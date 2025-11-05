@@ -13,9 +13,7 @@ export const walletGeneratorTool = createTool({
   id: "wallet-generator-tool",
   description: "Generates a new Solana wallet for the user. Returns the wallet address (public key) that users can send SOL to from their Phantom wallet. The bot manages this wallet for trading.",
 
-  inputSchema: z.object({
-    userId: z.string().describe("Telegram user ID"),
-  }),
+  inputSchema: z.object({}),
 
   outputSchema: z.object({
     walletAddress: z.string(),

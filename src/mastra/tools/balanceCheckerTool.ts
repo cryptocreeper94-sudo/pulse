@@ -11,9 +11,7 @@ export const balanceCheckerTool = createTool({
   id: "balance-checker-tool",
   description: "Checks the SOL balance of the user's bot wallet. Returns current balance in SOL.",
 
-  inputSchema: z.object({
-    userId: z.string().describe("Telegram user ID"),
-  }),
+  inputSchema: z.object({}),
 
   outputSchema: z.object({
     balance: z.number(),

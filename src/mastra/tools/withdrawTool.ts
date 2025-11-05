@@ -22,7 +22,6 @@ export const withdrawTool = createTool({
   description: "Withdraws SOL from the user's bot wallet to their Phantom wallet address. Specify amount and destination address.",
 
   inputSchema: z.object({
-    userId: z.string().describe("Telegram user ID"),
     amount: z.number().describe("Amount of SOL to withdraw"),
     destinationAddress: z.string().describe("Phantom wallet address to send SOL to"),
   }),
