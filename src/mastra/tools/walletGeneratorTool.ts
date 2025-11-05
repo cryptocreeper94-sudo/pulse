@@ -2,6 +2,7 @@ import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
 import { Keypair } from "@solana/web3.js";
 import * as bs58 from "bs58";
+import { encryptPrivateKey } from "./walletEncryption";
 
 /**
  * Wallet Generator Tool - Creates new Solana wallets for users
@@ -74,6 +75,10 @@ export const walletGeneratorTool = createTool({
         walletAddress: publicKey 
       });
 
+      // Encrypt private key before storage
+      const encryptedPrivateKey = encryptPrivateKey(privateKey);
+      logger?.info('🔒 [WalletGeneratorTool] Private key encrypted', { userId });
+
       // Save wallet to database (encrypted storage via PostgreSQL)
       const memory = mastra?.memory;
       if (memory) {
@@ -82,14 +87,14 @@ export const walletGeneratorTool = createTool({
             role: 'system',
             content: JSON.stringify({
               publicKey,
-              privateKey, // WARNING: Store encrypted in production!
+              privateKey: encryptedPrivateKey, // Encrypted using AES-256-GCM
               createdAt: new Date().toISOString(),
             }),
           }],
           resourceId: userId,
           threadId: WALLET_KEY,
         });
-        logger?.info('💾 [WalletGeneratorTool] Saved wallet to database', { userId });
+        logger?.info('💾 [WalletGeneratorTool] Saved encrypted wallet to database', { userId });
       }
 
       logger?.info('✅ [WalletGeneratorTool] Wallet generation complete', { 

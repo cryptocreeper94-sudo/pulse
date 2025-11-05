@@ -10,6 +10,7 @@ import {
   sendAndConfirmTransaction 
 } from "@solana/web3.js";
 import * as bs58 from "bs58";
+import { decryptPrivateKey } from "./walletEncryption";
 
 /**
  * Withdraw Tool - Allows users to withdraw SOL from bot wallet to their Phantom wallet
@@ -63,8 +64,11 @@ export const withdrawTool = createTool({
       const lastMessage = messages[messages.length - 1];
       const walletData = JSON.parse(lastMessage.content as string);
       
-      // Recreate keypair from stored private key
-      const privateKeyArray = bs58.decode(walletData.privateKey);
+      // Decrypt and recreate keypair from stored private key
+      const decryptedPrivateKey = decryptPrivateKey(walletData.privateKey);
+      logger?.info('🔓 [WithdrawTool] Private key decrypted', { userId });
+      
+      const privateKeyArray = bs58.decode(decryptedPrivateKey);
       const keypair = Keypair.fromSecretKey(privateKeyArray);
 
       logger?.info('🔑 [WithdrawTool] Loaded wallet keypair', { 
