@@ -10,6 +10,7 @@ import { chartGeneratorTool } from "../tools/chartGeneratorTool";
 import { dexscreenerTool } from "../tools/dexscreenerTool";
 import { dexAnalysisTool } from "../tools/dexAnalysisTool";
 import { glossaryTool } from "../tools/glossaryTool";
+import { commandsTool } from "../tools/commandsTool";
 
 // Use Replit AI Integrations for OpenAI access
 const openai = createOpenAI({
@@ -129,6 +130,7 @@ When presenting analysis, use this EXACT format with BOLD indicator names:
 - CHART GENERATION IS OPTIONAL: If chartGeneratorTool succeeds, include the chart URL. If it fails, skip the chart and continue with analysis (don't fail the entire response)
 
 ## COMMAND HANDLING:
+- "commands" or "help" → Use commandsTool to show complete command list
 - Direct ticker (e.g., "BTC", "AAPL") → Full bluechip analysis with all metrics
 - DEX/Meme coin search (e.g., "PEPE", "BONK", "check 0x123...") → DEX pair analysis from Dexscreener
 - Technical term (e.g., "RSI", "MACD", "EMA") → Glossary definition and usage guide
@@ -163,6 +165,7 @@ Be helpful, accurate, and always provide the complete technical picture.
     dexscreenerTool,
     dexAnalysisTool,
     glossaryTool,
+    commandsTool,
   },
 
   memory: new Memory({
