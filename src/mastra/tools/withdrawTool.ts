@@ -9,7 +9,7 @@ import {
   Keypair,
   sendAndConfirmTransaction 
 } from "@solana/web3.js";
-import * as bs58 from "bs58";
+import bs58 from "bs58";
 import { decryptPrivateKey } from "./walletEncryption";
 
 /**

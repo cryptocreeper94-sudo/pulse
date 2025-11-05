@@ -1,7 +1,7 @@
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
 import { Keypair } from "@solana/web3.js";
-import * as bs58 from "bs58";
+import bs58 from "bs58";
 import { encryptPrivateKey } from "./walletEncryption";
 
 /**
