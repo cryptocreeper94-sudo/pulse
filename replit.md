@@ -6,6 +6,8 @@ DarkWave-V2 is an advanced technical analysis bot built with the Mastra framewor
 
 The application uses a workflow-based architecture to process user messages through an AI agent that has access to specialized market analysis tools. It maintains conversation history and user watchlists using PostgreSQL storage, enabling personalized and context-aware interactions.
 
+**New in v2.1**: DEX pair and meme coin support via Dexscreener integration with specialized rug-risk detection, liquidity scoring, and visual price charts.
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
@@ -31,12 +33,15 @@ The application is built on Mastra, a TypeScript agent framework that provides p
 
 ### Tool Architecture
 
-The system implements four specialized tools:
+The system implements seven specialized tools:
 
 1. **Market Data Tool**: Fetches historical OHLCV data from free APIs (CoinGecko for crypto, Yahoo Finance for stocks)
 2. **Technical Analysis Tool**: Calculates technical indicators using the `technicalindicators` library (RSI, MACD, EMAs, SMAs, Bollinger Bands)
 3. **Holdings Tool**: Manages user watchlists with add/remove/list/clear operations
 4. **Scanner Tool**: Scans top assets and filters for strong buy signals
+5. **Chart Generator Tool**: Creates visual price charts with EMA overlays using QuickChart.io (free, no API key)
+6. **Dexscreener Tool**: Searches DEX pairs for meme coins and new tokens across all chains (Solana, Ethereum, Base, BSC, etc.)
+7. **DEX Analysis Tool**: Specialized technical analysis for high-volatility DEX pairs with rug-risk detection and liquidity scoring
 
 **Design pattern**: Each tool follows a consistent structure with:
 - Zod schemas for input/output validation
@@ -92,6 +97,8 @@ Telegram webhooks → Inngest workflow → Mastra agent → Tools → Response f
 ### Market Data APIs
 - **CoinGecko API**: Free cryptocurrency market data (prices, volume, market cap)
 - **Yahoo Finance (via axios)**: Free stock market data and historical prices
+- **Dexscreener API**: Free DEX pair data with 300 requests/minute limit (no API key required)
+- **QuickChart.io**: Free Chart.js image generation for price charts with technical indicators
 - **Rate limiting**: Scanner tool limited to top 20 assets per scan to respect free tier limits
 
 ### Database & Storage
