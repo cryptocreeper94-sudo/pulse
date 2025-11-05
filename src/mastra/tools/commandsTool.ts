@@ -37,9 +37,8 @@ export const commandsTool = createTool({
 • \`withdraw 0.5 ABC123...\` - Withdraw SOL to your Phantom wallet
 
 **🔍 MARKET SCANNING**
-• \`market\` - Quick scan (top 10 cryptos + 10 stocks) ~5-7 seconds
-• \`crypto\` - Full crypto scan (top 50 cryptos) ~8-9 minutes
-• \`stock\` - Full stock scan (top 100 stocks) ~20-25 seconds
+• \`crypto\` - Scan top 50 cryptocurrencies for BUY signals (~8-9 minutes)
+• \`stock\` - Scan top 100 stocks for BUY signals (~20-25 seconds)
 
 **📚 EDUCATIONAL**
 • \`RSI\` - Learn about Relative Strength Index
@@ -68,7 +67,7 @@ Every analysis includes:
 • Type any technical term to learn more
 
 **🚀 QUICK START**
-Try: \`BTC\`, \`PEPE\`, \`market\`, or \`SIGNALS\``;
+Try: \`BTC\`, \`PEPE\`, \`crypto\`, or \`SIGNALS\``;
 
     logger?.info('✅ [CommandsTool] Commands list generated');
 
