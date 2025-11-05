@@ -39,25 +39,23 @@ export const scannerTool = createTool({
     const logger = mastra?.getLogger();
     logger?.info('🔧 [ScannerTool] Starting scan', { type: context.type, limit: context.limit });
 
-    // Top crypto tickers to scan (reduced for API rate limits)
+    // Top crypto tickers to scan (reduced to avoid CoinGecko rate limits)
     const TOP_CRYPTOS = [
-      'BTC', 'ETH', 'SOL', 'XRP', 'ADA', 'DOGE', 'DOT', 'MATIC', 'AVAX', 'LINK',
-      'UNI', 'ATOM', 'LTC', 'BCH', 'NEAR', 'APT', 'ARB', 'OP', 'SUI', 'FIL',
+      'BTC', 'ETH', 'SOL', 'BNB', 'XRP', 'ADA', 'DOGE', 'AVAX', 'LINK', 'MATIC',
     ];
 
-    // Top stock tickers to scan (limited to top 20 for API constraints)
+    // Top stock tickers to scan (limited for API constraints)
     const TOP_STOCKS = [
-      'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'META', 'TSLA', 'JPM', 'V',
-      'JNJ', 'WMT', 'PG', 'MA', 'HD', 'CVX', 'MRK', 'ABBV', 'PEP', 'KO',
+      'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'META', 'TSLA', 'JPM', 'V', 'WMT',
     ];
 
     let tickersToScan: { ticker: string; type: 'crypto' | 'stock' }[] = [];
 
     if (context.type === 'crypto' || context.type === 'both') {
-      tickersToScan.push(...TOP_CRYPTOS.slice(0, 20).map(t => ({ ticker: t, type: 'crypto' as const })));
+      tickersToScan.push(...TOP_CRYPTOS.map(t => ({ ticker: t, type: 'crypto' as const })));
     }
     if (context.type === 'stock' || context.type === 'both') {
-      tickersToScan.push(...TOP_STOCKS.slice(0, 20).map(t => ({ ticker: t, type: 'stock' as const })));
+      tickersToScan.push(...TOP_STOCKS.map(t => ({ ticker: t, type: 'stock' as const })));
     }
 
     logger?.info('📊 [ScannerTool] Scanning tickers', { count: tickersToScan.length });
@@ -112,8 +110,8 @@ export const scannerTool = createTool({
           break;
         }
 
-        // Add small delay to avoid hitting API rate limits
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Add delay to avoid hitting CoinGecko rate limits (critical for crypto scans)
+        await new Promise(resolve => setTimeout(resolve, type === 'crypto' ? 500 : 200));
 
       } catch (error: any) {
         logger?.warn(`⚠️ [ScannerTool] Failed to analyze ${ticker}`, { error: error.message });
