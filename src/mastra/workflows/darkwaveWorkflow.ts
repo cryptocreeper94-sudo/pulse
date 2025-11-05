@@ -36,9 +36,8 @@ const processMessage = createStep({
         logger?.info('🔐 [DarkWaveWorkflow] Getting wallet for user', { userId });
         const { walletGeneratorTool } = await import('../tools/walletGeneratorTool');
         const result = await walletGeneratorTool.execute({ 
-          context: {},
-          mastra, 
-          runtimeContext: { resourceId: userId } as any
+          context: { userId },
+          mastra
         });
         logger?.info('🔐 [DarkWaveWorkflow] Wallet result', { userId, address: result.walletAddress });
         return {
@@ -52,9 +51,8 @@ const processMessage = createStep({
         logger?.info('💰 [DarkWaveWorkflow] Checking balance for user', { userId });
         const { balanceCheckerTool } = await import('../tools/balanceCheckerTool');
         const result = await balanceCheckerTool.execute({ 
-          context: {},
-          mastra, 
-          runtimeContext: { resourceId: userId } as any
+          context: { userId },
+          mastra
         });
         logger?.info('💰 [DarkWaveWorkflow] Balance result', { userId, success: result.success });
         return {

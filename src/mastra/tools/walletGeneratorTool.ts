@@ -22,20 +22,14 @@ export const walletGeneratorTool = createTool({
     isNewWallet: z.boolean(),
   }),
 
-  execute: async ({ context, mastra, runtimeContext }) => {
+  execute: async ({ context, mastra }) => {
     const logger = mastra?.getLogger();
 
     try {
-      // Get actual user ID from runtimeContext (set by workflow)
-      const userId = (runtimeContext as any)?.resourceId || (context as any).userId || 'default-user';
+      // Get userId from context (passed from workflow)
+      const userId = (context as any).userId || 'default-user';
       
-      logger?.info('🔧 [WalletGeneratorTool] Received userId', { 
-        userId,
-        fromRuntimeContext: !!(runtimeContext as any)?.resourceId,
-        fromContext: !!(context as any).userId
-      });
-      
-      logger?.info('🔧 [WalletGeneratorTool] Starting wallet generation', { userId });
+      logger?.info('🔧 [WalletGeneratorTool] Starting wallet retrieval/generation', { userId });
       
       const WALLET_KEY = `user_wallet_${userId}`;
 
