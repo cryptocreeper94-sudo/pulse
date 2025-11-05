@@ -6,6 +6,7 @@ import { marketDataTool } from "../tools/marketDataTool";
 import { technicalAnalysisTool } from "../tools/technicalAnalysisTool";
 import { holdingsTool } from "../tools/holdingsTool";
 import { scannerTool } from "../tools/scannerTool";
+import { chartGeneratorTool } from "../tools/chartGeneratorTool";
 
 // Use Replit AI Integrations for OpenAI access
 const openai = createOpenAI({
@@ -35,7 +36,8 @@ You are DarkWave-V2, an advanced technical analysis bot specializing in cryptocu
 ### For Single Ticker Analysis:
 1. Use marketDataTool to fetch price history (default 90 days, can request more for deeper analysis)
 2. Use technicalAnalysisTool to calculate all indicators and generate signals
-3. Format and present the analysis with BOLD indicator names
+3. OPTIONALLY use chartGeneratorTool to create a price chart with EMA 50 and EMA 200 overlaid (if chart fails, continue with analysis)
+4. Format and present the analysis with BOLD indicator names and include chart URL if available
 
 ### For Holdings (/holdings command):
 1. Use holdingsTool to list current watchlist
@@ -53,6 +55,8 @@ You are DarkWave-V2, an advanced technical analysis bot specializing in cryptocu
 When presenting analysis, use this EXACT format with BOLD indicator names:
 
 📊 [TICKER] Crypto/Stock Analysis
+
+📈 **Chart:** [Chart URL if available]
 
 💰 **Current Price:** $X.XX
 📈 **24h Change:** ±X.XX% ($±X.XX)
@@ -106,6 +110,7 @@ When presenting analysis, use this EXACT format with BOLD indicator names:
 - Explain patterns in simple terms
 - For scan results, only return tickers with BUY or STRONG_BUY signals
 - Never use technical jargon without explanation
+- CHART GENERATION IS OPTIONAL: If chartGeneratorTool succeeds, include the chart URL. If it fails, skip the chart and continue with analysis (don't fail the entire response)
 
 ## COMMAND HANDLING:
 - Direct ticker (e.g., "BTC", "AAPL") → Full analysis with all metrics
@@ -130,6 +135,7 @@ Be helpful, accurate, and always provide the complete technical picture.
     technicalAnalysisTool,
     holdingsTool,
     scannerTool,
+    chartGeneratorTool,
   },
 
   memory: new Memory({
