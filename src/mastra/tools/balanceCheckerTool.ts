@@ -24,10 +24,13 @@ export const balanceCheckerTool = createTool({
 
   execute: async ({ context, mastra, runtimeContext }) => {
     const logger = mastra?.getLogger();
-    logger?.info('🔧 [BalanceCheckerTool] Starting balance check', { userId: context.userId });
 
     try {
-      const userId = context.userId || (runtimeContext as any)?.resourceId || 'default-user';
+      // Get actual user ID from runtimeContext (set by workflow)
+      const userId = (runtimeContext as any)?.resourceId || context.userId || 'default-user';
+      
+      logger?.info('🔧 [BalanceCheckerTool] Starting balance check', { userId });
+      
       const WALLET_KEY = `user_wallet_${userId}`;
 
       // Get user's wallet from database
