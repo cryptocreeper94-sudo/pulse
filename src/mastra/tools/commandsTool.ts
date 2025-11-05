@@ -44,10 +44,6 @@ export const commandsTool = createTool({
 • \`volume\` - Learn about volume analysis
 • Ask: "What is [any technical term]?" - Natural language glossary
 
-**📊 VISUAL CHARTS**
-• Automatically included with bluechip analysis
-• Shows price trends with EMA overlays
-
 **🎯 WHAT YOU GET**
 Every analysis includes:
 ✓ Current Price & Market Cap
