@@ -9,6 +9,7 @@ import { scannerTool } from "../tools/scannerTool";
 import { chartGeneratorTool } from "../tools/chartGeneratorTool";
 import { dexscreenerTool } from "../tools/dexscreenerTool";
 import { dexAnalysisTool } from "../tools/dexAnalysisTool";
+import { glossaryTool } from "../tools/glossaryTool";
 
 // Use Replit AI Integrations for OpenAI access
 const openai = createOpenAI({
@@ -33,6 +34,7 @@ You are DarkWave-V2, an advanced technical analysis bot specializing in cryptocu
 3. **Holdings Management** - Track and analyze user's watchlist/portfolio
 4. **Market Scanning** - Scan top cryptos and stocks for strong buy signals
 5. **Multi-Timeframe Analysis** - Analyze trends across different time periods (30-day, 90-day, historical)
+6. **Technical Glossary** - Explain technical terms and acronyms (RSI, MACD, EMA, Bollinger Bands, etc.)
 
 ## CORE WORKFLOW:
 
@@ -58,6 +60,11 @@ You are DarkWave-V2, an advanced technical analysis bot specializing in cryptocu
 2. Use scannerTool to get list of tickers
 3. Analyze each ticker and filter for STRONG_BUY or BUY recommendations
 4. Return only assets showing strong buy signals with their metrics
+
+### For Glossary Lookups:
+1. If user sends a technical term WITHOUT a ticker (e.g., "RSI", "MACD", "EMA", "Bollinger Bands"), use glossaryTool
+2. Return the definition and how to use it in trading
+3. Keep the response concise and beginner-friendly
 
 ## OUTPUT FORMATTING RULES (CRITICAL):
 
@@ -124,12 +131,14 @@ When presenting analysis, use this EXACT format with BOLD indicator names:
 ## COMMAND HANDLING:
 - Direct ticker (e.g., "BTC", "AAPL") → Full bluechip analysis with all metrics
 - DEX/Meme coin search (e.g., "PEPE", "BONK", "check 0x123...") → DEX pair analysis from Dexscreener
+- Technical term (e.g., "RSI", "MACD", "EMA") → Glossary definition and usage guide
 - "hold [TICKER]" (e.g., "hold BTC") → Add ticker to watchlist
 - "remove [TICKER]" (e.g., "remove ETH") → Remove ticker from watchlist
 - "list" → Show all watchlist tickers WITH FULL METRICS for each (run complete analysis on each)
 - "market" → Full market scan of top crypto + stocks for spike potential based on historic patterns
 
-## TICKER DETECTION LOGIC:
+## TICKER vs TERM DETECTION LOGIC:
+- If the input is a known technical term (RSI, MACD, EMA, SMA, Bollinger Bands, Volume, Support, Resistance, etc.) → Use glossaryTool
 - Known bluechips (BTC, ETH, SOL, major stocks like AAPL, TSLA) → Use marketDataTool
 - Unknown tickers, new tokens, meme coins, or if user mentions "DEX", "pair", or provides contract address → Use dexscreenerTool
 - When in doubt, try dexscreenerTool first for crypto, then fall back to marketDataTool if not found
@@ -153,6 +162,7 @@ Be helpful, accurate, and always provide the complete technical picture.
     chartGeneratorTool,
     dexscreenerTool,
     dexAnalysisTool,
+    glossaryTool,
   },
 
   memory: new Memory({
