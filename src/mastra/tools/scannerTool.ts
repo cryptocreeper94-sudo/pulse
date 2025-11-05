@@ -39,18 +39,13 @@ export const scannerTool = createTool({
     const logger = mastra?.getLogger();
     logger?.info('🔧 [ScannerTool] Starting scan', { type: context.type, limit: context.limit });
 
-    // Top 100 crypto tickers by market cap
-    const TOP_100_CRYPTOS = [
+    // Top 50 crypto tickers by market cap (optimized for CoinGecko free tier rate limits)
+    const TOP_50_CRYPTOS = [
       'BTC', 'ETH', 'SOL', 'BNB', 'XRP', 'ADA', 'DOGE', 'AVAX', 'LINK', 'MATIC',
       'DOT', 'UNI', 'ATOM', 'LTC', 'BCH', 'NEAR', 'APT', 'ARB', 'OP', 'SUI',
       'FIL', 'ICP', 'VET', 'ALGO', 'SAND', 'MANA', 'AXS', 'FTM', 'AAVE', 'GRT',
       'SNX', 'AR', 'HBAR', 'XLM', 'TRX', 'ETC', 'XMR', 'TON', 'SHIB', 'PEPE',
       'WIF', 'BONK', 'FLOKI', 'INJ', 'TIA', 'SEI', 'RUNE', 'OSMO', 'JUNO', 'CRV',
-      'MKR', 'LDO', 'QNT', 'IMX', 'RNDR', 'STX', 'FET', 'AGIX', 'OCEAN', 'ROSE',
-      'GALA', 'ENJ', 'CHZ', 'ZIL', 'BAT', 'COMP', 'YFI', 'SUSHI', '1INCH', 'UMA',
-      'BAL', 'REN', 'LRC', 'ZRX', 'KNC', 'BNT', 'BAND', 'NMR', 'MLN', 'ANT',
-      'RLC', 'STORJ', 'ANKR', 'CELR', 'CVC', 'DNT', 'FUN', 'GNO', 'KIN', 'LOOM',
-      'MAID', 'POWR', 'REP', 'REQ', 'SKL', 'SXP', 'TRAC', 'VIDT', 'WBTC', 'ZEN',
     ];
 
     // Top 100 stock tickers by market cap
@@ -68,13 +63,13 @@ export const scannerTool = createTool({
     ];
 
     // Quick scan list (10+10 for "market" command)
-    const QUICK_CRYPTOS = TOP_100_CRYPTOS.slice(0, 10);
+    const QUICK_CRYPTOS = TOP_50_CRYPTOS.slice(0, 10);
     const QUICK_STOCKS = TOP_100_STOCKS.slice(0, 10);
 
     let tickersToScan: { ticker: string; type: 'crypto' | 'stock' }[] = [];
 
     if (context.type === 'crypto') {
-      tickersToScan.push(...TOP_100_CRYPTOS.map(t => ({ ticker: t, type: 'crypto' as const })));
+      tickersToScan.push(...TOP_50_CRYPTOS.map(t => ({ ticker: t, type: 'crypto' as const })));
     } else if (context.type === 'stock') {
       tickersToScan.push(...TOP_100_STOCKS.map(t => ({ ticker: t, type: 'stock' as const })));
     } else if (context.type === 'both') {

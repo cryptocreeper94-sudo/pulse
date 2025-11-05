@@ -171,7 +171,7 @@ DO NOT include MACD, EMAs, Bollinger Bands, or other indicators in scan results 
 ## CRITICAL BEHAVIORS:
 - For "list" command: MUST run full technical analysis on EACH ticker in the watchlist
 - For "market" command: Quick scan using scannerTool with type='both' (20 assets total)
-- For "crypto" command: Full crypto scan using scannerTool with type='crypto' (100 cryptos, takes ~60 seconds)
+- For "crypto" command: Full crypto scan using scannerTool with type='crypto' (50 cryptos, takes ~3-4 minutes)
 - For "stock" command: Full stock scan using scannerTool with type='stock' (100 stocks, takes ~25 seconds)
 - For "hold/remove": Use holdingsTool with the appropriate action
 - Single tickers always get full analysis treatment

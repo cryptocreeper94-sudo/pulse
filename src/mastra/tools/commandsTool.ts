@@ -33,7 +33,7 @@ export const commandsTool = createTool({
 
 **🔍 MARKET SCANNING**
 • \`market\` - Quick scan (top 10 cryptos + 10 stocks) ~5-7 seconds
-• \`crypto\` - Full crypto scan (top 100 cryptos) ~50-60 seconds
+• \`crypto\` - Full crypto scan (top 50 cryptos) ~3-4 minutes
 • \`stock\` - Full stock scan (top 100 stocks) ~20-25 seconds
 
 **📚 EDUCATIONAL**
