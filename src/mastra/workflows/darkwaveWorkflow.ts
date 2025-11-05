@@ -31,10 +31,42 @@ const processMessage = createStep({
     logger?.info('🚀 [DarkWaveWorkflow] Processing command', { message: msg, userId });
 
     try {
-      // WALLET FEATURES DISABLED - causing issues with new wallet creation
-      if (msg === "BALANCE" || msg === "WALLET" || msg.startsWith("WITHDRAW")) {
+      // WALLET command - retrieve existing wallet
+      if (msg === "WALLET") {
+        logger?.info('🔐 [DarkWaveWorkflow] Getting wallet for user', { userId });
+        const { walletGeneratorTool } = await import('../tools/walletGeneratorTool');
+        const result = await walletGeneratorTool.execute({ 
+          context: {},
+          mastra, 
+          runtimeContext: { resourceId: userId } as any
+        });
+        logger?.info('🔐 [DarkWaveWorkflow] Wallet result', { userId, address: result.walletAddress });
         return {
-          response: "⚠️ Wallet features temporarily disabled due to technical issues.\n\nYour existing wallet: 6vexNEjjuygFqvQehKyDBNCZ4WRRo7G5BmoZmG8x3bR1\n\nFor now, please use BTC/ETH analysis and SCAN commands.",
+          response: `🔐 **Your Wallet**\n\n${result.message}\n\nAddress: ${result.walletAddress}`,
+          success: result.success
+        };
+      }
+
+      // BALANCE command - check wallet balance
+      if (msg === "BALANCE") {
+        logger?.info('💰 [DarkWaveWorkflow] Checking balance for user', { userId });
+        const { balanceCheckerTool } = await import('../tools/balanceCheckerTool');
+        const result = await balanceCheckerTool.execute({ 
+          context: {},
+          mastra, 
+          runtimeContext: { resourceId: userId } as any
+        });
+        logger?.info('💰 [DarkWaveWorkflow] Balance result', { userId, success: result.success });
+        return {
+          response: `💰 **Wallet Balance**\n\n${result.message}\nAddress: ${result.walletAddress}`,
+          success: result.success
+        };
+      }
+
+      // WITHDRAW disabled for safety
+      if (msg.startsWith("WITHDRAW")) {
+        return {
+          response: "⚠️ Withdrawals disabled for safety. Contact admin to enable.",
           success: true
         };
       }

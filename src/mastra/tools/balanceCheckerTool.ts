@@ -24,15 +24,14 @@ export const balanceCheckerTool = createTool({
     const logger = mastra?.getLogger();
 
     try {
-      // Debug: Log what we received
-      logger?.info('[BalanceCheckerTool] DEBUG', { 
-        runtimeContext: runtimeContext,
-        contextUserId: (context as any).userId,
-        runtimeResourceId: (runtimeContext as any)?.resourceId
-      });
-      
       // Get actual user ID from runtimeContext (set by workflow)
       const userId = (runtimeContext as any)?.resourceId || (context as any).userId || 'default-user';
+      
+      logger?.info('🔧 [BalanceCheckerTool] Received userId', { 
+        userId,
+        fromRuntimeContext: !!(runtimeContext as any)?.resourceId,
+        fromContext: !!(context as any).userId
+      });
       
       logger?.info('🔧 [BalanceCheckerTool] Starting balance check', { userId });
       
