@@ -56,6 +56,11 @@ export const technicalAnalysisTool = createTool({
       changePercent: z.number(),
     }),
     volatility: z.number(),
+    patternDuration: z.object({
+      estimate: z.string(),
+      confidence: z.string(),
+      type: z.string(),
+    }),
     signals: z.array(z.string()),
     recommendation: z.enum(['BUY', 'SELL', 'HOLD', 'STRONG_BUY', 'STRONG_SELL']),
     signalCount: z.object({
@@ -123,6 +128,17 @@ export const technicalAnalysisTool = createTool({
 
     // Calculate volatility (standard deviation of recent returns)
     const volatility = calculateVolatility(closePrices.slice(-30));
+
+    // Calculate pattern duration estimate
+    const patternDuration = estimatePatternDuration(
+      context.prices,
+      currentRSI,
+      currentMACD,
+      volumeChangePercent,
+      context.currentPrice,
+      currentEMA50,
+      currentEMA200
+    );
 
     logger?.info('📝 [TechnicalAnalysisTool] Generating signals');
 
@@ -256,6 +272,7 @@ export const technicalAnalysisTool = createTool({
         changePercent: parseFloat(volumeChangePercent.toFixed(1)),
       },
       volatility: parseFloat(volatility.toFixed(1)),
+      patternDuration,
       signals,
       recommendation,
       signalCount: {
@@ -305,4 +322,264 @@ function calculateVolatility(prices: number[]): number {
   const stdDev = Math.sqrt(variance);
   
   return stdDev * 100; // Convert to percentage
+}
+
+function estimatePatternDuration(
+  prices: any[],
+  currentRSI: number,
+  currentMACD: any,
+  volumeChange: number,
+  currentPrice: number,
+  ema50: number,
+  ema200: number
+): { estimate: string; confidence: string; type: string } {
+  // Analyze historical patterns to estimate duration of current trend
+  
+  const closePrices = prices.map(p => p.close);
+  let patternType = 'consolidation';
+  let estimatedDays = 0;
+  let confidence = 'low';
+  
+  // RSI-based duration analysis
+  if (currentRSI < 30) {
+    // Oversold - analyze past oversold recoveries
+    const oversoldDurations = analyzeOversoldRecoveries(closePrices, prices);
+    estimatedDays = oversoldDurations.avgDuration;
+    confidence = oversoldDurations.confidence;
+    patternType = 'potential rally from oversold';
+  } else if (currentRSI > 70) {
+    // Overbought - analyze past overbought corrections
+    const overboughtDurations = analyzeOverboughtCorrections(closePrices, prices);
+    estimatedDays = overboughtDurations.avgDuration;
+    confidence = overboughtDurations.confidence;
+    patternType = 'potential correction from overbought';
+  }
+  
+  // MACD momentum duration
+  else if (currentMACD.histogram && Math.abs(currentMACD.histogram) > 0) {
+    const macdDurations = analyzeMACDMomentum(closePrices, prices);
+    estimatedDays = macdDurations.avgDuration;
+    confidence = macdDurations.confidence;
+    if (currentMACD.histogram > 0) {
+      patternType = 'bullish momentum continuation';
+    } else {
+      patternType = 'bearish momentum continuation';
+    }
+  }
+  
+  // Trend-based duration (EMA crossovers)
+  else if (currentPrice > ema50 && ema50 > ema200) {
+    const trendDurations = analyzeUptrends(closePrices, prices);
+    estimatedDays = trendDurations.avgDuration;
+    confidence = trendDurations.confidence;
+    patternType = 'uptrend continuation';
+  } else if (currentPrice < ema50 && ema50 < ema200) {
+    const trendDurations = analyzeDowntrends(closePrices, prices);
+    estimatedDays = trendDurations.avgDuration;
+    confidence = trendDurations.confidence;
+    patternType = 'downtrend continuation';
+  }
+  
+  // Volume spike patterns
+  else if (volumeChange > 50) {
+    estimatedDays = 5; // Volume spikes typically precede 3-7 day moves
+    confidence = 'medium';
+    patternType = 'volume breakout pattern';
+  }
+  
+  // Default consolidation
+  else {
+    estimatedDays = 7;
+    confidence = 'low';
+    patternType = 'consolidation/range-bound';
+  }
+  
+  // Format estimate as time range
+  let estimate = '';
+  if (estimatedDays < 2) {
+    estimate = '1-2 days';
+  } else if (estimatedDays < 7) {
+    estimate = `${Math.floor(estimatedDays)}-${Math.ceil(estimatedDays + 2)} days`;
+  } else if (estimatedDays < 14) {
+    estimate = '1-2 weeks';
+  } else if (estimatedDays < 30) {
+    estimate = '2-4 weeks';
+  } else {
+    estimate = '1-2 months';
+  }
+  
+  return {
+    estimate,
+    confidence,
+    type: patternType,
+  };
+}
+
+function analyzeOversoldRecoveries(closePrices: number[], prices: any[]): { avgDuration: number; confidence: string } {
+  // Calculate RSI for all data points
+  const rsiValues = RSI.calculate({ values: closePrices, period: 14 });
+  
+  const recoveries: number[] = [];
+  let inOversold = false;
+  let oversoldStart = 0;
+  
+  for (let i = 0; i < rsiValues.length; i++) {
+    if (rsiValues[i] < 30 && !inOversold) {
+      inOversold = true;
+      oversoldStart = i;
+    } else if (rsiValues[i] >= 50 && inOversold) {
+      // Recovery complete
+      const duration = i - oversoldStart;
+      if (duration > 0 && duration < 60) { // Filter outliers
+        recoveries.push(duration);
+      }
+      inOversold = false;
+    }
+  }
+  
+  if (recoveries.length >= 3) {
+    const avg = recoveries.reduce((a, b) => a + b, 0) / recoveries.length;
+    return { avgDuration: Math.round(avg), confidence: 'high' };
+  } else if (recoveries.length > 0) {
+    const avg = recoveries.reduce((a, b) => a + b, 0) / recoveries.length;
+    return { avgDuration: Math.round(avg), confidence: 'medium' };
+  }
+  
+  return { avgDuration: 5, confidence: 'low' }; // Default estimate
+}
+
+function analyzeOverboughtCorrections(closePrices: number[], prices: any[]): { avgDuration: number; confidence: string } {
+  const rsiValues = RSI.calculate({ values: closePrices, period: 14 });
+  
+  const corrections: number[] = [];
+  let inOverbought = false;
+  let overboughtStart = 0;
+  
+  for (let i = 0; i < rsiValues.length; i++) {
+    if (rsiValues[i] > 70 && !inOverbought) {
+      inOverbought = true;
+      overboughtStart = i;
+    } else if (rsiValues[i] <= 50 && inOverbought) {
+      const duration = i - overboughtStart;
+      if (duration > 0 && duration < 60) {
+        corrections.push(duration);
+      }
+      inOverbought = false;
+    }
+  }
+  
+  if (corrections.length >= 3) {
+    const avg = corrections.reduce((a, b) => a + b, 0) / corrections.length;
+    return { avgDuration: Math.round(avg), confidence: 'high' };
+  } else if (corrections.length > 0) {
+    const avg = corrections.reduce((a, b) => a + b, 0) / corrections.length;
+    return { avgDuration: Math.round(avg), confidence: 'medium' };
+  }
+  
+  return { avgDuration: 7, confidence: 'low' };
+}
+
+function analyzeMACDMomentum(closePrices: number[], prices: any[]): { avgDuration: number; confidence: string } {
+  const macdValues = MACD.calculate({
+    values: closePrices,
+    fastPeriod: 12,
+    slowPeriod: 26,
+    signalPeriod: 9,
+    SimpleMAOscillator: false,
+    SimpleMASignal: false,
+  });
+  
+  const momentumPeriods: number[] = [];
+  let currentSign = 0;
+  let periodStart = 0;
+  
+  for (let i = 0; i < macdValues.length; i++) {
+    const hist = macdValues[i].histogram || 0;
+    const sign = hist > 0 ? 1 : hist < 0 ? -1 : 0;
+    
+    if (sign !== currentSign && currentSign !== 0) {
+      const duration = i - periodStart;
+      if (duration > 0 && duration < 60) {
+        momentumPeriods.push(duration);
+      }
+      periodStart = i;
+    }
+    currentSign = sign;
+  }
+  
+  if (momentumPeriods.length >= 3) {
+    const avg = momentumPeriods.reduce((a, b) => a + b, 0) / momentumPeriods.length;
+    return { avgDuration: Math.round(avg), confidence: 'high' };
+  } else if (momentumPeriods.length > 0) {
+    const avg = momentumPeriods.reduce((a, b) => a + b, 0) / momentumPeriods.length;
+    return { avgDuration: Math.round(avg), confidence: 'medium' };
+  }
+  
+  return { avgDuration: 8, confidence: 'low' };
+}
+
+function analyzeUptrends(closePrices: number[], prices: any[]): { avgDuration: number; confidence: string } {
+  const ema50 = EMA.calculate({ values: closePrices, period: 50 });
+  
+  const trends: number[] = [];
+  let inUptrend = false;
+  let trendStart = 0;
+  
+  for (let i = 50; i < closePrices.length; i++) {
+    const idx = i - 50;
+    if (idx >= ema50.length) continue;
+    
+    const priceAboveEMA = closePrices[i] > ema50[idx];
+    
+    if (priceAboveEMA && !inUptrend) {
+      inUptrend = true;
+      trendStart = i;
+    } else if (!priceAboveEMA && inUptrend) {
+      const duration = i - trendStart;
+      if (duration > 0 && duration < 90) {
+        trends.push(duration);
+      }
+      inUptrend = false;
+    }
+  }
+  
+  if (trends.length >= 2) {
+    const avg = trends.reduce((a, b) => a + b, 0) / trends.length;
+    return { avgDuration: Math.round(avg), confidence: 'medium' };
+  }
+  
+  return { avgDuration: 14, confidence: 'low' };
+}
+
+function analyzeDowntrends(closePrices: number[], prices: any[]): { avgDuration: number; confidence: string } {
+  const ema50 = EMA.calculate({ values: closePrices, period: 50 });
+  
+  const trends: number[] = [];
+  let inDowntrend = false;
+  let trendStart = 0;
+  
+  for (let i = 50; i < closePrices.length; i++) {
+    const idx = i - 50;
+    if (idx >= ema50.length) continue;
+    
+    const priceBelowEMA = closePrices[i] < ema50[idx];
+    
+    if (priceBelowEMA && !inDowntrend) {
+      inDowntrend = true;
+      trendStart = i;
+    } else if (!priceBelowEMA && inDowntrend) {
+      const duration = i - trendStart;
+      if (duration > 0 && duration < 90) {
+        trends.push(duration);
+      }
+      inDowntrend = false;
+    }
+  }
+  
+  if (trends.length >= 2) {
+    const avg = trends.reduce((a, b) => a + b, 0) / trends.length;
+    return { avgDuration: Math.round(avg), confidence: 'medium' };
+  }
+  
+  return { avgDuration: 12, confidence: 'low' };
 }

@@ -80,6 +80,11 @@ When presenting analysis, use this EXACT format with BOLD indicator names:
 • **Volatility:** X.X%
 • **Volume:** $X.XX (+X.X%)
 
+⏱️ **PATTERN DURATION ESTIMATE:**
+• **Estimated Duration:** X-X days/weeks
+• **Pattern Type:** [pattern type]
+• **Confidence:** High/Medium/Low
+
 ⚠️ **SIGNALS** (X):
 • Signal 1
 • Signal 2
