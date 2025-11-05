@@ -48,71 +48,76 @@ export function registerTelegramTrigger({
           // Extract message and user info
           const messageText = payload.message?.text || "";
           const userId = payload.message?.from?.id?.toString() || "unknown";
+          const chatId = payload.message?.chat?.id;
 
-          // Execute DarkWave-V2 workflow synchronously
-          logger?.info("🚀 [Telegram] Triggering DarkWave-V2 workflow");
+          // Respond to Telegram immediately to avoid timeout
+          logger?.info("🚀 [Telegram] Processing async");
           
-          const run = await darkwaveWorkflow.createRunAsync();
-          const workflowResult = await run.start({ 
-            inputData: {
-              message: messageText,
-              userId: userId,
+          // Process workflow asynchronously (don't await)
+          (async () => {
+            try {
+              const run = await darkwaveWorkflow.createRunAsync();
+              const workflowResult = await run.start({ 
+                inputData: {
+                  message: messageText,
+                  userId: userId,
+                }
+              });
+
+              logger?.info("✅ [Telegram] Workflow completed", { 
+                status: workflowResult.status,
+                hasSteps: !!workflowResult.steps
+              });
+
+              // Send response back to Telegram
+              let responseText = "";
+              if (workflowResult.status === "success") {
+                const stepResult = workflowResult.steps['process-telegram-message'];
+                if (stepResult && stepResult.status === 'success' && 'output' in stepResult) {
+                  responseText = stepResult.output.response || "⚠️ No response generated";
+                  logger?.info("📤 [Telegram] Sending response", { textLength: responseText.length });
+                } else {
+                  responseText = "⚠️ No response generated from workflow.";
+                  logger?.warn("⚠️ [Telegram] No step output found");
+                }
+              } else if (workflowResult.status === "failed") {
+                responseText = "⚠️ Error processing your request. Please try again.";
+                logger?.warn("⚠️ [Telegram] Workflow failed", { status: workflowResult.status });
+              }
+
+              if (responseText && chatId) {
+                const telegramApiUrl = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
+                const telegramResponse = await fetch(telegramApiUrl, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    chat_id: chatId,
+                    text: responseText,
+                    parse_mode: "Markdown",
+                  }),
+                });
+                
+                const responseData = await telegramResponse.json();
+                logger?.info("📨 [Telegram] Message sent", { ok: responseData.ok, statusCode: telegramResponse.status });
+                
+                if (!responseData.ok) {
+                  logger?.error("❌ [Telegram] Failed to send message", { error: responseData.description });
+                }
+              }
+
+              // Call the original handler for compatibility
+              await handler(mastra, {
+                type: triggerType,
+                params: {
+                  userName: payload.message.from.username,
+                  message: messageText,
+                },
+                payload,
+              } as TriggerInfoTelegramOnNewMessage);
+            } catch (error: any) {
+              logger?.error("❌ [Telegram] Async workflow error", { error: error.message });
             }
-          });
-
-          logger?.info("✅ [Telegram] Workflow completed", { 
-            status: workflowResult.status,
-            hasSteps: !!workflowResult.steps
-          });
-
-          // Send response back to Telegram
-          let responseText = "";
-          if (workflowResult.status === "success") {
-            // Get the result from the workflow steps
-            const stepResult = workflowResult.steps['process-telegram-message'];
-            if (stepResult && stepResult.status === 'success' && 'output' in stepResult) {
-              responseText = stepResult.output.response || "⚠️ No response generated";
-              logger?.info("📤 [Telegram] Sending response", { textLength: responseText.length });
-            } else {
-              responseText = "⚠️ No response generated from workflow.";
-              logger?.warn("⚠️ [Telegram] No step output found");
-            }
-          } else if (workflowResult.status === "failed") {
-            responseText = "⚠️ Error processing your request. Please try again.";
-            logger?.warn("⚠️ [Telegram] Workflow failed", { status: workflowResult.status });
-          }
-
-          if (responseText) {
-            const telegramApiUrl = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
-            const telegramResponse = await fetch(telegramApiUrl, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                chat_id: payload.message.chat.id,
-                text: responseText,
-                parse_mode: "Markdown",
-              }),
-            });
-            
-            const responseData = await telegramResponse.json();
-            logger?.info("📨 [Telegram] Message sent", { ok: responseData.ok, statusCode: telegramResponse.status });
-            
-            if (!responseData.ok) {
-              logger?.error("❌ [Telegram] Failed to send message", { error: responseData.description });
-            }
-          } else {
-            logger?.warn("⚠️ [Telegram] No response text to send");
-          }
-
-          // Also call the original handler for compatibility
-          await handler(mastra, {
-            type: triggerType,
-            params: {
-              userName: payload.message.from.username,
-              message: messageText,
-            },
-            payload,
-          } as TriggerInfoTelegramOnNewMessage);
+          })();
 
           return c.text("OK", 200);
         } catch (error: any) {
