@@ -3,12 +3,10 @@ import { z } from "zod";
 import { marketDataTool } from "../tools/marketDataTool";
 import { technicalAnalysisTool } from "../tools/technicalAnalysisTool";
 import { scannerTool } from "../tools/scannerTool";
-import { balanceCheckerTool } from "../tools/balanceCheckerTool";
-import { walletGeneratorTool } from "../tools/walletGeneratorTool";
 
 /**
- * DarkWave-V2 Workflow - NO AI, direct command processing only
- * Budget-friendly: Uses free APIs only, no OpenAI
+ * DarkWave-V2 Workflow - NO AI, NO WALLET (disabled to prevent issues)
+ * Budget-friendly: Free APIs only, no OpenAI
  */
 
 const processMessage = createStep({
@@ -33,33 +31,11 @@ const processMessage = createStep({
     logger?.info('🚀 [DarkWaveWorkflow] Processing command', { message: msg, userId });
 
     try {
-      // BALANCE command
-      if (msg === "BALANCE") {
-        logger?.info('💰 [DarkWaveWorkflow] Checking balance for user', { userId });
-        const result = await balanceCheckerTool.execute({ 
-          context: {}, 
-          mastra, 
-          runtimeContext: { resourceId: userId } as any
-        });
-        logger?.info('💰 [DarkWaveWorkflow] Balance result', { userId, success: result.success });
+      // WALLET FEATURES DISABLED - causing issues with new wallet creation
+      if (msg === "BALANCE" || msg === "WALLET" || msg.startsWith("WITHDRAW")) {
         return {
-          response: `💰 **Wallet Balance**\n\n${result.message}\nAddress: ${result.walletAddress}`,
-          success: result.success
-        };
-      }
-
-      // WALLET command
-      if (msg === "WALLET") {
-        logger?.info('🔐 [DarkWaveWorkflow] Getting wallet for user', { userId });
-        const result = await walletGeneratorTool.execute({ 
-          context: {}, 
-          mastra, 
-          runtimeContext: { resourceId: userId } as any
-        });
-        logger?.info('🔐 [DarkWaveWorkflow] Wallet result', { userId, address: result.walletAddress, isNew: result.isNewWallet });
-        return {
-          response: `🔐 **Your Wallet**\n\n${result.message}\n\nAddress: ${result.walletAddress}`,
-          success: result.success
+          response: "⚠️ Wallet features temporarily disabled due to technical issues.\n\nYour existing wallet: 6vexNEjjuygFqvQehKyDBNCZ4WRRo7G5BmoZmG8x3bR1\n\nFor now, please use BTC/ETH analysis and SCAN commands.",
+          success: true
         };
       }
 
@@ -133,7 +109,7 @@ const processMessage = createStep({
 
       // Unknown command
       return {
-        response: "Commands:\n• BTC, ETH, SOL (any ticker)\n• BALANCE - Check wallet\n• WALLET - Create/view wallet\n• SCAN - Top 10 cryptos",
+        response: "Commands:\n• BTC, ETH, SOL (any ticker)\n• SCAN - Top 10 cryptos\n\n⚠️ Wallet features disabled",
         success: true
       };
 
