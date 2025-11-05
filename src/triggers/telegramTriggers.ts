@@ -4,9 +4,11 @@ import { registerApiRoute } from "../mastra/inngest";
 import { Mastra } from "@mastra/core";
 import { darkwaveWorkflow } from "../mastra/workflows/darkwaveWorkflow";
 
-if (!process.env.TELEGRAM_BOT_TOKEN) {
+const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN_NEW || process.env.TELEGRAM_BOT_TOKEN;
+
+if (!TELEGRAM_TOKEN) {
   console.warn(
-    "Trying to initialize Telegram triggers without TELEGRAM_BOT_TOKEN. Can you confirm that the Telegram integration is configured correctly?",
+    "Trying to initialize Telegram triggers without TELEGRAM_TOKEN_NEW or TELEGRAM_BOT_TOKEN. Can you confirm that the Telegram integration is configured correctly?",
   );
 }
 
@@ -69,7 +71,7 @@ export function registerTelegramTrigger({
           }
 
           if (responseText) {
-            const telegramApiUrl = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`;
+            const telegramApiUrl = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
             await fetch(telegramApiUrl, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
