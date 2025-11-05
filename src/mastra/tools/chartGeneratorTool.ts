@@ -45,14 +45,17 @@ export const chartGeneratorTool = createTool({
       const closePrices = recentPrices.map(p => p.close);
 
       // Align EMAs with price data (EMAs are shorter due to calculation period)
-      const ema50Data = context.ema50.slice(-dataPoints);
-      const ema200Data = context.ema200.slice(-dataPoints);
+      // Guard against edge cases where EMA arrays might be empty or too short
+      const ema50Data = context.ema50.length > 0 ? context.ema50.slice(-Math.min(dataPoints, context.ema50.length)) : [];
+      const ema200Data = context.ema200.length > 0 ? context.ema200.slice(-Math.min(dataPoints, context.ema200.length)) : [];
 
       // Pad EMAs with nulls at the beginning to align with price data
-      const ema50Padded = [...Array(dataPoints - ema50Data.length).fill(null), ...ema50Data];
-      const ema200Padded = [...Array(dataPoints - ema200Data.length).fill(null), ...ema200Data];
+      const ema50PadLength = Math.max(0, dataPoints - ema50Data.length);
+      const ema200PadLength = Math.max(0, dataPoints - ema200Data.length);
+      const ema50Padded = [...Array(ema50PadLength).fill(null), ...ema50Data];
+      const ema200Padded = [...Array(ema200PadLength).fill(null), ...ema200Data];
 
-      // Create Chart.js configuration
+      // Create Chart.js v4 configuration
       const chartConfig = {
         type: 'line',
         data: {
@@ -88,21 +91,27 @@ export const chartGeneratorTool = createTool({
           ],
         },
         options: {
-          title: {
-            display: true,
-            text: `${context.ticker} - Price with Moving Averages`,
-            fontSize: 16,
+          plugins: {
+            title: {
+              display: true,
+              text: `${context.ticker} - Price with Moving Averages`,
+              font: {
+                size: 16,
+              },
+            },
+            legend: {
+              display: true,
+              position: 'bottom',
+            },
           },
           scales: {
-            yAxes: [{
+            y: {
               ticks: {
-                callback: (value: number) => `$${value.toFixed(2)}`,
+                callback: function(value: any) {
+                  return '$' + value.toFixed(2);
+                },
               },
-            }],
-          },
-          legend: {
-            display: true,
-            position: 'bottom',
+            },
           },
         },
       };
