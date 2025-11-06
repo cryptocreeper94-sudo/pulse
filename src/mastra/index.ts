@@ -443,6 +443,142 @@ export const mastra = new Mastra({
         },
       },
       {
+        path: "/api/wallet/disconnect",
+        method: "POST",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          try {
+            const { userId } = await c.req.json();
+            logger?.info('🔌 [Mini App] Disconnect wallet', { userId });
+            
+            await walletConnectionTool.execute({
+              context: { action: 'disconnect', userId: userId || 'demo-user' },
+              mastra,
+              runtimeContext: null as any
+            });
+            
+            return c.json({ success: true });
+          } catch (error: any) {
+            logger?.error('❌ [Mini App] Wallet disconnect error', { error: error.message });
+            return c.json({ success: false }, 500);
+          }
+        },
+      },
+      {
+        path: "/api/limit-orders",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          const userId = c.req.query('userId') || 'demo-user';
+          logger?.info('📋 [Mini App] Limit orders request', { userId });
+          
+          try {
+            const result = await jupiterLimitOrderTool.execute({
+              context: { action: 'list', userId },
+              mastra,
+              runtimeContext: null as any
+            });
+            
+            return c.json({
+              success: result.success,
+              orders: result.orders || []
+            });
+          } catch (error: any) {
+            logger?.error('❌ [Mini App] Limit orders error', { error: error.message });
+            return c.json({ success: false, orders: [] });
+          }
+        },
+      },
+      {
+        path: "/api/limit-orders",
+        method: "POST",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          try {
+            const body = await c.req.json();
+            const userId = body.userId || 'demo-user';
+            logger?.info('📝 [Mini App] Create limit order', { userId, body });
+            
+            const result = await jupiterLimitOrderTool.execute({
+              context: {
+                action: 'create',
+                userId,
+                orderType: body.orderType,
+                ticker: body.ticker,
+                targetPrice: body.targetPrice,
+                amount: body.amount
+              },
+              mastra,
+              runtimeContext: null as any
+            });
+            
+            return c.json(result);
+          } catch (error: any) {
+            logger?.error('❌ [Mini App] Create limit order error', { error: error.message });
+            return c.json({ success: false, message: 'Error creating order' }, 500);
+          }
+        },
+      },
+      {
+        path: "/api/sniping",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          const userId = c.req.query('userId') || 'demo-user';
+          logger?.info('🎯 [Mini App] Sniping status request', { userId });
+          
+          try {
+            const result = await tokenSnipingTool.execute({
+              context: { action: 'status', userId },
+              mastra,
+              runtimeContext: null as any
+            });
+            
+            return c.json({
+              success: result.success,
+              config: result.config || {
+                enabled: false,
+                minLiquidity: 10000,
+                maxRugScore: 30,
+                autoExecute: false,
+                maxBuyAmount: 0.1,
+                targetChains: ['solana']
+              }
+            });
+          } catch (error: any) {
+            logger?.error('❌ [Mini App] Sniping status error', { error: error.message });
+            return c.json({ success: false, config: null });
+          }
+        },
+      },
+      {
+        path: "/api/sniping",
+        method: "POST",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          try {
+            const body = await c.req.json();
+            const userId = body.userId || 'demo-user';
+            logger?.info('🎯 [Mini App] Update sniping config', { userId, config: body.config });
+            
+            const result = await tokenSnipingTool.execute({
+              context: {
+                action: 'configure',
+                userId,
+                config: body.config
+              },
+              mastra,
+              runtimeContext: null as any
+            });
+            
+            return c.json(result);
+          } catch (error: any) {
+            logger?.error('❌ [Mini App] Update sniping error', { error: error.message });
+            return c.json({ success: false, message: 'Error updating config' }, 500);
+          }
+        },
+      },
+      {
         path: "/api/settings",
         method: "GET",
         createHandler: async ({ mastra }) => async (c: any) => {

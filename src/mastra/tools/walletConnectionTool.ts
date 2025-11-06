@@ -1,5 +1,6 @@
 import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
+import { walletCache } from './sharedCaches';
 
 export const walletConnectionTool = createTool({
   id: 'wallet-connection',
@@ -35,28 +36,8 @@ export const walletConnectionTool = createTool({
     });
 
     try {
-      const memory = mastra?.memory;
-      
-      // Get current wallet data from memory
-      let walletData: any = null;
-      try {
-        if (memory) {
-          const messages = await memory.getMessages({
-            resourceId: userId,
-            threadId: WALLET_KEY,
-          });
-          
-          if (messages && messages.length > 0) {
-            const lastMessage = messages[messages.length - 1];
-            if (lastMessage.content) {
-              walletData = JSON.parse(lastMessage.content as string);
-            }
-          }
-        }
-      } catch (e) {
-        logger?.warn('[WalletConnection] No existing wallet found');
-        walletData = null;
-      }
+      // Get current wallet data from cache
+      let walletData: { address: string; connectedAt: string } | null = walletCache.get(userId) || null;
 
       if (action === 'connect') {
         if (!walletAddress) {
@@ -76,22 +57,13 @@ export const walletConnectionTool = createTool({
           };
         }
 
-        // Store wallet address in PostgreSQL (PUBLIC address only, NO private keys)
+        // Store wallet address in cache (PUBLIC address only, NO private keys)
         const newWalletData = {
           address: walletAddress,
           connectedAt: new Date().toISOString(),
         };
 
-        if (memory) {
-          await memory.saveMessages({
-            messages: [{
-              role: 'assistant',
-              content: JSON.stringify(newWalletData),
-            }],
-            resourceId: userId,
-            threadId: WALLET_KEY,
-          });
-        }
+        walletCache.set(userId, newWalletData);
 
         logger?.info('✅ [WalletConnection] Wallet connected successfully', {
           userId,
@@ -129,17 +101,8 @@ export const walletConnectionTool = createTool({
       }
 
       if (action === 'disconnect') {
-        // Clear wallet data
-        if (memory) {
-          await memory.saveMessages({
-            messages: [{
-              role: 'assistant',
-              content: JSON.stringify(null),
-            }],
-            resourceId: userId,
-            threadId: WALLET_KEY,
-          });
-        }
+        // Clear wallet data from cache
+        walletCache.delete(userId);
 
         logger?.info('🔌 [WalletConnection] Wallet disconnected', { userId });
 

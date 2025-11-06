@@ -1,5 +1,6 @@
 import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
+import { walletCache, snipingCache } from './sharedCaches';
 
 /**
  * Token Sniping Tool - Monitors new token launches via Helius webhooks
@@ -61,31 +62,12 @@ export const tokenSnipingTool = createTool({
     });
 
     try {
-      const memory = mastra?.memory;
-      
       // Check if wallet is connected
-      let walletAddress: string | null = null;
-      try {
-        if (memory) {
-          const walletMessages = await memory.getMessages({
-            resourceId: userId,
-            threadId: WALLET_KEY,
-          });
-          
-          if (walletMessages && walletMessages.length > 0) {
-            const lastMessage = walletMessages[walletMessages.length - 1];
-            if (lastMessage.content) {
-              const walletData = JSON.parse(lastMessage.content as string);
-              walletAddress = walletData?.address;
-            }
-          }
-        }
-      } catch (e) {
-        logger?.warn('[TokenSniping] No wallet found');
-      }
+      const walletData = walletCache.get(userId);
+      const walletAddress = walletData?.address || null;
 
-      // Get current sniping config
-      let snipingConfig = {
+      // Get current sniping config from cache
+      const defaultConfig = {
         enabled: false,
         minLiquidity: 10000, // $10k minimum liquidity
         maxRugScore: 30, // Max rug score of 30 (0-100 scale)
@@ -94,23 +76,7 @@ export const tokenSnipingTool = createTool({
         targetChains: ['solana'],
       };
       
-      try {
-        if (memory) {
-          const messages = await memory.getMessages({
-            resourceId: userId,
-            threadId: SNIPING_CONFIG_KEY,
-          });
-          
-          if (messages && messages.length > 0) {
-            const lastMessage = messages[messages.length - 1];
-            if (lastMessage.content) {
-              snipingConfig = { ...snipingConfig, ...JSON.parse(lastMessage.content as string) };
-            }
-          }
-        }
-      } catch (e) {
-        logger?.warn('[TokenSniping] No existing config found, using defaults');
-      }
+      let snipingConfig = snipingCache.get(userId) || defaultConfig;
 
       if (action === 'status') {
         logger?.info('📊 [TokenSniping] Viewing status');
@@ -184,17 +150,8 @@ export const tokenSnipingTool = createTool({
           };
         }
 
-        // Save config
-        if (memory) {
-          await memory.saveMessages({
-            messages: [{
-              role: 'assistant',
-              content: JSON.stringify(updatedConfig),
-            }],
-            resourceId: userId,
-            threadId: SNIPING_CONFIG_KEY,
-          });
-        }
+        // Save config to cache
+        snipingCache.set(userId, updatedConfig);
 
         logger?.info('✅ [TokenSniping] Config updated', {
           userId,

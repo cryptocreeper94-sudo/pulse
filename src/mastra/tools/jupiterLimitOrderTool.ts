@@ -1,5 +1,6 @@
 import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
+import { walletCache, ordersCache, settingsCache } from './sharedCaches';
 
 /**
  * Jupiter Limit Order Tool - Places limit orders on Jupiter DEX
@@ -55,56 +56,19 @@ export const jupiterLimitOrderTool = createTool({
     });
 
     try {
-      const memory = mastra?.memory;
-      
       // Check if wallet is connected
-      let walletAddress: string | null = null;
-      try {
-        if (memory) {
-          const walletMessages = await memory.getMessages({
-            resourceId: userId,
-            threadId: WALLET_KEY,
-          });
-          
-          if (walletMessages && walletMessages.length > 0) {
-            const lastMessage = walletMessages[walletMessages.length - 1];
-            if (lastMessage.content) {
-              const walletData = JSON.parse(lastMessage.content as string);
-              walletAddress = walletData?.address;
-            }
-          }
-        }
-      } catch (e) {
-        logger?.warn('[JupiterLimitOrder] No wallet found');
-      }
+      const walletData = walletCache.get(userId);
+      const walletAddress = walletData?.address || null;
 
       if (!walletAddress) {
         return {
           success: false,
-          message: '⚠️ No wallet connected. Use /connect to link your Phantom wallet first.',
+          message: '⚠️ No wallet connected. Connect your wallet in the Mini App first.',
         };
       }
 
-      // Get current orders from memory
-      let orders: any[] = [];
-      try {
-        if (memory) {
-          const messages = await memory.getMessages({
-            resourceId: userId,
-            threadId: ORDERS_KEY,
-          });
-          
-          if (messages && messages.length > 0) {
-            const lastMessage = messages[messages.length - 1];
-            if (lastMessage.content) {
-              orders = JSON.parse(lastMessage.content as string);
-            }
-          }
-        }
-      } catch (e) {
-        logger?.warn('[JupiterLimitOrder] No existing orders found');
-        orders = [];
-      }
+      // Get current orders from cache
+      let orders: any[] = ordersCache.get(userId) || [];
 
       if (action === 'list') {
         logger?.info('📋 [JupiterLimitOrder] Listing orders', { count: orders.length });
@@ -160,17 +124,8 @@ export const jupiterLimitOrderTool = createTool({
 
         const cancelledOrder = orders.splice(orderIndex, 1)[0];
 
-        // Save updated orders
-        if (memory) {
-          await memory.saveMessages({
-            messages: [{
-              role: 'assistant',
-              content: JSON.stringify(orders),
-            }],
-            resourceId: userId,
-            threadId: ORDERS_KEY,
-          });
-        }
+        // Save updated orders to cache
+        ordersCache.set(userId, orders);
 
         logger?.info('✅ [JupiterLimitOrder] Order cancelled', { orderId: cancelledOrder.id });
 
@@ -190,25 +145,8 @@ export const jupiterLimitOrderTool = createTool({
         }
 
         // Get user settings to check auto-execute preference
-        let autoExecute = false;
-        try {
-          if (memory) {
-            const settingsMessages = await memory.getMessages({
-              resourceId: userId,
-              threadId: SETTINGS_KEY,
-            });
-            
-            if (settingsMessages && settingsMessages.length > 0) {
-              const lastMessage = settingsMessages[settingsMessages.length - 1];
-              if (lastMessage.content) {
-                const settings = JSON.parse(lastMessage.content as string);
-                autoExecute = settings?.autoExecuteLimitOrders || false;
-              }
-            }
-          }
-        } catch (e) {
-          logger?.warn('[JupiterLimitOrder] Could not load settings');
-        }
+        const settings = settingsCache.get(userId) || {};
+        const autoExecute = settings?.autoExecute || false;
 
         // Create new order
         const newOrder = {
@@ -225,17 +163,8 @@ export const jupiterLimitOrderTool = createTool({
 
         orders.push(newOrder);
 
-        // Save orders
-        if (memory) {
-          await memory.saveMessages({
-            messages: [{
-              role: 'assistant',
-              content: JSON.stringify(orders),
-            }],
-            resourceId: userId,
-            threadId: ORDERS_KEY,
-          });
-        }
+        // Save orders to cache
+        ordersCache.set(userId, orders);
 
         logger?.info('✅ [JupiterLimitOrder] Order created', {
           orderId: newOrder.id,

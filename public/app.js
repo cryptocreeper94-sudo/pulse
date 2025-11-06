@@ -468,6 +468,8 @@ async function loadWallet() {
     const walletInputSection = document.getElementById('walletInputSection');
     const walletDisconnectSection = document.getElementById('walletDisconnectSection');
     const fullWalletAddress = document.getElementById('fullWalletAddress');
+    const limitOrdersSection = document.getElementById('limitOrdersSection');
+    const snipingSection = document.getElementById('snipingSection');
     
     if (wallet.connected) {
       walletStatus.textContent = `${wallet.address.slice(0,6)}...${wallet.address.slice(-4)}`;
@@ -477,12 +479,22 @@ async function loadWallet() {
       walletDisconnectSection.classList.remove('hidden');
       fullWalletAddress.textContent = wallet.address;
       document.getElementById('solBalance').textContent = wallet.balance.toFixed(4);
+      
+      // Show trading features
+      limitOrdersSection.classList.remove('hidden');
+      snipingSection.classList.remove('hidden');
+      
+      // Load trading data
+      await loadLimitOrders();
+      await loadSniping();
     } else {
       walletStatus.textContent = 'Not Connected';
       walletStatus.className = 'status-badge disconnected';
       walletBalance.classList.add('hidden');
       walletInputSection.classList.remove('hidden');
       walletDisconnectSection.classList.add('hidden');
+      limitOrdersSection.classList.add('hidden');
+      snipingSection.classList.add('hidden');
     }
   } catch (error) {
     console.error('Wallet error:', error);
@@ -530,6 +542,110 @@ document.getElementById('refreshBalanceBtn')?.addEventListener('click', async ()
   showToast('Refreshing balance...');
   await loadWallet();
   if (tg) tg.HapticFeedback?.impactOccurred('light');
+});
+
+// Limit Orders
+async function loadLimitOrders() {
+  try {
+    const response = await fetch(`${API_BASE}/api/limit-orders?userId=${state.userId}`);
+    const data = await response.json();
+    
+    const ordersList = document.getElementById('ordersList');
+    const limitOrdersSection = document.getElementById('limitOrdersSection');
+    
+    if (data.orders && data.orders.length > 0) {
+      let html = '';
+      data.orders.forEach(order => {
+        const typeColor = order.type === 'buy' ? '#4ADE80' : '#E63946';
+        html += `
+          <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="font-weight: 600; color: ${typeColor};">${order.type.toUpperCase()} ${order.ticker}</span>
+              <span style="font-size: 0.85rem; padding: 3px 8px; border-radius: 10px; background: rgba(168, 85, 247, 0.2); color: #A855F7;">${order.status}</span>
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-secondary);">
+              Target: $${order.targetPrice} | Amount: ${order.amount}
+            </div>
+          </div>
+        `;
+      });
+      ordersList.innerHTML = html;
+    } else {
+      ordersList.innerHTML = '<div class="empty-state" style="text-align: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 8px;"><p style="color: var(--text-secondary); font-size: 0.9rem;">No active orders</p></div>';
+    }
+  } catch (error) {
+    console.error('Error loading limit orders:', error);
+  }
+}
+
+document.getElementById('createOrderBtn')?.addEventListener('click', () => {
+  document.getElementById('createOrderForm').classList.remove('hidden');
+  if (tg) tg.HapticFeedback?.impactOccurred('light');
+});
+
+document.getElementById('cancelOrderFormBtn')?.addEventListener('click', () => {
+  document.getElementById('createOrderForm').classList.add('hidden');
+  document.getElementById('orderTicker').value = '';
+  document.getElementById('orderPrice').value = '';
+  document.getElementById('orderAmount').value = '';
+});
+
+document.getElementById('submitOrderBtn')?.addEventListener('click', async () => {
+  const orderType = document.getElementById('orderType').value;
+  const ticker = document.getElementById('orderTicker').value.trim().toUpperCase();
+  const targetPrice = parseFloat(document.getElementById('orderPrice').value);
+  const amount = parseFloat(document.getElementById('orderAmount').value);
+  
+  if (!ticker || !targetPrice || !amount) {
+    showToast('Please fill all fields');
+    return;
+  }
+  
+  try {
+    await fetch(`${API_BASE}/api/limit-orders`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: state.userId, orderType, ticker, targetPrice, amount })
+    });
+    showToast('Limit order created! ✅');
+    if (tg) tg.HapticFeedback?.notificationOccurred('success');
+    document.getElementById('createOrderForm').classList.add('hidden');
+    document.getElementById('orderTicker').value = '';
+    document.getElementById('orderPrice').value = '';
+    document.getElementById('orderAmount').value = '';
+    await loadLimitOrders();
+  } catch (error) {
+    showToast('Error creating order');
+  }
+});
+
+// Token Sniping
+async function loadSniping() {
+  try {
+    const response = await fetch(`${API_BASE}/api/sniping?userId=${state.userId}`);
+    const data = await response.json();
+    
+    if (data.config) {
+      const { enabled, minLiquidity, maxRugScore, autoExecute, maxBuyAmount } = data.config;
+      
+      const statusEl = document.getElementById('snipingStatus');
+      statusEl.textContent = enabled ? 'Enabled' : 'Disabled';
+      statusEl.style.background = enabled ? 'rgba(74, 222, 128, 0.2)' : 'rgba(230, 57, 70, 0.2)';
+      statusEl.style.color = enabled ? '#4ADE80' : '#E63946';
+      
+      document.getElementById('snipingMinLiq').textContent = `$${minLiquidity.toLocaleString()}`;
+      document.getElementById('snipingMaxRug').textContent = `${maxRugScore}/100`;
+      document.getElementById('snipingMaxBuy').textContent = `${maxBuyAmount} SOL`;
+      document.getElementById('snipingAutoExecute').textContent = autoExecute ? 'ON' : 'OFF';
+    }
+  } catch (error) {
+    console.error('Error loading sniping config:', error);
+  }
+}
+
+document.getElementById('configureSnipingBtn')?.addEventListener('click', () => {
+  showToast('💡 Configure sniping in the Settings tab!');
+  switchTab('settings');
 });
 
 // Settings
