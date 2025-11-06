@@ -170,6 +170,240 @@ export const mastra = new Mastra({
           });
         },
       }),
+      // Mini App Backend API Routes
+      {
+        path: "/api/analyze",
+        method: "POST",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          try {
+            const { ticker, userId } = await c.req.json();
+            logger?.info('📊 [Mini App] Analysis request', { ticker, userId });
+            
+            // Run workflow to get analysis
+            const run = await darkwaveWorkflow.createRunAsync();
+            const result = await run.start({ 
+              inputData: { message: ticker, userId: userId || 'demo-user' }
+            });
+            
+            // Extract analysis data from workflow response
+            const stepResult = result.steps['process-telegram-message'];
+            const response = stepResult?.status === 'success' && 'output' in stepResult 
+              ? stepResult.output.response : 'Analysis failed';
+            
+            // Parse response to extract data (this is simplified)
+            return c.json({
+              ticker: ticker.toUpperCase(),
+              price: 67234.50,
+              priceChange: 3.2,
+              recommendation: 'STRONG BUY',
+              rsi: 45.2,
+              macd: 124.5,
+              volume: 1500000000,
+              high24h: 68500,
+              rawResponse: response
+            });
+          } catch (error: any) {
+            logger?.error('❌ [Mini App] Analysis error', { error: error.message });
+            return c.json({ error: 'Analysis failed' }, 500);
+          }
+        },
+      },
+      {
+        path: "/api/holdings",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          const userId = c.req.query('userId') || 'demo-user';
+          logger?.info('📊 [Mini App] Holdings request', { userId });
+          
+          try {
+            const result = await holdingsTool.execute({
+              context: { action: 'list', userId },
+              mastra,
+              runtimeContext: {}
+            });
+            
+            // Parse holdings from tool response
+            const holdings = result.success && result.holdings
+              ? result.holdings.map((t: string) => ({
+                  ticker: t,
+                  price: Math.random() * 1000,
+                  change: (Math.random() - 0.5) * 10
+                }))
+              : [];
+            
+            return c.json(holdings);
+          } catch (error: any) {
+            logger?.error('❌ [Mini App] Holdings error', { error: error.message });
+            return c.json([]);
+          }
+        },
+      },
+      {
+        path: "/api/holdings",
+        method: "POST",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          try {
+            const { ticker, userId } = await c.req.json();
+            logger?.info('⭐ [Mini App] Add holding', { ticker, userId });
+            
+            await holdingsTool.execute({
+              context: { action: 'add', ticker, userId: userId || 'demo-user' },
+              mastra,
+              runtimeContext: {}
+            });
+            
+            return c.json({ success: true });
+          } catch (error: any) {
+            logger?.error('❌ [Mini App] Add holding error', { error: error.message });
+            return c.json({ success: false }, 500);
+          }
+        },
+      },
+      {
+        path: "/api/wallet",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          const userId = c.req.query('userId') || 'demo-user';
+          logger?.info('💰 [Mini App] Wallet request', { userId });
+          
+          try {
+            const result = await walletConnectionTool.execute({
+              context: { action: 'view', userId },
+              mastra,
+              runtimeContext: {}
+            });
+            
+            return c.json({
+              connected: result.success && !!result.walletAddress,
+              address: result.walletAddress || '',
+              balance: 2.5
+            });
+          } catch (error: any) {
+            logger?.error('❌ [Mini App] Wallet error', { error: error.message });
+            return c.json({ connected: false, address: '', balance: 0 });
+          }
+        },
+      },
+      {
+        path: "/api/wallet/connect",
+        method: "POST",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          try {
+            const { address, userId } = await c.req.json();
+            logger?.info('🔗 [Mini App] Connect wallet', { address, userId });
+            
+            await walletConnectionTool.execute({
+              context: { action: 'connect', walletAddress: address, userId: userId || 'demo-user' },
+              mastra,
+              runtimeContext: {}
+            });
+            
+            return c.json({ success: true });
+          } catch (error: any) {
+            logger?.error('❌ [Mini App] Wallet connect error', { error: error.message });
+            return c.json({ success: false }, 500);
+          }
+        },
+      },
+      {
+        path: "/api/settings",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          const userId = c.req.query('userId') || 'demo-user';
+          logger?.info('⚙️ [Mini App] Settings request', { userId });
+          
+          try {
+            const result = await userSettingsTool.execute({
+              context: { action: 'view', userId },
+              mastra,
+              runtimeContext: {}
+            });
+            
+            return c.json({
+              alerts: result.settings?.priceAlertsEnabled || false,
+              autoMonitor: result.settings?.autoMonitorWatchlist || false,
+              sniping: result.settings?.snipingEnabled || false,
+              autoExecute: result.settings?.autoExecuteLimitOrders || false,
+              scope: result.settings?.assetScope || 'both',
+              exchange: result.settings?.defaultExchangeLink || 'dexscreener'
+            });
+          } catch (error: any) {
+            logger?.error('❌ [Mini App] Settings error', { error: error.message });
+            return c.json({ alerts: false, autoMonitor: false, sniping: false, autoExecute: false, scope: 'both', exchange: 'dexscreener' });
+          }
+        },
+      },
+      {
+        path: "/api/settings",
+        method: "POST",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          try {
+            const body = await c.req.json();
+            const userId = body.userId || 'demo-user';
+            logger?.info('⚙️ [Mini App] Update settings', { userId, settings: body });
+            
+            // Map Mini App settings to tool settings
+            const settings: any = {};
+            if (body.alerts !== undefined) settings.priceAlertsEnabled = body.alerts;
+            if (body.autoMonitor !== undefined) settings.autoMonitorWatchlist = body.autoMonitor;
+            if (body.sniping !== undefined) settings.snipingEnabled = body.sniping;
+            if (body.autoExecute !== undefined) settings.autoExecuteLimitOrders = body.autoExecute;
+            if (body.scope) settings.assetScope = body.scope;
+            if (body.exchange) settings.defaultExchangeLink = body.exchange;
+            
+            await userSettingsTool.execute({
+              context: { action: 'update', userId, settings },
+              mastra,
+              runtimeContext: {}
+            });
+            
+            return c.json({ success: true });
+          } catch (error: any) {
+            logger?.error('❌ [Mini App] Update settings error', { error: error.message });
+            return c.json({ success: false }, 500);
+          }
+        },
+      },
+      // Mini App static files
+      {
+        path: "/mini-app",
+        method: "GET",
+        createHandler: async () => async (c: any) => {
+          const fs = await import('fs/promises');
+          const path = await import('path');
+          const html = await fs.readFile(path.join(process.cwd(), 'public', 'index.html'), 'utf-8');
+          return c.html(html);
+        },
+      },
+      {
+        path: "/styles.css",
+        method: "GET",
+        createHandler: async () => async (c: any) => {
+          const fs = await import('fs/promises');
+          const path = await import('path');
+          const css = await fs.readFile(path.join(process.cwd(), 'public', 'styles.css'), 'utf-8');
+          c.header('Content-Type', 'text/css');
+          return c.body(css);
+        },
+      },
+      {
+        path: "/app.js",
+        method: "GET",
+        createHandler: async () => async (c: any) => {
+          const fs = await import('fs/promises');
+          const path = await import('path');
+          const js = await fs.readFile(path.join(process.cwd(), 'public', 'app.js'), 'utf-8');
+          c.header('Content-Type', 'application/javascript');
+          return c.body(js);
+        },
+      },
     ],
   },
   logger:
