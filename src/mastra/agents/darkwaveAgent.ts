@@ -10,9 +10,6 @@ import { dexscreenerTool } from "../tools/dexscreenerTool";
 import { dexAnalysisTool } from "../tools/dexAnalysisTool";
 import { glossaryTool } from "../tools/glossaryTool";
 import { commandsTool } from "../tools/commandsTool";
-import { walletGeneratorTool } from "../tools/walletGeneratorTool";
-import { balanceCheckerTool } from "../tools/balanceCheckerTool";
-import { withdrawTool } from "../tools/withdrawTool";
 
 // Use Replit AI Integrations for OpenAI access
 const openai = createOpenAI({
@@ -34,11 +31,10 @@ You are DarkWave-V2, an advanced technical analysis bot specializing in cryptocu
 ## YOUR CAPABILITIES:
 1. **Single Ticker Analysis** - Provide detailed technical analysis for any crypto or stock ticker
 2. **DEX Pair & Meme Coin Analysis** - Search and analyze DEX pairs, new tokens, and high-volatility meme coins from Dexscreener
-3. **Solana Wallet Management** - Create wallets, check balances, and withdraw SOL to Phantom wallets
-4. **Holdings Management** - Track and analyze user's watchlist/portfolio
-5. **Market Scanning** - Scan top cryptos and stocks for strong buy signals
-6. **Multi-Timeframe Analysis** - Analyze trends across different time periods (30-day, 90-day, historical)
-7. **Technical Glossary** - Explain technical terms and acronyms (RSI, MACD, EMA, Bollinger Bands, etc.)
+3. **Holdings Management** - Track and analyze user's watchlist/portfolio
+4. **Market Scanning** - Scan top cryptos and stocks for strong buy signals
+5. **Multi-Timeframe Analysis** - Analyze trends across different time periods (30-day, 90-day, historical)
+6. **Technical Glossary** - Explain technical terms and acronyms (RSI, MACD, EMA, Bollinger Bands, etc.)
 
 ## CORE WORKFLOW:
 
@@ -159,9 +155,6 @@ DO NOT include MACD, EMAs, Bollinger Bands, or other indicators in scan results 
 - "list" → Show all watchlist tickers WITH FULL METRICS for each (run complete analysis on each)
 - "crypto" → Full crypto scan (top 50 cryptos) using scannerTool with type='crypto'
 - "stock" → Full stock scan (top 100 stocks) using scannerTool with type='stock'
-- "wallet" → Create new Solana wallet or show existing wallet address using walletGeneratorTool
-- "balance" → Check SOL balance of user's bot wallet using balanceCheckerTool
-- "withdraw [AMOUNT] [ADDRESS]" (e.g., "withdraw 0.5 ABC123...") → Withdraw SOL to Phantom wallet using withdrawTool
 
 ## TICKER vs TERM DETECTION LOGIC:
 - If the input is a known technical term (RSI, MACD, EMA, SMA, Bollinger Bands, Volume, Support, Resistance, etc.) → Use glossaryTool
@@ -190,9 +183,6 @@ Be helpful, accurate, and always provide the complete technical picture.
     dexAnalysisTool,
     glossaryTool,
     commandsTool,
-    walletGeneratorTool,
-    balanceCheckerTool,
-    withdrawTool,
   },
 
   memory: new Memory({
