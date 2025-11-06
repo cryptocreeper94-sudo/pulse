@@ -31,6 +31,22 @@ const processMessage = createStep({
     logger?.info('🚀 [DarkWaveWorkflow] Processing command', { message: msg, userId });
 
     try {
+      // HELP / COMMANDS - Show available commands
+      if (msg === "HELP" || msg === "COMMANDS" || msg === "START") {
+        return {
+          response: "🤖 *DarkWave-V2 Commands*\n\n" +
+            "*📊 Analysis:*\n" +
+            "• Send any ticker (BTC, ETH, XVG, MXC, AAPL, TSLA, etc.)\n" +
+            "• Get full technical analysis with RSI, MACD, EMAs, Bollinger Bands\n\n" +
+            "*🔍 Market Scan:*\n" +
+            "• SCAN or CRYPTO - Top 10 cryptos with buy signals\n\n" +
+            "*⚠️ Note:*\n" +
+            "• Wallet features are permanently disabled\n" +
+            "• All analysis uses FREE APIs only",
+          success: true
+        };
+      }
+
       // WALLET FEATURE PERMANENTLY DISABLED - technical limitation causing charges
       if (msg === "WALLET" || msg === "BALANCE" || msg.startsWith("WITHDRAW")) {
         return {
