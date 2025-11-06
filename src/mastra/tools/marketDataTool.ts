@@ -239,18 +239,38 @@ async function fetchCryptoData(ticker: string, days: number, logger: any) {
 
   const currentData = currentResponse.data[coinId];
 
-  // Fetch historical OHLC data
-  const historyUrl = `https://api.coingecko.com/api/v3/coins/${coinId}/ohlc?vs_currency=usd&days=${days}`;
+  // Fetch historical price data with market_chart (gets hourly data for 2-90 days)
+  // This gives us 2000+ data points instead of 23 daily candles
+  const historyUrl = `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}&interval=hourly`;
   const historyResponse = await axios.get(historyUrl);
 
-  const prices = historyResponse.data.map((candle: number[]) => ({
-    timestamp: candle[0],
-    open: candle[1],
-    high: candle[2],
-    low: candle[3],
-    close: candle[4],
-    volume: currentData.usd_24h_vol || 0, // CoinGecko OHLC doesn't include volume per candle
-  }));
+  // Convert market_chart data to OHLC format
+  // market_chart returns prices array [[timestamp, price], ...], we need to convert to candlesticks
+  const priceData = historyResponse.data.prices || [];
+  
+  // Group hourly prices into 4-hour candles for better analysis
+  const candleSize = 4; // 4-hour candles
+  const prices = [];
+  
+  for (let i = 0; i < priceData.length; i += candleSize) {
+    const candlePrices = priceData.slice(i, Math.min(i + candleSize, priceData.length));
+    if (candlePrices.length === 0) continue;
+    
+    const open = candlePrices[0][1];
+    const close = candlePrices[candlePrices.length - 1][1];
+    const high = Math.max(...candlePrices.map((p: number[]) => p[1]));
+    const low = Math.min(...candlePrices.map((p: number[]) => p[1]));
+    const timestamp = candlePrices[0][0];
+    
+    prices.push({
+      timestamp,
+      open,
+      high,
+      low,
+      close,
+      volume: currentData.usd_24h_vol || 0, // CoinGecko doesn't provide per-candle volume in free tier
+    });
+  }
 
   logger?.info('✅ [MarketDataTool] Successfully fetched crypto data', { 
     ticker, 

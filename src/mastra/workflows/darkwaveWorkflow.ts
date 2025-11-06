@@ -4,6 +4,8 @@ import { marketDataTool } from "../tools/marketDataTool";
 import { technicalAnalysisTool } from "../tools/technicalAnalysisTool";
 import { scannerTool } from "../tools/scannerTool";
 import { holdingsTool } from "../tools/holdingsTool";
+import { dexscreenerTool } from "../tools/dexscreenerTool";
+import { dexAnalysisTool } from "../tools/dexAnalysisTool";
 
 /**
  * DarkWave-V2 Workflow - NO AI, NO WALLET (disabled to prevent issues)
@@ -187,16 +189,133 @@ const processMessage = createStep({
         return { response, success: true };
       }
 
+      // CONTRACT ADDRESS DETECTION (Ethereum 0x... or Solana base58)
+      const isEthAddress = /^0x[a-fA-F0-9]{40}$/i.test(msg);
+      const isSolAddress = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(msg);
+      
+      if (isEthAddress || isSolAddress) {
+        logger?.info('💎 [DarkWaveWorkflow] Contract address detected', { address: msg.substring(0, 10) + '...' });
+        
+        try {
+          // Use dexscreener for contract addresses
+          const dexData = await dexscreenerTool.execute({
+            context: { query: msg },
+            mastra,
+            runtimeContext: undefined as any
+          });
+
+          // Analyze with DEX-specific analysis tool
+          const analysis = await dexAnalysisTool.execute({
+            context: {
+              ticker: dexData.ticker,
+              currentPrice: dexData.currentPrice,
+              priceChange24h: dexData.priceChange24h,
+              priceChangePercent24h: dexData.priceChangePercent24h,
+              volume24h: dexData.volume24h,
+              liquidity: dexData.liquidity,
+              priceHistory: dexData.priceHistory,
+            },
+            mastra,
+            runtimeContext: undefined as any
+          });
+
+          let emoji = "🟡";
+          if (analysis.recommendation === "BUY" || analysis.recommendation === "STRONG_BUY") emoji = "🟢";
+          if (analysis.recommendation === "SELL" || analysis.recommendation === "STRONG_SELL") emoji = "🔴";
+
+          return {
+            response: `${emoji} *${dexData.ticker} (${dexData.name})*\n\n` +
+              `🔗 *Chain:* ${dexData.chain} | *DEX:* ${dexData.dex}\n` +
+              `💰 *Price:* $${dexData.currentPrice?.toFixed(8)}\n` +
+              `📈 *24h Change:* ${dexData.priceChangePercent24h >= 0 ? '+' : ''}${dexData.priceChangePercent24h?.toFixed(2)}%\n\n` +
+              `${emoji} *${analysis.recommendation}*\n` +
+              `⚠️ *Rug Risk:* ${analysis.rugRisk}\n` +
+              `💧 *Liquidity Score:* ${analysis.liquidityScore}/10\n\n` +
+              `📊 *INDICATORS:*\n` +
+              `• *RSI (14):* ${analysis.rsi?.toFixed(1)}\n` +
+              `• *Volume 24h:* $${(dexData.volume24h / 1000000).toFixed(2)}M\n` +
+              `• *Liquidity:* $${(dexData.liquidity / 1000).toFixed(1)}K\n` +
+              `• *Volatility:* ${analysis.volatility?.toFixed(1)}%\n\n` +
+              `⚠️ *SIGNALS (${analysis.signals?.length || 0}):*\n` +
+              (analysis.signals?.map(s => `• ${s}`).join('\n') || '• None') + `\n\n` +
+              `🔗 ${dexData.url}`,
+            success: true
+          };
+        } catch (dexError: any) {
+          return {
+            response: `⚠️ Contract address not found on DEX.\n\nTry:\n• Token symbol instead (e.g., PEPE)\n• Or search on dexscreener.com`,
+            success: false
+          };
+        }
+      }
+
       // Single ticker analysis (BTC, ETH, etc.)
-      const ticker = msg.replace(/[^A-Z]/g, '');
+      const ticker = msg.replace(/[^A-Z0-9]/g, '');
       if (ticker.length >= 2 && ticker.length <= 6) {
         logger?.info('📊 [DarkWaveWorkflow] Analyzing ticker', { ticker });
         
-        const marketData = await marketDataTool.execute({ 
-          context: { ticker, days: 90 },
-          mastra, 
-          runtimeContext: undefined as any
-        });
+        // Try market data first, fallback to dexscreener for unknown tickers
+        let marketData;
+        let isDexPair = false;
+        
+        try {
+          marketData = await marketDataTool.execute({ 
+            context: { ticker, days: 90 },
+            mastra, 
+            runtimeContext: undefined as any
+          });
+        } catch (marketError: any) {
+          // If market data fails, try dexscreener as fallback
+          logger?.info('🔍 [DarkWaveWorkflow] Market data failed, trying DEX', { ticker });
+          
+          try {
+            const dexData = await dexscreenerTool.execute({
+              context: { query: ticker },
+              mastra,
+              runtimeContext: undefined as any
+            });
+            
+            // Use DEX analysis instead
+            const analysis = await dexAnalysisTool.execute({
+              context: {
+                ticker: dexData.ticker,
+                currentPrice: dexData.currentPrice,
+                priceChange24h: dexData.priceChange24h,
+                priceChangePercent24h: dexData.priceChangePercent24h,
+                volume24h: dexData.volume24h,
+                liquidity: dexData.liquidity,
+                priceHistory: dexData.priceHistory,
+              },
+              mastra,
+              runtimeContext: undefined as any
+            });
+
+            let emoji = "🟡";
+            if (analysis.recommendation === "BUY" || analysis.recommendation === "STRONG_BUY") emoji = "🟢";
+            if (analysis.recommendation === "SELL" || analysis.recommendation === "STRONG_SELL") emoji = "🔴";
+
+            return {
+              response: `${emoji} *${dexData.ticker} (${dexData.name})*\n\n` +
+                `🔗 *Chain:* ${dexData.chain} | *DEX:* ${dexData.dex}\n` +
+                `💰 *Price:* $${dexData.currentPrice?.toFixed(8)}\n` +
+                `📈 *24h Change:* ${dexData.priceChangePercent24h >= 0 ? '+' : ''}${dexData.priceChangePercent24h?.toFixed(2)}%\n\n` +
+                `${emoji} *${analysis.recommendation}*\n` +
+                `⚠️ *Rug Risk:* ${analysis.rugRisk}\n` +
+                `💧 *Liquidity Score:* ${analysis.liquidityScore}/10\n\n` +
+                `📊 *INDICATORS:*\n` +
+                `• *RSI (14):* ${analysis.rsi?.toFixed(1)}\n` +
+                `• *Volume 24h:* $${(dexData.volume24h / 1000000).toFixed(2)}M\n` +
+                `• *Liquidity:* $${(dexData.liquidity / 1000).toFixed(1)}K\n` +
+                `• *Volatility:* ${analysis.volatility?.toFixed(1)}%\n\n` +
+                `⚠️ *SIGNALS (${analysis.signals?.length || 0}):*\n` +
+                (analysis.signals?.map(s => `• ${s}`).join('\n') || '• None') + `\n\n` +
+                `🔗 ${dexData.url}`,
+              success: true
+            };
+          } catch (dexError: any) {
+            throw marketError; // Rethrow original error if both fail
+          }
+        }
 
         const analysis = await technicalAnalysisTool.execute({ 
           context: { 
