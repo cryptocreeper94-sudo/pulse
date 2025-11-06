@@ -10,7 +10,8 @@ import { z } from "zod";
 import { sharedPostgresStorage } from "./storage";
 import { inngest, inngestServe } from "./inngest";
 import { darkwaveWorkflow } from "./workflows/darkwaveWorkflow";
-import { darkwaveAgent } from "./agents/darkwaveAgent";
+// AGENT DISABLED - NO AI to prevent $400+ charges
+// import { darkwaveAgent } from "./agents/darkwaveAgent";
 import { registerTelegramTrigger } from "../triggers/telegramTriggers";
 
 class ProductionPinoLogger extends MastraLogger {
@@ -58,8 +59,8 @@ export const mastra = new Mastra({
   storage: sharedPostgresStorage,
   // Register your workflows here
   workflows: { darkwaveWorkflow },
-  // Register your agents here
-  agents: { darkwaveAgent },
+  // NO AGENTS - Agent disabled to prevent OpenAI charges
+  agents: {},
   mcpServers: {
     allTools: new MCPServer({
       name: "allTools",
@@ -162,8 +163,9 @@ if (Object.keys(mastra.getWorkflows()).length > 1) {
 
 /*  Sanity check 2: Throw an error if there are more than 1 agents.  */
 // !!!!!! Do not remove this check. !!!!!!
-if (Object.keys(mastra.getAgents()).length > 1) {
-  throw new Error(
-    "More than 1 agents found. Currently, more than 1 agents are not supported in the UI, since doing so will cause app state to be inconsistent.",
-  );
-}
+// DISABLED - No agents registered to prevent OpenAI charges
+// if (Object.keys(mastra.getAgents()).length > 1) {
+//   throw new Error(
+//     "More than 1 agents found. Currently, more than 1 agents are not supported in the UI, since doing so will cause app state to be inconsistent.",
+//   );
+// }

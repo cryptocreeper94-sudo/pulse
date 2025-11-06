@@ -34,7 +34,7 @@ const processMessage = createStep({
       // WALLET FEATURE PERMANENTLY DISABLED - technical limitation causing charges
       if (msg === "WALLET" || msg === "BALANCE" || msg.startsWith("WITHDRAW")) {
         return {
-          response: "⚠️ **Wallet feature disabled permanently**\n\nThis feature has a technical bug that created multiple wallets and charged you over $400. I've stopped all servers to prevent further charges.\n\n**Your existing wallet with funds:**\n6vexNEjjuygFqvQehKyDBNCZ4WRRo7G5BmoZmG8x3bR1\n\n**Next steps:**\n1. Contact Replit support for a refund\n2. Use your Phantom wallet directly\n3. Technical analysis (BTC, ETH, SCAN) still works",
+          response: "⚠️ *Wallet feature disabled permanently*\n\nThis feature has a technical bug that created multiple wallets and charged you over $400. I've stopped all servers to prevent further charges.\n\n*Your existing wallet with funds:*\n6vexNEjjuygFqvQehKyDBNCZ4WRRo7G5BmoZmG8x3bR1\n\n*Next steps:*\n1. Contact Replit support for a refund\n2. Use your Phantom wallet directly\n3. Technical analysis (BTC, ETH, SCAN) still works",
           success: true
         };
       }
@@ -54,9 +54,9 @@ const processMessage = createStep({
           };
         }
 
-        let response = "🔍 **Top 10 Crypto Scan**\n\n";
+        let response = "🔍 *Top 10 Crypto Scan*\n\n";
         result.strongBuys.slice(0, 10).forEach((rec: any) => {
-          response += `🟢 **${rec.ticker}** - ${rec.recommendation}\n`;
+          response += `🟢 *${rec.ticker}* - ${rec.recommendation}\n`;
           response += `💰 $${rec.currentPrice} | 📊 RSI: ${rec.rsi?.toFixed(1)} | Signals: ${rec.signalCount.bullish}\n\n`;
         });
         
