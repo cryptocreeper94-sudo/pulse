@@ -2,8 +2,10 @@ Subject: URGENT FOLLOW-UP: $600 Overcharges Causing Financial Hardship - IMMEDIA
 
 To: Replit Support Team
 
+REFERENCE TICKET: #198906
+
 Date: November 6, 2025
-Follow-up to: Initial complaint sent November 5, 2025
+Follow-up to: Initial complaint sent November 5, 2025 (Ticket #198906)
 Project: DarkWave-V2 Telegram Bot (@Darkwave_RSI_Bot)
 User ID: 7806554124
 
