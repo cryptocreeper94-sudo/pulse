@@ -92,24 +92,57 @@
           <h2>💰 Wallet</h2>
         </div>
         <div id="walletContent" class="wallet-content">
-          <div class="wallet-card">
+          <!-- Connection Section -->
+          <div class="wallet-card" id="walletConnectCard">
             <div class="wallet-status">
               <span class="status-label">Status:</span>
               <span class="status-badge disconnected" id="walletStatus">Not Connected</span>
             </div>
-            <button class="primary-btn" id="connectWalletBtn">Connect Phantom Wallet</button>
-            <p class="wallet-hint">We only store your public address (read-only)</p>
+            
+            <div id="walletInputSection">
+              <label style="display: block; margin-bottom: 8px; color: var(--text-secondary); font-size: 0.9rem;">
+                Enter your Phantom wallet public address:
+              </label>
+              <input 
+                type="text" 
+                id="walletAddressInput" 
+                placeholder="e.g., 7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"
+                style="width: 100%; padding: 12px; border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 8px; background: rgba(255,255,255,0.05); color: white; font-size: 0.9rem; margin-bottom: 12px; font-family: monospace;"
+              />
+              <button class="primary-btn" id="connectWalletBtn" style="width: 100%;">
+                Connect Wallet
+              </button>
+              <p class="wallet-hint" style="margin-top: 8px; font-size: 0.85rem; color: var(--text-secondary); text-align: center;">
+                🔒 We only store your public address (read-only, 100% safe)
+              </p>
+            </div>
+
+            <div id="walletDisconnectSection" class="hidden">
+              <div style="background: rgba(74, 222, 128, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 4px;">Connected Address:</div>
+                <div style="font-family: monospace; font-size: 0.9rem; color: #4ADE80; word-break: break-all;" id="fullWalletAddress"></div>
+              </div>
+              <button class="action-btn" id="disconnectWalletBtn" style="width: 100%; background: rgba(230, 57, 70, 0.2); border-color: #E63946;">
+                Disconnect Wallet
+              </button>
+            </div>
           </div>
 
+          <!-- Balance & Info Section -->
           <div id="walletBalance" class="wallet-balance hidden">
-            <h3>Balance</h3>
+            <h3 style="margin-bottom: 16px;">💎 Balance</h3>
             <div class="balance-card">
               <div class="balance-item">
                 <span class="balance-label">SOL</span>
                 <span class="balance-value" id="solBalance">0.00</span>
               </div>
             </div>
-            <button class="action-btn" id="viewOrdersBtn">📋 View Orders</button>
+            <button class="action-btn" id="refreshBalanceBtn" style="width: 100%; margin-top: 12px;">
+              🔄 Refresh Balance
+            </button>
+            <button class="action-btn" id="viewOrdersBtn" style="width: 100%; margin-top: 8px;">
+              📋 View Orders
+            </button>
           </div>
         </div>
       </div>

@@ -465,19 +465,24 @@ async function loadWallet() {
     
     const walletStatus = document.getElementById('walletStatus');
     const walletBalance = document.getElementById('walletBalance');
-    const connectBtn = document.getElementById('connectWalletBtn');
+    const walletInputSection = document.getElementById('walletInputSection');
+    const walletDisconnectSection = document.getElementById('walletDisconnectSection');
+    const fullWalletAddress = document.getElementById('fullWalletAddress');
     
     if (wallet.connected) {
       walletStatus.textContent = `${wallet.address.slice(0,6)}...${wallet.address.slice(-4)}`;
       walletStatus.className = 'status-badge connected';
       walletBalance.classList.remove('hidden');
+      walletInputSection.classList.add('hidden');
+      walletDisconnectSection.classList.remove('hidden');
+      fullWalletAddress.textContent = wallet.address;
       document.getElementById('solBalance').textContent = wallet.balance.toFixed(4);
-      connectBtn.textContent = 'Disconnect Wallet';
     } else {
       walletStatus.textContent = 'Not Connected';
       walletStatus.className = 'status-badge disconnected';
       walletBalance.classList.add('hidden');
-      connectBtn.textContent = 'Connect Phantom Wallet';
+      walletInputSection.classList.remove('hidden');
+      walletDisconnectSection.classList.add('hidden');
     }
   } catch (error) {
     console.error('Wallet error:', error);
@@ -485,8 +490,11 @@ async function loadWallet() {
 }
 
 document.getElementById('connectWalletBtn')?.addEventListener('click', async () => {
-  const input = prompt('Enter your Phantom wallet public address:');
-  if (!input) return;
+  const input = document.getElementById('walletAddressInput').value.trim();
+  if (!input) {
+    showToast('Please enter a wallet address');
+    return;
+  }
   
   try {
     await fetch(`${API_BASE}/api/wallet/connect`, {
@@ -494,12 +502,34 @@ document.getElementById('connectWalletBtn')?.addEventListener('click', async () 
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ address: input, userId: state.userId })
     });
-    showToast('Wallet connected!');
+    showToast('Wallet connected! ✅');
     if (tg) tg.HapticFeedback?.notificationOccurred('success');
+    document.getElementById('walletAddressInput').value = '';
     await loadWallet();
   } catch (error) {
     showToast('Error connecting wallet');
   }
+});
+
+document.getElementById('disconnectWalletBtn')?.addEventListener('click', async () => {
+  try {
+    await fetch(`${API_BASE}/api/wallet/disconnect`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: state.userId })
+    });
+    showToast('Wallet disconnected');
+    if (tg) tg.HapticFeedback?.notificationOccurred('warning');
+    await loadWallet();
+  } catch (error) {
+    showToast('Error disconnecting wallet');
+  }
+});
+
+document.getElementById('refreshBalanceBtn')?.addEventListener('click', async () => {
+  showToast('Refreshing balance...');
+  await loadWallet();
+  if (tg) tg.HapticFeedback?.impactOccurred('light');
 });
 
 // Settings
