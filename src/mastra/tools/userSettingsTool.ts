@@ -8,12 +8,16 @@ import { z } from 'zod';
 
 export const userSettingsTool = createTool({
   id: 'user-settings',
-  description: `Manages user bot settings and toggles. 
+  description: `Control Center - Manages ALL bot settings and toggles with simple on/off commands. 
   Use this when the user wants to:
-  - Turn auto-trading on/off
-  - Change exchange link preferences (kraken/dexscreener)
-  - Set spending limits for auto-execution
-  - View current settings`,
+  - View all settings ("settings")
+  - Toggle features ("on alerts", "off sniping", "on auto trading")
+  - Change asset scope ("stocks only", "coins only", "both")
+  - Change exchange links ("kraken links", "dex links")
+  - Set spending limits ("set max spend 0.5")
+  - Any simple toggle or preference change
+  
+  This is the MAIN settings interface - users prefer toggles over complex commands.`,
   inputSchema: z.object({
     action: z.enum(['view', 'update']).describe('View or update settings'),
     userId: z.string().describe('User ID from Telegram'),
@@ -23,6 +27,9 @@ export const userSettingsTool = createTool({
       defaultExchangeLink: z.enum(['kraken', 'dexscreener']).optional().describe('Default exchange for hyperlinks'),
       maxAutoSpendPerTrade: z.number().optional().describe('Max SOL to spend per auto-executed trade'),
       snipingEnabled: z.boolean().optional().describe('Enable/disable sniping features'),
+      priceAlertsEnabled: z.boolean().optional().describe('Enable/disable price alert monitoring'),
+      assetScope: z.enum(['coins', 'stocks', 'both']).optional().describe('Which assets to analyze'),
+      autoMonitorWatchlist: z.boolean().optional().describe('Auto-create alerts for watchlist items'),
     }).optional(),
   }),
   outputSchema: z.object({
@@ -34,6 +41,9 @@ export const userSettingsTool = createTool({
       defaultExchangeLink: z.string(),
       maxAutoSpendPerTrade: z.number(),
       snipingEnabled: z.boolean(),
+      priceAlertsEnabled: z.boolean(),
+      assetScope: z.string(),
+      autoMonitorWatchlist: z.boolean(),
     }).optional(),
   }),
   execute: async ({ context, mastra, runtimeContext }) => {
@@ -57,6 +67,9 @@ export const userSettingsTool = createTool({
         defaultExchangeLink: 'dexscreener',
         maxAutoSpendPerTrade: 0.1, // 0.1 SOL default (~$15-20)
         snipingEnabled: false,
+        priceAlertsEnabled: false,
+        assetScope: 'both', // coins, stocks, or both
+        autoMonitorWatchlist: false,
       };
       
       try {
@@ -78,19 +91,80 @@ export const userSettingsTool = createTool({
       }
 
       if (action === 'view') {
-        logger?.info('👁️ [UserSettings] Viewing settings', { userId });
+        logger?.info('👁️ [UserSettings] Viewing Control Center', { userId });
 
-        const statusEmoji = (enabled: boolean) => enabled ? '✅' : '❌';
+        const toggle = (enabled: boolean) => enabled ? '✅ ON' : '❌ OFF';
+        const safeMode = !currentSettings.autoExecuteLimitOrders && !currentSettings.autoExecuteSniping;
+        
+        // Check wallet status from memory
+        let walletStatus = '❌ Not connected';
+        try {
+          if (memory) {
+            const walletMessages = await memory.getMessages({
+              resourceId: userId,
+              threadId: `wallet_${userId}`,
+            });
+            if (walletMessages && walletMessages.length > 0) {
+              const lastWallet = walletMessages[walletMessages.length - 1];
+              if (lastWallet.content) {
+                const walletData = JSON.parse(lastWallet.content as string);
+                if (walletData.publicKey) {
+                  const short = walletData.publicKey.slice(0, 6) + '...' + walletData.publicKey.slice(-4);
+                  walletStatus = `✅ ${short}`;
+                }
+              }
+            }
+          }
+        } catch (e) {
+          // No wallet connected
+        }
+        
+        const controlCenter = `
+╔═══════════════════════════════════════╗
+║   🌊 DarkWave Control Center V2.1    ║
+╚═══════════════════════════════════════╝
+
+📱 WALLET
+├─ Status: ${walletStatus}
+└─ Quick: "connect wallet" | "disconnect"
+
+🎯 PRICE ALERTS
+├─ Enabled: ${toggle(currentSettings.priceAlertsEnabled)}
+├─ Auto-monitor watchlist: ${toggle(currentSettings.autoMonitorWatchlist)}
+└─ Quick: "on alerts" | "BTC alert 65000"
+
+💱 TRADING ${safeMode ? '(SAFE MODE ✅)' : '(AUTO MODE ⚠️)'}
+├─ Auto-execute orders: ${toggle(currentSettings.autoExecuteLimitOrders)}
+├─ Max spend: ${currentSettings.maxAutoSpendPerTrade} SOL/trade
+└─ Exchange links: ${currentSettings.defaultExchangeLink}
+
+🎯 SNIPING
+├─ Enabled: ${toggle(currentSettings.snipingEnabled)}
+├─ Auto-execute: ${toggle(currentSettings.autoExecuteSniping)}
+└─ Quick: "on sniping" | "off sniping"
+
+🔍 ANALYSIS
+├─ Asset scope: ${currentSettings.assetScope === 'both' ? '📊 Stocks + 🪙 Crypto' : currentSettings.assetScope === 'stocks' ? '📊 Stocks only' : '🪙 Crypto only'}
+└─ Quick: "stocks only" | "coins only" | "both"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✨ SUPER SIMPLE COMMANDS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Toggle anything:
+  "on [feature]" → Enable
+  "off [feature]" → Disable
+  
+Examples:
+  "on auto trading" "off sniping"
+  "stocks only" "coins only"
+  "kraken links" "dex links"
+  
+${!safeMode ? '\n⚠️ AUTO-TRADING ACTIVE - Bot will execute trades automatically!\n' : ''}`.trim();
         
         return {
           success: true,
-          message: `⚙️ Bot Settings:\n\n` +
-            `${statusEmoji(currentSettings.autoExecuteLimitOrders)} Auto-Execute Limit Orders\n` +
-            `${statusEmoji(currentSettings.autoExecuteSniping)} Auto-Execute Sniping\n` +
-            `${statusEmoji(currentSettings.snipingEnabled)} Sniping Features\n` +
-            `🔗 Exchange Links: ${currentSettings.defaultExchangeLink}\n` +
-            `💰 Max Auto-Spend: ${currentSettings.maxAutoSpendPerTrade} SOL/trade\n\n` +
-            `Use commands like "enable auto trading" or "set max spend to 0.5 SOL" to change settings.`,
+          message: controlCenter,
           settings: currentSettings,
         };
       }
@@ -142,6 +216,17 @@ export const userSettingsTool = createTool({
         if (settings.snipingEnabled !== undefined) {
           updateMsg += `${settings.snipingEnabled ? '✅' : '❌'} Sniping features: ${settings.snipingEnabled ? 'ENABLED' : 'DISABLED'}\n`;
         }
+        if (settings.priceAlertsEnabled !== undefined) {
+          updateMsg += `${settings.priceAlertsEnabled ? '✅' : '❌'} Price alerts: ${settings.priceAlertsEnabled ? 'ENABLED' : 'DISABLED'}\n`;
+        }
+        if (settings.autoMonitorWatchlist !== undefined) {
+          updateMsg += `${settings.autoMonitorWatchlist ? '✅' : '❌'} Auto-monitor watchlist: ${settings.autoMonitorWatchlist ? 'ENABLED' : 'DISABLED'}\n`;
+        }
+        if (settings.assetScope) {
+          const scopeText = settings.assetScope === 'both' ? '📊 Stocks + 🪙 Crypto' : 
+                           settings.assetScope === 'stocks' ? '📊 Stocks only' : '🪙 Crypto only';
+          updateMsg += `🔍 Asset scope: ${scopeText}\n`;
+        }
         if (settings.defaultExchangeLink) {
           updateMsg += `🔗 Exchange links: ${settings.defaultExchangeLink}\n`;
         }
@@ -151,6 +236,8 @@ export const userSettingsTool = createTool({
 
         if (updatedSettings.autoExecuteLimitOrders || updatedSettings.autoExecuteSniping) {
           updateMsg += `\n⚠️ AUTO-TRADING ENABLED - The bot will execute trades automatically using your connected wallet.`;
+        } else {
+          updateMsg += `\n✅ SAFE MODE - All trades require manual approval in Phantom.`;
         }
 
         return {
