@@ -208,6 +208,9 @@ const processMessage = createStep({
           const analysis = await dexAnalysisTool.execute({
             context: {
               ticker: dexData.ticker,
+              name: dexData.name,
+              chain: dexData.chain,
+              dex: dexData.dex,
               currentPrice: dexData.currentPrice,
               priceChange24h: dexData.priceChange24h,
               priceChangePercent24h: dexData.priceChangePercent24h,
@@ -279,6 +282,9 @@ const processMessage = createStep({
             const analysis = await dexAnalysisTool.execute({
               context: {
                 ticker: dexData.ticker,
+                name: dexData.name,
+                chain: dexData.chain,
+                dex: dexData.dex,
                 currentPrice: dexData.currentPrice,
                 priceChange24h: dexData.priceChange24h,
                 priceChangePercent24h: dexData.priceChangePercent24h,
