@@ -69,12 +69,14 @@ export const marketDataTool = createTool({
         try {
           return await fetchCryptoDataWithRetry(ticker, days, logger);
         } catch (cryptoError: any) {
-          // If it's a rate limit error and we explicitly want crypto, don't fall back to stock
-          const isRateLimit = cryptoError.message?.includes('429') || cryptoError.message?.includes('rate limit');
+          // If it's a rate limit/auth error (429 or 401) and we explicitly want crypto, don't fall back
+          const isRateLimit = cryptoError.message?.includes('429') || 
+                             cryptoError.message?.includes('401') ||
+                             cryptoError.message?.includes('rate limit');
           const isExplicitCrypto = context.type === 'crypto';
           
           if (isRateLimit && isExplicitCrypto) {
-            logger?.error('❌ [MarketDataTool] Rate limited on crypto, skipping stock fallback', {
+            logger?.error('❌ [MarketDataTool] Rate limited/auth error on crypto, skipping stock fallback', {
               error: cryptoError.message
             });
             throw cryptoError; // Don't fall back to stock for known cryptos
@@ -155,6 +157,7 @@ const COINGECKO_MAP: Record<string, string> = {
   'RUNE': 'thorchain',
   'OSMO': 'osmosis',
   'JUNO': 'juno-network',
+  'XVG': 'verge',
 };
 
 // Retry function with exponential backoff for rate limits
@@ -163,11 +166,14 @@ async function fetchCryptoDataWithRetry(ticker: string, days: number, logger: an
     try {
       return await fetchCryptoData(ticker, days, logger);
     } catch (error: any) {
-      const isRateLimit = error.response?.status === 429 || error.message?.includes('429');
+      const isRateLimit = error.response?.status === 429 || 
+                         error.response?.status === 401 ||
+                         error.message?.includes('429') ||
+                         error.message?.includes('401');
       
       if (isRateLimit && attempt < maxRetries) {
         const delay = Math.pow(2, attempt) * 2000; // 4s, 8s, 16s
-        logger?.warn(`⏳ [MarketDataTool] Rate limited, retrying in ${delay/1000}s (attempt ${attempt}/${maxRetries})`, {
+        logger?.warn(`⏳ [MarketDataTool] Rate limited/auth error, retrying in ${delay/1000}s (attempt ${attempt}/${maxRetries})`, {
           ticker,
           attempt
         });
