@@ -6,6 +6,7 @@ import { scannerTool } from "../tools/scannerTool";
 import { holdingsTool } from "../tools/holdingsTool";
 import { dexscreenerTool } from "../tools/dexscreenerTool";
 import { dexAnalysisTool } from "../tools/dexAnalysisTool";
+import { preferencesTool } from "../tools/preferencesTool";
 
 /**
  * DarkWave-V2 Workflow - NO AI, NO WALLET (disabled to prevent issues)
@@ -48,9 +49,13 @@ const processMessage = createStep({
             "• REMOVE [ticker] - Remove from watchlist\n" +
             "• LIST or HOLDINGS - View your watchlist\n" +
             "• CLEAR - Clear entire watchlist\n\n" +
+            "*⚙️ Settings:*\n" +
+            "• SET LINKS DEFAULT - Links to CoinGecko/Yahoo Finance\n" +
+            "• SET LINKS KRAKEN - Links to Kraken.com\n\n" +
             "*⚠️ Note:*\n" +
             "• Wallet features are permanently disabled\n" +
-            "• All analysis uses FREE APIs only",
+            "• All analysis uses FREE APIs only\n" +
+            "• DEX pairs always link to Dexscreener",
           success: true
         };
       }
@@ -165,8 +170,30 @@ const processMessage = createStep({
         };
       }
 
+      // SETTINGS - SET LINKS preference
+      if (msg === "SET LINKS DEFAULT" || msg === "SET LINKS KRAKEN") {
+        const preference = msg.includes("KRAKEN") ? 'kraken' : 'default';
+        const result = await preferencesTool.execute({
+          context: { action: 'set', linkPreference: preference, userId },
+          mastra,
+          runtimeContext: undefined as any
+        });
+        return {
+          response: result.message,
+          success: true
+        };
+      }
+
       // SCAN command - LIMITED TO 10 TICKERS
       if (msg === "SCAN" || msg === "CRYPTO") {
+        // Get user's link preference
+        const prefResult = await preferencesTool.execute({
+          context: { action: 'get', userId },
+          mastra,
+          runtimeContext: undefined as any
+        });
+        const linkPref = prefResult.linkPreference;
+
         const result = await scannerTool.execute({ 
           context: { type: "crypto", limit: 10 },
           mastra, 
@@ -199,8 +226,15 @@ const processMessage = createStep({
 
         let response = "🔍 *Crypto Market Scan*\n\n";
         result.strongBuys.slice(0, 10).forEach((rec: any) => {
-          const coinGeckoId = coinGeckoMap[rec.ticker] || rec.ticker.toLowerCase();
-          const url = `https://www.coingecko.com/en/coins/${coinGeckoId}`;
+          let url: string;
+          if (linkPref === 'kraken') {
+            // Kraken format: https://www.kraken.com/prices/[ticker]-price-chart/[symbol]-usd
+            url = `https://www.kraken.com/prices/${rec.ticker.toLowerCase()}-price-chart/${rec.ticker.toLowerCase()}-usd`;
+          } else {
+            // Default: CoinGecko
+            const coinGeckoId = coinGeckoMap[rec.ticker] || rec.ticker.toLowerCase();
+            url = `https://www.coingecko.com/en/coins/${coinGeckoId}`;
+          }
           
           response += `🟢 *${rec.name}* ([${rec.ticker}](${url})) - ${rec.recommendation}\n`;
           response += `📊 RSI: ${rec.rsi?.toFixed(1)}\n`;
