@@ -254,47 +254,49 @@ async function fetchCryptoDataWithRetry(ticker: string, days: number, logger: an
 }
 
 async function fetchCryptoData(ticker: string, days: number, logger: any) {
-  logger?.info('📊 [MarketDataTool] Fetching crypto data from Binance', { ticker, days });
+  logger?.info('📊 [MarketDataTool] Fetching crypto data from CryptoCompare', { ticker, days });
 
-  // Binance uses USDT pairs for crypto (BTC → BTCUSDT)
-  const symbol = `${ticker}USDT`;
+  // Get current price data
+  const priceUrl = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${ticker}&tsyms=USD`;
+  const priceResponse = await axios.get(priceUrl);
   
-  // Determine interval based on days (4h candles for better analysis)
-  const interval = '4h';
-  const limit = Math.min(Math.ceil((days * 24) / 4), 500); // Max 500 candles from Binance
-  
-  // Fetch OHLCV data from Binance public API (FREE, NO RATE LIMITS!)
-  const klineUrl = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`;
-  const klineResponse = await axios.get(klineUrl);
-  
-  const candles = klineResponse.data;
-  if (!candles || candles.length === 0) {
-    throw new Error(`Cryptocurrency ${ticker} not found on Binance`);
+  const coinData = priceResponse.data?.RAW?.[ticker]?.USD;
+  if (!coinData) {
+    throw new Error(`Cryptocurrency ${ticker} not found on CryptoCompare`);
   }
 
-  // Parse Binance kline data [timestamp, open, high, low, close, volume, ...]
-  const prices = candles.map((candle: any) => ({
-    timestamp: candle[0], // Unix timestamp in ms
-    open: parseFloat(candle[1]),
-    high: parseFloat(candle[2]),
-    low: parseFloat(candle[3]),
-    close: parseFloat(candle[4]),
-    volume: parseFloat(candle[5]),
-  }));
-
-  const latestCandle = prices[prices.length - 1];
-  const prevCandle = prices[prices.length - 2] || latestCandle;
+  const currentPrice = coinData.PRICE || 0;
+  const priceChangePercent24h = coinData.CHANGEPCT24HOUR || 0;
+  const volume24h = coinData.VOLUME24HOURTO || 0;
+  const marketCap = coinData.MKTCAP || 0;
   
-  const currentPrice = latestCandle.close;
-  const priceChange24h = currentPrice - prevCandle.close;
-  const priceChangePercent24h = (priceChange24h / prevCandle.close) * 100;
-  
-  // Calculate 24h volume (sum of recent candles)
-  const volume24h = prices.slice(-6).reduce((sum, p) => sum + p.volume, 0); // Last 6 4h candles = 24h
+  // Get historical hourly data (limit: 2000 points free)
+  const limit = Math.min(days * 6, 2000); // 4-hour candles
+  const historyUrl = `https://min-api.cryptocompare.com/data/v2/histohour?fsym=${ticker}&tsym=USD&limit=${limit}`;
+  const historyResponse = await axios.get(historyUrl);
 
-  logger?.info('✅ [MarketDataTool] Successfully fetched crypto data from Binance', { 
+  const histData = historyResponse.data?.Data?.Data || [];
+  
+  // Group hourly data into 4-hour candles
+  const candleSize = 4;
+  const prices = [];
+  
+  for (let i = 0; i < histData.length; i += candleSize) {
+    const candles = histData.slice(i, Math.min(i + candleSize, histData.length));
+    if (candles.length === 0) continue;
+    
+    const open = candles[0].open;
+    const close = candles[candles.length - 1].close;
+    const high = Math.max(...candles.map((c: any) => c.high));
+    const low = Math.min(...candles.map((c: any) => c.low));
+    const volume = candles.reduce((sum: number, c: any) => sum + c.volumeto, 0);
+    const timestamp = candles[0].time * 1000; // Convert to ms
+    
+    prices.push({ timestamp, open, high, low, close, volume });
+  }
+
+  logger?.info('✅ [MarketDataTool] Successfully fetched crypto data from CryptoCompare', { 
     ticker,
-    symbol,
     dataPoints: prices.length,
     currentPrice 
   });
@@ -303,10 +305,10 @@ async function fetchCryptoData(ticker: string, days: number, logger: any) {
     ticker,
     type: 'crypto',
     currentPrice,
-    priceChange24h,
+    priceChange24h: currentPrice * (priceChangePercent24h / 100),
     priceChangePercent24h,
     volume24h,
-    marketCap: 0, // Binance doesn't provide market cap, set to 0
+    marketCap,
     prices,
   };
 }
