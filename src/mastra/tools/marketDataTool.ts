@@ -68,15 +68,15 @@ export const marketDataTool = createTool({
 
     logger?.info('📝 [MarketDataTool] Initial detection', { ticker, assetType });
 
-    // Try primary detection with fallback
+    // Try primary detection with fallback - USE YAHOO FINANCE FOR EVERYTHING
     try {
       if (assetType === 'crypto') {
-        // For crypto, ONLY use CoinCap (Yahoo Finance shows ETFs instead of real crypto)
-        logger?.info('📊 [MarketDataTool] Fetching crypto from CoinCap', { ticker });
+        // For crypto, try Yahoo Finance with -USD suffix first
+        logger?.info('📊 [MarketDataTool] Fetching crypto from Yahoo Finance', { ticker });
         try {
-          return await fetchCryptoDataWithRetry(ticker, days, logger);
+          return await fetchStockData(`${ticker}-USD`, days, logger);
         } catch (cryptoError: any) {
-          logger?.error('❌ [MarketDataTool] CoinCap failed', {
+          logger?.error('❌ [MarketDataTool] Yahoo crypto failed', {
             error: cryptoError.message
           });
           throw cryptoError;
@@ -85,15 +85,11 @@ export const marketDataTool = createTool({
         try {
           return await fetchStockData(ticker, days, logger);
         } catch (stockError: any) {
-          logger?.warn('⚠️ [MarketDataTool] Stock fetch failed, trying crypto', { 
+          logger?.warn('⚠️ [MarketDataTool] Stock fetch failed, trying as crypto', { 
             error: stockError.message 
           });
-          // Fallback to crypto if stock fails
-          try {
-            return await fetchStockData(`${ticker}-USD`, days, logger);
-          } catch (yahooError: any) {
-            return await fetchCryptoDataWithRetry(ticker, days, logger);
-          }
+          // Fallback to crypto format if stock fails
+          return await fetchStockData(`${ticker}-USD`, days, logger);
         }
       }
     } catch (error: any) {
