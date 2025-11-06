@@ -254,7 +254,9 @@ const processMessage = createStep({
             url = `https://www.coingecko.com/en/coins/${coinGeckoId}`;
           }
           
-          response += `🟢 *${rec.name}* ([${rec.ticker}](${url})) - ${rec.recommendation}\n`;
+          const duration = rec.patternDuration?.estimate || 'Unknown';
+          response += `🟢 ${rec.name} [${rec.ticker}](${url}) - ${rec.recommendation}\n`;
+          response += `⏱️ Duration: ${duration}\n`;
           response += `📊 RSI: ${rec.rsi?.toFixed(1)}\n`;
           response += `💰 24h Price: ${rec.priceChangePercent24h >= 0 ? '+' : ''}${rec.priceChangePercent24h?.toFixed(2)}%\n`;
           response += `📈 24h Volume: ${rec.volumeChangePercent >= 0 ? '+' : ''}${rec.volumeChangePercent?.toFixed(1)}%\n\n`;
@@ -339,71 +341,13 @@ const processMessage = createStep({
         });
         const linkPref = prefResult.linkPreference;
 
-        // Try market data first, fallback to dexscreener for unknown tickers
-        let marketData;
-        let isDexPair = false;
-        
-        try {
-          marketData = await marketDataTool.execute({ 
-            context: { ticker, days: 90 },
-            mastra, 
-            runtimeContext: undefined as any
-          });
-        } catch (marketError: any) {
-          // If market data fails, try dexscreener as fallback
-          logger?.info('🔍 [DarkWaveWorkflow] Market data failed, trying DEX', { ticker });
-          
-          try {
-            const dexData = await dexscreenerTool.execute({
-              context: { query: ticker },
-              mastra,
-              runtimeContext: undefined as any
-            });
-            
-            // Use DEX analysis instead
-            const analysis = await dexAnalysisTool.execute({
-              context: {
-                ticker: dexData.ticker,
-                name: dexData.name,
-                chain: dexData.chain,
-                dex: dexData.dex,
-                currentPrice: dexData.currentPrice,
-                priceChange24h: dexData.priceChange24h,
-                priceChangePercent24h: dexData.priceChangePercent24h,
-                volume24h: dexData.volume24h,
-                liquidity: dexData.liquidity,
-                priceHistory: dexData.priceHistory,
-              },
-              mastra,
-              runtimeContext: undefined as any
-            });
-
-            let emoji = "🟡";
-            if (analysis.recommendation === "BUY" || analysis.recommendation === "STRONG_BUY") emoji = "🟢";
-            if (analysis.recommendation === "SELL" || analysis.recommendation === "STRONG_SELL") emoji = "🔴";
-
-            return {
-              response: `${emoji} *${dexData.ticker} (${dexData.name})*\n\n` +
-                `🔗 *Chain:* ${dexData.chain} | *DEX:* ${dexData.dex}\n` +
-                `💰 *Price:* $${dexData.currentPrice?.toFixed(8)}\n` +
-                `📈 *24h Change:* ${dexData.priceChangePercent24h >= 0 ? '+' : ''}${dexData.priceChangePercent24h?.toFixed(2)}%\n\n` +
-                `${emoji} *${analysis.recommendation}*\n` +
-                `⚠️ *Rug Risk:* ${analysis.rugRisk}\n` +
-                `💧 *Liquidity Score:* ${analysis.liquidityScore}/10\n\n` +
-                `📊 *INDICATORS:*\n` +
-                `• *RSI (14):* ${analysis.rsi?.toFixed(1)}\n` +
-                `• *Volume 24h:* $${(dexData.volume24h / 1000000).toFixed(2)}M\n` +
-                `• *Liquidity:* $${(dexData.liquidity / 1000).toFixed(1)}K\n` +
-                `• *Volatility:* ${analysis.volatility?.toFixed(1)}%\n\n` +
-                `⚠️ *SIGNALS (${analysis.signals?.length || 0}):*\n` +
-                (analysis.signals?.map(s => `• ${s}`).join('\n') || '• None') + `\n\n` +
-                `🔗 ${dexData.url}`,
-              success: true
-            };
-          } catch (dexError: any) {
-            throw marketError; // Rethrow original error if both fail
-          }
-        }
+        // Blue chips and stocks ONLY use CoinCap/Yahoo Finance
+        // NO fallback to Dexscreener (prevents BTC linking to dead Dexscreener duplicates)
+        const marketData = await marketDataTool.execute({ 
+          context: { ticker, days: 90 },
+          mastra, 
+          runtimeContext: undefined as any
+        });
 
         const analysis = await technicalAnalysisTool.execute({ 
           context: { 
@@ -479,11 +423,13 @@ const processMessage = createStep({
           }
         }
 
-        // Simplified output format
-        const volumeChange = analysis.volumeChangePercent || 0;
-        const response = `${emoji} ([${ticker}](${tickerUrl})) - ${analysis.recommendation}\n` +
+        // Simplified output format with duration estimate
+        const volumeChange = analysis.volume?.changePercent || 0;
+        const duration = analysis.patternDuration?.estimate || 'Unknown';
+        const response = `${emoji} [${ticker}](${tickerUrl}) - ${analysis.recommendation}\n` +
+          `⏱️ Duration: ${duration}\n` +
           `📊 RSI: ${analysis.rsi?.toFixed(1)}\n` +
-          `💰 24h Price: ${analysis.priceChange24h >= 0 ? '+' : ''}${analysis.priceChange24h?.toFixed(2)}%\n` +
+          `💰 24h Price: ${analysis.priceChangePercent24h >= 0 ? '+' : ''}${analysis.priceChangePercent24h?.toFixed(2)}%\n` +
           `📈 24h Volume: ${volumeChange >= 0 ? '+' : ''}${volumeChange?.toFixed(1)}%`;
 
         return { response, success: true };

@@ -45,6 +45,11 @@ export const scannerTool = createTool({
       priceChangePercent24h: z.number(),
       rsi: z.number(),
       recommendation: z.string(),
+      patternDuration: z.object({
+        estimate: z.string(),
+        confidence: z.string(),
+        type: z.string(),
+      }).optional(),
       signalCount: z.object({
         bullish: z.number(),
         bearish: z.number(),
@@ -133,6 +138,7 @@ export const scannerTool = createTool({
             priceChangePercent24h: marketData.priceChangePercent24h,
             rsi: analysis.rsi,
             recommendation: analysis.recommendation,
+            patternDuration: analysis.patternDuration,
             signalCount: analysis.signalCount,
           });
         }
