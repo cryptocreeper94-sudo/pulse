@@ -55,6 +55,17 @@ export const technicalAnalysisTool = createTool({
       average: z.number(),
       changePercent: z.number(),
     }),
+    volumeDelta: z.object({
+      buyVolume: z.number(),
+      sellVolume: z.number(),
+      delta: z.number(),
+      buySellRatio: z.number(),
+    }),
+    spikeScore: z.object({
+      score: z.number(),
+      signal: z.enum(['SPIKE_SIGNAL', 'WATCHLIST', 'NO_SIGNAL']),
+      prediction: z.string(),
+    }),
     volatility: z.number(),
     patternDuration: z.object({
       estimate: z.string(),
@@ -128,6 +139,22 @@ export const technicalAnalysisTool = createTool({
 
     // Calculate volatility (standard deviation of recent returns)
     const volatility = calculateVolatility(closePrices.slice(-30));
+
+    // Calculate Volume Delta (estimate buy vs sell pressure)
+    const volumeDelta = calculateVolumeDelta(
+      context.prices.slice(-20),
+      currentVolume,
+      context.priceChangePercent24h
+    );
+
+    // Calculate Spike Score (predictive score 0-100)
+    const spikeScore = calculateSpikeScore({
+      volumeDelta: volumeDelta.delta,
+      rsi: currentRSI,
+      momentum: context.priceChangePercent24h,
+      volumeChange: volumeChangePercent,
+      trendStrength: Math.abs(currentEMA50 - currentEMA200) / context.currentPrice * 100,
+    });
 
     // Calculate pattern duration estimate
     const patternDuration = estimatePatternDuration(
@@ -270,6 +297,17 @@ export const technicalAnalysisTool = createTool({
         current: parseFloat(currentVolume.toFixed(2)),
         average: parseFloat(avgVolume.toFixed(2)),
         changePercent: parseFloat(volumeChangePercent.toFixed(1)),
+      },
+      volumeDelta: {
+        buyVolume: parseFloat(volumeDelta.buyVolume.toFixed(2)),
+        sellVolume: parseFloat(volumeDelta.sellVolume.toFixed(2)),
+        delta: parseFloat(volumeDelta.delta.toFixed(2)),
+        buySellRatio: parseFloat(volumeDelta.buySellRatio.toFixed(2)),
+      },
+      spikeScore: {
+        score: parseFloat(spikeScore.score.toFixed(1)),
+        signal: spikeScore.signal,
+        prediction: spikeScore.prediction,
       },
       volatility: parseFloat(volatility.toFixed(1)),
       patternDuration,
@@ -582,4 +620,101 @@ function analyzeDowntrends(closePrices: number[], prices: any[]): { avgDuration:
   }
   
   return { avgDuration: 12, confidence: 'low' };
+}
+
+function calculateVolumeDelta(
+  recentPrices: any[],
+  currentVolume: number,
+  priceChangePercent: number
+): { buyVolume: number; sellVolume: number; delta: number; buySellRatio: number } {
+  // Estimate buy/sell volume based on price movement and volume distribution
+  // If price is up, more volume is attributed to buys; if down, to sells
+  
+  let buyVolume = 0;
+  let sellVolume = 0;
+  
+  // Calculate buy/sell ratio from recent price action
+  for (let i = 1; i < recentPrices.length; i++) {
+    const priceChange = recentPrices[i].close - recentPrices[i - 1].close;
+    const volume = recentPrices[i].volume;
+    
+    if (priceChange > 0) {
+      // Price went up - attribute more to buys
+      const buyRatio = Math.min(0.7 + (Math.abs(priceChange) / recentPrices[i].close) * 10, 0.95);
+      buyVolume += volume * buyRatio;
+      sellVolume += volume * (1 - buyRatio);
+    } else if (priceChange < 0) {
+      // Price went down - attribute more to sells
+      const sellRatio = Math.min(0.7 + (Math.abs(priceChange) / recentPrices[i].close) * 10, 0.95);
+      sellVolume += volume * sellRatio;
+      buyVolume += volume * (1 - sellRatio);
+    } else {
+      // No change - split 50/50
+      buyVolume += volume * 0.5;
+      sellVolume += volume * 0.5;
+    }
+  }
+  
+  const delta = buyVolume - sellVolume;
+  const ratio = buyVolume / (sellVolume + 1e-6); // Avoid division by zero
+  
+  return {
+    buyVolume,
+    sellVolume,
+    delta,
+    buySellRatio: ratio,
+  };
+}
+
+function calculateSpikeScore(metrics: {
+  volumeDelta: number;
+  rsi: number;
+  momentum: number;
+  volumeChange: number;
+  trendStrength: number;
+}): { score: number; signal: 'SPIKE_SIGNAL' | 'WATCHLIST' | 'NO_SIGNAL'; prediction: string } {
+  // Weighted scoring system (0-100)
+  const weights = {
+    volumeDelta: 0.3,
+    rsi: 0.2,
+    momentum: 0.2,
+    volumeChange: 0.15,
+    trendStrength: 0.15,
+  };
+  
+  // Normalize metrics to 0-100 scale
+  const normalizedVolumeDelta = Math.min(Math.max((metrics.volumeDelta / 1000000) * 50 + 50, 0), 100);
+  const normalizedRSI = metrics.rsi;
+  const normalizedMomentum = Math.min(Math.max(metrics.momentum * 2 + 50, 0), 100);
+  const normalizedVolumeChange = Math.min(Math.max(metrics.volumeChange + 50, 0), 100);
+  const normalizedTrendStrength = Math.min(metrics.trendStrength * 10, 100);
+  
+  // Calculate weighted score
+  const score =
+    weights.volumeDelta * normalizedVolumeDelta +
+    weights.rsi * normalizedRSI +
+    weights.momentum * normalizedMomentum +
+    weights.volumeChange * normalizedVolumeChange +
+    weights.trendStrength * normalizedTrendStrength;
+  
+  // Determine signal level
+  let signal: 'SPIKE_SIGNAL' | 'WATCHLIST' | 'NO_SIGNAL';
+  let prediction: string;
+  
+  if (score > 75) {
+    signal = 'SPIKE_SIGNAL';
+    prediction = 'Strong upward momentum - high probability of price spike';
+  } else if (score > 50) {
+    signal = 'WATCHLIST';
+    prediction = 'Moderate bullish signals - watch for breakout';
+  } else {
+    signal = 'NO_SIGNAL';
+    prediction = 'Weak momentum - no clear entry signal';
+  }
+  
+  return {
+    score: Math.min(Math.max(score, 0), 100),
+    signal,
+    prediction,
+  };
 }
