@@ -10,9 +10,24 @@ import { z } from "zod";
 import { sharedPostgresStorage } from "./storage";
 import { inngest, inngestServe } from "./inngest";
 import { darkwaveWorkflow } from "./workflows/darkwaveWorkflow";
-// AGENT DISABLED - NO AI to prevent $400+ charges
-// import { darkwaveAgent } from "./agents/darkwaveAgent";
+import { darkwaveAgent } from "./agents/darkwaveAgent";
 import { registerTelegramTrigger } from "../triggers/telegramTriggers";
+
+// Import trading tools
+import { walletConnectionTool } from "./tools/walletConnectionTool";
+import { userSettingsTool } from "./tools/userSettingsTool";
+import { balanceCheckerTool } from "./tools/balanceCheckerTool";
+import { jupiterLimitOrderTool } from "./tools/jupiterLimitOrderTool";
+import { tokenSnipingTool } from "./tools/tokenSnipingTool";
+
+// Import existing tools
+import { marketDataTool } from "./tools/marketDataTool";
+import { technicalAnalysisTool } from "./tools/technicalAnalysisTool";
+import { holdingsTool } from "./tools/holdingsTool";
+import { scannerTool } from "./tools/scannerTool";
+import { chartGeneratorTool } from "./tools/chartGeneratorTool";
+import { dexscreenerTool } from "./tools/dexscreenerTool";
+import { dexAnalysisTool } from "./tools/dexAnalysisTool";
 
 class ProductionPinoLogger extends MastraLogger {
   protected logger: pino.Logger;
@@ -59,13 +74,29 @@ export const mastra = new Mastra({
   storage: sharedPostgresStorage,
   // Register your workflows here
   workflows: { darkwaveWorkflow },
-  // NO AGENTS - Agent disabled to prevent OpenAI charges
-  agents: {},
+  // Agent enabled with Replit AI Integrations (free OpenAI access, no charges)
+  agents: { darkwaveAgent },
   mcpServers: {
     allTools: new MCPServer({
       name: "allTools",
       version: "1.0.0",
-      tools: {},
+      tools: {
+        // Wallet & Trading Tools
+        'wallet-connection': walletConnectionTool,
+        'user-settings': userSettingsTool,
+        'balance-checker': balanceCheckerTool,
+        'jupiter-limit-order': jupiterLimitOrderTool,
+        'token-sniping': tokenSnipingTool,
+        
+        // Market Analysis Tools
+        'market-data-tool': marketDataTool,
+        'technical-analysis-tool': technicalAnalysisTool,
+        'holdings-tool': holdingsTool,
+        'scanner-tool': scannerTool,
+        'chart-generator-tool': chartGeneratorTool,
+        'dexscreener-tool': dexscreenerTool,
+        'dex-analysis-tool': dexAnalysisTool,
+      },
     }),
   },
   bundler: {
@@ -163,9 +194,8 @@ if (Object.keys(mastra.getWorkflows()).length > 1) {
 
 /*  Sanity check 2: Throw an error if there are more than 1 agents.  */
 // !!!!!! Do not remove this check. !!!!!!
-// DISABLED - No agents registered to prevent OpenAI charges
-// if (Object.keys(mastra.getAgents()).length > 1) {
-//   throw new Error(
-//     "More than 1 agents found. Currently, more than 1 agents are not supported in the UI, since doing so will cause app state to be inconsistent.",
-//   );
-// }
+if (Object.keys(mastra.getAgents()).length > 1) {
+  throw new Error(
+    "More than 1 agents found. Currently, more than 1 agents are not supported in the UI, since doing so will cause app state to be inconsistent.",
+  );
+}
