@@ -259,6 +259,8 @@ const processMessage = createStep({
           response += `💵 Price: $${rec.currentPrice?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 8 })}\n`;
           response += `⏱️ Duration: ${duration}\n`;
           response += `📊 RSI: ${rec.rsi?.toFixed(1)}\n`;
+          response += `🔻 Support: $${rec.support?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 8 })}\n`;
+          response += `🔺 Resistance: $${rec.resistance?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 8 })}\n`;
           response += `💰 24h Price: ${rec.priceChangePercent24h >= 0 ? '+' : ''}${rec.priceChangePercent24h?.toFixed(2)}%\n`;
           response += `📈 24h Volume: ${rec.volumeChangePercent >= 0 ? '+' : ''}${rec.volumeChangePercent?.toFixed(1)}%\n\n`;
         });
@@ -431,6 +433,8 @@ const processMessage = createStep({
           `💵 Price: $${marketData.currentPrice?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 8 })}\n` +
           `⏱️ Duration: ${duration}\n` +
           `📊 RSI: ${analysis.rsi?.toFixed(1)}\n` +
+          `🔻 Support: $${analysis.support?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 8 })}\n` +
+          `🔺 Resistance: $${analysis.resistance?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 8 })}\n` +
           `💰 24h Price: ${analysis.priceChangePercent24h >= 0 ? '+' : ''}${analysis.priceChangePercent24h?.toFixed(2)}%\n` +
           `📈 24h Volume: ${volumeChange >= 0 ? '+' : ''}${volumeChange?.toFixed(1)}%`;
 
