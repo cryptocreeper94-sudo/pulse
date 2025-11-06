@@ -5,7 +5,12 @@ import axios from "axios";
 /**
  * Market Data Tool - Fetches historical price data for stocks and crypto
  * Uses free APIs: CoinGecko for crypto, Yahoo Finance for stocks
+ * Implements caching to stay within free tier rate limits
  */
+
+// In-memory cache with 10-minute TTL to reduce API calls
+const dataCache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 
 export const marketDataTool = createTool({
   id: "market-data-tool",
@@ -219,9 +224,24 @@ const COINGECKO_MAP: Record<string, string> = {
 
 // Retry function with exponential backoff for rate limits
 async function fetchCryptoDataWithRetry(ticker: string, days: number, logger: any, maxRetries = 3) {
+  // Check cache first
+  const cacheKey = `crypto_${ticker}_${days}`;
+  const cached = dataCache.get(cacheKey);
+  
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    logger?.info('💾 [MarketDataTool] Using cached data', { ticker, age: Math.round((Date.now() - cached.timestamp) / 1000) + 's' });
+    return cached.data;
+  }
+
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      return await fetchCryptoData(ticker, days, logger);
+      const data = await fetchCryptoData(ticker, days, logger);
+      
+      // Cache successful response
+      dataCache.set(cacheKey, { data, timestamp: Date.now() });
+      logger?.info('💾 [MarketDataTool] Data cached', { ticker, ttl: CACHE_TTL / 1000 + 's' });
+      
+      return data;
     } catch (error: any) {
       const isRateLimit = error.response?.status === 429 || 
                          error.response?.status === 401 ||
@@ -325,6 +345,15 @@ async function fetchCryptoData(ticker: string, days: number, logger: any) {
 }
 
 async function fetchStockData(ticker: string, days: number, logger: any) {
+  // Check cache first
+  const cacheKey = `stock_${ticker}_${days}`;
+  const cached = dataCache.get(cacheKey);
+  
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    logger?.info('💾 [MarketDataTool] Using cached data', { ticker, age: Math.round((Date.now() - cached.timestamp) / 1000) + 's' });
+    return cached.data;
+  }
+
   logger?.info('📊 [MarketDataTool] Fetching stock data from Yahoo Finance', { ticker, days });
 
   // Yahoo Finance v8 API endpoint
@@ -361,13 +390,7 @@ async function fetchStockData(ticker: string, days: number, logger: any) {
   const priceChange = currentPrice - previousClose;
   const priceChangePercent = (priceChange / previousClose) * 100;
 
-  logger?.info('✅ [MarketDataTool] Successfully fetched stock data', { 
-    ticker, 
-    dataPoints: prices.length,
-    currentPrice 
-  });
-
-  return {
+  const data = {
     ticker,
     type: 'stock',
     currentPrice,
@@ -375,4 +398,16 @@ async function fetchStockData(ticker: string, days: number, logger: any) {
     priceChangePercent24h: priceChangePercent,
     prices,
   };
+
+  // Cache successful response
+  dataCache.set(cacheKey, { data, timestamp: Date.now() });
+  logger?.info('💾 [MarketDataTool] Data cached', { ticker, ttl: CACHE_TTL / 1000 + 's' });
+
+  logger?.info('✅ [MarketDataTool] Successfully fetched stock data', { 
+    ticker, 
+    dataPoints: prices.length,
+    currentPrice 
+  });
+
+  return data;
 }
