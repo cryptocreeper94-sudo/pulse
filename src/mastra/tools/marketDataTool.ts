@@ -106,8 +106,9 @@ export const marketDataTool = createTool({
   },
 });
 
-// CoinGecko mapping for top 100+ cryptocurrencies (no search needed)
-const COINGECKO_MAP: Record<string, string> = {
+// CoinCap mapping for top 100+ cryptocurrencies (no search needed)
+// CoinCap uses lowercase coin names as IDs (bitcoin, ethereum, etc.)
+const COINCAP_MAP: Record<string, string> = {
   // Top 10
   'BTC': 'bitcoin',
   'ETH': 'ethereum',
@@ -251,75 +252,66 @@ async function fetchCryptoDataWithRetry(ticker: string, days: number, logger: an
 }
 
 async function fetchCryptoData(ticker: string, days: number, logger: any) {
-  logger?.info('📊 [MarketDataTool] Fetching crypto data from CoinGecko', { ticker, days });
+  logger?.info('📊 [MarketDataTool] Fetching crypto data from CoinCap', { ticker, days });
 
   // Try static map first, then search API
-  let coinId = COINGECKO_MAP[ticker];
+  let coinId = COINCAP_MAP[ticker];
   
   if (!coinId) {
-    logger?.info('🔍 [MarketDataTool] Ticker not in static map, searching CoinGecko', { ticker });
+    logger?.info('🔍 [MarketDataTool] Ticker not in static map, searching CoinCap', { ticker });
     try {
-      const apiKey = process.env.COINGECKO_API_KEY;
-      const searchUrl = `https://api.coingecko.com/api/v3/search?query=${ticker}${apiKey ? `&x_cg_demo_api_key=${apiKey}` : ''}`;
-      const searchResponse = await axios.get(searchUrl);
+      // Search all assets and find matching symbol
+      const searchUrl = `https://api.coincap.io/v2/assets`;
+      const searchResponse = await axios.get(searchUrl, {
+        headers: { 'Accept': 'application/json' }
+      });
       
-      // Find ALL exact symbol matches (case-insensitive)
-      const matches = searchResponse.data.coins?.filter((coin: any) => 
+      // Find exact symbol match (case-insensitive)
+      const match = searchResponse.data.data?.find((coin: any) => 
         coin.symbol?.toUpperCase() === ticker.toUpperCase()
-      ) || [];
+      );
       
-      if (matches.length > 0) {
-        // If multiple matches, prefer the one with highest market cap (comes first in CoinGecko search results)
-        // CoinGecko search already sorts by relevance/market cap
-        coinId = matches[0].id;
+      if (match) {
+        coinId = match.id; // CoinCap uses the id field (e.g., "bitcoin", "ethereum")
         logger?.info('✓ [MarketDataTool] Found coin via search', { 
           ticker, 
           coinId,
-          matchCount: matches.length,
-          selectedName: matches[0].name 
+          name: match.name 
         });
       } else {
-        // No exact symbol match - try the coin if ticker appears in name
-        const nameMatch = searchResponse.data.coins?.find((coin: any) => 
-          coin.name?.toUpperCase().includes(ticker.toUpperCase())
-        );
-        
-        if (nameMatch) {
-          coinId = nameMatch.id;
-          logger?.info('✓ [MarketDataTool] Found coin by name match', { ticker, coinId, name: nameMatch.name });
-        } else {
-          throw new Error(`No CoinGecko match found for ${ticker}`);
-        }
+        throw new Error(`No CoinCap match found for ${ticker}`);
       }
     } catch (searchError: any) {
-      logger?.warn('⚠️ [MarketDataTool] CoinGecko search failed', { 
+      logger?.warn('⚠️ [MarketDataTool] CoinCap search failed', { 
         ticker, 
         error: searchError.message 
       });
-      throw new Error(`Cryptocurrency ${ticker} not found on CoinGecko`);
+      throw new Error(`Cryptocurrency ${ticker} not found on CoinCap`);
     }
   }
 
-  // Fetch current price and 24h change
-  // Add API key if available (required as of Nov 2025)
-  const apiKey = process.env.COINGECKO_API_KEY;
-  const currentDataUrl = `https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_market_cap=true${apiKey ? `&x_cg_demo_api_key=${apiKey}` : ''}`;
-  const currentResponse = await axios.get(currentDataUrl);
+  // Fetch current price and market data
+  const currentDataUrl = `https://api.coincap.io/v2/assets/${coinId}`;
+  const currentResponse = await axios.get(currentDataUrl, {
+    headers: { 'Accept': 'application/json' }
+  });
   
-  if (!currentResponse.data[coinId]) {
-    throw new Error(`Cryptocurrency ${ticker} not found on CoinGecko`);
+  if (!currentResponse.data.data) {
+    throw new Error(`Cryptocurrency ${ticker} not found on CoinCap`);
   }
 
-  const currentData = currentResponse.data[coinId];
+  const currentData = currentResponse.data.data;
+  
+  // Fetch historical price data (hourly intervals for 90 days)
+  const end = Date.now();
+  const start = end - (days * 24 * 60 * 60 * 1000); // days ago in milliseconds
+  
+  const historyUrl = `https://api.coincap.io/v2/assets/${coinId}/history?interval=h1&start=${start}&end=${end}`;
+  const historyResponse = await axios.get(historyUrl, {
+    headers: { 'Accept': 'application/json' }
+  });
 
-  // Fetch historical price data with market_chart (gets hourly data for 2-90 days)
-  // This gives us 2000+ data points instead of 23 daily candles
-  const historyUrl = `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}&interval=hourly${apiKey ? `&x_cg_demo_api_key=${apiKey}` : ''}`;
-  const historyResponse = await axios.get(historyUrl);
-
-  // Convert market_chart data to OHLC format
-  // market_chart returns prices array [[timestamp, price], ...], we need to convert to candlesticks
-  const priceData = historyResponse.data.prices || [];
+  const priceData = historyResponse.data.data || [];
   
   // Group hourly prices into 4-hour candles for better analysis
   const candleSize = 4; // 4-hour candles
@@ -329,11 +321,12 @@ async function fetchCryptoData(ticker: string, days: number, logger: any) {
     const candlePrices = priceData.slice(i, Math.min(i + candleSize, priceData.length));
     if (candlePrices.length === 0) continue;
     
-    const open = candlePrices[0][1];
-    const close = candlePrices[candlePrices.length - 1][1];
-    const high = Math.max(...candlePrices.map((p: number[]) => p[1]));
-    const low = Math.min(...candlePrices.map((p: number[]) => p[1]));
-    const timestamp = candlePrices[0][0];
+    const candlePricesNum = candlePrices.map((p: any) => parseFloat(p.priceUsd));
+    const open = candlePricesNum[0];
+    const close = candlePricesNum[candlePricesNum.length - 1];
+    const high = Math.max(...candlePricesNum);
+    const low = Math.min(...candlePricesNum);
+    const timestamp = candlePrices[0].time;
     
     prices.push({
       timestamp,
@@ -341,24 +334,27 @@ async function fetchCryptoData(ticker: string, days: number, logger: any) {
       high,
       low,
       close,
-      volume: currentData.usd_24h_vol || 0, // CoinGecko doesn't provide per-candle volume in free tier
+      volume: parseFloat(currentData.volumeUsd24Hr || '0'),
     });
   }
+
+  const currentPrice = parseFloat(currentData.priceUsd);
+  const priceChangePercent24h = parseFloat(currentData.changePercent24Hr || '0');
 
   logger?.info('✅ [MarketDataTool] Successfully fetched crypto data', { 
     ticker, 
     dataPoints: prices.length,
-    currentPrice: currentData.usd 
+    currentPrice 
   });
 
   return {
     ticker,
     type: 'crypto',
-    currentPrice: currentData.usd,
-    priceChange24h: currentData.usd * (currentData.usd_24h_change / 100),
-    priceChangePercent24h: currentData.usd_24h_change,
-    volume24h: currentData.usd_24h_vol,
-    marketCap: currentData.usd_market_cap,
+    currentPrice,
+    priceChange24h: currentPrice * (priceChangePercent24h / 100),
+    priceChangePercent24h,
+    volume24h: parseFloat(currentData.volumeUsd24Hr || '0'),
+    marketCap: parseFloat(currentData.marketCapUsd || '0'),
     prices,
   };
 }
