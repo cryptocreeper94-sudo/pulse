@@ -4,6 +4,8 @@ import { PinoLogger } from "@mastra/loggers";
 import { LogLevel, MastraLogger } from "@mastra/core/logger";
 import pino from "pino";
 import { MCPServer } from "@mastra/mcp";
+import { Memory } from "@mastra/memory";
+import { PostgresStore } from "@mastra/pg";
 import { NonRetriableError } from "inngest";
 import { z } from "zod";
 
@@ -180,32 +182,63 @@ export const mastra = new Mastra({
             const { ticker, userId } = await c.req.json();
             logger?.info('📊 [Mini App] Analysis request', { ticker, userId });
             
-            // Run workflow to get analysis
-            const run = await darkwaveWorkflow.createRunAsync();
-            const result = await run.start({ 
-              inputData: { message: ticker, userId: userId || 'demo-user' }
+            // Step 1: Get market data
+            const marketData = await marketDataTool.execute({
+              context: { ticker, days: 90 },
+              mastra,
+              runtimeContext: null as any
             });
             
-            // Extract analysis data from workflow response
-            const stepResult = result.steps['process-telegram-message'];
-            const response = stepResult?.status === 'success' && 'output' in stepResult 
-              ? stepResult.output.response : 'Analysis failed';
+            if (!marketData || !marketData.prices) {
+              return c.json({ error: 'Failed to fetch market data' }, 404);
+            }
             
-            // Parse response to extract data (this is simplified)
+            // Step 2: Run technical analysis
+            const analysis = await technicalAnalysisTool.execute({
+              context: { 
+                ticker,
+                prices: marketData.prices,
+                currentPrice: marketData.currentPrice,
+                priceChange24h: marketData.priceChange24h,
+                priceChangePercent24h: marketData.priceChangePercent24h
+              },
+              mastra,
+              runtimeContext: null as any
+            });
+            
+            if (!analysis) {
+              return c.json({ error: 'Technical analysis failed' }, 500);
+            }
+            
+            // Calculate high/low from recent price data
+            const recentPrices = marketData.prices.slice(-24); // Last 24 data points
+            const high24h = Math.max(...recentPrices.map((p: any) => p.high));
+            const low24h = Math.min(...recentPrices.map((p: any) => p.low));
+            
+            // Return structured data for Mini App
             return c.json({
               ticker: ticker.toUpperCase(),
-              price: 67234.50,
-              priceChange: 3.2,
-              recommendation: 'STRONG BUY',
-              rsi: 45.2,
-              macd: 124.5,
-              volume: 1500000000,
-              high24h: 68500,
-              rawResponse: response
+              price: analysis.currentPrice || marketData.currentPrice,
+              priceChange: analysis.priceChangePercent24h || marketData.priceChangePercent24h || 0, // PERCENTAGE
+              priceChangeDollar: analysis.priceChange24h || marketData.priceChange24h || 0, // DOLLAR AMOUNT
+              recommendation: analysis.recommendation || 'HOLD',
+              rsi: analysis.rsi || 50,
+              macd: analysis.macd?.value || 0,
+              macdSignal: analysis.macd?.signal || 0,
+              volume: analysis.volume?.current || 0,
+              high24h: high24h || 0,
+              low24h: low24h || 0,
+              sma50: analysis.sma50 || 0,
+              sma200: analysis.sma200 || 0,
+              ema50: analysis.ema50 || 0,
+              ema200: analysis.ema200 || 0,
+              support: analysis.support || 0,
+              resistance: analysis.resistance || 0,
+              signals: analysis.signals || []
             });
           } catch (error: any) {
             logger?.error('❌ [Mini App] Analysis error', { error: error.message });
-            return c.json({ error: 'Analysis failed' }, 500);
+            return c.json({ error: 'Analysis failed: ' + error.message }, 500);
           }
         },
       },
@@ -221,19 +254,45 @@ export const mastra = new Mastra({
             const result = await holdingsTool.execute({
               context: { action: 'list', userId },
               mastra,
-              runtimeContext: {}
+              runtimeContext: null as any
             });
             
-            // Parse holdings from tool response
-            const holdings = result.success && result.holdings
-              ? result.holdings.map((t: string) => ({
-                  ticker: t,
-                  price: Math.random() * 1000,
-                  change: (Math.random() - 0.5) * 10
-                }))
-              : [];
+            if (!result.success || !result.holdings || result.holdings.length === 0) {
+              return c.json([]);
+            }
             
-            return c.json(holdings);
+            // Get real price data for each holding
+            const holdingsWithData = await Promise.all(
+              result.holdings.map(async (ticker: string) => {
+                try {
+                  const marketData = await marketDataTool.execute({
+                    context: { ticker, days: 1 },
+                    mastra,
+                    runtimeContext: null as any
+                  });
+                  
+                  if (marketData && marketData.currentPrice) {
+                    return {
+                      ticker,
+                      price: marketData.currentPrice || 0,
+                      change: marketData.priceChange24h || 0,
+                      volume: marketData.volume24h || 0
+                    };
+                  }
+                } catch (err) {
+                  logger?.warn(`Failed to get data for ${ticker}`);
+                }
+                
+                return {
+                  ticker,
+                  price: 0,
+                  change: 0,
+                  volume: 0
+                };
+              })
+            );
+            
+            return c.json(holdingsWithData);
           } catch (error: any) {
             logger?.error('❌ [Mini App] Holdings error', { error: error.message });
             return c.json([]);
@@ -252,7 +311,7 @@ export const mastra = new Mastra({
             await holdingsTool.execute({
               context: { action: 'add', ticker, userId: userId || 'demo-user' },
               mastra,
-              runtimeContext: {}
+              runtimeContext: null as any
             });
             
             return c.json({ success: true });
@@ -274,13 +333,33 @@ export const mastra = new Mastra({
             const result = await walletConnectionTool.execute({
               context: { action: 'view', userId },
               mastra,
-              runtimeContext: {}
+              runtimeContext: null as any
             });
             
+            const connected = result.success && !!result.walletAddress;
+            let balance = 0;
+            
+            // If wallet is connected, get real balance
+            if (connected && result.walletAddress) {
+              try {
+                const balanceResult = await balanceCheckerTool.execute({
+                  context: { userId },
+                  mastra,
+                  runtimeContext: null as any
+                });
+                
+                if (balanceResult && typeof balanceResult.balance === 'number') {
+                  balance = balanceResult.balance;
+                }
+              } catch (balanceErr) {
+                logger?.warn('Failed to fetch balance, returning 0');
+              }
+            }
+            
             return c.json({
-              connected: result.success && !!result.walletAddress,
+              connected,
               address: result.walletAddress || '',
-              balance: 2.5
+              balance
             });
           } catch (error: any) {
             logger?.error('❌ [Mini App] Wallet error', { error: error.message });
@@ -300,7 +379,7 @@ export const mastra = new Mastra({
             await walletConnectionTool.execute({
               context: { action: 'connect', walletAddress: address, userId: userId || 'demo-user' },
               mastra,
-              runtimeContext: {}
+              runtimeContext: null as any
             });
             
             return c.json({ success: true });
@@ -322,7 +401,7 @@ export const mastra = new Mastra({
             const result = await userSettingsTool.execute({
               context: { action: 'view', userId },
               mastra,
-              runtimeContext: {}
+              runtimeContext: null as any
             });
             
             return c.json({
@@ -361,7 +440,7 @@ export const mastra = new Mastra({
             await userSettingsTool.execute({
               context: { action: 'update', userId, settings },
               mastra,
-              runtimeContext: {}
+              runtimeContext: null as any
             });
             
             return c.json({ success: true });

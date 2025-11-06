@@ -6,6 +6,9 @@ import { z } from "zod";
  * Stores tickers in database for tracking
  */
 
+// In-memory cache for holdings when memory is not available (API route calls)
+const holdingsCache = new Map<string, string[]>();
+
 export const holdingsTool = createTool({
   id: "holdings-tool",
   description: "Manages user's watchlist. Can add, remove, list, or clear holdings. Holdings are persisted in the database per user.",
@@ -35,13 +38,13 @@ export const holdingsTool = createTool({
     logger?.info('📝 [HoldingsTool] User context', { userId, holdingsKey: HOLDINGS_KEY });
 
     try {
-      // Get current holdings from agent's memory storage (PostgreSQL-backed)
+      // Get current holdings from agent's memory storage (PostgreSQL-backed) or in-memory cache
       let holdings: string[] = [];
+      const memory = mastra?.memory;
       
       try {
-        const memory = mastra?.memory;
         if (memory) {
-          // Try to get holdings from memory
+          // Try to get holdings from persistent memory
           const messages = await memory.getMessages({
             resourceId: userId,
             threadId: HOLDINGS_KEY,
@@ -54,6 +57,10 @@ export const holdingsTool = createTool({
               holdings = JSON.parse(lastMessage.content as string);
             }
           }
+        } else {
+          // Fallback to in-memory cache when called from API routes
+          holdings = holdingsCache.get(userId) || [];
+          logger?.info('[HoldingsTool] Using in-memory cache (no persistent memory available)');
         }
       } catch (e) {
         logger?.warn('[HoldingsTool] No existing holdings found, starting fresh');
@@ -114,9 +121,8 @@ export const holdingsTool = createTool({
           break;
       }
 
-      // Save updated holdings to memory (PostgreSQL-backed, per-user storage)
+      // Save updated holdings to memory (PostgreSQL-backed, per-user storage) or in-memory cache
       try {
-        const memory = mastra?.memory;
         if (memory) {
           await memory.saveMessages({
             messages: [{
@@ -127,6 +133,10 @@ export const holdingsTool = createTool({
             threadId: HOLDINGS_KEY,
           });
           logger?.info('💾 [HoldingsTool] Holdings saved to database', { userId, holdingsCount: holdings.length });
+        } else {
+          // Save to in-memory cache when memory is not available
+          holdingsCache.set(userId, holdings);
+          logger?.info('💾 [HoldingsTool] Holdings saved to in-memory cache', { userId, holdingsCount: holdings.length });
         }
       } catch (saveError: any) {
         logger?.error('❌ [HoldingsTool] Failed to save holdings', { error: saveError.message });
