@@ -180,10 +180,32 @@ const processMessage = createStep({
           };
         }
 
-        let response = "🔍 *Top 10 Crypto Scan*\n\n";
+        // CoinGecko ID mapping for top cryptos
+        const coinGeckoMap: Record<string, string> = {
+          'BTC': 'bitcoin', 'ETH': 'ethereum', 'SOL': 'solana', 'BNB': 'binancecoin', 
+          'XRP': 'ripple', 'ADA': 'cardano', 'DOGE': 'dogecoin', 'AVAX': 'avalanche-2', 
+          'LINK': 'chainlink', 'MATIC': 'matic-network', 'DOT': 'polkadot', 'UNI': 'uniswap',
+          'ATOM': 'cosmos', 'LTC': 'litecoin', 'BCH': 'bitcoin-cash', 'NEAR': 'near',
+          'APT': 'aptos', 'ARB': 'arbitrum', 'OP': 'optimism', 'SUI': 'sui',
+          'FIL': 'filecoin', 'ICP': 'internet-computer', 'VET': 'vechain', 'ALGO': 'algorand',
+          'SAND': 'the-sandbox', 'MANA': 'decentraland', 'AXS': 'axie-infinity', 'FTM': 'fantom',
+          'AAVE': 'aave', 'GRT': 'the-graph', 'SNX': 'havven', 'AR': 'arweave',
+          'HBAR': 'hedera-hashgraph', 'XLM': 'stellar', 'TRX': 'tron', 'ETC': 'ethereum-classic',
+          'XMR': 'monero', 'TON': 'the-open-network', 'SHIB': 'shiba-inu', 'PEPE': 'pepe',
+          'WIF': 'dogwifcoin', 'BONK': 'bonk', 'FLOKI': 'floki', 'INJ': 'injective-protocol',
+          'TIA': 'celestia', 'SEI': 'sei-network', 'RUNE': 'thorchain', 'OSMO': 'osmosis',
+          'JUNO': 'juno-network', 'CRV': 'curve-dao-token'
+        };
+
+        let response = "🔍 *Crypto Market Scan*\n\n";
         result.strongBuys.slice(0, 10).forEach((rec: any) => {
-          response += `🟢 *${rec.ticker}* - ${rec.recommendation}\n`;
-          response += `💰 $${rec.currentPrice} | 📊 RSI: ${rec.rsi?.toFixed(1)} | Signals: ${rec.signalCount.bullish}\n\n`;
+          const coinGeckoId = coinGeckoMap[rec.ticker] || rec.ticker.toLowerCase();
+          const url = `https://www.coingecko.com/en/coins/${coinGeckoId}`;
+          
+          response += `🟢 [${rec.ticker}](${url}) - ${rec.recommendation}\n`;
+          response += `📊 RSI: ${rec.rsi?.toFixed(1)}\n`;
+          response += `💰 24h Price: ${rec.priceChangePercent24h >= 0 ? '+' : ''}${rec.priceChangePercent24h?.toFixed(2)}%\n`;
+          response += `📈 24h Volume: ${rec.volumeChangePercent >= 0 ? '+' : ''}${rec.volumeChangePercent?.toFixed(1)}%\n\n`;
         });
         
         return { response, success: true };
