@@ -259,7 +259,8 @@ async function fetchCryptoData(ticker: string, days: number, logger: any) {
   if (!coinId) {
     logger?.info('🔍 [MarketDataTool] Ticker not in static map, searching CoinGecko', { ticker });
     try {
-      const searchUrl = `https://api.coingecko.com/api/v3/search?query=${ticker}`;
+      const apiKey = process.env.COINGECKO_API_KEY;
+      const searchUrl = `https://api.coingecko.com/api/v3/search?query=${ticker}${apiKey ? `&x_cg_demo_api_key=${apiKey}` : ''}`;
       const searchResponse = await axios.get(searchUrl);
       
       // Find ALL exact symbol matches (case-insensitive)
@@ -300,7 +301,9 @@ async function fetchCryptoData(ticker: string, days: number, logger: any) {
   }
 
   // Fetch current price and 24h change
-  const currentDataUrl = `https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_market_cap=true`;
+  // Add API key if available (required as of Nov 2025)
+  const apiKey = process.env.COINGECKO_API_KEY;
+  const currentDataUrl = `https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_market_cap=true${apiKey ? `&x_cg_demo_api_key=${apiKey}` : ''}`;
   const currentResponse = await axios.get(currentDataUrl);
   
   if (!currentResponse.data[coinId]) {
@@ -311,7 +314,7 @@ async function fetchCryptoData(ticker: string, days: number, logger: any) {
 
   // Fetch historical price data with market_chart (gets hourly data for 2-90 days)
   // This gives us 2000+ data points instead of 23 daily candles
-  const historyUrl = `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}&interval=hourly`;
+  const historyUrl = `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}&interval=hourly${apiKey ? `&x_cg_demo_api_key=${apiKey}` : ''}`;
   const historyResponse = await axios.get(historyUrl);
 
   // Convert market_chart data to OHLC format

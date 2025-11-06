@@ -75,13 +75,43 @@ export const dexscreenerTool = createTool({
         throw new Error(`No DEX pairs found for "${context.query}"`);
       }
 
-      // Get the most liquid pair (highest liquidity = most reliable)
+      // Filter to ONLY pairs that match the query symbol (case-insensitive)
+      // This prevents returning wrong coins (e.g., XVG -> DHN)
       const pairs = response.data.pairs;
-      const bestPair = pairs.reduce((best: any, current: any) => {
+      const queryUpper = context.query.toUpperCase();
+      
+      // First try to find exact symbol match
+      let matchingPairs = pairs.filter((pair: any) => 
+        pair.baseToken.symbol.toUpperCase() === queryUpper ||
+        pair.baseToken.name.toUpperCase() === queryUpper
+      );
+      
+      // If no exact match, check if query is a contract address
+      if (matchingPairs.length === 0) {
+        matchingPairs = pairs.filter((pair: any) => 
+          pair.baseToken.address.toLowerCase() === context.query.toLowerCase() ||
+          pair.pairAddress.toLowerCase() === context.query.toLowerCase()
+        );
+      }
+      
+      // If still no match, fall back to any pair containing the query in symbol or name
+      if (matchingPairs.length === 0) {
+        matchingPairs = pairs.filter((pair: any) => 
+          pair.baseToken.symbol.toUpperCase().includes(queryUpper) ||
+          pair.baseToken.name.toUpperCase().includes(queryUpper)
+        );
+      }
+      
+      if (matchingPairs.length === 0) {
+        throw new Error(`No DEX pairs found matching "${context.query}". Found ${pairs.length} pairs but none matched the symbol/name.`);
+      }
+      
+      // Get the most liquid pair from matching pairs only
+      const bestPair = matchingPairs.reduce((best: any, current: any) => {
         const bestLiq = best.liquidity?.usd || 0;
         const currentLiq = current.liquidity?.usd || 0;
         return currentLiq > bestLiq ? current : best;
-      }, pairs[0]);
+      }, matchingPairs[0]);
 
       logger?.info('✅ [DexscreenerTool] Found pair', { 
         symbol: bestPair.baseToken.symbol,
