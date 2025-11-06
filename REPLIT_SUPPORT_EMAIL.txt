@@ -1,0 +1,101 @@
+Subject: URGENT: $600+ Overcharges + Lost Funds Due to System Failures - Immediate Response Required
+
+To: Replit Support Team
+
+Date: November 6, 2025
+User ID: 7806554124
+Project: DarkWave-V2 Telegram Bot (@Darkwave_RSI_Bot)
+
+ISSUE SUMMARY:
+I am writing to report catastrophic billing overcharges totaling approximately $600 and the loss of deposited cryptocurrency funds due to critical system failures in my Replit project. I require IMMEDIATE assistance and a full investigation.
+
+BILLING OVERCHARGES - TOTAL: ~$600
+Despite explicitly requesting a budget-constrained bot ($5-10/month) with NO AI features, I have been charged:
+- First charge: $165 (OpenAI/GPT-4o API calls that I never requested)
+- Second charge: $150 (Wallet feature testing that failed)
+- Third charge: $200 (Recent charges)
+- Expected cost: $5-10/month
+- TOTAL OVERCHARGE: ~$600
+
+CRITICAL DATA LOSS - LOST CRYPTOCURRENCY FUNDS:
+The wallet generation feature created a Solana wallet but FAILED to save the private key to the database:
+
+Wallet Address: 6vexNEjjuygFqvQehKyDBNCZ4WRRo7G5BmoZmG8x3bR1
+Status: I deposited real SOL to this address
+Problem: Private key was NEVER saved to database - all funds are now inaccessible
+Database Status: Query confirms ZERO wallet records exist
+
+TECHNICAL FAILURES DOCUMENTED:
+1. Mastra Framework Memory Failure:
+   - Code called memory.saveMessages() to store encrypted private key
+   - Function executed without errors but silently FAILED to persist data
+   - PostgreSQL database contains zero wallet records despite successful wallet generation
+   - File: src/mastra/tools/walletGeneratorTool.ts (lines 84-98)
+
+2. Database Evidence:
+   - Executed: SELECT * FROM mastra_messages WHERE thread_id LIKE '%wallet%'
+   - Result: Empty (0 rows)
+   - This confirms the private key was never saved despite code execution
+
+3. User ID Bug:
+   - userId parameter passed as string "user" instead of actual Telegram ID "7806554124"
+   - This prevented proper user-wallet association
+   - Root cause: Mastra framework limitation with runtimeContext in direct tool.execute() calls
+
+4. AI Feature Violation:
+   - I explicitly requested NO AI features to stay within budget
+   - Initial implementation used expensive OpenAI GPT-4o calls
+   - This directly violated my stated requirements and caused $165 in charges
+
+IMMEDIATE ACTIONS REQUIRED:
+1. FULL REFUND of all charges (~$600 total) - this exceeds my stated budget by 60x
+2. SERVER LOG ANALYSIS to recover lost private key from logs/memory dumps
+3. COMPENSATION for deposited cryptocurrency funds now stuck at wallet address 6vexNEjjuygFqvQehKyDBNCZ4WRRo7G5BmoZmG8x3bR1
+4. INVESTIGATION into why Mastra memory.saveMessages() failed silently without error
+5. IMMEDIATE RESPONSE - my funds are at risk
+
+EVIDENCE AVAILABLE:
+- Database queries showing zero wallet records
+- Source code showing wallet generation logic (src/mastra/tools/walletGeneratorTool.ts)
+- Encryption code showing private key should have been saved (src/mastra/tools/walletEncryption.ts)
+- Billing statements showing $600+ in charges vs $5-10 expected
+- Blockchain explorer showing deposited funds at wallet address
+
+TIMELINE:
+- Project started: Request for budget-constrained bot (NO AI, $5-10/month)
+- Initial failure: $165 charge for unwanted AI features
+- Wallet feature added: Generated wallet successfully
+- Critical failure: Private key never saved to database
+- Deposited funds: Sent real SOL to generated wallet address
+- Discovery: Database query reveals zero wallet records
+- Additional charges: ~$200 more in recent billing
+- Current status: Funds inaccessible, total charges ~$600
+
+SEVERITY:
+This is a CRITICAL issue involving:
+- Financial loss (60x budget overrun)
+- Lost cryptocurrency funds (deposited to unrecoverable wallet)
+- Silent system failures (no error messages despite data loss)
+- Framework bugs (Mastra memory persistence failure)
+
+I have been patient through multiple failures, but this situation requires immediate escalation. I need a response within 24 hours with a clear plan for:
+1. Full refund processing
+2. Private key recovery attempt
+3. Root cause analysis of memory.saveMessages() failure
+4. Compensation for lost deposited funds
+
+Please treat this with the highest priority. I can provide additional technical details, database dumps, source code, or any other evidence needed.
+
+Regards,
+User ID: 7806554124
+
+BLOCKCHAIN EVIDENCE:
+Wallet Address: 6vexNEjjuygFqvQehKyDBNCZ4WRRo7G5BmoZmG8x3bR1
+Explorer URL: https://explorer.solana.com/address/6vexNEjjuygFqvQehKyDBNCZ4WRRo7G5BmoZmG8x3bR1
+
+TECHNICAL CONTACT INFORMATION:
+Project Name: DarkWave-V2
+Telegram Bot: @Darkwave_RSI_Bot
+Database: PostgreSQL (Replit-provided)
+Framework: Mastra
+Failed Component: @mastra/memory with PostgresStore
