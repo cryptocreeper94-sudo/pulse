@@ -479,30 +479,12 @@ const processMessage = createStep({
           }
         }
 
-        const response = `${emoji} *[${ticker}](${tickerUrl}) Analysis*\n\n` +
-          `💰 *Current Price:* $${analysis.currentPrice?.toFixed(4)}\n` +
-          `📈 *24h Change:* ${analysis.priceChange24h >= 0 ? '+' : ''}${analysis.priceChange24h?.toFixed(2)}%\n\n` +
-          `${emoji} *${analysis.recommendation}*\n` +
-          `⏱️ *Duration:* ${analysis.patternDuration?.estimate} (${analysis.patternDuration?.confidence} confidence)\n` +
-          `📌 *Pattern:* ${analysis.patternDuration?.type}\n\n` +
-          `📊 *TECHNICAL INDICATORS:*\n` +
-          `• *RSI (14):* ${analysis.rsi?.toFixed(1)}\n` +
-          `• *MACD:* ${analysis.macd?.value.toFixed(2)} | Signal: ${analysis.macd?.signal.toFixed(2)} | Histogram: ${analysis.macd?.histogram.toFixed(2)}\n` +
-          `• *SMA 50:* $${analysis.sma50?.toFixed(4)}\n` +
-          `• *SMA 200:* $${analysis.sma200?.toFixed(4)}\n` +
-          `• *EMA 50:* $${analysis.ema50?.toFixed(4)}\n` +
-          `• *EMA 200:* $${analysis.ema200?.toFixed(4)}\n` +
-          `• *Bollinger Bands:*\n` +
-          `  Upper: $${analysis.bollingerBands?.upper.toFixed(4)}\n` +
-          `  Middle: $${analysis.bollingerBands?.middle.toFixed(4)}\n` +
-          `  Lower: $${analysis.bollingerBands?.lower.toFixed(4)}\n` +
-          `  Bandwidth: ${analysis.bollingerBands?.bandwidth.toFixed(2)}%\n` +
-          `• *Support:* $${analysis.support?.toFixed(4)}\n` +
-          `• *Resistance:* $${analysis.resistance?.toFixed(4)}\n` +
-          `• *Volatility:* ${analysis.volatility?.toFixed(1)}%\n` +
-          `• *Volume:* $${((marketData.volume24h || 0) / 1000000).toFixed(2)}M\n\n` +
-          `⚠️ *SIGNALS (${analysis.signals?.length || 0}):*\n` +
-          (analysis.signals?.map(s => `• ${s}`).join('\n') || '• None');
+        // Simplified output format
+        const volumeChange = analysis.volumeChangePercent || 0;
+        const response = `${emoji} ([${ticker}](${tickerUrl})) - ${analysis.recommendation}\n` +
+          `📊 RSI: ${analysis.rsi?.toFixed(1)}\n` +
+          `💰 24h Price: ${analysis.priceChange24h >= 0 ? '+' : ''}${analysis.priceChange24h?.toFixed(2)}%\n` +
+          `📈 24h Volume: ${volumeChange >= 0 ? '+' : ''}${volumeChange?.toFixed(1)}%`;
 
         return { response, success: true };
       }
