@@ -68,28 +68,22 @@ export const marketDataTool = createTool({
 
     logger?.info('📝 [MarketDataTool] Initial detection', { ticker, assetType });
 
-    // Try primary detection with fallback - USE YAHOO FINANCE FOR EVERYTHING
+    // STRICT SEPARATION: Crypto → Binance, Stocks → Yahoo Finance
     try {
       if (assetType === 'crypto') {
-        // For crypto, try Yahoo Finance with -USD suffix first
-        logger?.info('📊 [MarketDataTool] Fetching crypto from Yahoo Finance', { ticker });
-        try {
-          return await fetchStockData(`${ticker}-USD`, days, logger);
-        } catch (cryptoError: any) {
-          logger?.error('❌ [MarketDataTool] Yahoo crypto failed', {
-            error: cryptoError.message
-          });
-          throw cryptoError;
-        }
+        // For crypto, use Binance ONLY (keeps crypto separate from stocks)
+        logger?.info('📊 [MarketDataTool] Fetching crypto from Binance', { ticker });
+        return await fetchCryptoDataWithRetry(ticker, days, logger);
       } else {
+        // For stocks, use Yahoo Finance ONLY
         try {
           return await fetchStockData(ticker, days, logger);
         } catch (stockError: any) {
           logger?.warn('⚠️ [MarketDataTool] Stock fetch failed, trying as crypto', { 
             error: stockError.message 
           });
-          // Fallback to crypto format if stock fails
-          return await fetchStockData(`${ticker}-USD`, days, logger);
+          // Fallback to crypto if stock fails
+          return await fetchCryptoDataWithRetry(ticker, days, logger);
         }
       }
     } catch (error: any) {
@@ -260,63 +254,47 @@ async function fetchCryptoDataWithRetry(ticker: string, days: number, logger: an
 }
 
 async function fetchCryptoData(ticker: string, days: number, logger: any) {
-  logger?.info('📊 [MarketDataTool] Fetching crypto data from CoinCap', { ticker, days });
+  logger?.info('📊 [MarketDataTool] Fetching crypto data from Binance', { ticker, days });
 
-  // CoinCap uses lowercase asset IDs
-  const assetId = ticker.toLowerCase();
+  // Binance uses USDT pairs for crypto (BTC → BTCUSDT)
+  const symbol = `${ticker}USDT`;
   
-  // Fetch current price and market data from CoinCap (FREE, NO RATE LIMITS!)
-  const currentDataUrl = `https://api.coincap.io/v2/assets/${assetId}`;
-  const currentResponse = await axios.get(currentDataUrl);
+  // Determine interval based on days (4h candles for better analysis)
+  const interval = '4h';
+  const limit = Math.min(Math.ceil((days * 24) / 4), 500); // Max 500 candles from Binance
   
-  const assetData = currentResponse.data?.data;
-  if (!assetData) {
-    throw new Error(`Cryptocurrency ${ticker} not found on CoinCap`);
+  // Fetch OHLCV data from Binance public API (FREE, NO RATE LIMITS!)
+  const klineUrl = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`;
+  const klineResponse = await axios.get(klineUrl);
+  
+  const candles = klineResponse.data;
+  if (!candles || candles.length === 0) {
+    throw new Error(`Cryptocurrency ${ticker} not found on Binance`);
   }
 
-  const currentPrice = parseFloat(assetData.priceUsd) || 0;
-  const priceChangePercent24h = parseFloat(assetData.changePercent24Hr) || 0;
-  const volume24h = parseFloat(assetData.volumeUsd24Hr) || 0;
-  const marketCap = parseFloat(assetData.marketCapUsd) || 0;
-  
-  // Fetch historical price data from CoinCap
-  const now = Date.now();
-  const start = now - (days * 24 * 60 * 60 * 1000);
-  const interval = days <= 1 ? 'h1' : 'h6'; // Hourly for 1 day, 6-hour for longer
-  
-  const historyUrl = `https://api.coincap.io/v2/assets/${assetId}/history?interval=${interval}&start=${start}&end=${now}`;
-  const historyResponse = await axios.get(historyUrl);
+  // Parse Binance kline data [timestamp, open, high, low, close, volume, ...]
+  const prices = candles.map((candle: any) => ({
+    timestamp: candle[0], // Unix timestamp in ms
+    open: parseFloat(candle[1]),
+    high: parseFloat(candle[2]),
+    low: parseFloat(candle[3]),
+    close: parseFloat(candle[4]),
+    volume: parseFloat(candle[5]),
+  }));
 
-  const priceData = historyResponse.data?.data || [];
+  const latestCandle = prices[prices.length - 1];
+  const prevCandle = prices[prices.length - 2] || latestCandle;
   
-  // Convert CoinCap data to OHLCV format (group into 4-hour candles)
-  const candleSize = 4;
-  const prices = [];
+  const currentPrice = latestCandle.close;
+  const priceChange24h = currentPrice - prevCandle.close;
+  const priceChangePercent24h = (priceChange24h / prevCandle.close) * 100;
   
-  for (let i = 0; i < priceData.length; i += candleSize) {
-    const candlePrices = priceData.slice(i, Math.min(i + candleSize, priceData.length));
-    if (candlePrices.length === 0) continue;
-    
-    const candlePricesNum = candlePrices.map((p: any) => parseFloat(p.priceUsd));
-    const open = candlePricesNum[0];
-    const close = candlePricesNum[candlePricesNum.length - 1];
-    const high = Math.max(...candlePricesNum);
-    const low = Math.min(...candlePricesNum);
-    const timestamp = candlePrices[0].time; // CoinCap timestamp in ms
-    
-    prices.push({
-      timestamp,
-      open,
-      high,
-      low,
-      close,
-      volume: volume24h / priceData.length, // Estimate volume per candle
-    });
-  }
+  // Calculate 24h volume (sum of recent candles)
+  const volume24h = prices.slice(-6).reduce((sum, p) => sum + p.volume, 0); // Last 6 4h candles = 24h
 
-  logger?.info('✅ [MarketDataTool] Successfully fetched crypto data from CoinCap', { 
+  logger?.info('✅ [MarketDataTool] Successfully fetched crypto data from Binance', { 
     ticker,
-    assetId,
+    symbol,
     dataPoints: prices.length,
     currentPrice 
   });
@@ -325,10 +303,10 @@ async function fetchCryptoData(ticker: string, days: number, logger: any) {
     ticker,
     type: 'crypto',
     currentPrice,
-    priceChange24h: currentPrice * (priceChangePercent24h / 100),
+    priceChange24h,
     priceChangePercent24h,
     volume24h,
-    marketCap,
+    marketCap: 0, // Binance doesn't provide market cap, set to 0
     prices,
   };
 }
