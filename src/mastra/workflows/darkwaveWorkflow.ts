@@ -218,7 +218,9 @@ const processMessage = createStep({
         const response = `${emoji} *${ticker} Analysis*\n\n` +
           `💰 *Current Price:* $${analysis.currentPrice?.toFixed(4)}\n` +
           `📈 *24h Change:* ${analysis.priceChange24h >= 0 ? '+' : ''}${analysis.priceChange24h?.toFixed(2)}%\n\n` +
-          `${emoji} *${analysis.recommendation}*\n\n` +
+          `${emoji} *${analysis.recommendation}*\n` +
+          `⏱️ *Duration:* ${analysis.patternDuration?.estimate} (${analysis.patternDuration?.confidence} confidence)\n` +
+          `📌 *Pattern:* ${analysis.patternDuration?.type}\n\n` +
           `📊 *TECHNICAL INDICATORS:*\n` +
           `• *RSI (14):* ${analysis.rsi?.toFixed(1)}\n` +
           `• *MACD:* ${analysis.macd?.value.toFixed(2)} | Signal: ${analysis.macd?.signal.toFixed(2)} | Histogram: ${analysis.macd?.histogram.toFixed(2)}\n` +
