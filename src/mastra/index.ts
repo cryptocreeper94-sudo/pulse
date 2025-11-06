@@ -804,15 +804,31 @@ export const mastra = new Mastra({
           }
         },
       },
-      // Mini App static files
+      // Mini App static files - Helper to resolve public files in both dev and deployment
       {
         path: "/mini-app",
         method: "GET",
         createHandler: async () => async (c: any) => {
           const fs = await import('fs/promises');
           const path = await import('path');
-          const html = await fs.readFile(path.join(process.cwd(), 'public', 'index.html'), 'utf-8');
-          return c.html(html);
+          
+          // Try multiple paths for dev vs deployment
+          const possiblePaths = [
+            path.join(process.cwd(), '.mastra', 'output', 'public', 'index.html'),
+            path.join(process.cwd(), 'public', 'index.html'),
+            path.resolve(process.cwd(), '../..', 'public', 'index.html'),
+          ];
+          
+          for (const filePath of possiblePaths) {
+            try {
+              const html = await fs.readFile(filePath, 'utf-8');
+              return c.html(html);
+            } catch (err) {
+              continue;
+            }
+          }
+          
+          return c.text('Mini App not found', 404);
         },
       },
       {
@@ -821,9 +837,24 @@ export const mastra = new Mastra({
         createHandler: async () => async (c: any) => {
           const fs = await import('fs/promises');
           const path = await import('path');
-          const css = await fs.readFile(path.join(process.cwd(), 'public', 'styles.css'), 'utf-8');
-          c.header('Content-Type', 'text/css');
-          return c.body(css);
+          
+          const possiblePaths = [
+            path.join(process.cwd(), '.mastra', 'output', 'public', 'styles.css'),
+            path.join(process.cwd(), 'public', 'styles.css'),
+            path.resolve(process.cwd(), '../..', 'public', 'styles.css'),
+          ];
+          
+          for (const filePath of possiblePaths) {
+            try {
+              const css = await fs.readFile(filePath, 'utf-8');
+              c.header('Content-Type', 'text/css');
+              return c.body(css);
+            } catch (err) {
+              continue;
+            }
+          }
+          
+          return c.text('CSS not found', 404);
         },
       },
       {
@@ -832,9 +863,24 @@ export const mastra = new Mastra({
         createHandler: async () => async (c: any) => {
           const fs = await import('fs/promises');
           const path = await import('path');
-          const js = await fs.readFile(path.join(process.cwd(), 'public', 'app.js'), 'utf-8');
-          c.header('Content-Type', 'application/javascript');
-          return c.body(js);
+          
+          const possiblePaths = [
+            path.join(process.cwd(), '.mastra', 'output', 'public', 'app.js'),
+            path.join(process.cwd(), 'public', 'app.js'),
+            path.resolve(process.cwd(), '../..', 'public', 'app.js'),
+          ];
+          
+          for (const filePath of possiblePaths) {
+            try {
+              const js = await fs.readFile(filePath, 'utf-8');
+              c.header('Content-Type', 'application/javascript');
+              return c.body(js);
+            } catch (err) {
+              continue;
+            }
+          }
+          
+          return c.text('JavaScript not found', 404);
         },
       },
     ],
