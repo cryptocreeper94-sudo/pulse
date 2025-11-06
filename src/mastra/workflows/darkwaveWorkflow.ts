@@ -202,7 +202,7 @@ const processMessage = createStep({
           const coinGeckoId = coinGeckoMap[rec.ticker] || rec.ticker.toLowerCase();
           const url = `https://www.coingecko.com/en/coins/${coinGeckoId}`;
           
-          response += `🟢 [${rec.ticker}](${url}) - ${rec.recommendation}\n`;
+          response += `🟢 *${rec.name}* ([${rec.ticker}](${url})) - ${rec.recommendation}\n`;
           response += `📊 RSI: ${rec.rsi?.toFixed(1)}\n`;
           response += `💰 24h Price: ${rec.priceChangePercent24h >= 0 ? '+' : ''}${rec.priceChangePercent24h?.toFixed(2)}%\n`;
           response += `📈 24h Volume: ${rec.volumeChangePercent >= 0 ? '+' : ''}${rec.volumeChangePercent?.toFixed(1)}%\n\n`;

@@ -8,6 +8,22 @@ import { technicalAnalysisTool } from "./technicalAnalysisTool";
  * Returns only assets that meet buy criteria based on technical analysis
  */
 
+// Crypto name mapping for display purposes
+const CRYPTO_NAMES: Record<string, string> = {
+  'BTC': 'Bitcoin', 'ETH': 'Ethereum', 'SOL': 'Solana', 'BNB': 'BNB', 'XRP': 'XRP',
+  'ADA': 'Cardano', 'DOGE': 'Dogecoin', 'AVAX': 'Avalanche', 'LINK': 'Chainlink', 
+  'MATIC': 'Polygon', 'DOT': 'Polkadot', 'UNI': 'Uniswap', 'ATOM': 'Cosmos', 
+  'LTC': 'Litecoin', 'BCH': 'Bitcoin Cash', 'NEAR': 'NEAR Protocol', 'APT': 'Aptos',
+  'ARB': 'Arbitrum', 'OP': 'Optimism', 'SUI': 'Sui', 'FIL': 'Filecoin', 
+  'ICP': 'Internet Computer', 'VET': 'VeChain', 'ALGO': 'Algorand', 'SAND': 'The Sandbox',
+  'MANA': 'Decentraland', 'AXS': 'Axie Infinity', 'FTM': 'Fantom', 'AAVE': 'Aave',
+  'GRT': 'The Graph', 'SNX': 'Synthetix', 'AR': 'Arweave', 'HBAR': 'Hedera',
+  'XLM': 'Stellar', 'TRX': 'TRON', 'ETC': 'Ethereum Classic', 'XMR': 'Monero',
+  'TON': 'Toncoin', 'SHIB': 'Shiba Inu', 'PEPE': 'Pepe', 'WIF': 'dogwifhat',
+  'BONK': 'Bonk', 'FLOKI': 'FLOKI', 'INJ': 'Injective', 'TIA': 'Celestia',
+  'SEI': 'Sei', 'RUNE': 'THORChain', 'OSMO': 'Osmosis', 'JUNO': 'Juno', 'CRV': 'Curve DAO'
+};
+
 export const scannerTool = createTool({
   id: "scanner-tool",
   description: "Scans top cryptocurrencies or stocks for spike potential based on historic patterns. Returns assets showing strong buy signals with bullish convergence (volume spikes, RSI recovery, MACD crossovers, resistance breaks). Use when user says 'crypto' or 'stock'.",
@@ -21,6 +37,7 @@ export const scannerTool = createTool({
     scannedCount: z.number(),
     strongBuys: z.array(z.object({
       ticker: z.string(),
+      name: z.string(),
       type: z.string(),
       currentPrice: z.number(),
       volume24h: z.number(),
@@ -108,6 +125,7 @@ export const scannerTool = createTool({
         if (analysis.recommendation === 'BUY' || analysis.recommendation === 'STRONG_BUY') {
           strongBuys.push({
             ticker: analysis.ticker,
+            name: type === 'crypto' ? (CRYPTO_NAMES[ticker] || ticker) : ticker,
             type,
             currentPrice: analysis.currentPrice,
             volume24h: marketData.volume24h,
