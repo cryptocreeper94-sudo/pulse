@@ -59,6 +59,18 @@ const FEATURED_TOKENS = [
     featured: true
   },
   
+  // Token #4: Vertigo I
+  { 
+    address: 'DitutwBDmEU1fM82ePTymzjLStjraLdwSQDwvSdgCmTs',
+    name: 'Vertigo I',
+    symbol: '$V-25',
+    description: 'Experience the rush',
+    platform: 'pumpfun',
+    twitter: '',
+    telegram: '',
+    featured: true
+  },
+  
   // Add more tokens below as you send them:
   
 ];
