@@ -24,7 +24,8 @@ const state = {
     plan: 'free',
     status: 'inactive',
     expiryDate: null
-  }
+  },
+  accessGranted: false // Access code verification status
 };
 
 // ===== FEATURED TOKENS CONFIGURATION =====
@@ -1428,8 +1429,163 @@ function closeChartModal() {
   }
 }
 
+// ===== ACCESS CODE SYSTEM =====
+function checkAccessCode() {
+  const savedCode = localStorage.getItem('darkwave_access');
+  return savedCode === 'granted';
+}
+
+async function verifyAccessCode(code) {
+  try {
+    const response = await fetch(`${API_BASE}/api/verify-access`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code })
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      localStorage.setItem('darkwave_access', 'granted');
+      state.accessGranted = true;
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('Access verification error:', error);
+    return false;
+  }
+}
+
+function showAccessGate() {
+  // Hide main app
+  document.getElementById('app').style.display = 'none';
+  
+  // Create and show access gate
+  const gateHtml = `
+    <div id="accessGate" style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #1a0000 0%, #0d0011 50%, #000000 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      padding: 20px;
+    ">
+      <div style="
+        background: rgba(26, 0, 0, 0.95);
+        border: 2px solid #8b0000;
+        border-radius: 16px;
+        padding: 40px 30px;
+        max-width: 400px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 0 30px rgba(139, 0, 0, 0.5);
+      ">
+        <div style="font-size: 48px; margin-bottom: 20px;">🔒</div>
+        <h2 style="color: #fff; margin-bottom: 10px; font-size: 24px;">DarkWave-V2</h2>
+        <p style="color: #999; margin-bottom: 30px; font-size: 14px;">Enter access code to continue</p>
+        
+        <input 
+          type="text" 
+          id="accessCodeInput" 
+          placeholder="Enter access code"
+          style="
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #8b0000;
+            border-radius: 8px;
+            background: rgba(13, 0, 17, 0.8);
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-sizing: border-box;
+          "
+          autocomplete="off"
+        />
+        
+        <button 
+          id="accessCodeSubmit"
+          style="
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #8b0000 0%, #4b0000 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+          "
+        >
+          Unlock
+        </button>
+        
+        <div id="accessError" style="
+          color: #ff4444;
+          margin-top: 15px;
+          font-size: 14px;
+          display: none;
+        ">Invalid access code</div>
+      </div>
+    </div>
+  `;
+  
+  document.body.insertAdjacentHTML('afterbegin', gateHtml);
+  
+  // Add event listeners
+  const input = document.getElementById('accessCodeInput');
+  const submit = document.getElementById('accessCodeSubmit');
+  const error = document.getElementById('accessError');
+  
+  const handleSubmit = async () => {
+    const code = input.value.trim();
+    if (!code) return;
+    
+    submit.textContent = 'Verifying...';
+    submit.disabled = true;
+    error.style.display = 'none';
+    
+    const isValid = await verifyAccessCode(code);
+    
+    if (isValid) {
+      document.getElementById('accessGate').remove();
+      document.getElementById('app').style.display = 'block';
+      if (tg) tg.HapticFeedback?.notificationOccurred('success');
+    } else {
+      error.style.display = 'block';
+      input.value = '';
+      input.focus();
+      submit.textContent = 'Unlock';
+      submit.disabled = false;
+      if (tg) tg.HapticFeedback?.notificationOccurred('error');
+    }
+  };
+  
+  submit.addEventListener('click', handleSubmit);
+  input.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') handleSubmit();
+  });
+  
+  // Focus input
+  setTimeout(() => input.focus(), 100);
+}
+
 // Modal Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
+  // Check access code first
+  if (!checkAccessCode()) {
+    showAccessGate();
+  } else {
+    state.accessGranted = true;
+  }
+  
   const closeBtn = document.getElementById('closeChartModal');
   const modal = document.getElementById('chartModal');
   const modalContent = document.getElementById('chartModalImage');
