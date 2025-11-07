@@ -23,19 +23,19 @@ const state = {
 // ===== FEATURED TOKENS CONFIGURATION =====
 // Paste your token contract addresses here as you get them
 const FEATURED_TOKENS = [
-  // Example format (replace with your real addresses):
-  // { 
-  //   address: 'YOUR_TOKEN_CONTRACT_ADDRESS',
-  //   name: 'Token Name',
-  //   symbol: 'TICKER',
-  //   description: 'Your token description',
-  //   platform: 'pumpfun', // or 'raydium'
-  //   twitter: 'https://twitter.com/yourtoken',
-  //   telegram: 'https://t.me/yourtoken',
-  //   featured: true // Set to true for featured banner
-  // },
+  // Token #1: Justice for Humanity
+  { 
+    address: '22PXfkPGkhVUwMqQaeFzjtdzyFNU8ZQRk2shifwAuSkx',
+    name: 'Justice for Humanity',
+    symbol: '$JH-25',
+    description: 'A movement for global justice and humanitarian causes',
+    platform: 'pumpfun',
+    twitter: '',  // Add your Twitter link when you send it
+    telegram: '', // Add your Telegram link when you send it
+    featured: true // Shows in banner, popup, and Projects tab
+  },
   
-  // Add your tokens below (I'll add them as you send addresses):
+  // Add more tokens below as you send them:
   
 ];
 
