@@ -264,6 +264,246 @@ export const mastra = new Mastra({
           return c.text('styles.css not found', 404);
         }
       },
+      // Admin Dashboard - View subscribers and manage whitelist
+      {
+        path: "/admin",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          
+          // Simple admin authentication - check if access code matches
+          const adminCode = c.req.query('code');
+          const expectedCode = process.env.ADMIN_ACCESS_CODE || 'Lucky777Admin';
+          
+          if (adminCode !== expectedCode) {
+            return c.html(`
+              <html>
+                <head>
+                  <title>Admin Access</title>
+                  <style>
+                    body { font-family: Arial, sans-serif; max-width: 400px; margin: 100px auto; padding: 20px; background: #1a1a1a; color: #fff; }
+                    input { width: 100%; padding: 12px; margin: 10px 0; background: #2a2a2a; border: 1px solid #4ADE80; color: #fff; border-radius: 4px; }
+                    button { width: 100%; padding: 12px; background: #4ADE80; color: #000; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+                    button:hover { background: #3BC970; }
+                  </style>
+                </head>
+                <body>
+                  <h2>🔐 Admin Access</h2>
+                  <form action="/admin" method="GET">
+                    <input type="password" name="code" placeholder="Enter admin code" required>
+                    <button type="submit">Access Dashboard</button>
+                  </form>
+                </body>
+              </html>
+            `);
+          }
+          
+          // Fetch all subscribers and whitelisted users
+          const { db } = await import('../db/client.js');
+          const { subscriptions, whitelistedUsers } = await import('../db/schema.js');
+          
+          const allSubscribers = await db.select().from(subscriptions);
+          const allWhitelisted = await db.select().from(whitelistedUsers);
+          
+          const premiumCount = allSubscribers.filter(s => s.plan === 'premium' && s.status === 'active').length;
+          const monthlyRevenue = premiumCount * 5;
+          
+          const html = `
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <title>DarkWave Admin Dashboard</title>
+                <style>
+                  * { margin: 0; padding: 0; box-sizing: border-box; }
+                  body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #8B0000 0%, #4B0082 50%, #000000 100%); color: #fff; padding: 20px; }
+                  .container { max-width: 1200px; margin: 0 auto; }
+                  h1 { margin-bottom: 30px; text-align: center; }
+                  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+                  .stat-card { background: rgba(0,0,0,0.5); padding: 20px; border-radius: 8px; border: 1px solid #4ADE80; }
+                  .stat-value { font-size: 32px; font-weight: bold; color: #4ADE80; }
+                  .stat-label { color: #aaa; margin-top: 5px; }
+                  .section { background: rgba(0,0,0,0.5); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #666; }
+                  .section h2 { margin-bottom: 15px; color: #4ADE80; }
+                  table { width: 100%; border-collapse: collapse; }
+                  th { background: rgba(74,222,128,0.2); padding: 12px; text-align: left; border-bottom: 2px solid #4ADE80; }
+                  td { padding: 12px; border-bottom: 1px solid #333; }
+                  tr:hover { background: rgba(74,222,128,0.1); }
+                  .status-active { color: #4ADE80; font-weight: bold; }
+                  .status-inactive { color: #999; }
+                  .add-whitelist { background: #4ADE80; color: #000; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+                  .add-whitelist:hover { background: #3BC970; }
+                  input { padding: 8px; background: #2a2a2a; border: 1px solid #666; color: #fff; border-radius: 4px; margin-right: 10px; }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <h1>🌊 DarkWave Admin Dashboard</h1>
+                  
+                  <div class="stats">
+                    <div class="stat-card">
+                      <div class="stat-value">${allSubscribers.length}</div>
+                      <div class="stat-label">Total Users</div>
+                    </div>
+                    <div class="stat-card">
+                      <div class="stat-value">${premiumCount}</div>
+                      <div class="stat-label">Premium Subscribers</div>
+                    </div>
+                    <div class="stat-card">
+                      <div class="stat-value">$${monthlyRevenue}</div>
+                      <div class="stat-label">Monthly Revenue</div>
+                    </div>
+                    <div class="stat-card">
+                      <div class="stat-value">${allWhitelisted.length}</div>
+                      <div class="stat-label">Whitelisted Users</div>
+                    </div>
+                  </div>
+                  
+                  <div class="section">
+                    <h2>💎 Premium Subscribers</h2>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>User ID</th>
+                          <th>Plan</th>
+                          <th>Status</th>
+                          <th>Provider</th>
+                          <th>Expiry Date</th>
+                          <th>Auto-Renew</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        ${allSubscribers.filter(s => s.plan === 'premium').map(sub => `
+                          <tr>
+                            <td>${sub.userId}</td>
+                            <td>${sub.plan.toUpperCase()}</td>
+                            <td class="status-${sub.status}">${sub.status}</td>
+                            <td>${sub.provider || 'N/A'}</td>
+                            <td>${sub.expiryDate ? new Date(sub.expiryDate).toLocaleDateString() : 'N/A'}</td>
+                            <td>${sub.autoRenew ? '✅ Yes' : '❌ No'}</td>
+                          </tr>
+                        `).join('')}
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                  <div class="section">
+                    <h2>⭐ Whitelisted Users</h2>
+                    <form action="/admin/whitelist/add" method="POST" style="margin-bottom: 20px;">
+                      <input type="hidden" name="code" value="${adminCode}">
+                      <input type="text" name="userId" placeholder="User ID" required>
+                      <input type="text" name="reason" placeholder="Reason (optional)">
+                      <button type="submit" class="add-whitelist">Add to Whitelist</button>
+                    </form>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>User ID</th>
+                          <th>Reason</th>
+                          <th>Expires At</th>
+                          <th>Created</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        ${allWhitelisted.map(user => `
+                          <tr>
+                            <td>${user.userId}</td>
+                            <td>${user.reason || 'N/A'}</td>
+                            <td>${user.expiresAt ? new Date(user.expiresAt).toLocaleDateString() : 'Never'}</td>
+                            <td>${new Date(user.createdAt).toLocaleDateString()}</td>
+                            <td>
+                              <form action="/admin/whitelist/remove" method="POST" style="display: inline;">
+                                <input type="hidden" name="code" value="${adminCode}">
+                                <input type="hidden" name="userId" value="${user.userId}">
+                                <button type="submit" style="background: #ff4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Remove</button>
+                              </form>
+                            </td>
+                          </tr>
+                        `).join('')}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </body>
+            </html>
+          `;
+          
+          return c.html(html);
+        }
+      },
+      // Admin: Add user to whitelist
+      {
+        path: "/admin/whitelist/add",
+        method: "POST",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          const expectedCode = process.env.ADMIN_ACCESS_CODE || 'Lucky777Admin';
+          
+          const formData = await c.req.parseBody();
+          const adminCode = formData.code || c.req.header('X-Admin-Code');
+          
+          // SECURITY: Validate admin code from form data or header
+          if (adminCode !== expectedCode) {
+            logger?.warn('⚠️ [Admin] Unauthorized whitelist add attempt');
+            return c.text('Unauthorized', 401);
+          }
+          
+          // SECURITY: Validate userId input
+          const userId = formData.userId as string;
+          if (!userId || typeof userId !== 'string' || userId.trim().length === 0) {
+            logger?.warn('⚠️ [Admin] Invalid userId provided for whitelist');
+            return c.text('Invalid userId', 400);
+          }
+          
+          const { db } = await import('../db/client.js');
+          const { whitelistedUsers } = await import('../db/schema.js');
+          
+          await db.insert(whitelistedUsers).values({
+            userId: userId.trim(),
+            reason: (formData.reason as string) || null,
+            expiresAt: null,
+          }).onConflictDoNothing();
+          
+          logger?.info('✅ [Admin] User added to whitelist', { userId: userId.trim(), reason: formData.reason });
+          
+          return c.redirect(`/admin?code=${adminCode}`);
+        }
+      },
+      // Admin: Remove user from whitelist
+      {
+        path: "/admin/whitelist/remove",
+        method: "POST",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          const expectedCode = process.env.ADMIN_ACCESS_CODE || 'Lucky777Admin';
+          
+          const formData = await c.req.parseBody();
+          const adminCode = formData.code || c.req.header('X-Admin-Code');
+          
+          // SECURITY: Validate admin code from form data or header
+          if (adminCode !== expectedCode) {
+            logger?.warn('⚠️ [Admin] Unauthorized whitelist remove attempt');
+            return c.text('Unauthorized', 401);
+          }
+          
+          // SECURITY: Validate userId input
+          const userId = formData.userId as string;
+          if (!userId || typeof userId !== 'string' || userId.trim().length === 0) {
+            logger?.warn('⚠️ [Admin] Invalid userId provided for removal');
+            return c.text('Invalid userId', 400);
+          }
+          
+          const { db } = await import('../db/client.js');
+          const { whitelistedUsers } = await import('../db/schema.js');
+          const { eq } = await import('drizzle-orm');
+          
+          await db.delete(whitelistedUsers).where(eq(whitelistedUsers.userId, userId.trim()));
+          
+          logger?.info('✅ [Admin] User removed from whitelist', { userId: userId.trim() });
+          
+          return c.redirect(`/admin?code=${adminCode}`);
+        }
+      },
       // Mini App Backend API Routes
       // Access Code Verification
       {
@@ -1460,6 +1700,72 @@ export const mastra = new Mastra({
               });
               
               logger?.info('✅ [Stripe] Premium activated', { userId });
+              
+              // 📧 Send Email notification to admin
+              try {
+                const adminEmail = process.env.ADMIN_EMAIL;
+                
+                if (adminEmail) {
+                  const { sendEmail } = await import('../utils/replitmail.js');
+                  const htmlContent = `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                      <h2 style="color: #4ADE80;">🎉 New Premium Subscriber!</h2>
+                      <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                        <p><strong>👤 User ID:</strong> ${userId}</p>
+                        <p><strong>💳 Amount:</strong> $5.00/month</p>
+                        <p><strong>📅 Subscribed:</strong> ${new Date().toLocaleString()}</p>
+                        <p><strong>🔄 Auto-renewal:</strong> Yes</p>
+                        <p><strong>⏰ Expires:</strong> ${expiryDate.toLocaleDateString()}</p>
+                      </div>
+                      <p style="color: #4ADE80; font-size: 18px; font-weight: bold;">💰 Monthly Revenue +$5</p>
+                    </div>
+                  `;
+                  
+                  await sendEmail({
+                    to: adminEmail,
+                    subject: '🎉 New DarkWave Premium Subscriber!',
+                    html: htmlContent,
+                    text: `New Premium Subscriber!\n\nUser ID: ${userId}\nAmount: $5.00/month\nSubscribed: ${new Date().toLocaleString()}\nExpires: ${expiryDate.toLocaleDateString()}\n\nMonthly Revenue +$5`
+                  });
+                  
+                  logger?.info('📧 [Email] Admin notification sent', { userId });
+                } else {
+                  logger?.debug('⚠️ [Email] Admin notifications not configured (missing ADMIN_EMAIL)');
+                }
+              } catch (emailError: any) {
+                logger?.error('❌ [Email] Failed to send admin notification', { error: emailError.message });
+                // Don't fail the webhook if email fails
+              }
+              
+              // 📧 Send Telegram notification to admin
+              try {
+                const telegramToken = process.env.TELEGRAM_BOT_TOKEN;
+                const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID; // Your Telegram chat ID
+                
+                if (telegramToken && adminChatId) {
+                  const axios = await import('axios');
+                  const message = `🎉 *New Premium Subscriber!*\n\n` +
+                    `👤 User ID: \`${userId}\`\n` +
+                    `💳 Amount: $5.00/month\n` +
+                    `📅 Subscribed: ${new Date().toLocaleString()}\n` +
+                    `🔄 Auto-renewal: Yes\n` +
+                    `⏰ Expires: ${expiryDate.toLocaleDateString()}\n\n` +
+                    `💰 Monthly Revenue +$5`;
+                  
+                  await axios.default.post(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
+                    chat_id: adminChatId,
+                    text: message,
+                    parse_mode: 'Markdown'
+                  });
+                  
+                  logger?.info('📱 [Telegram] Admin notification sent', { userId });
+                } else {
+                  logger?.debug('⚠️ [Telegram] Admin notifications not configured (missing TELEGRAM_ADMIN_CHAT_ID)');
+                }
+              } catch (telegramError: any) {
+                logger?.error('❌ [Telegram] Failed to send admin notification', { error: telegramError.message });
+                // Don't fail the webhook if Telegram fails
+              }
             }
             
             // Handle subscription.deleted (cancellation)
@@ -1478,6 +1784,30 @@ export const mastra = new Mastra({
                   .where(eq(subscriptions.userId, sub.userId));
                 
                 logger?.info('✅ [Stripe] Subscription status updated', { userId: sub.userId });
+                
+                // 📧 Send Telegram notification to admin about cancellation
+                try {
+                  const telegramToken = process.env.TELEGRAM_BOT_TOKEN;
+                  const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
+                  
+                  if (telegramToken && adminChatId) {
+                    const axios = await import('axios');
+                    const message = `❌ *Subscription Cancelled*\n\n` +
+                      `👤 User ID: \`${sub.userId}\`\n` +
+                      `📅 Cancelled: ${new Date().toLocaleString()}\n` +
+                      `💸 Monthly Revenue -$5`;
+                    
+                    await axios.default.post(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
+                      chat_id: adminChatId,
+                      text: message,
+                      parse_mode: 'Markdown'
+                    });
+                    
+                    logger?.info('📱 [Telegram] Cancellation notification sent', { userId: sub.userId });
+                  }
+                } catch (telegramError: any) {
+                  logger?.error('❌ [Telegram] Failed to send cancellation notification', { error: telegramError.message });
+                }
               }
             }
             
