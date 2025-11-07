@@ -107,12 +107,12 @@ const FEATURED_TOKENS = [
     featured: true
   },
   
-  // Token #8: (Not on Dexscreener yet - please provide name/symbol)
+  // Token #8: Yahuah
   { 
     address: 'ERf16TD1VrUHdhpUFbUJpSPXVu9rbtzrzkKfCbwLMYiP',
-    name: 'Token Name TBD',
-    symbol: '$TBD',
-    description: 'Token description coming soon',
+    name: 'Yahuah',
+    symbol: '$YAH',
+    description: 'Divine token on Solana',
     platform: 'pumpfun',
     twitter: '',
     telegram: '',
