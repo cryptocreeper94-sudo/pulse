@@ -1279,17 +1279,13 @@ document.getElementById('addAlertBtn')?.addEventListener('click', () => {
 });
 
 // ===== GLOSSARY FUNCTIONALITY =====
-let currentPath = 'all';
+let currentLetter = 'ALL';
+let expandedTerms = new Set();
 
-function renderGlossary(searchTerm = '', path = 'all') {
+function renderGlossary(searchTerm = '') {
   const glossaryContent = document.getElementById('glossaryContent');
   
   let filteredTerms = GLOSSARY_TERMS;
-  
-  // Filter by learning path
-  if (path !== 'all') {
-    filteredTerms = filteredTerms.filter(t => t.level === path);
-  }
   
   // Filter by search term
   if (searchTerm) {
@@ -1299,6 +1295,11 @@ function renderGlossary(searchTerm = '', path = 'all') {
       (t.full && t.full.toLowerCase().includes(search)) ||
       t.definition.toLowerCase().includes(search)
     );
+  }
+  
+  // Filter by letter if not ALL
+  if (currentLetter !== 'ALL') {
+    filteredTerms = filteredTerms.filter(t => t.term.charAt(0).toUpperCase() === currentLetter);
   }
   
   if (filteredTerms.length === 0) {
@@ -1311,36 +1312,77 @@ function renderGlossary(searchTerm = '', path = 'all') {
     return;
   }
   
-  glossaryContent.innerHTML = filteredTerms.map(term => `
-    <div class="glossary-term">
-      <div class="glossary-term-header">
-        <div>
-          <div class="glossary-term-name">${term.term}${term.full ? ` (${term.full})` : ''}</div>
-        </div>
-        <span class="glossary-term-level ${term.level}">${term.level.toUpperCase()}</span>
+  // Group by first letter
+  const grouped = {};
+  filteredTerms.forEach(term => {
+    const letter = term.term.charAt(0).toUpperCase();
+    if (!grouped[letter]) grouped[letter] = [];
+    grouped[letter].push(term);
+  });
+  
+  // Sort alphabetically
+  const letters = Object.keys(grouped).sort();
+  
+  glossaryContent.innerHTML = letters.map(letter => `
+    <div class="letter-group" style="margin-bottom: 24px;">
+      <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 12px; padding: 8px 0; border-bottom: 2px solid var(--primary);">
+        ${letter}
       </div>
-      <div class="glossary-term-definition">${term.definition}</div>
-      ${term.example ? `<div class="glossary-term-example"><strong>Example:</strong> ${term.example}</div>` : ''}
+      ${grouped[letter].map(term => {
+        const termId = term.term.replace(/\s+/g, '-').toLowerCase();
+        const isExpanded = expandedTerms.has(termId);
+        return `
+          <div class="glossary-term-compact" style="margin-bottom: 8px; border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 8px; overflow: hidden;">
+            <div class="glossary-term-header-compact" onclick="toggleTerm('${termId}')" style="padding: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: ${isExpanded ? 'rgba(168, 85, 247, 0.1)' : 'transparent'};">
+              <div>
+                <span style="font-weight: 600; font-size: 1rem;">${term.term}</span>
+                ${term.full ? `<span style="color: var(--text-secondary); font-size: 0.85rem; margin-left: 8px;">(${term.full})</span>` : ''}
+              </div>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <span class="glossary-term-level ${term.level}" style="padding: 4px 8px; border-radius: 4px; font-size: 0.75rem;">${term.level.toUpperCase()}</span>
+                <span style="font-size: 1.2rem; transition: transform 0.2s; transform: rotate(${isExpanded ? '180deg' : '0deg'});">▼</span>
+              </div>
+            </div>
+            <div id="term-${termId}" class="glossary-term-content" style="display: ${isExpanded ? 'block' : 'none'}; padding: 0 12px 12px 12px;">
+              <div style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 8px;">${term.definition}</div>
+              ${term.example ? `<div style="background: rgba(168, 85, 247, 0.1); padding: 8px; border-radius: 4px; font-size: 0.9rem;"><strong>Example:</strong> ${term.example}</div>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('')}
     </div>
   `).join('');
 }
 
+// Toggle term expansion
+window.toggleTerm = function(termId) {
+  if (expandedTerms.has(termId)) {
+    expandedTerms.delete(termId);
+  } else {
+    expandedTerms.add(termId);
+  }
+  renderGlossary(document.getElementById('glossarySearch')?.value || '');
+  if (tg) tg.HapticFeedback?.impactOccurred('light');
+};
+
 // Glossary search
 const glossarySearch = document.getElementById('glossarySearch');
-glossarySearch?.addEventListener('input', (e) => {
-  renderGlossary(e.target.value, currentPath);
-});
+if (glossarySearch) {
+  glossarySearch.addEventListener('input', (e) => {
+    renderGlossary(e.target.value);
+  });
+}
 
-// Learning path buttons
+// Alphabet navigation buttons
 document.querySelectorAll('.path-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    const path = btn.dataset.path;
-    currentPath = path;
+    const letter = btn.dataset.path.toUpperCase();
+    currentLetter = letter;
     
     document.querySelectorAll('.path-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     
-    renderGlossary(glossarySearch?.value || '', path);
+    renderGlossary(glossarySearch?.value || '');
     if (tg) tg.HapticFeedback?.impactOccurred('light');
   });
 });
