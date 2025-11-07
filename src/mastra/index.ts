@@ -1196,6 +1196,13 @@ export const mastra = new Mastra({
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
+            // Check access session
+            const { checkAccessSession } = await import('./middleware/accessControl.js');
+            const sessionCheck = await checkAccessSession(c);
+            if (!sessionCheck.valid) {
+              return c.json({ error: 'Unauthorized - Invalid or expired session' }, 401);
+            }
+            
             const { ticker, userId } = await c.req.json();
             logger?.info('📊 [Mini App] Multi-timeframe analysis request', { ticker, userId });
             
