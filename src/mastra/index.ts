@@ -390,14 +390,18 @@ export const mastra = new Mastra({
                     <h2>⭐ Whitelisted Users</h2>
                     <form action="/admin/whitelist/add" method="POST" style="margin-bottom: 20px;">
                       <input type="hidden" name="code" value="${adminCode}">
-                      <input type="text" name="userId" placeholder="User ID" required>
+                      <input type="text" name="userId" placeholder="User ID or Email" required>
                       <input type="text" name="reason" placeholder="Reason (optional)">
                       <button type="submit" class="add-whitelist">Add to Whitelist</button>
                     </form>
+                    <p style="color: #aaa; margin-bottom: 20px; font-size: 14px;">
+                      💡 Tip: Add Telegram IDs for bot users, or emails for website/app subscribers. Stripe subscriptions are auto-whitelisted.
+                    </p>
                     <table>
                       <thead>
                         <tr>
-                          <th>User ID</th>
+                          <th>User ID / Email</th>
+                          <th>Email</th>
                           <th>Reason</th>
                           <th>Expires At</th>
                           <th>Created</th>
@@ -408,6 +412,7 @@ export const mastra = new Mastra({
                         ${allWhitelisted.map(user => `
                           <tr>
                             <td>${user.userId}</td>
+                            <td>${user.email || 'N/A'}</td>
                             <td>${user.reason || 'N/A'}</td>
                             <td>${user.expiresAt ? new Date(user.expiresAt).toLocaleDateString() : 'Never'}</td>
                             <td>${new Date(user.createdAt).toLocaleDateString()}</td>
@@ -448,23 +453,40 @@ export const mastra = new Mastra({
             return c.text('Unauthorized', 401);
           }
           
-          // SECURITY: Validate userId input
-          const userId = formData.userId as string;
-          if (!userId || typeof userId !== 'string' || userId.trim().length === 0) {
-            logger?.warn('⚠️ [Admin] Invalid userId provided for whitelist');
-            return c.text('Invalid userId', 400);
+          // SECURITY: Validate userId/email input
+          const userIdOrEmail = formData.userId as string;
+          if (!userIdOrEmail || typeof userIdOrEmail !== 'string' || userIdOrEmail.trim().length === 0) {
+            logger?.warn('⚠️ [Admin] Invalid userId/email provided for whitelist');
+            return c.text('Invalid userId/email', 400);
           }
           
           const { db } = await import('../db/client.js');
           const { whitelistedUsers } = await import('../db/schema.js');
           
-          await db.insert(whitelistedUsers).values({
-            userId: userId.trim(),
-            reason: (formData.reason as string) || null,
-            expiresAt: null,
-          }).onConflictDoNothing();
+          // Detect if input is an email address
+          const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userIdOrEmail.trim());
           
-          logger?.info('✅ [Admin] User added to whitelist', { userId: userId.trim(), reason: formData.reason });
+          if (isEmail) {
+            // Store email in both userId AND email field for backwards compatibility
+            await db.insert(whitelistedUsers).values({
+              userId: userIdOrEmail.trim(),
+              email: userIdOrEmail.trim(),
+              reason: (formData.reason as string) || 'Email subscription',
+              expiresAt: null,
+            }).onConflictDoNothing();
+            
+            logger?.info('✅ [Admin] Email added to whitelist', { email: userIdOrEmail.trim(), reason: formData.reason });
+          } else {
+            // Store as Telegram ID (userId)
+            await db.insert(whitelistedUsers).values({
+              userId: userIdOrEmail.trim(),
+              email: null,
+              reason: (formData.reason as string) || null,
+              expiresAt: null,
+            }).onConflictDoNothing();
+            
+            logger?.info('✅ [Admin] Telegram ID added to whitelist', { userId: userIdOrEmail.trim(), reason: formData.reason });
+          }
           
           return c.redirect(`/admin?code=${adminCode}`);
         }
@@ -1700,6 +1722,30 @@ export const mastra = new Mastra({
               });
               
               logger?.info('✅ [Stripe] Premium activated', { userId });
+              
+              // 🎯 AUTO-WHITELIST: Add customer email to whitelist for unlimited access
+              try {
+                const customerEmail = session.customer_details?.email || session.customer_email;
+                
+                if (customerEmail) {
+                  const { whitelistedUsers } = await import('../db/schema.js');
+                  
+                  // Add email to whitelist (auto-grant unlimited access)
+                  await db.insert(whitelistedUsers).values({
+                    userId: customerEmail, // Use email as userId for easy lookup
+                    email: customerEmail,
+                    reason: 'Paid subscriber (Stripe)',
+                    expiresAt: null, // Never expires (lifetime whitelist for paying customers)
+                  }).onConflictDoNothing();
+                  
+                  logger?.info('✅ [Stripe] Email auto-whitelisted', { email: customerEmail, userId });
+                } else {
+                  logger?.warn('⚠️ [Stripe] No customer email found in session - skipping auto-whitelist');
+                }
+              } catch (whitelistError: any) {
+                logger?.error('❌ [Stripe] Failed to auto-whitelist email', { error: whitelistError.message });
+                // Don't fail the webhook if whitelist fails
+              }
               
               // 📧 Send Email notification to admin
               try {

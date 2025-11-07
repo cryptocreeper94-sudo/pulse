@@ -2,12 +2,19 @@ import { db } from "../../db/client.js";
 import { subscriptions, userUsage, whitelistedUsers } from "../../db/schema.js";
 import { eq } from "drizzle-orm";
 
-export async function checkSubscriptionLimit(userId: string, feature: 'search' | 'alert'): Promise<{ allowed: boolean; isPremium: boolean; isWhitelisted?: boolean; message?: string }> {
+export async function checkSubscriptionLimit(userId: string, feature: 'search' | 'alert', userEmail?: string): Promise<{ allowed: boolean; isPremium: boolean; isWhitelisted?: boolean; message?: string }> {
   try {
-    // Check if user is whitelisted first
+    // Check if user is whitelisted first (by userId OR email)
+    const { or } = await import('drizzle-orm');
+    
+    const whitelistConditions = [eq(whitelistedUsers.userId, userId)];
+    if (userEmail) {
+      whitelistConditions.push(eq(whitelistedUsers.email, userEmail));
+    }
+    
     const whitelist = await db.select()
       .from(whitelistedUsers)
-      .where(eq(whitelistedUsers.userId, userId))
+      .where(or(...whitelistConditions))
       .limit(1);
     
     if (whitelist.length > 0) {
