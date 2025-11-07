@@ -811,15 +811,27 @@ export const mastra = new Mastra({
         createHandler: async () => async (c: any) => {
           const fs = await import('fs/promises');
           const path = await import('path');
-          const imagePath = path.join(process.cwd(), 'public', 'darkwave-banner.png');
-          try {
-            const imageBuffer = await fs.readFile(imagePath);
-            c.header('Content-Type', 'image/png');
-            c.header('Content-Disposition', 'inline; filename="darkwave-telegram-banner.png"');
-            return c.body(imageBuffer);
-          } catch (error) {
-            return c.text('Image not found', 404);
+          
+          // Try multiple paths for dev vs deployment
+          const possiblePaths = [
+            path.join(process.cwd(), '.mastra', 'output', 'public', 'darkwave-banner.png'),
+            path.join(process.cwd(), 'public', 'darkwave-banner.png'),
+            path.resolve(process.cwd(), '../..', 'public', 'darkwave-banner.png'),
+          ];
+          
+          for (const filePath of possiblePaths) {
+            try {
+              const imageBuffer = await fs.readFile(filePath);
+              c.header('Content-Type', 'image/png');
+              c.header('Content-Disposition', 'attachment; filename="darkwave-telegram-banner.png"');
+              c.header('Cache-Control', 'public, max-age=31536000');
+              return c.body(imageBuffer);
+            } catch (error) {
+              continue;
+            }
           }
+          
+          return c.text('Image not found. Tried paths: ' + possiblePaths.join(', '), 404);
         },
       },
       // Mini App static files - Helper to resolve public files in both dev and deployment
