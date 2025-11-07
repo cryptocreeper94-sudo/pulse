@@ -360,15 +360,15 @@ body {
 .trending-item {
   flex-shrink: 0;
   width: 140px;
-  background: linear-gradient(135deg, rgba(107, 0, 0, 0.4), rgba(26, 10, 31, 0.5));
-  border: 2px solid rgba(168, 85, 247, 0.3);
+  background: linear-gradient(135deg, #FFFFFF, #F0F0F0);
+  border: 3px solid #FFD700;
   border-radius: 12px;
   padding: 0.75rem;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.8);
 }
 
 .trending-item::before {
@@ -378,7 +378,7 @@ body {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(26, 10, 31, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
   transition: left 0.5s ease;
 }
 
@@ -387,9 +387,10 @@ body {
 }
 
 .trending-item:hover {
-  transform: translateY(-4px) scale(1.05);
-  border-color: var(--glow-purple);
-  box-shadow: 0 8px 24px rgba(26, 10, 31, 0.4), var(--button-glow);
+  transform: translateY(-6px) scale(1.08);
+  border-color: #FFA500;
+  box-shadow: 0 12px 30px rgba(255, 215, 0, 0.6), 0 6px 16px rgba(0, 0, 0, 0.9);
+  background: linear-gradient(135deg, #FFFFFF, #FFFACD);
 }
 
 .trending-item-logo {
@@ -407,15 +408,15 @@ body {
   height: 100%;
   object-fit: contain;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(26, 10, 31, 0.1), rgba(107, 0, 0, 0.1));
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.2));
   padding: 4px;
   transition: all 0.3s ease;
   animation: pulse 2s ease-in-out infinite;
 }
 
 .trending-item:hover .trending-item-logo img {
-  transform: scale(1.1) rotate(5deg);
-  box-shadow: 0 0 20px rgba(26, 10, 31, 0.6);
+  transform: scale(1.15) rotate(5deg);
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
   animation: none;
 }
 
@@ -426,10 +427,10 @@ body {
 
 @keyframes pulse {
   0%, 100% {
-    box-shadow: 0 0 10px rgba(26, 10, 31, 0.3);
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
   }
   50% {
-    box-shadow: 0 0 20px rgba(26, 10, 31, 0.5);
+    box-shadow: 0 0 24px rgba(255, 215, 0, 0.7);
   }
 }
 
@@ -442,7 +443,7 @@ body {
 .trending-item-name {
   font-size: 0.8rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #000000;
   margin-bottom: 0.25rem;
   text-align: center;
   white-space: nowrap;
@@ -452,7 +453,7 @@ body {
 
 .trending-item-ticker {
   font-size: 0.7rem;
-  color: var(--text-secondary);
+  color: #333333;
   text-align: center;
   margin-bottom: 0.5rem;
 }
@@ -460,7 +461,7 @@ body {
 .trending-item-price {
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #000000;
   text-align: center;
   margin-bottom: 0.25rem;
 }
