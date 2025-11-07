@@ -189,11 +189,24 @@ export const mastra = new Mastra({
             const { code } = await c.req.json();
             logger?.info('🔐 [Access Code] Verification attempt');
             
-            const correctCode = process.env.ACCESS_CODE || 'Lucky777';
+            const correctCode = process.env.ACCESS_CODE;
+            
+            if (!correctCode) {
+              logger?.error('🚨 [Access Code] ACCESS_CODE not configured');
+              return c.json({ error: 'Access code system not configured' }, 500);
+            }
             
             if (code === correctCode) {
-              logger?.info('✅ [Access Code] Valid code entered');
-              return c.json({ success: true, message: 'Access granted' });
+              // Generate session token
+              const { generateSessionToken } = await import('./middleware/accessControl.js');
+              const sessionToken = generateSessionToken();
+              
+              logger?.info('✅ [Access Code] Valid code entered, session created');
+              return c.json({ 
+                success: true, 
+                message: 'Access granted',
+                sessionToken 
+              });
             } else {
               logger?.warn('❌ [Access Code] Invalid code attempt');
               return c.json({ success: false, message: 'Invalid access code' }, 401);
