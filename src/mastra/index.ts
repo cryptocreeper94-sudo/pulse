@@ -31,6 +31,7 @@ import { chartGeneratorTool } from "./tools/chartGeneratorTool";
 import { dexscreenerTool } from "./tools/dexscreenerTool";
 import { dexAnalysisTool } from "./tools/dexAnalysisTool";
 import { priceAlertTool } from "./tools/priceAlertTool";
+import { nftTool } from "./tools/nftTool";
 
 class ProductionPinoLogger extends MastraLogger {
   protected logger: pino.Logger;
@@ -100,6 +101,7 @@ export const mastra = new Mastra({
         'dexscreener-tool': dexscreenerTool,
         'dex-analysis-tool': dexAnalysisTool,
         'price-alert-tool': priceAlertTool,
+        'nft-tool': nftTool,
       },
     }),
   },
@@ -1062,6 +1064,29 @@ export const mastra = new Mastra({
             return c.json(analysisResult);
           } catch (error: any) {
             logger?.error('❌ [Mini App] DEX analysis error', { error: error.message });
+            return c.json({ error: error.message, success: false }, 500);
+          }
+        },
+      },
+      // NFT Analysis endpoint
+      {
+        path: "/api/nft-analyze",
+        method: "POST",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          try {
+            const { query, userId } = await c.req.json();
+            logger?.info('🎨 [Mini App] NFT analysis request', { query, userId });
+            
+            const result = await nftTool.execute({
+              context: { query },
+              mastra,
+              runtimeContext: null as any
+            });
+            
+            return c.json(result);
+          } catch (error: any) {
+            logger?.error('❌ [Mini App] NFT analysis error', { error: error.message });
             return c.json({ error: error.message, success: false }, 500);
           }
         },

@@ -234,6 +234,14 @@ const CATEGORY_DATA = {
     placeholder: 'Search token name or address...',
     quickPicks: [],
     showBlockchain: true
+  },
+  nft: {
+    icon: '🎨',
+    title: 'NFT Collections',
+    description: 'Analyze NFT floor prices, volume, and market trends',
+    placeholder: 'Search collection name or address...',
+    quickPicks: ['BAYC', 'Azuki', 'Pudgy Penguins', 'DeGods', 'Milady', 'Lil Pudgys'],
+    showBlockchain: false
   }
 };
 
@@ -469,6 +477,65 @@ const GLOSSARY_TERMS = [
     level: 'intermediate',
     definition: 'A scheme where a group artificially inflates (pumps) the price of an asset through coordinated buying or hype, then sells (dumps) at the peak.',
     example: 'The coin pumped 300% in an hour, then crashed 90% - classic pump and dump.'
+  },
+  
+  // NFT Terms
+  {
+    term: 'Floor Price',
+    category: 'nft',
+    level: 'beginner',
+    definition: 'The lowest price at which an NFT from a collection is currently listed for sale. Acts as the entry price to own any NFT from that collection.',
+    example: 'BAYC floor price is 30 ETH, meaning that\'s the minimum you need to buy any Bored Ape.'
+  },
+  {
+    term: 'Mint',
+    category: 'nft',
+    level: 'beginner',
+    definition: 'The process of creating and issuing a new NFT on the blockchain. Buying directly from the project during initial release.',
+    example: 'The project will mint 10,000 NFTs at 0.08 ETH each on Saturday.'
+  },
+  {
+    term: 'Reveal',
+    category: 'nft',
+    level: 'beginner',
+    definition: 'When the actual artwork/traits of an NFT are disclosed after minting. Many projects use delayed reveals to prevent rarity sniping.',
+    example: 'The collection reveals 48 hours after mint - you won\'t know what you got until then.'
+  },
+  {
+    term: 'Utility',
+    category: 'nft',
+    level: 'intermediate',
+    definition: 'Additional benefits or use cases an NFT provides beyond just art/collectibility, like access to events, airdrops, or governance rights.',
+    example: 'This NFT grants you access to exclusive alpha channels and quarterly airdrops.'
+  },
+  {
+    term: 'Royalties',
+    category: 'nft',
+    level: 'intermediate',
+    definition: 'A percentage of secondary sales that goes back to the original creator. Programmed into the smart contract.',
+    example: 'This collection has 5% royalties, so the artist gets 5% every time an NFT is resold.'
+  },
+  {
+    term: 'Trait Rarity',
+    category: 'nft',
+    level: 'intermediate',
+    definition: 'How uncommon specific attributes of an NFT are within its collection. Rarer traits typically command higher prices.',
+    example: 'Only 2% of this collection has the "laser eyes" trait, making those NFTs more valuable.'
+  },
+  {
+    term: 'Allowlist',
+    full: 'Whitelist',
+    category: 'nft',
+    level: 'beginner',
+    definition: 'A pre-approved list of wallet addresses that get early or guaranteed access to mint an NFT collection.',
+    example: 'Being on the allowlist lets you mint 24 hours before public sale at a lower price.'
+  },
+  {
+    term: 'Bluechip NFT',
+    category: 'nft',
+    level: 'intermediate',
+    definition: 'Established, high-value NFT collections with strong communities and track records, considered safer investments.',
+    example: 'BAYC, Azuki, and Pudgy Penguins are considered bluechip NFTs in the space.'
   }
 ];
 
@@ -645,33 +712,64 @@ async function performSearch() {
   if (tg) tg.HapticFeedback?.impactOccurred('light');
   
   try {
-    const response = await fetch(`${API_BASE}/api/analyze`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        ticker: query,
-        userId: state.userId 
-      })
-    });
-    
-    const data = await response.json();
-    if (data.error) {
-      showToast(data.error);
-      hideLoading();
-      return;
+    // Route to appropriate endpoint based on category
+    if (state.currentCategory === 'nft') {
+      await searchNFT(query);
+    } else {
+      await searchAsset(query);
     }
-    
-    state.currentAnalysis = data;
-    displayAnalysis(data);
-    
-    // Load chart in background
-    loadChart(query);
   } catch (error) {
     showToast('Error fetching analysis. Please try again.');
     console.error('Search error:', error);
   } finally {
     hideLoading();
   }
+}
+
+// Search for traditional assets (stocks, crypto, DEX pairs)
+async function searchAsset(query) {
+  const response = await fetch(`${API_BASE}/api/analyze`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ 
+      ticker: query,
+      userId: state.userId 
+    })
+  });
+  
+  const data = await response.json();
+  if (data.error) {
+    showToast(data.error);
+    hideLoading();
+    return;
+  }
+  
+  state.currentAnalysis = data;
+  displayAnalysis(data);
+  
+  // Load chart in background
+  loadChart(query);
+}
+
+// Search for NFT collections
+async function searchNFT(query) {
+  const response = await fetch(`${API_BASE}/api/nft-analyze`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ 
+      query: query,
+      userId: state.userId 
+    })
+  });
+  
+  const data = await response.json();
+  if (!data.success || data.error) {
+    showToast(data.error || 'NFT collection not found');
+    hideLoading();
+    return;
+  }
+  
+  displayNFTAnalysis(data.collection);
 }
 
 function displayAnalysis(data) {
@@ -861,6 +959,103 @@ function displayAnalysis(data) {
       <button class="action-btn" style="flex: 1;" onclick="setAlert('${data.ticker}')">🔔 Alert</button>
       <button class="action-btn" style="flex: 1;" onclick="createOrder('${data.ticker}')">💰 Trade</button>
       <button class="action-btn" style="flex: 1;" onclick="addToHoldings('${data.ticker}')">⭐ Hold</button>
+    </div>
+  `;
+  
+  analysisResult.innerHTML = '';
+  analysisResult.appendChild(card);
+}
+
+function displayNFTAnalysis(nft) {
+  const volumeChange = nft.volumeChange24h || 0;
+  const volumeChangeClass = volumeChange >= 0 ? 'positive' : 'negative';
+  const floorChange = ((nft.floorPriceUsd || 0) / ((nft.floorPriceUsd || 1) - volumeChange / 100)) - 1;
+  
+  const card = document.createElement('div');
+  card.className = 'analysis-card';
+  card.style.cssText = 'animation: slideUp 0.3s ease-out;';
+  
+  card.innerHTML = `
+    <div class="analysis-header">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        ${nft.image ? `<img src="${nft.image}" style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover;" alt="${nft.name}" />` : ''}
+        <div>
+          <div class="ticker-name">🎨 ${nft.name}</div>
+          <div class="price-value">Floor: ${nft.floorPrice?.toFixed(4) || '0'} ${nft.chain === 'Ethereum' ? 'ETH' : 'Token'}</div>
+          <div class="price-change" style="color: var(--text-secondary);">
+            $${nft.floorPriceUsd?.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) || '0.00'} USD
+          </div>
+        </div>
+      </div>
+      <div class="signal-badge" style="background: var(--gradient-primary); color: white;">
+        ${nft.chain}
+      </div>
+    </div>
+    
+    <div style="margin-top: 20px;">
+      <h3 style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 10px;">📊 COLLECTION STATS</h3>
+      <div class="indicators-grid">
+        <div class="indicator-item">
+          <div class="indicator-label">24h Volume</div>
+          <div class="indicator-value">${nft.volume24h?.toFixed(4) || 'N/A'} ${nft.chain === 'Ethereum' ? 'ETH' : 'Token'}</div>
+          <div style="font-size:0.7rem; color: var(--text-secondary);">
+            $${(nft.volume24hUsd || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}
+          </div>
+        </div>
+        <div class="indicator-item">
+          <div class="indicator-label">Volume Change</div>
+          <div class="indicator-value ${volumeChangeClass}">
+            ${volumeChange >= 0 ? '+' : ''}${volumeChange.toFixed(1)}%
+          </div>
+        </div>
+        <div class="indicator-item">
+          <div class="indicator-label">Market Cap</div>
+          <div class="indicator-value">$${((nft.marketCap || 0) / 1000000).toFixed(2)}M</div>
+        </div>
+        <div class="indicator-item">
+          <div class="indicator-label">24h Sales</div>
+          <div class="indicator-value">${nft.sales24h || 0}</div>
+        </div>
+      </div>
+    </div>
+    
+    <div style="margin-top: 20px;">
+      <h3 style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 10px;">🏛️ COLLECTION INFO</h3>
+      <div class="indicators-grid">
+        <div class="indicator-item">
+          <div class="indicator-label">Total Supply</div>
+          <div class="indicator-value">${(nft.totalSupply || 0).toLocaleString()}</div>
+        </div>
+        <div class="indicator-item">
+          <div class="indicator-label">Owners</div>
+          <div class="indicator-value">${(nft.owners || 0).toLocaleString()}</div>
+        </div>
+        <div class="indicator-item">
+          <div class="indicator-label">Listed</div>
+          <div class="indicator-value">${(nft.listedCount || 0).toLocaleString()}</div>
+          <div style="font-size:0.7rem; color: var(--text-secondary);">
+            ${nft.totalSupply ? ((nft.listedCount / nft.totalSupply) * 100).toFixed(1) : '0'}%
+          </div>
+        </div>
+        <div class="indicator-item">
+          <div class="indicator-label">Contract</div>
+          <div class="indicator-value" style="font-size: 0.7rem; word-break: break-all;">
+            ${nft.contractAddress ? nft.contractAddress.substring(0, 6) + '...' + nft.contractAddress.substring(38) : 'N/A'}
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    ${nft.description ? `
+      <div style="margin-top: 20px; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 8px; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">
+        ${nft.description.length > 200 ? nft.description.substring(0, 200) + '...' : nft.description}
+      </div>
+    ` : ''}
+    
+    <div class="action-buttons" style="margin-top: 20px; display: flex; gap: 8px;">
+      <button class="action-btn" style="flex: 1;" onclick="setAlert('${nft.name}')">🔔 Alert</button>
+      <button class="action-btn" style="flex: 1;" onclick="addToHoldings('${nft.name}')">⭐ Watch</button>
+      ${nft.contractAddress ? `<button class="action-btn" style="flex: 1;" onclick="window.open('https://opensea.io/assets/${nft.chain.toLowerCase()}/${nft.contractAddress}', '_blank')">🛒 View on OpenSea</button>` : ''}
     </div>
   `;
   
@@ -1503,7 +1698,8 @@ const CATEGORY_NAMES = {
   trading: '💰 Trading Strategies',
   acronyms: '🔤 Crypto Acronyms & Slang',
   market: '💎 Market Terms',
-  blockchain: '⛓️ Blockchain & DeFi'
+  blockchain: '⛓️ Blockchain & DeFi',
+  nft: '🎨 NFT Terms'
 };
 
 function renderGlossary(searchTerm = '', category = null) {
