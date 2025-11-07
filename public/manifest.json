@@ -1,0 +1,41 @@
+{
+  "name": "DarkWave-V2 Technical Analysis",
+  "short_name": "DarkWave",
+  "description": "Advanced cryptocurrency and stock market technical analysis with real-time signals",
+  "start_url": "/mini-app",
+  "display": "standalone",
+  "background_color": "#0A0A0A",
+  "theme_color": "#8B0000",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/darkwave-coin.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/darkwave-coin.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "productivity", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Analysis",
+      "short_name": "Analyze",
+      "description": "Quick technical analysis",
+      "url": "/mini-app?tab=analysis",
+      "icons": [{ "src": "/darkwave-coin.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Projects",
+      "short_name": "Projects",
+      "description": "View featured tokens",
+      "url": "/mini-app?tab=projects",
+      "icons": [{ "src": "/darkwave-coin.png", "sizes": "192x192" }]
+    }
+  ]
+}

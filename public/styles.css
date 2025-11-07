@@ -1,23 +1,27 @@
 /* DarkWave-V2 Mini App Styles */
 
 :root {
-  /* DarkWave Color Palette (Brightened from emblem) */
-  --primary-red: #E63946;
-  --primary-purple: #A855F7;
-  --bg-dark: #0F172A;
-  --bg-card: #1E293B;
-  --bg-card-hover: #334155;
+  /* DarkWave Color Palette - Deep Maroon to Black */
+  --primary-maroon: #8B0000;
+  --deep-red: #A52A2A;
+  --primary-red: #A52A2A; /* Alias for backwards compatibility */
+  --primary-purple: #6B1B6B;
+  --glow-purple: #9D4EDD;
+  --bg-dark: #0A0A0A;
+  --bg-card: #1A0F0F;
+  --bg-card-hover: #2A1515;
   --text-primary: #F1F5F9;
   --text-secondary: #CBD5E1;
   --accent-cyan: #06B6D4;
   --success-green: #10B981;
   --warning-amber: #F59E0B;
-  --danger-red: #EF4444;
+  --danger-red: #DC143C;
   
-  /* Gradients */
-  --gradient-primary: linear-gradient(135deg, var(--primary-red), var(--primary-purple));
-  --gradient-card: linear-gradient(145deg, #1E293B, #0F172A);
-  --gradient-glow: linear-gradient(135deg, rgba(230, 57, 70, 0.2), rgba(168, 85, 247, 0.2));
+  /* Gradients - Left to Right: Maroon to Dark Purple to Black */
+  --gradient-primary: linear-gradient(to right, #8B0000, #6B1B6B, #0A0A0A);
+  --gradient-card: linear-gradient(to right, #2A1515, #1A0F0F, #0A0A0A);
+  --gradient-glow: linear-gradient(to right, rgba(139, 0, 0, 0.3), rgba(107, 27, 107, 0.3));
+  --button-glow: 0 0 20px rgba(157, 78, 221, 0.6), 0 0 40px rgba(157, 78, 221, 0.4);
 }
 
 /* Tooltips for Technical Terms */
@@ -95,7 +99,7 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: var(--bg-dark);
+  background: var(--gradient-primary);
   color: var(--text-primary);
   overflow-x: hidden;
   -webkit-tap-highlight-color: transparent;
@@ -402,11 +406,12 @@ body {
   font-size: 1.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(230, 57, 70, 0.4);
+  box-shadow: var(--button-glow), 0 4px 15px rgba(0, 0, 0, 0.4);
 }
 
 .search-btn:active {
   transform: scale(0.95);
+  box-shadow: var(--button-glow), 0 2px 10px rgba(0, 0, 0, 0.4);
 }
 
 /* Welcome Card */
@@ -581,26 +586,33 @@ body {
 .action-btn, .primary-btn {
   flex: 1;
   min-width: 120px;
-  background: rgba(230, 57, 70, 0.1);
-  border: 2px solid var(--primary-red);
+  background: rgba(139, 0, 0, 0.2);
+  border: 2px solid var(--primary-maroon);
   border-radius: 12px;
   padding: 0.75rem 1rem;
   color: var(--text-primary);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .action-btn:hover, .primary-btn:hover {
   background: var(--gradient-primary);
-  box-shadow: 0 4px 15px rgba(230, 57, 70, 0.4);
-  transform: translateY(-2px);
+  box-shadow: var(--button-glow), 0 6px 20px rgba(0, 0, 0, 0.5);
+  transform: translateY(-4px);
 }
 
 .primary-btn {
   background: var(--gradient-primary);
   border: none;
-  box-shadow: 0 4px 15px rgba(230, 57, 70, 0.4);
+  box-shadow: var(--button-glow), 0 6px 20px rgba(0, 0, 0, 0.5);
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
 }
 
 /* Loading Spinner */
@@ -613,10 +625,11 @@ body {
   width: 50px;
   height: 50px;
   margin: 0 auto 1rem;
-  border: 4px solid rgba(230, 57, 70, 0.2);
-  border-top-color: var(--primary-red);
+  border: 4px solid rgba(139, 0, 0, 0.2);
+  border-top-color: var(--glow-purple);
   border-radius: 50%;
   animation: spin 1s linear infinite;
+  filter: drop-shadow(0 0 10px var(--glow-purple));
 }
 
 @keyframes spin {
@@ -1499,11 +1512,12 @@ body {
 .project-btn-primary {
   background: var(--gradient-primary);
   color: white;
+  box-shadow: var(--button-glow), 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .project-btn-primary:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4);
+  transform: scale(1.05) translateY(-2px);
+  box-shadow: var(--button-glow), 0 6px 20px rgba(0, 0, 0, 0.5);
 }
 
 .project-btn-secondary {
