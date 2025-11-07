@@ -131,12 +131,12 @@ const FEATURED_TOKENS = [
     featured: true
   },
   
-  // Token #10: (Not on Dexscreener yet - please provide name/symbol)
+  // Token #10: Uncertainty
   { 
     address: 'H9BhViZnhNDpUAwv1vpt2waRNLcRNNQ1wYsaWJ6Npump',
-    name: 'Token Name TBD',
-    symbol: '$TBD',
-    description: 'Token description coming soon',
+    name: 'Uncertainty',
+    symbol: '$UNCAT',
+    description: 'Embracing the unknown',
     platform: 'pumpfun',
     twitter: '',
     telegram: '',
