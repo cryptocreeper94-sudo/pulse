@@ -179,12 +179,12 @@ const FEATURED_TOKENS = [
     featured: true
   },
   
-  // Token #14: (Raydium token - not on Dexscreener yet - please provide name/symbol)
+  // Token #14: Catwifcash (Raydium)
   { 
     address: '75A2MwNbiXMBNoJuKFgEsaN42fHAqjHhEuW4fPpKMGF',
-    name: 'Token Name TBD',
-    symbol: '$TBD',
-    description: 'Token description coming soon',
+    name: 'Catwifcash',
+    symbol: '$CWC',
+    description: 'Cat with cash on Raydium',
     platform: 'raydium',
     twitter: '',
     telegram: '',
