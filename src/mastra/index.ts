@@ -430,12 +430,12 @@ export const mastra = new Mastra({
           try {
             // Use scanner tool to get top assets, then filter by category
             const scanResult = await scannerTool.execute({
-              context: { userId },
+              context: { type: 'crypto', limit: 20 },
               mastra,
               runtimeContext: null as any
             });
             
-            if (!scanResult || !scanResult.signals || scanResult.signals.length === 0) {
+            if (!scanResult || !scanResult.strongBuys || scanResult.strongBuys.length === 0) {
               // Fallback: return hardcoded popular assets
               const fallbackMovers = [
                 { ticker: 'BTC', price: 60000, change: 5.2 },
@@ -463,11 +463,11 @@ export const mastra = new Mastra({
               return c.json({ movers: movers.slice(0, 10) });
             }
             
-            // Convert scanner signals to movers format
-            let movers = scanResult.signals.map((signal: any) => ({
-              ticker: signal.ticker,
-              price: signal.price || 0,
-              change: signal.priceChange || 0
+            // Convert scanner strongBuys to movers format
+            let movers = scanResult.strongBuys.map((buy: any) => ({
+              ticker: buy.ticker,
+              price: buy.currentPrice || 0,
+              change: buy.priceChangePercent24h || 0
             }));
             
             // Filter and sort based on category
