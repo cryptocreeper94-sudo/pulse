@@ -1,6 +1,7 @@
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
 import { RSI, MACD, EMA, SMA, BollingerBands } from "technicalindicators";
+import { checkSubscriptionLimit } from "../middleware/subscriptionCheck.js";
 
 /**
  * Technical Analysis Tool - Calculates all technical indicators and generates buy/sell signals
@@ -80,9 +81,21 @@ export const technicalAnalysisTool = createTool({
     }),
   }),
 
-  execute: async ({ context, mastra }) => {
+  execute: async ({ context, mastra, runtimeContext }) => {
     const logger = mastra?.getLogger();
     logger?.info('🔧 [TechnicalAnalysisTool] Starting analysis', { ticker: context.ticker });
+
+    // Extract userId from runtimeContext
+    const userId = (runtimeContext as any)?.resourceId || 'unknown';
+    
+    // Check subscription limit for searches (technical analysis counts as search)
+    const limitCheck = await checkSubscriptionLimit(userId, 'search');
+    logger?.info('🔐 [TechnicalAnalysisTool] Subscription check result', { userId, allowed: limitCheck.allowed, isPremium: limitCheck.isPremium });
+    
+    if (!limitCheck.allowed) {
+      logger?.warn('⚠️ [TechnicalAnalysisTool] Usage limit exceeded', { userId, message: limitCheck.message });
+      throw new Error(limitCheck.message || 'Daily search limit reached. Upgrade to Premium for unlimited access!');
+    }
 
     const closePrices = context.prices.map(p => p.close);
     const highPrices = context.prices.map(p => p.high);

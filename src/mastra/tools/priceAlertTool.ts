@@ -1,5 +1,6 @@
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
+import { checkSubscriptionLimit } from "../middleware/subscriptionCheck.js";
 
 const alertsCache = new Map<string, any[]>();
 
@@ -81,6 +82,18 @@ export const priceAlertTool = createTool({
             return {
               success: false,
               message: 'Missing ticker, targetPrice, or condition',
+            };
+          }
+
+          // Check subscription limit for alert creation
+          const limitCheck = await checkSubscriptionLimit(userId, 'alert');
+          logger?.info('🔐 [PriceAlerts] Subscription check result', { userId, allowed: limitCheck.allowed, isPremium: limitCheck.isPremium });
+          
+          if (!limitCheck.allowed) {
+            logger?.warn('⚠️ [PriceAlerts] Alert limit exceeded', { userId, message: limitCheck.message });
+            return {
+              success: false,
+              message: limitCheck.message || 'Daily alert limit reached (3 alerts on free plan). Upgrade to Premium for unlimited alerts!',
             };
           }
 

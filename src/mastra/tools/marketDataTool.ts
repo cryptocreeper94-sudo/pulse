@@ -1,6 +1,7 @@
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
 import axios from "axios";
+import { checkSubscriptionLimit } from "../middleware/subscriptionCheck.js";
 
 /**
  * Market Data Tool - Fetches historical price data for stocks and crypto
@@ -40,9 +41,21 @@ export const marketDataTool = createTool({
     marketCap: z.number().optional(),
   }),
 
-  execute: async ({ context, mastra }) => {
+  execute: async ({ context, mastra, runtimeContext }) => {
     const logger = mastra?.getLogger();
     logger?.info('🔧 [MarketDataTool] Starting execution', { ticker: context.ticker, days: context.days });
+
+    // Extract userId from runtimeContext
+    const userId = (runtimeContext as any)?.resourceId || 'unknown';
+    
+    // Check subscription limit for searches
+    const limitCheck = await checkSubscriptionLimit(userId, 'search');
+    logger?.info('🔐 [MarketDataTool] Subscription check result', { userId, allowed: limitCheck.allowed, isPremium: limitCheck.isPremium });
+    
+    if (!limitCheck.allowed) {
+      logger?.warn('⚠️ [MarketDataTool] Usage limit exceeded', { userId, message: limitCheck.message });
+      throw new Error(limitCheck.message || 'Daily search limit reached. Upgrade to Premium for unlimited access!');
+    }
 
     const ticker = context.ticker.toUpperCase();
     const days = context.days || 90;
