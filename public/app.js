@@ -1998,10 +1998,16 @@ function updateSubscriptionUI() {
   const statusEl = document.getElementById('subscriptionStatus');
   const planBadge = document.getElementById('planBadge');
   const upgradeBtn = document.getElementById('upgradeBtn');
+  const upgradeBanner = document.getElementById('upgradeBanner');
   
   if (!statusEl || !planBadge || !upgradeBtn) return;
   
   const isPremium = state.subscription.plan === 'premium' && state.subscription.status === 'active';
+  
+  // Show/hide upgrade banner on main page based on subscription status
+  if (upgradeBanner) {
+    upgradeBanner.style.display = isPremium ? 'none' : 'block';
+  }
   
   if (isPremium) {
     planBadge.textContent = '👑 Premium';

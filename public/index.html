@@ -102,6 +102,28 @@
           </button>
         </div>
 
+        <!-- Premium Upgrade Banner (Hidden for premium users) -->
+        <div id="upgradeBanner" class="upgrade-banner" style="display: none; margin: 15px 0; padding: 20px; background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,165,0,0.15)); border: 2px solid #FFD700; border-radius: 12px; text-align: center;">
+          <div style="font-size: 24px; margin-bottom: 8px;">👑</div>
+          <h3 style="margin: 0 0 8px 0; color: #FFD700; font-size: 1.1rem;">Unlock Premium Features</h3>
+          <p style="margin: 0 0 15px 0; color: #ccc; font-size: 0.9rem;">Get unlimited searches, alerts & advanced analysis</p>
+          <button onclick="showUpgradeModal()" style="
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255,215,0,0.3);
+          ">
+            🚀 Upgrade to Premium - $5/month
+          </button>
+          <p style="margin: 10px 0 0 0; font-size: 0.75rem; opacity: 0.6;">Cancel anytime • Instant access</p>
+        </div>
+
         <!-- Trending Carousel -->
         <div id="trendingCarousel" class="trending-carousel">
           <div class="trending-header">
