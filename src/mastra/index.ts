@@ -463,6 +463,14 @@ export const mastra = new Mastra({
         method: "GET",
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
+          
+          // Check access session
+          const { checkAccessSession } = await import('./middleware/accessControl.js');
+          const sessionCheck = await checkAccessSession(c);
+          if (!sessionCheck.valid) {
+            return c.json({ error: 'Unauthorized - Invalid or expired session' }, 401);
+          }
+          
           const category = c.req.query('category') || 'gainers';
           const userId = c.req.query('userId') || 'demo-user';
           logger?.info('🔥 [Mini App] Top movers request', { category, userId });
@@ -541,6 +549,14 @@ export const mastra = new Mastra({
         method: "GET",
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
+          
+          // Check access session
+          const { checkAccessSession } = await import('./middleware/accessControl.js');
+          const sessionCheck = await checkAccessSession(c);
+          if (!sessionCheck.valid) {
+            return c.json({ error: 'Unauthorized - Invalid or expired session' }, 401);
+          }
+          
           const userId = c.req.query('userId') || 'demo-user';
           logger?.info('🔔 [Mini App] Get alerts request', { userId });
           
@@ -567,6 +583,13 @@ export const mastra = new Mastra({
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
+            // Check access session
+            const { checkAccessSession } = await import('./middleware/accessControl.js');
+            const sessionCheck = await checkAccessSession(c);
+            if (!sessionCheck.valid) {
+              return c.json({ error: 'Unauthorized - Invalid or expired session' }, 401);
+            }
+            
             const { ticker, targetPrice, condition, userId } = await c.req.json();
             logger?.info('➕ [Mini App] Create alert request', { ticker, targetPrice, condition, userId });
             
@@ -608,6 +631,13 @@ export const mastra = new Mastra({
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
+            // Check access session
+            const { checkAccessSession } = await import('./middleware/accessControl.js');
+            const sessionCheck = await checkAccessSession(c);
+            if (!sessionCheck.valid) {
+              return c.json({ error: 'Unauthorized - Invalid or expired session' }, 401);
+            }
+            
             const alertId = c.req.param('id');
             const userId = c.req.query('userId') || 'demo-user';
             logger?.info('🗑️ [Mini App] Delete alert request', { alertId, userId });
@@ -634,6 +664,14 @@ export const mastra = new Mastra({
         method: "GET",
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
+          
+          // Check access session
+          const { checkAccessSession } = await import('./middleware/accessControl.js');
+          const sessionCheck = await checkAccessSession(c);
+          if (!sessionCheck.valid) {
+            return c.json({ error: 'Unauthorized - Invalid or expired session' }, 401);
+          }
+          
           const userId = c.req.query('userId') || 'demo-user';
           logger?.info('💰 [Mini App] Wallet request', { userId });
           
@@ -1093,6 +1131,13 @@ export const mastra = new Mastra({
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
+            // Check access session
+            const { checkAccessSession } = await import('./middleware/accessControl.js');
+            const sessionCheck = await checkAccessSession(c);
+            if (!sessionCheck.valid) {
+              return c.json({ error: 'Unauthorized - Invalid or expired session' }, 401);
+            }
+            
             const { ticker, userId } = await c.req.json();
             logger?.info('📈 [Mini App] Chart request', { ticker, userId });
             
