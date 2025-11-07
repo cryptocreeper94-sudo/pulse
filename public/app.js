@@ -2005,7 +2005,7 @@ function renderGlossary(searchTerm = '', category = null) {
         `;
       }).join('')}
     </div>
-  `).join('');
+  `}).join('');
 }
 
 // Toggle term expansion
