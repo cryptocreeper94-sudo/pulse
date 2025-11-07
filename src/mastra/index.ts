@@ -178,6 +178,40 @@ export const mastra = new Mastra({
           });
         },
       }),
+      // Serve frontend HTML at root
+      {
+        path: "/",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const fs = await import('fs/promises');
+          const path = await import('path');
+          const html = await fs.readFile(path.join(process.cwd(), 'public', 'index.html'), 'utf-8');
+          return c.html(html);
+        }
+      },
+      // Serve static assets
+      {
+        path: "/app.js",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const fs = await import('fs/promises');
+          const path = await import('path');
+          const js = await fs.readFile(path.join(process.cwd(), 'public', 'app.js'), 'utf-8');
+          c.header('Content-Type', 'application/javascript');
+          return c.body(js);
+        }
+      },
+      {
+        path: "/styles.css",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const fs = await import('fs/promises');
+          const path = await import('path');
+          const css = await fs.readFile(path.join(process.cwd(), 'public', 'styles.css'), 'utf-8');
+          c.header('Content-Type', 'text/css');
+          return c.body(css);
+        }
+      },
       // Mini App Backend API Routes
       // Access Code Verification
       {
