@@ -2,11 +2,13 @@
 
 ## Overview
 
-DarkWave-V2 is an advanced technical analysis bot built with the Mastra framework that provides comprehensive cryptocurrency and stock market analysis. The system integrates with Telegram to deliver real-time buy/sell signals based on proven technical indicators including RSI, MACD, moving averages, Bollinger Bands, and volume analysis.
+DarkWave-V2 is an advanced technical analysis bot built with the Mastra framework that provides comprehensive cryptocurrency, stock market, and NFT analysis. The system integrates with Telegram to deliver real-time buy/sell signals based on proven technical indicators including RSI, MACD, moving averages, Bollinger Bands, and volume analysis.
 
 The application uses a workflow-based architecture to process user messages through an AI agent that has access to specialized market analysis tools. It maintains conversation history and user watchlists using PostgreSQL storage, enabling personalized and context-aware interactions.
 
 **New in v2.1**: DEX pair and meme coin support via Dexscreener integration with specialized rug-risk detection, liquidity scoring, and visual price charts.
+
+**New in v2.2**: NFT collection analysis with curated database of popular collections (BAYC, Azuki, Pudgy Penguins, DeGods, Milady, Lil Pudgys). Supports search by collection name or contract address. Educational glossary expanded with 8 NFT-specific terms (Floor Price, Mint, Reveal, Utility, Royalties, Trait Rarity, Allowlist, Bluechip NFT).
 
 ## User Preferences
 
@@ -33,7 +35,7 @@ The application is built on Mastra, a TypeScript agent framework that provides p
 
 ### Tool Architecture
 
-The system implements seven specialized tools:
+The system implements eight specialized tools:
 
 1. **Market Data Tool**: Fetches historical OHLCV data from free APIs (CoinGecko for crypto, Yahoo Finance for stocks)
 2. **Technical Analysis Tool**: Calculates technical indicators using the `technicalindicators` library (RSI, MACD, EMAs, SMAs, Bollinger Bands)
@@ -42,6 +44,7 @@ The system implements seven specialized tools:
 5. **Chart Generator Tool**: Creates visual price charts with EMA overlays using QuickChart.io (free, no API key)
 6. **Dexscreener Tool**: Searches DEX pairs for meme coins and new tokens across all chains (Solana, Ethereum, Base, BSC, etc.)
 7. **DEX Analysis Tool**: Specialized technical analysis for high-volatility DEX pairs with rug-risk detection and liquidity scoring
+8. **NFT Tool**: Analyzes NFT collections with curated database of 6 popular collections (BAYC, Azuki, Pudgy Penguins, DeGods, Milady, Lil Pudgys). Supports search by name or contract address. Displays floor price, volume, market cap, owners, listings, and sales data. Zero API costs.
 
 **Design pattern**: Each tool follows a consistent structure with:
 - Zod schemas for input/output validation
