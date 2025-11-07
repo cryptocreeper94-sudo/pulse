@@ -886,6 +886,107 @@ export const mastra = new Mastra({
           }
         },
       },
+      // Multi-Timeframe Analysis endpoint
+      {
+        path: "/api/multi-timeframe",
+        method: "POST",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          try {
+            const { ticker, userId } = await c.req.json();
+            logger?.info('📊 [Mini App] Multi-timeframe analysis request', { ticker, userId });
+            
+            // Fetch data for different timeframes
+            const timeframes = [
+              { name: '1H', days: 0.05 }, // ~1 hour of data
+              { name: '4H', days: 0.2 },  // ~4 hours
+              { name: '1D', days: 1 },     // 1 day
+              { name: '1W', days: 7 },     // 1 week
+              { name: '1M', days: 30 },    // 1 month
+            ];
+            
+            const results = await Promise.all(
+              timeframes.map(async (tf) => {
+                try {
+                  const marketData = await marketDataTool.execute({
+                    context: { ticker, days: tf.days < 1 ? 1 : tf.days }, // Minimum 1 day
+                    mastra,
+                    runtimeContext: null as any
+                  });
+                  
+                  if (!marketData || !marketData.prices || marketData.prices.length === 0) {
+                    return {
+                      timeframe: tf.name,
+                      trend: 'UNKNOWN',
+                      strength: 0,
+                      price: 0,
+                      change: 0
+                    };
+                  }
+                  
+                  // Get appropriate data slice for timeframe
+                  let dataSlice = marketData.prices;
+                  if (tf.days < 1) {
+                    // For hour-based timeframes, use last portion of the day's data
+                    const sliceSize = Math.floor(marketData.prices.length * tf.days);
+                    dataSlice = marketData.prices.slice(-Math.max(sliceSize, 10));
+                  }
+                  
+                  const analysis = await technicalAnalysisTool.execute({
+                    context: { 
+                      ticker,
+                      prices: dataSlice,
+                      currentPrice: marketData.currentPrice,
+                      priceChange24h: marketData.priceChange24h,
+                      priceChangePercent24h: marketData.priceChangePercent24h
+                    },
+                    mastra,
+                    runtimeContext: null as any
+                  });
+                  
+                  // Determine trend based on signals
+                  let trend = 'NEUTRAL';
+                  if (analysis.signalCount.bullish > analysis.signalCount.bearish + 2) {
+                    trend = 'BULLISH';
+                  } else if (analysis.signalCount.bearish > analysis.signalCount.bullish + 2) {
+                    trend = 'BEARISH';
+                  }
+                  
+                  const strength = Math.abs(analysis.signalCount.bullish - analysis.signalCount.bearish);
+                  
+                  return {
+                    timeframe: tf.name,
+                    trend,
+                    strength,
+                    price: analysis.currentPrice,
+                    change: analysis.priceChangePercent24h,
+                    rsi: analysis.rsi,
+                    recommendation: analysis.recommendation
+                  };
+                } catch (error: any) {
+                  logger?.error(`Error analyzing ${tf.name} timeframe`, { error: error.message });
+                  return {
+                    timeframe: tf.name,
+                    trend: 'ERROR',
+                    strength: 0,
+                    price: 0,
+                    change: 0
+                  };
+                }
+              })
+            );
+            
+            return c.json({
+              ticker: ticker.toUpperCase(),
+              timeframes: results,
+              success: true
+            });
+          } catch (error: any) {
+            logger?.error('❌ [Mini App] Multi-timeframe error', { error: error.message });
+            return c.json({ success: false, error: error.message }, 500);
+          }
+        },
+      },
       // DEX Search endpoint
       {
         path: "/api/dex-search",
