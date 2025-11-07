@@ -1661,10 +1661,18 @@ if (state.currentTab === 'learn') {
 
 // ===== FEATURED TOKENS SYSTEM =====
 
-// Fetch token data from Dexscreener
+// Fetch token data from Dexscreener with timeout
 async function fetchTokenData(tokenAddress) {
   try {
-    const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${tokenAddress}`);
+    // Add 5-second timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    
+    const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${tokenAddress}`, {
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+    
     if (!response.ok) throw new Error('Failed to fetch token data');
     const data = await response.json();
     
@@ -1723,21 +1731,44 @@ async function renderProjectsTab() {
   
   container.innerHTML = tokens.map(token => {
     const data = token.liveData;
+    const platformClass = token.platform === 'raydium' ? 'raydium' : 'pumpfun';
+    const buyUrl = token.platform === 'raydium' 
+      ? `https://raydium.io/swap/?inputCurrency=sol&outputCurrency=${token.address}`
+      : `https://pump.fun/${token.address}`;
+    
+    // Show token info even without live data
     if (!data) {
       return `
         <div class="project-card">
-          <div style="text-align: center; padding: 20px;">
-            <p style="color: var(--text-secondary);">Failed to load: ${token.name || token.address}</p>
+          <div class="project-header">
+            <div class="project-title">
+              <h3>
+                ${token.name}
+                <span class="project-platform-badge ${platformClass}">${token.platform || 'pumpfun'}</span>
+              </h3>
+              <div class="project-symbol">${token.symbol}</div>
+            </div>
+          </div>
+          
+          ${token.description ? `<div class="project-description">${token.description}</div>` : ''}
+          
+          <div style="text-align: center; padding: 20px; color: var(--text-secondary);">
+            <p style="font-size: 0.9rem;">⏳ Price data loading...</p>
+            <p style="font-size: 0.8rem; margin-top: 8px;">This token may not be listed on DEX yet</p>
+          </div>
+          
+          <div class="project-actions">
+            <button class="project-btn project-btn-primary" onclick="window.open('${buyUrl}', '_blank')">
+              💰 Buy on ${token.platform === 'raydium' ? 'Raydium' : 'Pump.fun'}
+            </button>
+            ${token.twitter ? `<button class="project-btn project-btn-secondary" onclick="window.open('${token.twitter}', '_blank')">🐦 Twitter</button>` : ''}
+            ${token.telegram ? `<button class="project-btn project-btn-secondary" onclick="window.open('${token.telegram}', '_blank')">💬 Telegram</button>` : ''}
           </div>
         </div>
       `;
     }
     
     const changeClass = data.priceChange24h >= 0 ? 'positive' : 'negative';
-    const platformClass = token.platform === 'raydium' ? 'raydium' : 'pumpfun';
-    const buyUrl = token.platform === 'raydium' 
-      ? `https://raydium.io/swap/?inputCurrency=sol&outputCurrency=${token.address}`
-      : `https://pump.fun/${token.address}`;
     
     return `
       <div class="project-card">
