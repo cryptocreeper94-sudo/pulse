@@ -22,3 +22,11 @@ export const userUsage = pgTable('user_usage', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
+
+export const whitelistedUsers = pgTable('whitelisted_users', {
+  userId: varchar('user_id', { length: 255 }).primaryKey(),
+  reason: text('reason'), // Optional: why they're whitelisted (e.g., "Early access", "Beta tester")
+  expiresAt: timestamp('expires_at'), // Optional: whitelist expiration date
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});

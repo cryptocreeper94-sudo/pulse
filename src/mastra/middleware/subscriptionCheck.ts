@@ -1,9 +1,28 @@
 import { db } from "../../db/client.js";
-import { subscriptions, userUsage } from "../../db/schema.js";
+import { subscriptions, userUsage, whitelistedUsers } from "../../db/schema.js";
 import { eq } from "drizzle-orm";
 
-export async function checkSubscriptionLimit(userId: string, feature: 'search' | 'alert'): Promise<{ allowed: boolean; isPremium: boolean; message?: string }> {
+export async function checkSubscriptionLimit(userId: string, feature: 'search' | 'alert'): Promise<{ allowed: boolean; isPremium: boolean; isWhitelisted?: boolean; message?: string }> {
   try {
+    // Check if user is whitelisted first
+    const whitelist = await db.select()
+      .from(whitelistedUsers)
+      .where(eq(whitelistedUsers.userId, userId))
+      .limit(1);
+    
+    if (whitelist.length > 0) {
+      const whitelistEntry = whitelist[0];
+      
+      // Check if whitelist has expired
+      if (whitelistEntry.expiresAt && new Date(whitelistEntry.expiresAt) < new Date()) {
+        // Whitelist expired, continue with normal checks
+      } else {
+        // Active whitelist - grant premium access
+        console.log(`✅ [Whitelist] User ${userId} granted premium access (${whitelistEntry.reason || 'No reason'})`);
+        return { allowed: true, isPremium: true, isWhitelisted: true };
+      }
+    }
+    
     // Get user's subscription status
     const [subscription] = await db
       .select()
