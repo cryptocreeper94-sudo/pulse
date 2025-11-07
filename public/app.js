@@ -107,6 +107,18 @@ const FEATURED_TOKENS = [
     featured: true
   },
   
+  // Token #8: (Not on Dexscreener yet - please provide name/symbol)
+  { 
+    address: 'ERf16TD1VrUHdhpUFbUJpSPXVu9rbtzrzkKfCbwLMYiP',
+    name: 'Token Name TBD',
+    symbol: '$TBD',
+    description: 'Token description coming soon',
+    platform: 'pumpfun',
+    twitter: '',
+    telegram: '',
+    featured: true
+  },
+  
   // Add more tokens below as you send them:
   
 ];
