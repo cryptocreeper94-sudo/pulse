@@ -297,6 +297,21 @@
           <h2>⚙️ Control Center</h2>
         </div>
         <div class="settings-content">
+          <!-- Subscription Section -->
+          <div class="settings-section" style="background: linear-gradient(135deg, rgba(107,0,0,0.3), rgba(26,10,31,0.5)); border: 1px solid rgba(255,215,0,0.2); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+              <h3 style="margin: 0;">💎 Subscription Plan</h3>
+              <span id="planBadge" style="padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; background: rgba(107,0,0,0.3); color: #fff;">Free</span>
+            </div>
+            <div id="subscriptionStatus" style="margin-bottom: 15px;">
+              <p style="opacity: 0.8; margin: 5px 0;">Limited to 10 searches/day</p>
+              <p style="font-size: 0.9rem; color: #FFD700; margin: 5px 0;">Upgrade for unlimited access! 🚀</p>
+            </div>
+            <button id="upgradeBtn" class="action-btn" style="width: 100%; background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; font-weight: bold;">
+              👑 Upgrade to Premium
+            </button>
+          </div>
+          
           <div class="settings-section">
             <h3>🔔 Price Alerts</h3>
             <div class="toggle-row">

@@ -19,7 +19,12 @@ const state = {
   userId: tg?.initDataUnsafe?.user?.id || 'demo-user',
   currentAnalysis: null,
   trendingCache: {}, // Cache for trending data
-  trendingCacheTime: {} // Cache timestamps
+  trendingCacheTime: {}, // Cache timestamps
+  subscription: {
+    plan: 'free',
+    status: 'inactive',
+    expiryDate: null
+  }
 };
 
 // ===== FEATURED TOKENS CONFIGURATION =====
@@ -1709,10 +1714,203 @@ async function loadSettings() {
       btn.classList.toggle('active', btn.dataset.exchange === settings.exchange);
     });
     
-    // Load price alerts
+    // Load subscription status and price alerts
+    await loadSubscriptionStatus();
     await loadPriceAlerts();
   } catch (error) {
     console.error('Settings load error:', error);
+  }
+}
+
+// ===== SUBSCRIPTION FUNCTIONALITY =====
+async function loadSubscriptionStatus() {
+  try {
+    const response = await fetch(`${API_BASE}/api/subscription?userId=${state.userId}`);
+    const data = await response.json();
+    
+    if (data.success && data.subscription) {
+      state.subscription = data.subscription;
+      updateSubscriptionUI();
+    }
+  } catch (error) {
+    console.error('Subscription load error:', error);
+  }
+}
+
+function updateSubscriptionUI() {
+  const statusEl = document.getElementById('subscriptionStatus');
+  const planBadge = document.getElementById('planBadge');
+  const upgradeBtn = document.getElementById('upgradeBtn');
+  
+  if (!statusEl || !planBadge || !upgradeBtn) return;
+  
+  const isPremium = state.subscription.plan === 'premium' && state.subscription.status === 'active';
+  
+  if (isPremium) {
+    planBadge.textContent = '👑 Premium';
+    planBadge.style.background = 'linear-gradient(135deg, #FFD700, #FFA500)';
+    planBadge.style.color = '#000';
+    statusEl.innerHTML = `
+      <p style="color: #4ADE80;">✅ Active subscription</p>
+      ${state.subscription.expiryDate ? `<p style="font-size: 0.9rem; opacity: 0.8;">Renews: ${new Date(state.subscription.expiryDate).toLocaleDateString()}</p>` : ''}
+    `;
+    upgradeBtn.textContent = 'Manage Subscription';
+    upgradeBtn.onclick = showManageSubscription;
+  } else {
+    planBadge.textContent = 'Free';
+    planBadge.style.background = 'rgba(107,0,0,0.3)';
+    planBadge.style.color = '#fff';
+    statusEl.innerHTML = `
+      <p style="opacity: 0.8;">Limited to 10 searches/day</p>
+      <p style="font-size: 0.9rem; color: #FFD700;">Upgrade for unlimited access! 🚀</p>
+    `;
+    upgradeBtn.textContent = '👑 Upgrade to Premium';
+    upgradeBtn.onclick = showUpgradeModal;
+  }
+}
+
+async function showUpgradeModal() {
+  const modal = document.createElement('div');
+  modal.className = 'modal-backdrop';
+  modal.innerHTML = `
+    <div class="modal-content" style="max-width: 500px;">
+      <h3 style="margin-bottom: 20px;">🚀 Upgrade to Premium</h3>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px;">
+        <div style="padding: 15px; border: 1px solid rgba(168,85,247,0.3); border-radius: 8px;">
+          <h4 style="margin: 0 0 10px 0; color: #999;">Free Plan</h4>
+          <p style="font-size: 2rem; margin: 0; color: #6B0000;">$0</p>
+          <ul style="list-style: none; padding: 0; margin: 15px 0 0 0; text-align: left;">
+            <li style="margin: 8px 0;">❌ 10 searches/day</li>
+            <li style="margin: 8px 0;">❌ Basic charts</li>
+            <li style="margin: 8px 0;">❌ 3 price alerts</li>
+            <li style="margin: 8px 0;">❌ Standard support</li>
+          </ul>
+        </div>
+        
+        <div style="padding: 15px; border: 2px solid #FFD700; border-radius: 8px; background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,165,0,0.1));">
+          <h4 style="margin: 0 0 10px 0; color: #FFD700;">👑 Premium</h4>
+          <p style="font-size: 2rem; margin: 0; color: #FFD700;">$5<span style="font-size: 1rem;">/mo</span></p>
+          <ul style="list-style: none; padding: 0; margin: 15px 0 0 0; text-align: left;">
+            <li style="margin: 8px 0;">✅ Unlimited searches</li>
+            <li style="margin: 8px 0;">✅ Advanced charts</li>
+            <li style="margin: 8px 0;">✅ Unlimited alerts</li>
+            <li style="margin: 8px 0;">✅ Priority support</li>
+          </ul>
+        </div>
+      </div>
+      
+      <button class="action-btn" style="background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; font-weight: bold; width: 100%;" onclick="initiateCheckout()">
+        💳 Subscribe Now - $5/month
+      </button>
+      
+      <p style="margin-top: 15px; font-size: 0.85rem; opacity: 0.7;">
+        Secure payment powered by Stripe. Cancel anytime.
+      </p>
+      
+      <button class="secondary-btn" style="margin-top: 10px; width: 100%;" onclick="this.closest('.modal-backdrop').remove()">
+        Maybe Later
+      </button>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  if (tg) tg.HapticFeedback?.impactOccurred('medium');
+}
+
+async function initiateCheckout() {
+  try {
+    showLoading();
+    
+    const response = await fetch(`${API_BASE}/api/subscription/checkout`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: state.userId })
+    });
+    
+    const data = await response.json();
+    
+    if (data.success && data.checkoutUrl) {
+      // Open Stripe checkout in new window
+      if (tg) {
+        tg.openLink(data.checkoutUrl);
+      } else {
+        window.open(data.checkoutUrl, '_blank');
+      }
+      
+      showToast('Opening checkout... Complete payment to activate Premium!');
+      document.querySelector('.modal-backdrop')?.remove();
+    } else {
+      showToast('Error creating checkout session. Please try again.');
+    }
+  } catch (error) {
+    console.error('Checkout error:', error);
+    showToast('Error starting checkout. Please try again.');
+  } finally {
+    hideLoading();
+  }
+}
+
+async function showManageSubscription() {
+  const modal = document.createElement('div');
+  modal.className = 'modal-backdrop';
+  modal.innerHTML = `
+    <div class="modal-content" style="max-width: 400px;">
+      <h3 style="margin-bottom: 20px;">👑 Manage Subscription</h3>
+      
+      <div style="padding: 20px; background: rgba(255,215,0,0.1); border: 1px solid #FFD700; border-radius: 8px; margin-bottom: 20px;">
+        <p style="margin: 0 0 10px 0; color: #FFD700; font-weight: bold;">Premium Plan Active</p>
+        <p style="margin: 0; font-size: 0.9rem;">
+          ${state.subscription.expiryDate ? `Renews: ${new Date(state.subscription.expiryDate).toLocaleDateString()}` : 'Active subscription'}
+        </p>
+      </div>
+      
+      <p style="margin-bottom: 20px; opacity: 0.9;">
+        Enjoying Premium? You can cancel anytime and retain access until the end of your billing period.
+      </p>
+      
+      <button class="action-btn danger" style="width: 100%;" onclick="cancelSubscription()">
+        Cancel Subscription
+      </button>
+      
+      <button class="secondary-btn" style="margin-top: 10px; width: 100%;" onclick="this.closest('.modal-backdrop').remove()">
+        Keep Premium
+      </button>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  if (tg) tg.HapticFeedback?.impactOccurred('medium');
+}
+
+async function cancelSubscription() {
+  if (!confirm('Are you sure you want to cancel Premium? You\'ll lose access to unlimited searches and advanced features.')) {
+    return;
+  }
+  
+  try {
+    showLoading();
+    
+    const response = await fetch(`${API_BASE}/api/subscription/cancel`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: state.userId })
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      showToast('Subscription cancelled. You\'ll retain Premium until your billing period ends.');
+      document.querySelector('.modal-backdrop')?.remove();
+      await loadSubscriptionStatus();
+    } else {
+      showToast('Error cancelling subscription. Please try again.');
+    }
+  } catch (error) {
+    console.error('Cancel error:', error);
+    showToast('Error cancelling subscription. Please try again.');
+  } finally {
+    hideLoading();
   }
 }
 

@@ -832,6 +832,75 @@ export const mastra = new Mastra({
           }
         },
       },
+      // Subscription endpoints
+      {
+        path: "/api/subscription",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          const userId = c.req.query('userId') || 'demo-user';
+          logger?.info('💳 [Mini App] Get subscription status', { userId });
+          
+          try {
+            const result = await subscriptionTool.execute({
+              context: { action: 'check_status', userId },
+              mastra,
+              runtimeContext: null as any
+            });
+            
+            return c.json(result);
+          } catch (error: any) {
+            logger?.error('❌ [Mini App] Subscription status error', { error: error.message });
+            return c.json({ success: false, message: error.message }, 500);
+          }
+        },
+      },
+      {
+        path: "/api/subscription/checkout",
+        method: "POST",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          try {
+            const { userId } = await c.req.json();
+            const returnUrl = `${c.req.header('origin') || 'https://your-app.replit.app'}/mini-app`;
+            
+            logger?.info('🛒 [Mini App] Create checkout session', { userId, returnUrl });
+            
+            const result = await subscriptionTool.execute({
+              context: { action: 'create_checkout', userId: userId || 'demo-user', returnUrl },
+              mastra,
+              runtimeContext: null as any
+            });
+            
+            return c.json(result);
+          } catch (error: any) {
+            logger?.error('❌ [Mini App] Checkout error', { error: error.message });
+            return c.json({ success: false, message: error.message }, 500);
+          }
+        },
+      },
+      {
+        path: "/api/subscription/cancel",
+        method: "POST",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          try {
+            const { userId } = await c.req.json();
+            logger?.info('❌ [Mini App] Cancel subscription', { userId });
+            
+            const result = await subscriptionTool.execute({
+              context: { action: 'cancel', userId: userId || 'demo-user' },
+              mastra,
+              runtimeContext: null as any
+            });
+            
+            return c.json(result);
+          } catch (error: any) {
+            logger?.error('❌ [Mini App] Cancel error', { error: error.message });
+            return c.json({ success: false, message: error.message }, 500);
+          }
+        },
+      },
       // Chart endpoint
       {
         path: "/api/chart",
