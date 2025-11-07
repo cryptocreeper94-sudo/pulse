@@ -95,13 +95,13 @@ const FEATURED_TOKENS = [
     featured: true
   },
   
-  // Token #7: (Not on Dexscreener yet - please provide name/symbol)
+  // Token #7: Yahusha
   { 
     address: 'ADRs4hrVr729GDqCS5NeRSrVLPBvErpWJcF69vCJWsZT',
-    name: 'Token Name TBD',  // Tell me the name
-    symbol: '$TBD',          // Tell me the symbol
-    description: 'Token description coming soon',
-    platform: 'raydium',  // Assuming this is your Raydium token?
+    name: 'Yahusha',
+    symbol: '$YAHU',
+    description: 'Yahusha token on Solana',
+    platform: 'pumpfun',
     twitter: '',
     telegram: '',
     featured: true
