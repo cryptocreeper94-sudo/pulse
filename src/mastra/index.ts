@@ -2001,9 +2001,9 @@ export const mastra = new Mastra({
             }
             
             const body = await c.req.json();
-            const { type, userId, suggestion, tokenName, tokenSymbol, tokenContract, tokenChain, tokenDescription, tokenContact } = body;
+            const { type, userId, suggestion, tokenName, tokenSymbol, tokenContract, tokenChain, tokenDescription, tokenContact, tokenLogo } = body;
             
-            logger?.info('💬 [Feedback] Received submission', { type, userId });
+            logger?.info('💬 [Feedback] Received submission', { type, userId, hasImage: !!tokenLogo });
             
             // Get admin email from environment
             const adminEmail = process.env.ADMIN_EMAIL;
@@ -2033,6 +2033,15 @@ export const mastra = new Mastra({
               textContent = `New User Suggestion\n\nUser ID: ${userId}\nSubmitted: ${new Date().toLocaleString()}\n\nSuggestion:\n${suggestion}`;
             } else if (type === 'token') {
               subject = '🚀 New Token Submission - DarkWave-V2';
+              
+              // Include token logo in email if provided
+              const logoHtml = tokenLogo ? `
+                <div style="text-align: center; margin: 20px 0;">
+                  <img src="${tokenLogo.data}" alt="Token Logo" style="max-width: 150px; max-height: 150px; border-radius: 50%; border: 3px solid #4ADE80; box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);">
+                  <p style="color: #4ADE80; font-size: 0.9rem; margin-top: 10px;">📷 Token Logo Attached</p>
+                </div>
+              ` : '';
+              
               htmlContent = `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                   <h2 style="color: #4ADE80;">🚀 New Token Submission</h2>
@@ -2040,6 +2049,7 @@ export const mastra = new Mastra({
                     <p><strong>👤 Submitted by:</strong> ${userId}</p>
                     <p><strong>📅 Submitted:</strong> ${new Date().toLocaleString()}</p>
                   </div>
+                  ${logoHtml}
                   <div style="background: #fff; border-left: 4px solid #4ADE80; padding: 20px; margin: 20px 0;">
                     <h3 style="margin-top: 0; color: #333;">Token Details:</h3>
                     <p><strong>Name:</strong> ${tokenName}</p>
@@ -2055,7 +2065,7 @@ export const mastra = new Mastra({
                   <p style="color: #999; font-size: 0.9rem;">Sent from DarkWave-V2 Feedback System</p>
                 </div>
               `;
-              textContent = `New Token Submission\n\nSubmitted by: ${userId}\nSubmitted: ${new Date().toLocaleString()}\n\nToken Details:\nName: ${tokenName}\nSymbol: ${tokenSymbol}\nContract: ${tokenContract}\nBlockchain: ${tokenChain}\nContact: ${tokenContact}\n\nWhy List This Token:\n${tokenDescription}`;
+              textContent = `New Token Submission\n\nSubmitted by: ${userId}\nSubmitted: ${new Date().toLocaleString()}\n\nToken Details:\nName: ${tokenName}\nSymbol: ${tokenSymbol}\nContract: ${tokenContract}\nBlockchain: ${tokenChain}\nContact: ${tokenContact}\n${tokenLogo ? '\nToken Logo: Included (see email attachment)\n' : ''}\nWhy List This Token:\n${tokenDescription}`;
             } else {
               return c.json({ error: 'Invalid submission type' }, 400);
             }

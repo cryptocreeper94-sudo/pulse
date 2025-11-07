@@ -3151,6 +3151,47 @@ loadWallet = async function() {
 };
 
 // ===== FEEDBACK & TOKEN SUBMISSION =====
+
+// Store uploaded token logo
+let uploadedTokenLogo = null;
+
+// Handle token logo upload
+function handleTokenLogoUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  
+  // Check file size (max 2MB)
+  if (file.size > 2 * 1024 * 1024) {
+    showToast('⚠️ Image too large. Please use a file under 2MB.');
+    input.value = '';
+    return;
+  }
+  
+  // Check file type
+  if (!file.type.startsWith('image/')) {
+    showToast('⚠️ Please upload an image file (PNG or JPG).');
+    input.value = '';
+    return;
+  }
+  
+  // Read file as base64
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    uploadedTokenLogo = {
+      filename: file.name,
+      mimeType: file.type,
+      data: e.target.result
+    };
+    
+    // Show preview
+    document.getElementById('logoPreviewImage').src = e.target.result;
+    document.getElementById('logoPreview').style.display = 'block';
+    showToast('✅ Token image uploaded!');
+    if (tg) tg.HapticFeedback?.impactOccurred('light');
+  };
+  reader.readAsDataURL(file);
+}
+
 async function submitFeedback(event, type) {
   event.preventDefault();
   
@@ -3175,7 +3216,8 @@ async function submitFeedback(event, type) {
       tokenContract: document.getElementById('tokenContract').value,
       tokenChain: document.getElementById('tokenChain').value,
       tokenDescription: document.getElementById('tokenDescription').value,
-      tokenContact: document.getElementById('tokenContact').value || 'Not provided'
+      tokenContact: document.getElementById('tokenContact').value || 'Not provided',
+      tokenLogo: uploadedTokenLogo // Include image data
     };
     successMessage = '✅ Token submitted for review! We\'ll evaluate it soon!';
   }
@@ -3197,6 +3239,12 @@ async function submitFeedback(event, type) {
       showToast(successMessage);
       if (tg) tg.HapticFeedback?.notificationOccurred('success');
       document.getElementById(formId).reset();
+      
+      // Clear token logo after submission
+      if (type === 'token') {
+        uploadedTokenLogo = null;
+        document.getElementById('logoPreview').style.display = 'none';
+      }
     } else {
       const error = await response.json();
       showToast('❌ ' + (error.message || 'Failed to submit'));
