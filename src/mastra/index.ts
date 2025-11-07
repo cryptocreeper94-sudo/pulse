@@ -804,6 +804,24 @@ export const mastra = new Mastra({
           }
         },
       },
+      // Download platinum coin image
+      {
+        path: "/download-coin.png",
+        method: "GET",
+        createHandler: async () => async (c: any) => {
+          const fs = await import('fs/promises');
+          const path = await import('path');
+          const imagePath = path.join(process.cwd(), 'public', 'darkwave-coin.png');
+          try {
+            const imageBuffer = await fs.readFile(imagePath);
+            c.header('Content-Type', 'image/png');
+            c.header('Content-Disposition', 'inline; filename="darkwave-coin.png"');
+            return c.body(imageBuffer);
+          } catch (error) {
+            return c.text('Image not found', 404);
+          }
+        },
+      },
       // Mini App static files - Helper to resolve public files in both dev and deployment
       {
         path: "/mini-app",
