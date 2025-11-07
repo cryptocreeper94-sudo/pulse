@@ -747,6 +747,193 @@ export const mastra = new Mastra({
           }
         },
       },
+      // Tracked Wallets API (Read-Only, Up to 5 Wallets)
+      {
+        path: "/api/tracked-wallets",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          
+          const { checkAccessSession } = await import('./middleware/accessControl.js');
+          const sessionCheck = await checkAccessSession(c);
+          if (!sessionCheck.valid) {
+            return c.json({ error: 'Unauthorized' }, 401);
+          }
+          
+          const userId = sessionCheck.userId || 'demo-user';
+          logger?.info('📋 [Tracked Wallets] GET request', { userId });
+          
+          try {
+            const { db } = await import('../db/client.js');
+            const { trackedWallets } = await import('../db/schema.js');
+            const { eq } = await import('drizzle-orm');
+            
+            const wallets = await db
+              .select()
+              .from(trackedWallets)
+              .where(eq(trackedWallets.userId, userId));
+            
+            return c.json({ 
+              wallets: wallets.map(w => ({
+                id: w.id,
+                address: w.address,
+                nickname: w.nickname,
+                balance: w.balance ? JSON.parse(w.balance) : null,
+                lastUpdated: w.lastUpdated
+              }))
+            });
+          } catch (error: any) {
+            logger?.error('❌ [Tracked Wallets] GET error', { error: error.message });
+            return c.json({ error: 'Failed to fetch wallets' }, 500);
+          }
+        }
+      },
+      {
+        path: "/api/tracked-wallets",
+        method: "POST",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          
+          const { checkAccessSession } = await import('./middleware/accessControl.js');
+          const sessionCheck = await checkAccessSession(c);
+          if (!sessionCheck.valid) {
+            return c.json({ error: 'Unauthorized' }, 401);
+          }
+          
+          const userId = sessionCheck.userId || 'demo-user';
+          const { address, nickname } = await c.req.json();
+          logger?.info('➕ [Tracked Wallets] POST request', { userId, address });
+          
+          try {
+            const { db } = await import('../db/client.js');
+            const { trackedWallets } = await import('../db/schema.js');
+            const { eq } = await import('drizzle-orm');
+            const { randomBytes } = await import('crypto');
+            
+            // Check limit (max 5 wallets)
+            const existing = await db
+              .select()
+              .from(trackedWallets)
+              .where(eq(trackedWallets.userId, userId));
+            
+            if (existing.length >= 5) {
+              return c.json({ 
+                success: false, 
+                message: 'Maximum 5 wallets allowed' 
+              }, 400);
+            }
+            
+            // Check for duplicate address
+            const duplicate = existing.find(w => w.address === address);
+            if (duplicate) {
+              return c.json({ 
+                success: false, 
+                message: 'Wallet already tracked' 
+              }, 400);
+            }
+            
+            // Fetch balance from Helius
+            let balance = null;
+            try {
+              const response = await fetch(
+                `https://api.helius.xyz/v0/addresses/${address}/balances?api-key=demo`,
+                { method: 'GET' }
+              );
+              const data = await response.json();
+              balance = JSON.stringify(data);
+            } catch (err) {
+              logger?.warn('Failed to fetch balance, saving wallet anyway');
+            }
+            
+            // Insert wallet
+            const id = randomBytes(16).toString('hex');
+            await db.insert(trackedWallets).values({
+              id,
+              userId,
+              address,
+              nickname: nickname || null,
+              balance,
+              lastUpdated: new Date(),
+              createdAt: new Date()
+            });
+            
+            return c.json({ 
+              success: true, 
+              message: 'Wallet added',
+              wallet: { id, address, nickname, balance: balance ? JSON.parse(balance) : null }
+            });
+          } catch (error: any) {
+            logger?.error('❌ [Tracked Wallets] POST error', { error: error.message });
+            return c.json({ success: false, message: 'Failed to add wallet' }, 500);
+          }
+        }
+      },
+      {
+        path: "/api/tracked-wallets/:id",
+        method: "DELETE",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          
+          const { checkAccessSession } = await import('./middleware/accessControl.js');
+          const sessionCheck = await checkAccessSession(c);
+          if (!sessionCheck.valid) {
+            return c.json({ error: 'Unauthorized' }, 401);
+          }
+          
+          const userId = sessionCheck.userId || 'demo-user';
+          const walletId = c.req.param('id');
+          logger?.info('🗑️ [Tracked Wallets] DELETE request', { userId, walletId });
+          
+          try {
+            const { db } = await import('../db/client.js');
+            const { trackedWallets } = await import('../db/schema.js');
+            const { eq, and } = await import('drizzle-orm');
+            
+            await db
+              .delete(trackedWallets)
+              .where(and(
+                eq(trackedWallets.id, walletId),
+                eq(trackedWallets.userId, userId)
+              ));
+            
+            return c.json({ success: true, message: 'Wallet removed' });
+          } catch (error: any) {
+            logger?.error('❌ [Tracked Wallets] DELETE error', { error: error.message });
+            return c.json({ success: false, message: 'Failed to remove wallet' }, 500);
+          }
+        }
+      },
+      {
+        path: "/api/tracked-wallets/clear",
+        method: "DELETE",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          
+          const { checkAccessSession } = await import('./middleware/accessControl.js');
+          const sessionCheck = await checkAccessSession(c);
+          if (!sessionCheck.valid) {
+            return c.json({ error: 'Unauthorized' }, 401);
+          }
+          
+          const userId = sessionCheck.userId || 'demo-user';
+          logger?.info('🧹 [Tracked Wallets] CLEAR request', { userId });
+          
+          try {
+            const { db } = await import('../db/client.js');
+            const { trackedWallets } = await import('../db/schema.js');
+            const { eq } = await import('drizzle-orm');
+            
+            await db
+              .delete(trackedWallets)
+              .where(eq(trackedWallets.userId, userId));
+            
+            return c.json({ success: true, message: 'All wallets cleared' });
+          } catch (error: any) {
+            logger?.error('❌ [Tracked Wallets] CLEAR error', { error: error.message });
+            return c.json({ success: false, message: 'Failed to clear wallets' }, 500);
+          }
+        }
+      },
       {
         path: "/api/wallet/connect",
         method: "POST",

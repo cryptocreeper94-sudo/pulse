@@ -2938,3 +2938,153 @@ setTimeout(() => {
   renderFeaturedBanner();
   showTokenOfDay();
 }, 1000);
+
+// ===== TRACKED WALLETS FEATURE (Read-Only, Up to 5 Wallets) =====
+async function loadTrackedWallets() {
+  const list = document.getElementById('trackedWalletsList');
+  list.innerHTML = '<div class="loading-spinner"><div class="spinner"></div></div>';
+  
+  try {
+    const response = await fetch(`${API_BASE}/api/tracked-wallets`, { headers: getAuthHeaders() });
+    const data = await response.json();
+    
+    if (!data.wallets || data.wallets.length === 0) {
+      list.innerHTML = `
+        <div class="empty-state" style="padding: 40px 20px; text-align: center;">
+          <div class="empty-icon">💰</div>
+          <p style="color: var(--text-secondary);">No wallets tracked yet</p>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 8px;">Add up to 5 wallet addresses to track</p>
+        </div>
+      `;
+      return;
+    }
+    
+    list.innerHTML = data.wallets.map(wallet => {
+      const shortAddr = `${wallet.address.slice(0,6)}...${wallet.address.slice(-4)}`;
+      const balance = wallet.balance?.tokens?.length || 0;
+      const solBalance = wallet.balance?.nativeBalance || 0;
+      
+      return `
+        <div class="wallet-card" style="margin-bottom: 12px; border-left: 3px solid #A855F7;">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+            <div style="flex: 1;">
+              ${wallet.nickname ? `<div style="font-weight: 600; margin-bottom: 4px;">${wallet.nickname}</div>` : ''}
+              <div style="font-family: monospace; font-size: 0.85rem; color: var(--text-secondary);">${shortAddr}</div>
+            </div>
+            <button onclick="removeTrackedWallet('${wallet.id}')" style="padding: 4px 8px; background: rgba(230, 57, 70, 0.2); border: 1px solid #E63946; border-radius: 6px; color: #E63946; font-size: 0.8rem; cursor: pointer;">
+              🗑️
+            </button>
+          </div>
+          <div style="display: flex; gap: 16px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1);">
+            <div>
+              <div style="font-size: 0.75rem; color: var(--text-secondary);">SOL Balance</div>
+              <div style="font-weight: 600;">${(solBalance / 1e9).toFixed(4)} SOL</div>
+            </div>
+            <div>
+              <div style="font-size: 0.75rem; color: var(--text-secondary);">Tokens</div>
+              <div style="font-weight: 600;">${balance} tokens</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } catch (error) {
+    console.error('Load wallets error:', error);
+    showToast('Error loading wallets');
+    list.innerHTML = '<div class="empty-state"><p>Error loading wallets</p></div>';
+  }
+}
+
+window.removeTrackedWallet = async function(walletId) {
+  if (!confirm('Remove this wallet?')) return;
+  
+  try {
+    const response = await fetch(`${API_BASE}/api/tracked-wallets/${walletId}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    
+    const data = await response.json();
+    if (data.success) {
+      showToast('✅ Wallet removed');
+      if (tg) tg.HapticFeedback?.notificationOccurred('success');
+      await loadTrackedWallets();
+    } else {
+      showToast('❌ ' + (data.message || 'Failed to remove wallet'));
+    }
+  } catch (error) {
+    console.error('Remove wallet error:', error);
+    showToast('Error removing wallet');
+  }
+};
+
+// Add Wallet Button Handler
+document.getElementById('addWalletBtn')?.addEventListener('click', async () => {
+  const address = document.getElementById('walletAddressInput').value.trim();
+  const nickname = document.getElementById('walletNicknameInput').value.trim();
+  
+  if (!address) {
+    showToast('Please enter a wallet address');
+    return;
+  }
+  
+  try {
+    showLoading();
+    const response = await fetch(`${API_BASE}/api/tracked-wallets`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ address, nickname: nickname || null })
+    });
+    
+    const data = await response.json();
+    hideLoading();
+    
+    if (data.success) {
+      showToast('✅ Wallet added!');
+      if (tg) tg.HapticFeedback?.notificationOccurred('success');
+      document.getElementById('walletAddressInput').value = '';
+      document.getElementById('walletNicknameInput').value = '';
+      await loadTrackedWallets();
+    } else {
+      showToast('❌ ' + (data.message || 'Failed to add wallet'));
+    }
+  } catch (error) {
+    hideLoading();
+    console.error('Add wallet error:', error);
+    showToast('Error adding wallet');
+  }
+});
+
+// Clear All Wallets Button Handler
+document.getElementById('clearAllWalletsBtn')?.addEventListener('click', async () => {
+  if (!confirm('Clear all tracked wallets? This cannot be undone.')) return;
+  
+  try {
+    showLoading();
+    const response = await fetch(`${API_BASE}/api/tracked-wallets/clear`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    
+    const data = await response.json();
+    hideLoading();
+    
+    if (data.success) {
+      showToast('✅ All wallets cleared');
+      if (tg) tg.HapticFeedback?.notificationOccurred('warning');
+      await loadTrackedWallets();
+    } else {
+      showToast('❌ Failed to clear wallets');
+    }
+  } catch (error) {
+    hideLoading();
+    console.error('Clear wallets error:', error);
+    showToast('Error clearing wallets');
+  }
+});
+
+// Update loadWallet to use tracked wallets
+const originalLoadWallet = loadWallet;
+loadWallet = async function() {
+  await loadTrackedWallets();
+};

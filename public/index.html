@@ -172,121 +172,38 @@
       <!-- Wallet Tab -->
       <div id="wallet" class="tab-pane">
         <div class="section-header">
-          <h2>💰 Wallet</h2>
+          <h2>💰 Tracked Wallets</h2>
+          <button class="action-btn" id="clearAllWalletsBtn" style="background: rgba(230, 57, 70, 0.2); border-color: #E63946;">
+            🧹 Clear All
+          </button>
         </div>
         <div id="walletContent" class="wallet-content">
-          <!-- Connection Section -->
-          <div class="wallet-card" id="walletConnectCard">
-            <div class="wallet-status">
-              <span class="status-label">Status:</span>
-              <span class="status-badge disconnected" id="walletStatus">Not Connected</span>
-            </div>
-            
-            <div id="walletInputSection">
-              <label style="display: block; margin-bottom: 8px; color: var(--text-secondary); font-size: 0.9rem;">
-                Enter your Phantom wallet public address:
-              </label>
-              <input 
-                type="text" 
-                id="walletAddressInput" 
-                placeholder="e.g., 7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"
-                style="width: 100%; padding: 12px; border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 8px; background: rgba(255,255,255,0.05); color: white; font-size: 0.9rem; margin-bottom: 12px; font-family: monospace;"
-              />
-              <button class="primary-btn" id="connectWalletBtn" style="width: 100%;">
-                Connect Wallet
-              </button>
-              <p class="wallet-hint" style="margin-top: 8px; font-size: 0.85rem; color: var(--text-secondary); text-align: center;">
-                🔒 We only store your public address (read-only, 100% safe)
-              </p>
-            </div>
-
-            <div id="walletDisconnectSection" class="hidden">
-              <div style="background: rgba(74, 222, 128, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
-                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 4px;">Connected Address:</div>
-                <div style="font-family: monospace; font-size: 0.9rem; color: #4ADE80; word-break: break-all;" id="fullWalletAddress"></div>
-              </div>
-              <button class="action-btn" id="disconnectWalletBtn" style="width: 100%; background: rgba(230, 57, 70, 0.2); border-color: #E63946;">
-                Disconnect Wallet
-              </button>
-            </div>
+          <!-- Add Wallet Section -->
+          <div class="wallet-card" style="margin-bottom: 20px;">
+            <h3 style="margin-bottom: 12px; font-size: 1rem;">➕ Add Wallet (Read-Only)</h3>
+            <input 
+              type="text" 
+              id="walletAddressInput" 
+              placeholder="Paste Solana wallet address"
+              style="width: 100%; padding: 12px; border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 8px; background: rgba(255,255,255,0.05); color: white; font-size: 0.9rem; margin-bottom: 8px; font-family: monospace;"
+            />
+            <input 
+              type="text" 
+              id="walletNicknameInput" 
+              placeholder="Nickname (optional)"
+              style="width: 100%; padding: 12px; border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 8px; background: rgba(255,255,255,0.05); color: white; font-size: 0.9rem; margin-bottom: 12px;"
+            />
+            <button class="primary-btn" id="addWalletBtn" style="width: 100%;">
+              Track Wallet
+            </button>
+            <p style="margin-top: 8px; font-size: 0.75rem; color: var(--text-secondary); text-align: center;">
+              🔒 Read-only tracking • Up to 5 wallets • Auto-saves balances
+            </p>
           </div>
 
-          <!-- Balance & Info Section -->
-          <div id="walletBalance" class="wallet-balance hidden">
-            <h3 style="margin-bottom: 16px;">💎 Balance</h3>
-            <div class="balance-card">
-              <div class="balance-item">
-                <span class="balance-label">SOL</span>
-                <span class="balance-value" id="solBalance">0.00</span>
-              </div>
-            </div>
-            <button class="action-btn" id="refreshBalanceBtn" style="width: 100%; margin-top: 12px;">
-              🔄 Refresh Balance
-            </button>
-          </div>
-
-          <!-- Limit Orders Section -->
-          <div id="limitOrdersSection" class="hidden" style="margin-top: 20px;">
-            <h3 style="margin-bottom: 16px;">📊 Limit Orders</h3>
-            
-            <div id="ordersList" style="margin-bottom: 16px;">
-              <div class="empty-state" style="text-align: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 8px;">
-                <p style="color: var(--text-secondary); font-size: 0.9rem;">No active orders</p>
-              </div>
-            </div>
-
-            <button class="action-btn" id="createOrderBtn" style="width: 100%;">
-              + Create Limit Order
-            </button>
-
-            <div id="createOrderForm" class="hidden" style="margin-top: 16px; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 8px;">
-              <h4 style="margin-bottom: 12px; font-size: 0.9rem;">New Limit Order</h4>
-              <select id="orderType" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 6px; background: rgba(255,255,255,0.05); color: white;">
-                <option value="buy">Buy</option>
-                <option value="sell">Sell</option>
-              </select>
-              <input type="text" id="orderTicker" placeholder="Token (e.g., BONK)" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 6px; background: rgba(255,255,255,0.05); color: white;" />
-              <input type="number" id="orderPrice" placeholder="Target Price ($)" step="0.0001" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 6px; background: rgba(255,255,255,0.05); color: white;" />
-              <input type="number" id="orderAmount" placeholder="Amount (SOL or tokens)" step="0.01" style="width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 6px; background: rgba(255,255,255,0.05); color: white;" />
-              <div style="display: flex; gap: 8px;">
-                <button class="action-btn" id="submitOrderBtn" style="flex: 1;">Create</button>
-                <button class="action-btn" id="cancelOrderFormBtn" style="flex: 1; background: rgba(230, 57, 70, 0.2); border-color: #E63946;">Cancel</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Token Sniping Section -->
-          <div id="snipingSection" class="hidden" style="margin-top: 20px;">
-            <h3 style="margin-bottom: 16px;">🎯 Token Sniping</h3>
-            
-            <div style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <span style="font-size: 0.9rem;">Status:</span>
-                <span id="snipingStatus" style="padding: 4px 12px; border-radius: 12px; background: rgba(230, 57, 70, 0.2); color: #E63946; font-size: 0.85rem;">Disabled</span>
-              </div>
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 0.85rem;">
-                <div>
-                  <div style="color: var(--text-secondary);">Min Liquidity</div>
-                  <div id="snipingMinLiq" style="font-weight: 600;">$10,000</div>
-                </div>
-                <div>
-                  <div style="color: var(--text-secondary);">Max Rug Score</div>
-                  <div id="snipingMaxRug" style="font-weight: 600;">30/100</div>
-                </div>
-                <div>
-                  <div style="color: var(--text-secondary);">Max Buy Amount</div>
-                  <div id="snipingMaxBuy" style="font-weight: 600;">0.1 SOL</div>
-                </div>
-                <div>
-                  <div style="color: var(--text-secondary);">Auto-Execute</div>
-                  <div id="snipingAutoExecute" style="font-weight: 600;">OFF</div>
-                </div>
-              </div>
-            </div>
-
-            <button class="action-btn" id="configureSnipingBtn" style="width: 100%;">
-              ⚙️ Configure Sniping
-            </button>
+          <!-- Wallets List -->
+          <div id="trackedWalletsList">
+            <div class="loading-spinner"><div class="spinner"></div></div>
           </div>
         </div>
       </div>
