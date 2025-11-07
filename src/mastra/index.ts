@@ -834,6 +834,102 @@ export const mastra = new Mastra({
           return c.text('Image not found. Tried paths: ' + possiblePaths.join(', '), 404);
         },
       },
+      // Simple download page for the banner
+      {
+        path: "/download-banner",
+        method: "GET",
+        createHandler: async () => async (c: any) => {
+          const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Download DarkWave Banner</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      text-align: center;
+      max-width: 700px;
+    }
+    h1 {
+      color: #A855F7;
+      margin-bottom: 30px;
+    }
+    .banner-preview {
+      width: 100%;
+      max-width: 640px;
+      border: 2px solid #A855F7;
+      border-radius: 12px;
+      margin: 20px 0;
+      box-shadow: 0 8px 32px rgba(168, 85, 247, 0.3);
+    }
+    .download-btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #E63946, #A855F7);
+      color: white;
+      padding: 15px 40px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: bold;
+      margin: 20px 0;
+      transition: transform 0.2s;
+    }
+    .download-btn:hover {
+      transform: scale(1.05);
+    }
+    .instructions {
+      margin-top: 30px;
+      padding: 20px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+      text-align: left;
+    }
+    .instructions h3 {
+      color: #A855F7;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🌊 DarkWave Banner Download</h1>
+    <p>Your Telegram Mini App banner is ready!</p>
+    
+    <img src="/telegram-banner.png" class="banner-preview" alt="DarkWave Banner">
+    
+    <a href="/telegram-banner.png" download="darkwave-telegram-banner.png" class="download-btn">
+      ⬇️ Download Banner (640x360)
+    </a>
+    
+    <div class="instructions">
+      <h3>📋 How to Use This Banner:</h3>
+      <ol>
+        <li>Tap the "Download Banner" button above</li>
+        <li>The image will save to your device</li>
+        <li>Open Telegram and find @BotFather</li>
+        <li>Send command: <code>/newapp</code></li>
+        <li>Choose your bot: <code>@Darkwave_RSI_Bot</code></li>
+        <li>Upload the banner image you just downloaded</li>
+        <li>Follow the prompts to complete setup</li>
+      </ol>
+    </div>
+  </div>
+</body>
+</html>
+          `;
+          return c.html(html);
+        },
+      },
       // Mini App static files - Helper to resolve public files in both dev and deployment
       {
         path: "/mini-app",
