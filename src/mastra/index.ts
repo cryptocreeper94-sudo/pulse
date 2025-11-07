@@ -1277,11 +1277,27 @@ export const mastra = new Mastra({
               return c.json({ error: 'No signature' }, 400);
             }
             
-            // Verify webhook signature (in production, use STRIPE_WEBHOOK_SECRET)
-            // For now, just parse the event
-            const event = JSON.parse(rawBody);
+            // Verify webhook signature with STRIPE_WEBHOOK_SECRET
+            const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
             
-            logger?.info('🔔 [Stripe] Webhook received', { type: event.type });
+            if (!webhookSecret) {
+              logger?.error('🚨 [Stripe] STRIPE_WEBHOOK_SECRET not configured - rejecting webhook for security');
+              logger?.error('🔧 [Stripe] Set STRIPE_WEBHOOK_SECRET environment variable to enable webhook processing');
+              return c.json({ 
+                error: 'Webhook secret not configured',
+                message: 'Set STRIPE_WEBHOOK_SECRET environment variable' 
+              }, 500);
+            }
+            
+            // SECURE: Verify webhook signature
+            let event;
+            try {
+              event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
+              logger?.info('✅ [Stripe] Webhook signature verified', { type: event.type });
+            } catch (err: any) {
+              logger?.error('❌ [Stripe] Webhook signature verification failed', { error: err.message });
+              return c.json({ error: 'Invalid signature' }, 400);
+            }
             
             // Handle checkout.session.completed
             if (event.type === 'checkout.session.completed') {

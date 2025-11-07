@@ -360,14 +360,15 @@ body {
 .trending-item {
   flex-shrink: 0;
   width: 140px;
-  background: linear-gradient(135deg, rgba(107, 0, 0, 0.15), rgba(26, 10, 31, 0.15));
-  border: 2px solid rgba(26, 10, 31, 0.3);
+  background: linear-gradient(135deg, rgba(107, 0, 0, 0.4), rgba(26, 10, 31, 0.5));
+  border: 2px solid rgba(168, 85, 247, 0.3);
   border-radius: 12px;
   padding: 0.75rem;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .trending-item::before {
