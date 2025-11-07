@@ -20,6 +20,59 @@
   --gradient-glow: linear-gradient(135deg, rgba(230, 57, 70, 0.2), rgba(168, 85, 247, 0.2));
 }
 
+/* Tooltips for Technical Terms */
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted var(--primary-purple);
+  cursor: help;
+}
+
+.tooltip .tooltip-text {
+  visibility: hidden;
+  width: 280px;
+  background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+  color: var(--text-primary);
+  text-align: left;
+  border-radius: 8px;
+  padding: 12px;
+  position: absolute;
+  z-index: 1000;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -140px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  border: 2px solid var(--primary-purple);
+  box-shadow: 0 8px 24px rgba(168, 85, 247, 0.3);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.tooltip .tooltip-text::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -6px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: var(--primary-purple) transparent transparent transparent;
+}
+
+.tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+@media (max-width: 480px) {
+  .tooltip .tooltip-text {
+    width: 220px;
+    margin-left: -110px;
+    font-size: 0.75rem;
+  }
+}
+
 * {
   margin: 0;
   padding: 0;

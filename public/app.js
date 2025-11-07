@@ -18,6 +18,35 @@ const state = {
   currentAnalysis: null
 };
 
+// Technical term tooltips
+const TOOLTIPS = {
+  'RSI': 'Relative Strength Index - Momentum indicator measuring overbought (>70) or oversold (<30) conditions on a 0-100 scale',
+  'MACD': 'Moving Average Convergence Divergence - Trend-following momentum indicator showing relationship between two moving averages',
+  'EMA': 'Exponential Moving Average - Weighted average giving more importance to recent prices, responds faster to price changes',
+  'SMA': 'Simple Moving Average - Average price over a specific time period, smooths out price data to identify trends',
+  'Bollinger Bands': 'Volatility indicator with upper/lower bands around a moving average - price touching bands suggests overbought/oversold',
+  'Volume': 'Number of shares/coins traded - high volume confirms trend strength, low volume suggests weak trends',
+  'Support': 'Price level where buying interest prevents further decline - acts as a floor',
+  'Resistance': 'Price level where selling interest prevents further gains - acts as a ceiling',
+  'Liquidity': 'How easily an asset can be bought/sold without affecting price - higher is better for trading',
+  'Market Cap': 'Total value of all coins/shares in circulation - calculated as price × circulating supply'
+};
+
+// Add tooltips to text containing technical terms
+function addTooltips(text) {
+  if (!text) return text;
+  let result = text;
+  
+  for (const [term, definition] of Object.entries(TOOLTIPS)) {
+    const regex = new RegExp(`\\b${term}\\b`, 'gi');
+    result = result.replace(regex, match => {
+      return `<span class="tooltip">${match}<span class="tooltip-text">${definition}</span></span>`;
+    });
+  }
+  
+  return result;
+}
+
 // DOM Elements
 const searchInput = document.getElementById('searchInput');
 const searchBtn = document.getElementById('searchBtn');
@@ -146,11 +175,11 @@ function displayAnalysis(data) {
       <h3 style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 10px;">📊 CORE INDICATORS</h3>
       <div class="indicators-grid">
         <div class="indicator-item">
-          <div class="indicator-label">RSI (14)</div>
+          <div class="indicator-label"><span class="tooltip">RSI<span class="tooltip-text">Relative Strength Index - Momentum indicator measuring overbought (>70) or oversold (<30) conditions on a 0-100 scale</span></span> (14)</div>
           <div class="indicator-value" style="color: ${data.rsi > 70 ? '#E63946' : data.rsi < 30 ? '#4ADE80' : '#fff'}">${data.rsi?.toFixed(1) || 'N/A'}</div>
         </div>
         <div class="indicator-item">
-          <div class="indicator-label">MACD</div>
+          <div class="indicator-label"><span class="tooltip">MACD<span class="tooltip-text">Moving Average Convergence Divergence - Trend-following momentum indicator showing relationship between two moving averages</span></span></div>
           <div class="indicator-value">${data.macd?.value?.toFixed(2) || 'N/A'}</div>
           <div style="font-size:0.7rem; color: var(--text-secondary);">Signal: ${data.macd?.signal?.toFixed(2) || 'N/A'}</div>
         </div>
@@ -172,19 +201,19 @@ function displayAnalysis(data) {
       <h3 style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 10px;">📈 MOVING AVERAGES</h3>
       <div class="indicators-grid">
         <div class="indicator-item">
-          <div class="indicator-label">EMA 50</div>
+          <div class="indicator-label"><span class="tooltip">EMA<span class="tooltip-text">Exponential Moving Average - Weighted average giving more importance to recent prices, responds faster to price changes</span></span> 50</div>
           <div class="indicator-value">$${data.ema50?.toFixed(2) || 'N/A'}</div>
         </div>
         <div class="indicator-item">
-          <div class="indicator-label">EMA 200</div>
+          <div class="indicator-label"><span class="tooltip">EMA<span class="tooltip-text">Exponential Moving Average - Weighted average giving more importance to recent prices, responds faster to price changes</span></span> 200</div>
           <div class="indicator-value">$${data.ema200?.toFixed(2) || 'N/A'}</div>
         </div>
         <div class="indicator-item">
-          <div class="indicator-label">SMA 50</div>
+          <div class="indicator-label"><span class="tooltip">SMA<span class="tooltip-text">Simple Moving Average - Average price over a specific time period, smooths out price data to identify trends</span></span> 50</div>
           <div class="indicator-value">$${data.sma50?.toFixed(2) || 'N/A'}</div>
         </div>
         <div class="indicator-item">
-          <div class="indicator-label">SMA 200</div>
+          <div class="indicator-label"><span class="tooltip">SMA<span class="tooltip-text">Simple Moving Average - Average price over a specific time period, smooths out price data to identify trends</span></span> 200</div>
           <div class="indicator-value">$${data.sma200?.toFixed(2) || 'N/A'}</div>
         </div>
       </div>
@@ -217,7 +246,7 @@ function displayAnalysis(data) {
           <div style="font-size:0.7rem; color: var(--text-secondary);">${data.spikeScore?.signal || 'NO_SIGNAL'}</div>
         </div>
         <div class="indicator-item">
-          <div class="indicator-label">Volume</div>
+          <div class="indicator-label"><span class="tooltip">Volume<span class="tooltip-text">Number of shares/coins traded - high volume confirms trend strength, low volume suggests weak trends</span></span></div>
           <div class="indicator-value">${formatVolume(data.volume?.current)}</div>
           <div style="font-size:0.7rem; color: ${data.volume?.changePercent >= 0 ? '#4ADE80' : '#E63946'};">
             ${data.volume?.changePercent >= 0 ? '+' : ''}${data.volume?.changePercent?.toFixed(1) || '0'}% vs avg
@@ -230,11 +259,11 @@ function displayAnalysis(data) {
       <h3 style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 10px;">🎯 SUPPORT & RESISTANCE</h3>
       <div class="indicators-grid">
         <div class="indicator-item">
-          <div class="indicator-label">Support</div>
+          <div class="indicator-label"><span class="tooltip">Support<span class="tooltip-text">Price level where buying interest prevents further decline - acts as a floor</span></span></div>
           <div class="indicator-value" style="color: #4ADE80;">$${data.support?.toFixed(2) || 'N/A'}</div>
         </div>
         <div class="indicator-item">
-          <div class="indicator-label">Resistance</div>
+          <div class="indicator-label"><span class="tooltip">Resistance<span class="tooltip-text">Price level where selling interest prevents further gains - acts as a ceiling</span></span></div>
           <div class="indicator-value" style="color: #E63946;">$${data.resistance?.toFixed(2) || 'N/A'}</div>
         </div>
       </div>
