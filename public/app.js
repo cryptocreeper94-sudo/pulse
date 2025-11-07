@@ -936,6 +936,11 @@ async function performSearch() {
   const query = searchInput.value.trim();
   if (!query) return;
   
+  // Check usage limits for free users
+  if (!await checkUsageLimit('search')) {
+    return;
+  }
+  
   showLoading();
   if (tg) tg.HapticFeedback?.impactOccurred('light');
   
@@ -952,6 +957,72 @@ async function performSearch() {
   } finally {
     hideLoading();
   }
+}
+
+// Usage limit checking for feature gates
+async function checkUsageLimit(feature) {
+  const isPremium = state.subscription.plan === 'premium' && state.subscription.status === 'active';
+  
+  if (isPremium) {
+    return true; // Premium users have unlimited access
+  }
+  
+  // Free users have limits
+  const limits = {
+    search: 10, // 10 searches per day
+    alert: 3    // 3 price alerts max
+  };
+  
+  // Check local storage for today's usage
+  const today = new Date().toDateString();
+  const usageKey = `usage_${feature}_${today}`;
+  const currentUsage = parseInt(localStorage.getItem(usageKey) || '0');
+  
+  if (currentUsage >= limits[feature]) {
+    showUpgradeLimitModal(feature, limits[feature]);
+    return false;
+  }
+  
+  // Increment usage
+  localStorage.setItem(usageKey, (currentUsage + 1).toString());
+  return true;
+}
+
+function showUpgradeLimitModal(feature, limit) {
+  const featureNames = {
+    search: 'searches',
+    alert: 'price alerts'
+  };
+  
+  const modal = document.createElement('div');
+  modal.className = 'modal-backdrop';
+  modal.innerHTML = `
+    <div class="modal-content" style="max-width: 400px; text-align: center;">
+      <div style="font-size: 4rem; margin-bottom: 15px;">🚫</div>
+      <h3 style="margin-bottom: 15px;">Daily Limit Reached</h3>
+      <p style="margin-bottom: 20px; opacity: 0.9;">
+        You've used all ${limit} ${featureNames[feature]} on the free plan today.
+      </p>
+      <p style="margin-bottom: 25px; color: #FFD700; font-weight: bold;">
+        Upgrade to Premium for unlimited ${featureNames[feature]}! 🚀
+      </p>
+      
+      <button class="action-btn" style="background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; font-weight: bold; width: 100%; margin-bottom: 10px;" onclick="this.closest('.modal-backdrop').remove(); showUpgradeModal();">
+        👑 Upgrade to Premium
+      </button>
+      
+      <button class="secondary-btn" style="width: 100%;" onclick="this.closest('.modal-backdrop').remove()">
+        Close
+      </button>
+      
+      <p style="margin-top: 15px; font-size: 0.85rem; opacity: 0.6;">
+        Limit resets tomorrow
+      </p>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  if (tg) tg.HapticFeedback?.impactOccurred('heavy');
 }
 
 // Search for traditional assets (stocks, crypto, DEX pairs)
@@ -1971,6 +2042,11 @@ async function deleteAlert(alertId) {
 
 // Add alert button handler
 window.addPriceAlert = async function() {
+  // Check usage limits for free users
+  if (!await checkUsageLimit('alert')) {
+    return;
+  }
+  
   const ticker = prompt('Enter ticker symbol (e.g., BTC, ETH):');
   if (!ticker) return;
   

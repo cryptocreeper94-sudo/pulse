@@ -1,4 +1,4 @@
-import { pgTable, varchar, timestamp, boolean, text } from 'drizzle-orm/pg-core';
+import { pgTable, varchar, timestamp, boolean, text, integer } from 'drizzle-orm/pg-core';
 
 export const subscriptions = pgTable('subscriptions', {
   userId: varchar('user_id', { length: 255 }).primaryKey(),
@@ -16,8 +16,8 @@ export const subscriptions = pgTable('subscriptions', {
 
 export const userUsage = pgTable('user_usage', {
   userId: varchar('user_id', { length: 255 }).primaryKey(),
-  searchCount: varchar('search_count', { length: 20 }).notNull().default('0'),
-  alertCount: varchar('alert_count', { length: 20 }).notNull().default('0'),
+  searchCount: integer('search_count').notNull().default(0),
+  alertCount: integer('alert_count').notNull().default(0),
   lastResetDate: timestamp('last_reset_date').defaultNow().notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
