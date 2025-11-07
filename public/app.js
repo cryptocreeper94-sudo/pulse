@@ -155,12 +155,12 @@ const FEATURED_TOKENS = [
     featured: true
   },
   
-  // Token #12: (Not on Dexscreener yet - please provide name/symbol)
+  // Token #12: Rhodium
   { 
     address: 'HEkEQd1nwvD7qiRHcwLEw9d7bnsg2PffrkZrWMkKpump',
-    name: 'Token Name TBD',
-    symbol: '$TBD',
-    description: 'Token description coming soon',
+    name: 'Rhodium',
+    symbol: '$RHODI',
+    description: 'Precious metal token on Solana',
     platform: 'pumpfun',
     twitter: '',
     telegram: '',
