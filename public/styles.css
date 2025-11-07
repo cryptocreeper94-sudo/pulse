@@ -114,6 +114,42 @@ body {
   z-index: 100;
 }
 
+/* Banner Header Style */
+.banner-header {
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+  background: #000;
+}
+
+.header-banner-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  max-height: 180px;
+}
+
+.header-actions-overlay {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Mobile: Reduce banner height */
+@media (max-width: 480px) {
+  .header-banner-image {
+    max-height: 120px;
+  }
+  
+  .header-actions-overlay {
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+}
+
 .logo-container {
   position: relative;
 }
