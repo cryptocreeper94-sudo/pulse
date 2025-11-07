@@ -48,31 +48,9 @@ export const priceAlertTool = createTool({
     });
 
     try {
-      // Get current alerts from memory storage (PostgreSQL-backed)
-      let alerts: any[] = [];
-      const memory = mastra?.memory;
-
-      try {
-        if (memory) {
-          const messages = await memory.getMessages({
-            resourceId: userId,
-            threadId: ALERTS_KEY,
-          });
-
-          if (messages && messages.length > 0) {
-            const lastMessage = messages[messages.length - 1];
-            if (lastMessage.content) {
-              alerts = JSON.parse(lastMessage.content as string);
-            }
-          }
-        } else {
-          alerts = alertsCache.get(userId) || [];
-          logger?.info('📝 [PriceAlerts] Using in-memory cache');
-        }
-      } catch (e) {
-        logger?.warn('⚠️ [PriceAlerts] No existing alerts found, starting fresh');
-        alerts = [];
-      }
+      // Use in-memory cache for alerts (simple and fast)
+      let alerts: any[] = alertsCache.get(userId) || [];
+      logger?.info('📝 [PriceAlerts] Using in-memory cache', { count: alerts.length });
 
       // Handle different actions
       switch (action) {
@@ -107,19 +85,8 @@ export const priceAlertTool = createTool({
 
           alerts.push(newAlert);
 
-          // Save to persistent storage
-          if (memory) {
-            await memory.saveMessages({
-              messages: [{
-                role: 'assistant',
-                content: JSON.stringify(alerts),
-              }],
-              resourceId: userId,
-              threadId: ALERTS_KEY,
-            });
-          } else {
-            alertsCache.set(userId, alerts);
-          }
+          // Save to in-memory cache
+          alertsCache.set(userId, alerts);
 
           logger?.info('✅ [PriceAlerts] Alert created successfully', { alert: newAlert });
           return {
@@ -147,6 +114,9 @@ export const priceAlertTool = createTool({
 
           const initialCount = alerts.length;
           alerts = alerts.filter((a: any) => a.id !== alertId);
+
+          // Save updated list
+          alertsCache.set(userId, alerts);
 
           if (alerts.length === initialCount) {
             logger?.warn('⚠️ [PriceAlerts] Alert not found', { alertId });
