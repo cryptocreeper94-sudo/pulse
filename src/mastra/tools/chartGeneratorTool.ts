@@ -185,7 +185,9 @@ export const chartGeneratorTool = createTool({
       const encodedChart = encodeURIComponent(chartJson);
 
       // Generate QuickChart.io URL (free service, no API key needed)
-      const chartUrl = `https://quickchart.io/chart?width=800&height=400&chart=${encodedChart}`;
+      // For candlestick charts, add the financial chart plugin
+      const pluginParam = chartType === 'candlestick' ? '&plugins=chartjs-chart-financial' : '';
+      const chartUrl = `https://quickchart.io/chart?width=800&height=400&chart=${encodedChart}${pluginParam}`;
 
       logger?.info('✅ [ChartGeneratorTool] Chart generated successfully', { 
         ticker: context.ticker,
