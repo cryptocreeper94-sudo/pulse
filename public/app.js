@@ -119,6 +119,18 @@ const FEATURED_TOKENS = [
     featured: true
   },
   
+  // Token #9: Liquidation (Crypto Cat)
+  { 
+    address: '4BqYgxjhcc3ew44WEkaxzxxtSUpL62emzmRvuraxpump',
+    name: 'Liquidation (Crypto Cat)',
+    symbol: '$REKTMEOW',
+    description: 'When crypto cats get liquidated',
+    platform: 'pumpfun',
+    twitter: '',
+    telegram: '',
+    featured: true
+  },
+  
   // Add more tokens below as you send them:
   
 ];
