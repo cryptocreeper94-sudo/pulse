@@ -804,18 +804,18 @@ export const mastra = new Mastra({
           }
         },
       },
-      // Download platinum coin image
+      // Download DarkWave banner image for Telegram
       {
-        path: "/download-coin.png",
+        path: "/telegram-banner.png",
         method: "GET",
         createHandler: async () => async (c: any) => {
           const fs = await import('fs/promises');
           const path = await import('path');
-          const imagePath = path.join(process.cwd(), 'public', 'darkwave-coin.png');
+          const imagePath = path.join(process.cwd(), 'public', 'darkwave-banner.png');
           try {
             const imageBuffer = await fs.readFile(imagePath);
             c.header('Content-Type', 'image/png');
-            c.header('Content-Disposition', 'inline; filename="darkwave-coin.png"');
+            c.header('Content-Disposition', 'inline; filename="darkwave-telegram-banner.png"');
             return c.body(imageBuffer);
           } catch (error) {
             return c.text('Image not found', 404);
