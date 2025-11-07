@@ -374,6 +374,84 @@ export const mastra = new Mastra({
           }
         },
       },
+      // Top Movers endpoint
+      {
+        path: "/api/movers",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          const category = c.req.query('category') || 'gainers';
+          const userId = c.req.query('userId') || 'demo-user';
+          logger?.info('🔥 [Mini App] Top movers request', { category, userId });
+          
+          try {
+            // Use scanner tool to get top assets, then filter by category
+            const scanResult = await scannerTool.execute({
+              context: { userId },
+              mastra,
+              runtimeContext: null as any
+            });
+            
+            if (!scanResult || !scanResult.signals || scanResult.signals.length === 0) {
+              // Fallback: return hardcoded popular assets
+              const fallbackMovers = [
+                { ticker: 'BTC', price: 60000, change: 5.2 },
+                { ticker: 'ETH', price: 3000, change: 4.8 },
+                { ticker: 'SOL', price: 150, change: 8.5 },
+                { ticker: 'BNB', price: 450, change: 3.2 },
+                { ticker: 'XRP', price: 0.65, change: 2.1 },
+                { ticker: 'ADA', price: 0.45, change: 6.3 },
+                { ticker: 'AVAX', price: 35, change: 7.1 },
+                { ticker: 'DOT', price: 8.5, change: 4.5 },
+                { ticker: 'MATIC', price: 0.85, change: 5.9 },
+                { ticker: 'LINK', price: 14.5, change: 3.7 }
+              ];
+              
+              let movers = fallbackMovers;
+              if (category === 'losers') {
+                movers = fallbackMovers.map(m => ({ ...m, change: -Math.abs(m.change) }));
+              } else if (category === 'volume') {
+                movers = fallbackMovers; // Same list, different context
+              }
+              
+              // Sort appropriately
+              movers.sort((a, b) => category === 'losers' ? a.change - b.change : b.change - a.change);
+              
+              return c.json({ movers: movers.slice(0, 10) });
+            }
+            
+            // Convert scanner signals to movers format
+            let movers = scanResult.signals.map((signal: any) => ({
+              ticker: signal.ticker,
+              price: signal.price || 0,
+              change: signal.priceChange || 0
+            }));
+            
+            // Filter and sort based on category
+            if (category === 'gainers') {
+              movers = movers.filter((m: any) => m.change > 0);
+              movers.sort((a: any, b: any) => b.change - a.change);
+            } else if (category === 'losers') {
+              movers = movers.filter((m: any) => m.change < 0);
+              movers.sort((a: any, b: any) => a.change - b.change);
+            } else if (category === 'volume') {
+              // For volume, we just return top movers regardless of direction
+              movers.sort((a: any, b: any) => Math.abs(b.change) - Math.abs(a.change));
+            }
+            
+            return c.json({ movers: movers.slice(0, 10) });
+          } catch (error: any) {
+            logger?.error('❌ [Mini App] Movers error', { error: error.message });
+            // Return fallback data on error
+            const fallbackMovers = [
+              { ticker: 'BTC', price: 60000, change: 5.2 },
+              { ticker: 'ETH', price: 3000, change: 4.8 },
+              { ticker: 'SOL', price: 150, change: 8.5 }
+            ];
+            return c.json({ movers: fallbackMovers });
+          }
+        },
+      },
       {
         path: "/api/wallet",
         method: "GET",

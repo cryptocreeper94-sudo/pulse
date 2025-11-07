@@ -64,6 +64,200 @@ const CATEGORY_DATA = {
   }
 };
 
+// Comprehensive Trading Glossary
+const GLOSSARY_TERMS = [
+  {
+    term: 'RSI',
+    full: 'Relative Strength Index',
+    level: 'beginner',
+    definition: 'A momentum indicator that measures the speed and magnitude of price changes on a scale of 0-100. Values above 70 suggest overbought conditions, while values below 30 indicate oversold conditions.',
+    example: 'If BTC has an RSI of 25, it may be oversold and due for a bounce upward.'
+  },
+  {
+    term: 'MACD',
+    full: 'Moving Average Convergence Divergence',
+    level: 'intermediate',
+    definition: 'A trend-following momentum indicator that shows the relationship between two exponential moving averages (12-day and 26-day). When MACD crosses above the signal line, it generates a bullish signal.',
+    example: 'A MACD crossover from -2.5 to +1.2 suggests strengthening upward momentum.'
+  },
+  {
+    term: 'EMA',
+    full: 'Exponential Moving Average',
+    level: 'beginner',
+    definition: 'A type of moving average that gives more weight to recent prices, making it more responsive to new information than a simple moving average.',
+    example: 'The 50-day EMA is often used to identify the medium-term trend direction.'
+  },
+  {
+    term: 'SMA',
+    full: 'Simple Moving Average',
+    level: 'beginner',
+    definition: 'The average price over a specific number of periods, calculated by adding closing prices and dividing by the number of periods. Smooths out price data to identify trends.',
+    example: 'A 200-day SMA is commonly used to determine the long-term trend - prices above it suggest a bull market.'
+  },
+  {
+    term: 'Support',
+    level: 'beginner',
+    definition: 'A price level where buying interest is strong enough to prevent the price from falling further. Acts as a "floor" for the price.',
+    example: 'If ETH repeatedly bounces at $3,000, that level becomes a strong support zone.'
+  },
+  {
+    term: 'Resistance',
+    level: 'beginner',
+    definition: 'A price level where selling pressure is strong enough to prevent the price from rising higher. Acts as a "ceiling" for the price.',
+    example: 'If SOL fails to break above $150 multiple times, that becomes a resistance level.'
+  },
+  {
+    term: 'Bollinger Bands',
+    level: 'intermediate',
+    definition: 'Volatility indicator consisting of a moving average with upper and lower bands 2 standard deviations away. Price touching the upper band suggests overbought, lower band suggests oversold.',
+    example: 'When price breaks above the upper Bollinger Band, it often indicates strong momentum but potential reversal.'
+  },
+  {
+    term: 'Volume',
+    level: 'beginner',
+    definition: 'The number of shares or coins traded during a specific period. High volume confirms trend strength, while low volume suggests weak conviction.',
+    example: 'A price breakout with 3x average volume is more reliable than one with low volume.'
+  },
+  {
+    term: 'Market Cap',
+    full: 'Market Capitalization',
+    level: 'beginner',
+    definition: 'The total value of all coins or shares in circulation, calculated as price × circulating supply. Indicates the relative size of an asset.',
+    example: 'BTC with a $1.2T market cap is a blue chip, while a $50M cap coin is considered small cap.'
+  },
+  {
+    term: 'Liquidity',
+    level: 'intermediate',
+    definition: 'How easily an asset can be bought or sold without significantly affecting its price. Higher liquidity means tighter spreads and less slippage.',
+    example: 'A DEX pair with $10M liquidity will have less slippage than one with $100K.'
+  },
+  {
+    term: 'Bull Market',
+    level: 'beginner',
+    definition: 'A market condition characterized by rising prices and optimistic investor sentiment, typically defined as a 20%+ increase from recent lows.',
+    example: 'The 2021 crypto bull market saw BTC rise from $10K to $69K.'
+  },
+  {
+    term: 'Bear Market',
+    level: 'beginner',
+    definition: 'A market condition characterized by falling prices and pessimistic sentiment, typically defined as a 20%+ decline from recent highs.',
+    example: 'The 2022 bear market saw many altcoins drop 80-90% from their peaks.'
+  },
+  {
+    term: 'Breakout',
+    level: 'intermediate',
+    definition: 'When price moves above a resistance level or below a support level with increased volume, often signaling the start of a new trend.',
+    example: 'BTC breaking above $50K resistance with high volume could signal a move to $60K.'
+  },
+  {
+    term: 'Consolidation',
+    level: 'intermediate',
+    definition: 'A period where price moves sideways in a tight range, typically occurring after a strong move as the market digests gains or losses.',
+    example: 'After rallying 40%, ETH consolidated between $3,200-$3,400 for two weeks.'
+  },
+  {
+    term: 'Divergence',
+    level: 'advanced',
+    definition: 'When price and an indicator (like RSI or MACD) move in opposite directions. Bullish divergence: price makes lower lows while indicator makes higher lows. Bearish divergence: opposite.',
+    example: 'Price making new lows while RSI makes higher lows (bullish divergence) often precedes a reversal.'
+  },
+  {
+    term: 'Stop Loss',
+    level: 'beginner',
+    definition: 'An order placed to automatically sell an asset when it reaches a specific price, limiting potential losses on a trade.',
+    example: 'Setting a stop loss at $95 when buying at $100 limits your maximum loss to 5%.'
+  },
+  {
+    term: 'Take Profit',
+    level: 'beginner',
+    definition: 'An order to automatically sell an asset when it reaches a target price, locking in gains.',
+    example: 'Setting a take profit at $120 when buying at $100 secures a 20% gain.'
+  },
+  {
+    term: 'DCA',
+    full: 'Dollar-Cost Averaging',
+    level: 'beginner',
+    definition: 'An investment strategy of buying fixed dollar amounts at regular intervals regardless of price, reducing the impact of volatility.',
+    example: 'Buying $100 of BTC every week averages out your entry price over time.'
+  },
+  {
+    term: 'ATH',
+    full: 'All-Time High',
+    level: 'beginner',
+    definition: 'The highest price an asset has ever reached in its trading history.',
+    example: 'BTC\'s ATH was $69,000 in November 2021.'
+  },
+  {
+    term: 'ATL',
+    full: 'All-Time Low',
+    level: 'beginner',
+    definition: 'The lowest price an asset has ever reached since it began trading.',
+    example: 'Many altcoins hit new ATLs during the 2022 bear market.'
+  },
+  {
+    term: 'FOMO',
+    full: 'Fear Of Missing Out',
+    level: 'beginner',
+    definition: 'The anxiety of potentially missing a profitable opportunity, often leading to impulsive buying at high prices.',
+    example: 'FOMO drove many retail investors to buy BTC near $69K in 2021.'
+  },
+  {
+    term: 'FUD',
+    full: 'Fear, Uncertainty, and Doubt',
+    level: 'beginner',
+    definition: 'Negative information or rumors spread to create fear and drive prices down, sometimes deliberately by competitors or short sellers.',
+    example: 'Regulatory FUD can cause sudden price drops even without actual policy changes.'
+  },
+  {
+    term: 'Whale',
+    level: 'intermediate',
+    definition: 'An individual or entity that holds a very large amount of a cryptocurrency, capable of moving the market with their trades.',
+    example: 'A whale selling 10,000 BTC can cause significant price drops.'
+  },
+  {
+    term: 'Rug Pull',
+    level: 'intermediate',
+    definition: 'A scam where developers abandon a project and run away with investors\' funds, common in new DeFi tokens and meme coins.',
+    example: 'The project\'s liquidity was drained overnight - it was a rug pull.'
+  },
+  {
+    term: 'Gas Fees',
+    level: 'beginner',
+    definition: 'Transaction fees paid to blockchain validators for processing transactions. Varies by network congestion.',
+    example: 'Ethereum gas fees can range from $2 during low activity to $50+ during high demand.'
+  },
+  {
+    term: 'Slippage',
+    level: 'intermediate',
+    definition: 'The difference between the expected price of a trade and the actual executed price, caused by market movement or low liquidity.',
+    example: 'With 5% slippage, a $100 buy order might execute at $105 in a fast-moving market.'
+  },
+  {
+    term: 'Pump and Dump',
+    level: 'intermediate',
+    definition: 'A scheme where a group artificially inflates (pumps) the price of an asset through coordinated buying or hype, then sells (dumps) at the peak.',
+    example: 'The coin pumped 300% in an hour, then crashed 90% - classic pump and dump.'
+  },
+  {
+    term: 'Hodl',
+    level: 'beginner',
+    definition: 'A misspelling of "hold" that became a meme, meaning to hold crypto long-term regardless of price fluctuations.',
+    example: 'Many BTC hodlers who held through the 2018 bear market profited in 2021.'
+  },
+  {
+    term: 'Market Order',
+    level: 'beginner',
+    definition: 'An order to buy or sell immediately at the current market price, guaranteeing execution but not price.',
+    example: 'A market order to buy 1 ETH will execute instantly at whatever price sellers are offering.'
+  },
+  {
+    term: 'Limit Order',
+    level: 'beginner',
+    definition: 'An order to buy or sell at a specific price or better. Won\'t execute until the market reaches that price.',
+    example: 'A limit buy order at $50K for BTC will only execute if BTC drops to $50K or below.'
+  }
+];
+
 // Technical term tooltips
 const TOOLTIPS = {
   'RSI': 'Relative Strength Index - Momentum indicator measuring overbought (>70) or oversold (<30) conditions on a 0-100 scale',
@@ -979,6 +1173,160 @@ document.getElementById('settingsBtn')?.addEventListener('click', () => {
 
 // Scan button in holdings tab
 document.getElementById('scanBtn')?.addEventListener('click', runScanner);
+
+// ===== GLOSSARY FUNCTIONALITY =====
+let currentPath = 'all';
+
+function renderGlossary(searchTerm = '', path = 'all') {
+  const glossaryContent = document.getElementById('glossaryContent');
+  
+  let filteredTerms = GLOSSARY_TERMS;
+  
+  // Filter by learning path
+  if (path !== 'all') {
+    filteredTerms = filteredTerms.filter(t => t.level === path);
+  }
+  
+  // Filter by search term
+  if (searchTerm) {
+    const search = searchTerm.toLowerCase();
+    filteredTerms = filteredTerms.filter(t => 
+      t.term.toLowerCase().includes(search) ||
+      (t.full && t.full.toLowerCase().includes(search)) ||
+      t.definition.toLowerCase().includes(search)
+    );
+  }
+  
+  if (filteredTerms.length === 0) {
+    glossaryContent.innerHTML = `
+      <div class="empty-state" style="text-align: center; padding: 40px;">
+        <div style="font-size: 3rem; margin-bottom: 16px;">📚</div>
+        <p style="color: var(--text-secondary);">No terms found</p>
+      </div>
+    `;
+    return;
+  }
+  
+  glossaryContent.innerHTML = filteredTerms.map(term => `
+    <div class="glossary-term">
+      <div class="glossary-term-header">
+        <div>
+          <div class="glossary-term-name">${term.term}${term.full ? ` (${term.full})` : ''}</div>
+        </div>
+        <span class="glossary-term-level ${term.level}">${term.level.toUpperCase()}</span>
+      </div>
+      <div class="glossary-term-definition">${term.definition}</div>
+      ${term.example ? `<div class="glossary-term-example"><strong>Example:</strong> ${term.example}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+// Glossary search
+const glossarySearch = document.getElementById('glossarySearch');
+glossarySearch?.addEventListener('input', (e) => {
+  renderGlossary(e.target.value, currentPath);
+});
+
+// Learning path buttons
+document.querySelectorAll('.path-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const path = btn.dataset.path;
+    currentPath = path;
+    
+    document.querySelectorAll('.path-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    
+    renderGlossary(glossarySearch?.value || '', path);
+    if (tg) tg.HapticFeedback?.impactOccurred('light');
+  });
+});
+
+// ===== TOP MOVERS FUNCTIONALITY =====
+async function loadTopMovers(category = 'gainers') {
+  const moversContent = document.getElementById('moversContent');
+  
+  moversContent.innerHTML = `
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Loading ${category}...</p>
+    </div>
+  `;
+  
+  try {
+    const response = await fetch(`${API_BASE}/api/movers?category=${category}&userId=${state.userId}`);
+    const data = await response.json();
+    
+    if (!data.movers || data.movers.length === 0) {
+      moversContent.innerHTML = `
+        <div class="empty-state" style="text-align: center; padding: 40px;">
+          <div style="font-size: 3rem; margin-bottom: 16px;">🔥</div>
+          <p style="color: var(--text-secondary);">No data available</p>
+        </div>
+      `;
+      return;
+    }
+    
+    moversContent.innerHTML = data.movers.map((mover, index) => {
+      const changeClass = mover.change >= 0 ? 'positive' : 'negative';
+      const changeIcon = mover.change >= 0 ? '📈' : '📉';
+      
+      return `
+        <div class="mover-card" onclick="searchInput.value='${mover.ticker}'; switchTab('analysis'); performSearch();">
+          <span class="mover-rank">#${index + 1}</span>
+          <div class="mover-info">
+            <div class="mover-ticker">${mover.ticker}</div>
+            <div class="mover-price">$${mover.price?.toFixed(2) || 'N/A'}</div>
+          </div>
+          <div class="mover-change ${changeClass}">
+            ${changeIcon} ${mover.change >= 0 ? '+' : ''}${mover.change.toFixed(2)}%
+          </div>
+        </div>
+      `;
+    }).join('');
+    
+  } catch (error) {
+    console.error('Error loading movers:', error);
+    moversContent.innerHTML = `
+      <div class="empty-state" style="text-align: center; padding: 40px;">
+        <div style="font-size: 3rem; margin-bottom: 16px;">⚠️</div>
+        <p style="color: var(--text-secondary);">Error loading data</p>
+        <button class="action-btn" onclick="loadTopMovers('${category}')" style="margin-top: 16px;">Retry</button>
+      </div>
+    `;
+  }
+}
+
+// Mover category buttons
+document.querySelectorAll('.mover-category-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const category = btn.dataset.moverCategory;
+    
+    document.querySelectorAll('.mover-category-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    
+    loadTopMovers(category);
+    if (tg) tg.HapticFeedback?.impactOccurred('light');
+  });
+});
+
+// Refresh movers button
+document.getElementById('refreshMoversBtn')?.addEventListener('click', () => {
+  const activeCategory = document.querySelector('.mover-category-btn.active')?.dataset.moverCategory || 'gainers';
+  loadTopMovers(activeCategory);
+  if (tg) tg.HapticFeedback?.impactOccurred('light');
+});
+
+// Update loadTabContent to initialize movers and glossary
+const originalLoadTabContent = loadTabContent;
+async function loadTabContent(tabName) {
+  await originalLoadTabContent(tabName);
+  
+  if (tabName === 'movers') {
+    loadTopMovers('gainers');
+  } else if (tabName === 'learn') {
+    renderGlossary();
+  }
+}
 
 // Initialize
 console.log('🌊 DarkWave-V2 Mini App loaded with ALL features');

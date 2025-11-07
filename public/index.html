@@ -25,9 +25,17 @@
         <span class="tab-icon">📊</span>
         <span class="tab-label">Analysis</span>
       </button>
+      <button class="tab-btn" data-tab="movers">
+        <span class="tab-icon">🔥</span>
+        <span class="tab-label">Movers</span>
+      </button>
       <button class="tab-btn" data-tab="holdings">
         <span class="tab-icon">⭐</span>
         <span class="tab-label">Holdings</span>
+      </button>
+      <button class="tab-btn" data-tab="learn">
+        <span class="tab-icon">📚</span>
+        <span class="tab-label">Learn</span>
       </button>
       <button class="tab-btn" data-tab="wallet">
         <span class="tab-icon">💰</span>
@@ -296,7 +304,71 @@
               <button class="scope-btn active" data-exchange="dexscreener">Dexscreener</button>
             </div>
           </div>
+
+          <!-- Price Alerts Management -->
+          <div class="settings-section">
+            <h3>🔔 My Alerts</h3>
+            <div id="alertsList">
+              <div class="empty-state" style="padding: 20px; text-align: center;">
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">No alerts configured</p>
+              </div>
+            </div>
+            <button class="action-btn" id="addAlertBtn" style="width: 100%; margin-top: 12px;">
+              + Add Price Alert
+            </button>
+          </div>
         </div>
+      </div>
+
+      <!-- Top Movers Tab -->
+      <div id="movers" class="tab-pane">
+        <div class="section-header">
+          <h2>🔥 Market Movers</h2>
+          <button class="action-btn" id="refreshMoversBtn">🔄 Refresh</button>
+        </div>
+
+        <!-- Mover Categories -->
+        <div class="mover-categories">
+          <button class="mover-category-btn active" data-mover-category="gainers">
+            📈 Top Gainers
+          </button>
+          <button class="mover-category-btn" data-mover-category="losers">
+            📉 Top Losers
+          </button>
+          <button class="mover-category-btn" data-mover-category="volume">
+            💰 Volume Leaders
+          </button>
+        </div>
+
+        <div id="moversContent" class="movers-content">
+          <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Loading market movers...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Educational Glossary Tab -->
+      <div id="learn" class="tab-pane">
+        <div class="section-header">
+          <h2>📚 Trading Glossary</h2>
+        </div>
+
+        <!-- Search Box -->
+        <div class="glossary-search">
+          <input type="text" id="glossarySearch" placeholder="🔍 Search terms..." style="width: 100%; padding: 12px; border: 2px solid rgba(168, 85, 247, 0.3); border-radius: 12px; background: var(--bg-card); color: white; font-size: 1rem;">
+        </div>
+
+        <!-- Learning Path Selector -->
+        <div class="learning-path" style="margin: 16px 0;">
+          <button class="path-btn active" data-path="all">All Terms</button>
+          <button class="path-btn" data-path="beginner">🌱 Beginner</button>
+          <button class="path-btn" data-path="intermediate">📈 Intermediate</button>
+          <button class="path-btn" data-path="advanced">🎓 Advanced</button>
+        </div>
+
+        <!-- Glossary Content -->
+        <div id="glossaryContent" class="glossary-content"></div>
       </div>
     </div>
   </main>
