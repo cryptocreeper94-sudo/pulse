@@ -184,14 +184,14 @@ function displayAnalysis(data) {
           <div style="font-size:0.7rem; color: var(--text-secondary);">Signal: ${data.macd?.signal?.toFixed(2) || 'N/A'}</div>
         </div>
         <div class="indicator-item">
-          <div class="indicator-label">24h High/Low</div>
+          <div class="indicator-label"><span class="tooltip">24h High/Low<span class="tooltip-text">Highest and lowest price in the last 24 hours - shows the price range and daily volatility</span></span></div>
           <div class="indicator-value" style="font-size: 0.85rem;">
             $${data.high24h?.toFixed(2) || 'N/A'}<br>
             $${data.low24h?.toFixed(2) || 'N/A'}
           </div>
         </div>
         <div class="indicator-item">
-          <div class="indicator-label">Volatility</div>
+          <div class="indicator-label"><span class="tooltip">Volatility<span class="tooltip-text">Measures how much the price fluctuates - higher volatility means bigger price swings and more risk/reward potential</span></span></div>
           <div class="indicator-value">${data.volatility?.toFixed(2) || 'N/A'}%</div>
         </div>
       </div>
@@ -223,7 +223,7 @@ function displayAnalysis(data) {
       <h3 style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 10px;">💎 ADVANCED METRICS</h3>
       <div class="indicators-grid">
         <div class="indicator-item">
-          <div class="indicator-label">Volume Delta</div>
+          <div class="indicator-label"><span class="tooltip">Volume Delta<span class="tooltip-text">Difference between buying and selling volume - positive means more buying pressure, negative means more selling pressure</span></span></div>
           <div class="indicator-value" style="color: ${data.volumeDelta?.delta >= 0 ? '#4ADE80' : '#E63946'}">
             ${data.volumeDelta?.delta >= 0 ? '+' : ''}${formatVolume(data.volumeDelta?.delta)}
           </div>
@@ -233,13 +233,13 @@ function displayAnalysis(data) {
           </div>
         </div>
         <div class="indicator-item">
-          <div class="indicator-label">Buy/Sell Ratio</div>
+          <div class="indicator-label"><span class="tooltip">Buy/Sell Ratio<span class="tooltip-text">Ratio of buying to selling volume - above 1.0 means more buyers than sellers, below 1.0 means more sellers than buyers</span></span></div>
           <div class="indicator-value" style="color: ${data.volumeDelta?.buySellRatio >= 1 ? '#4ADE80' : '#E63946'}">
             ${data.volumeDelta?.buySellRatio?.toFixed(2) || 'N/A'}
           </div>
         </div>
         <div class="indicator-item">
-          <div class="indicator-label">Spike Score</div>
+          <div class="indicator-label"><span class="tooltip">Spike Score<span class="tooltip-text">Measures unusual price and volume spikes - scores above 70 indicate strong momentum, below 40 suggests weak movement</span></span></div>
           <div class="indicator-value" style="color: ${data.spikeScore?.score > 70 ? '#4ADE80' : data.spikeScore?.score > 40 ? '#F59E0B' : '#E63946'}">
             ${data.spikeScore?.score?.toFixed(1) || 'N/A'}/100
           </div>
