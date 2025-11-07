@@ -812,18 +812,18 @@ export const mastra = new Mastra({
           const fs = await import('fs/promises');
           const path = await import('path');
           
-          // Try multiple paths for dev vs deployment
+          // Try multiple paths for dev vs deployment - serve JPEG version (Telegram compliant)
           const possiblePaths = [
-            path.join(process.cwd(), '.mastra', 'output', 'public', 'darkwave-banner.png'),
-            path.join(process.cwd(), 'public', 'darkwave-banner.png'),
-            path.resolve(process.cwd(), '../..', 'public', 'darkwave-banner.png'),
+            path.join(process.cwd(), '.mastra', 'output', 'public', 'darkwave-banner.jpg'),
+            path.join(process.cwd(), 'public', 'darkwave-banner.jpg'),
+            path.resolve(process.cwd(), '../..', 'public', 'darkwave-banner.jpg'),
           ];
           
           for (const filePath of possiblePaths) {
             try {
               const imageBuffer = await fs.readFile(filePath);
-              c.header('Content-Type', 'image/png');
-              c.header('Content-Disposition', 'attachment; filename="darkwave-telegram-banner.png"');
+              c.header('Content-Type', 'image/jpeg');
+              c.header('Content-Disposition', 'attachment; filename="darkwave-telegram-banner.jpg"');
               c.header('Cache-Control', 'public, max-age=31536000');
               return c.body(imageBuffer);
             } catch (error) {
@@ -907,9 +907,11 @@ export const mastra = new Mastra({
     
     <img src="/telegram-banner.png" class="banner-preview" alt="DarkWave Banner">
     
-    <a href="/telegram-banner.png" download="darkwave-telegram-banner.png" class="download-btn">
-      ⬇️ Download Banner (640x360)
+    <a href="/telegram-banner.png" download="darkwave-telegram-banner.jpg" class="download-btn">
+      ⬇️ Download Banner (640×360 JPEG)
     </a>
+    
+    <p style="color: #4ADE80; margin-top: 10px; font-size: 0.9rem;">✅ Optimized for Telegram (640×360px, 46KB)</p>
     
     <div class="instructions">
       <h3>📋 How to Use This Banner:</h3>
