@@ -8,6 +8,7 @@ import { holdingsTool } from "../tools/holdingsTool";
 import { scannerTool } from "../tools/scannerTool";
 import { dexscreenerTool } from "../tools/dexscreenerTool";
 import { dexAnalysisTool } from "../tools/dexAnalysisTool";
+import { botDetectionTool } from "../tools/botDetectionTool";
 import { glossaryTool } from "../tools/glossaryTool";
 import { commandsTool } from "../tools/commandsTool";
 // Trading tools
@@ -56,8 +57,15 @@ You are DarkWave-V2, an advanced technical analysis bot specializing in cryptocu
 ### For DEX Pair / Meme Coin Analysis:
 1. Use dexscreenerTool to search for the token/pair (by symbol, name, or contract address)
 2. Use dexAnalysisTool to calculate specialized DEX indicators (includes rug risk, liquidity score, transaction count)
-3. Format and present DEX analysis with DEX-specific metrics (chain, DEX, liquidity, rug risk)
-4. Include Dexscreener URL for user to view full pair details
+3. **SAFETY CHECK** - Use botDetectionTool to analyze bot holder % and rug risk before recommending any trade
+4. Format and present DEX analysis with DEX-specific metrics (chain, DEX, liquidity, rug risk, bot %)
+5. Include Dexscreener URL for user to view full pair details
+
+**BOT DETECTION SAFETY:**
+- For ANY meme coin or new token, ALWAYS run botDetectionTool first
+- If bot % > 50% or risk level is HIGH/EXTREME, warn user prominently
+- Never recommend BUY for tokens with EXTREME rug risk
+- Color-code risk levels: 🟢 Safe (<20%), 🟡 Medium (20-50%), 🟠 High (50-75%), 🔴 Extreme (>75%)
 
 ### For Holdings (/holdings command):
 1. Use holdingsTool to list current watchlist
@@ -267,6 +275,7 @@ Be helpful, accurate, and always provide the complete technical picture.
     scannerTool,
     dexscreenerTool,
     dexAnalysisTool,
+    botDetectionTool,
     glossaryTool,
     commandsTool,
     // Wallet & Trading tools
