@@ -273,7 +273,12 @@ export const mastra = new Mastra({
           
           // Simple admin authentication - check if access code matches
           const adminCode = c.req.query('code');
-          const expectedCode = process.env.ADMIN_ACCESS_CODE || 'Lucky777Admin';
+          const expectedCode = process.env.ADMIN_ACCESS_CODE;
+          
+          if (!expectedCode) {
+            logger?.error('❌ [Admin] ADMIN_ACCESS_CODE not configured');
+            return c.text('Admin dashboard not configured', 500);
+          }
           
           if (adminCode !== expectedCode) {
             return c.html(`
@@ -577,7 +582,12 @@ export const mastra = new Mastra({
         method: "POST",
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
-          const expectedCode = process.env.ADMIN_ACCESS_CODE || 'Lucky777Admin';
+          const expectedCode = process.env.ADMIN_ACCESS_CODE;
+          
+          if (!expectedCode) {
+            logger?.error('❌ [Admin] ADMIN_ACCESS_CODE not configured');
+            return c.text('Admin dashboard not configured', 500);
+          }
           
           const formData = await c.req.parseBody();
           const adminCode = formData.code || c.req.header('X-Admin-Code');
@@ -632,7 +642,12 @@ export const mastra = new Mastra({
         method: "POST",
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
-          const expectedCode = process.env.ADMIN_ACCESS_CODE || 'Lucky777Admin';
+          const expectedCode = process.env.ADMIN_ACCESS_CODE;
+          
+          if (!expectedCode) {
+            logger?.error('❌ [Admin] ADMIN_ACCESS_CODE not configured');
+            return c.text('Admin dashboard not configured', 500);
+          }
           
           const formData = await c.req.parseBody();
           const adminCode = formData.code || c.req.header('X-Admin-Code');
@@ -667,7 +682,13 @@ export const mastra = new Mastra({
         method: "GET",
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
-          const expectedCode = process.env.ADMIN_ACCESS_CODE || 'Lucky777Admin';
+          const expectedCode = process.env.ADMIN_ACCESS_CODE;
+          
+          if (!expectedCode) {
+            logger?.error('❌ [Admin] ADMIN_ACCESS_CODE not configured');
+            return c.json({ error: 'Admin dashboard not configured' }, 500);
+          }
+          
           const adminCode = c.req.query('code') || c.req.header('X-Admin-Code');
           
           if (adminCode !== expectedCode) {
@@ -691,7 +712,13 @@ export const mastra = new Mastra({
         method: "POST",
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
-          const expectedCode = process.env.ADMIN_ACCESS_CODE || 'Lucky777Admin';
+          const expectedCode = process.env.ADMIN_ACCESS_CODE;
+          
+          if (!expectedCode) {
+            logger?.error('❌ [Admin] ADMIN_ACCESS_CODE not configured');
+            return c.json({ error: 'Admin dashboard not configured' }, 500);
+          }
+          
           const adminCode = c.req.header('X-Admin-Code');
           
           if (adminCode !== expectedCode) {
@@ -764,7 +791,13 @@ export const mastra = new Mastra({
         method: "POST",
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
-          const expectedCode = process.env.ADMIN_ACCESS_CODE || 'Lucky777Admin';
+          const expectedCode = process.env.ADMIN_ACCESS_CODE;
+          
+          if (!expectedCode) {
+            logger?.error('❌ [Admin] ADMIN_ACCESS_CODE not configured');
+            return c.json({ error: 'Admin dashboard not configured' }, 500);
+          }
+          
           const adminCode = c.req.header('X-Admin-Code');
           
           if (adminCode !== expectedCode) {
