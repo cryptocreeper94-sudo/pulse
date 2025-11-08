@@ -3047,44 +3047,148 @@ async function loadMarketSnapshots() {
 
 async function loadSingleMarketView(category) {
   const tableBody = document.getElementById('marketTableBody');
-  const titleEl = document.getElementById('marketOverviewTitle');
   
   // Show loading
-  tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 30px;"><div class="spinner"></div></td></tr>';
+  tableBody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 30px;"><div class="spinner"></div></td></tr>';
   
   try {
-    let data = [];
-    let title = '';
+    let url = '';
     
-    if (category === 'stocks') {
-      title = '📈 Top Stocks';
-      const stocks = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'META', 'TSLA', 'BRK.B', 'V', 'JPM'];
-      renderStocksTable(stocks);
-    } else if (category === 'meme') {
-      title = '🐸 Top Meme Coins';
-      const memeIds = 'dogecoin,shiba-inu,pepe,bonk,floki,baby-doge-coin,dogwifcoin,meme,popcat,mog-coin';
-      const response = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${memeIds}&order=market_cap_desc&per_page=10&sparkline=false`);
-      data = await response.json();
-      renderCryptoTable(data);
+    // Build API URL based on category
+    if (category === 'top') {
+      url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&sparkline=true&price_change_percentage=1h,24h,7d';
+    } else if (category === 'trending') {
+      url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=volume_desc&per_page=100&sparkline=true&price_change_percentage=1h,24h,7d';
+    } else if (category === 'gainers') {
+      url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&sparkline=true&price_change_percentage=1h,24h,7d';
+    } else if (category === 'losers') {
+      url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&sparkline=true&price_change_percentage=1h,24h,7d';
+    } else if (category === 'new') {
+      url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=gecko_desc&per_page=100&sparkline=true&price_change_percentage=1h,24h,7d';
     } else if (category === 'defi') {
-      title = '💎 Top DeFi Tokens';
-      const defiIds = 'uniswap,aave,maker,lido-dao,curve-dao-token,compound-governance-token,pancakeswap-token,synthetix-network-token,yearn-finance,sushi';
-      const response = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${defiIds}&order=market_cap_desc&per_page=10&sparkline=false`);
-      data = await response.json();
-      renderCryptoTable(data);
-    } else if (category === 'dex') {
-      title = '🔄 Trending DEX Pairs';
-      renderDEXTable();
+      const defiIds = 'uniswap,aave,maker,lido-dao,curve-dao-token,compound-governance-token,pancakeswap-token,synthetix-network-token,yearn-finance,sushi,thorchain,convex-finance,frax-share,rocket-pool,balancer,1inch,0x,raydium,gmx,ribbon-finance';
+      url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${defiIds}&order=market_cap_desc&per_page=50&sparkline=true&price_change_percentage=1h,24h,7d`;
     } else if (category === 'nft') {
-      title = '🎨 Top NFT Collections';
       renderNFTTable();
+      return;
     }
     
-    titleEl.textContent = title;
+    const response = await fetch(url);
+    let data = await response.json();
+    
+    // Filter/sort data based on category
+    if (category === 'gainers') {
+      data = data
+        .filter(coin => coin.price_change_percentage_24h > 0)
+        .sort((a, b) => (b.price_change_percentage_24h || 0) - (a.price_change_percentage_24h || 0))
+        .slice(0, 100);
+    } else if (category === 'losers') {
+      data = data
+        .filter(coin => coin.price_change_percentage_24h < 0)
+        .sort((a, b) => (a.price_change_percentage_24h || 0) - (b.price_change_percentage_24h || 0))
+        .slice(0, 100);
+    }
+    
+    renderCMCTable(data);
   } catch (error) {
     console.error('Error loading market overview:', error);
-    tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: #999;">Failed to load data</td></tr>';
+    tableBody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 20px; color: #999;">Failed to load data</td></tr>';
   }
+}
+
+function renderCMCTable(data) {
+  const tableBody = document.getElementById('marketTableBody');
+  
+  if (!data || data.length === 0) {
+    tableBody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 20px; color: #999;">No data available</td></tr>';
+    return;
+  }
+  
+  tableBody.innerHTML = data.slice(0, 100).map((coin, index) => {
+    const priceChange1h = coin.price_change_percentage_1h_in_currency || 0;
+    const priceChange24h = coin.price_change_percentage_24h || 0;
+    const priceChange7d = coin.price_change_percentage_7d_in_currency || 0;
+    
+    const change1hClass = priceChange1h >= 0 ? 'positive' : 'negative';
+    const change24hClass = priceChange24h >= 0 ? 'positive' : 'negative';
+    const change7dClass = priceChange7d >= 0 ? 'positive' : 'negative';
+    
+    const sparklineSvg = generateSparkline(coin.sparkline_in_7d?.price || [], priceChange7d >= 0);
+    
+    return `
+      <tr onclick="analyzeAssetFromTable('${coin.symbol.toUpperCase()}')" style="cursor: pointer;">
+        <td style="color: var(--text-secondary); font-size: 0.85rem;">${index + 1}</td>
+        <td>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <img src="${coin.image}" alt="${coin.name}" style="width: 24px; height: 24px; border-radius: 50%;" onerror="this.style.display='none'">
+            <div>
+              <div style="font-weight: 600; color: var(--text-primary);">${coin.name}</div>
+              <div style="font-size: 0.75rem; color: var(--text-secondary);">${coin.symbol.toUpperCase()}</div>
+            </div>
+          </div>
+        </td>
+        <td style="text-align: right; font-weight: 600; color: var(--text-primary);">
+          $${coin.current_price >= 1 ? coin.current_price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : coin.current_price.toFixed(6)}
+        </td>
+        <td style="text-align: right; font-size: 0.85rem;" class="${change1hClass}">
+          ${priceChange1h >= 0 ? '+' : ''}${priceChange1h.toFixed(2)}%
+        </td>
+        <td style="text-align: right; font-size: 0.85rem;" class="${change24hClass}">
+          ${priceChange24h >= 0 ? '+' : ''}${priceChange24h.toFixed(2)}%
+        </td>
+        <td style="text-align: right; font-size: 0.85rem;" class="${change7dClass}">
+          ${priceChange7d >= 0 ? '+' : ''}${priceChange7d.toFixed(2)}%
+        </td>
+        <td style="text-align: right; color: var(--text-secondary); font-size: 0.85rem;">
+          $${formatLargeNumber(coin.total_volume)}
+        </td>
+        <td style="text-align: right; color: var(--text-secondary); font-size: 0.85rem;">
+          $${formatLargeNumber(coin.market_cap)}
+        </td>
+        <td style="padding: 8px;">
+          ${sparklineSvg}
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function generateSparkline(prices, isPositive) {
+  if (!prices || prices.length === 0) {
+    return '<div style="width: 120px; height: 40px;"></div>';
+  }
+  
+  const width = 120;
+  const height = 40;
+  const padding = 2;
+  
+  const validPrices = prices.filter(p => p !== null && p !== undefined && !isNaN(p));
+  if (validPrices.length === 0) return '<div style="width: 120px; height: 40px;"></div>';
+  
+  const min = Math.min(...validPrices);
+  const max = Math.max(...validPrices);
+  const range = max - min || 1;
+  
+  const points = validPrices.map((price, i) => {
+    const x = (i / (validPrices.length - 1)) * (width - 2 * padding) + padding;
+    const y = height - padding - ((price - min) / range) * (height - 2 * padding);
+    return `${x.toFixed(2)},${y.toFixed(2)}`;
+  }).join(' ');
+  
+  const color = isPositive ? '#10b981' : '#ef4444';
+  
+  return `
+    <svg width="${width}" height="${height}" style="display: block;">
+      <polyline
+        points="${points}"
+        fill="none"
+        stroke="${color}"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  `;
 }
 
 function renderCryptoTable(data) {
