@@ -71,5 +71,65 @@ export const manageTrade = async (trade) => {
 
 ---
 
+## 🧠 Sentient Trigger (Priority: Medium)
+**Status:** Deferred - Requires sentiment API integration
+**Estimated Effort:** 2-3 hours development
+**AI Cost:** ~$3-5
+
+### Feature Description
+Combines RSI technical signals with market sentiment analysis to identify "emotionally undervalued" assets.
+
+### Code Snippet (Reference Implementation)
+```typescript
+// Sentient trigger combining RSI + sentiment
+export const sentientTrigger = async (symbol) => {
+  const rsi = await getRSI(symbol);
+  const sentiment = await getSentimentScore(symbol);
+
+  if (rsi < 30 && sentiment > 0.6) {
+    logEvent(`Sentient trigger: ${symbol} is emotionally undervalued`);
+    return true;
+  }
+
+  return false;
+};
+```
+
+### Requirements for Production
+1. **Sentiment Data Source** (choose one):
+   - **LunarCrush** (crypto sentiment) - $0-50/month, 100 calls/day free
+   - **Santiment** (on-chain + social) - $50-200/month
+   - **Fear & Greed Index** (free, crypto-wide only)
+   - **CoinGecko Sentiment** (FREE - already using) - Basic per-token sentiment
+
+2. **Better Approach - Use Sentiment as Confirmation**:
+   ```typescript
+   // Use sentiment to CONFIRM signals, not trigger them
+   if (rsi < 30) {
+     const sentiment = await getSentiment(symbol);
+     const confidence = sentiment > 0.6 ? "HIGH" : "MEDIUM";
+     return { signal: "BUY", confidence };
+   }
+   ```
+
+3. **Integration Points**:
+   - Add to `technicalAnalysisTool` as optional flag
+   - Store sentiment history in PostgreSQL
+   - Cache sentiment data (5-15 min TTL)
+
+### Testing Plan
+1. Backtest against historical data
+2. Compare with RSI-only signals
+3. Validate sentiment sources aren't manipulated
+4. A/B test with users
+
+### Notes
+- Sentiment often lags price (reacts AFTER moves)
+- Easily manipulated by bots/shills
+- Best as confirmation, not primary signal
+- CoinGecko provides basic sentiment for FREE (already integrated)
+
+---
+
 ## Other Future Features
 (Add more features here as they come up)
