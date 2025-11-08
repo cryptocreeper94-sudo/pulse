@@ -973,7 +973,7 @@ body::before {
   flex-shrink: 0;
   width: 96px;
   height: 96px;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(10, 10, 15, 0.7);
   backdrop-filter: blur(8px);
   border: 2px solid var(--digital-green);
   border-radius: 8px;
@@ -1025,7 +1025,7 @@ body::before {
   transform: translateY(-4px) scale(1.05);
   border-color: var(--digital-green);
   box-shadow: 0 8px 20px rgba(0, 255, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.8);
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(15, 15, 25, 0.9);
 }
 
 .trending-item-logo {
@@ -1078,7 +1078,7 @@ body::before {
 .trending-item-name {
   font-size: 0.8rem;
   font-weight: 700;
-  color: #000000;
+  color: var(--text-primary);
   margin-bottom: 0.25rem;
   text-align: center;
   white-space: nowrap;
@@ -1088,7 +1088,7 @@ body::before {
 
 .trending-item-ticker {
   font-size: 0.7rem;
-  color: #333333;
+  color: var(--text-secondary);
   text-align: center;
   margin-bottom: 0.5rem;
 }
@@ -1096,7 +1096,7 @@ body::before {
 .trending-item-price {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #000000;
+  color: var(--text-primary);
   text-align: center;
   margin-bottom: 0.25rem;
 }
