@@ -4,11 +4,19 @@
 DarkWave-V2 is an advanced technical analysis bot built with the Mastra framework, providing comprehensive cryptocurrency, stock market, and NFT analysis. It integrates with Telegram to deliver real-time buy/sell signals based on technical indicators like RSI, MACD, moving averages, and Bollinger Bands. The system uses a workflow-based architecture, processes user messages via an AI agent, and stores conversation history and user watchlists in PostgreSQL for personalized interactions. Key features include DEX pair and meme coin support with rug-risk detection, NFT collection analysis, a live trending carousel, database-backed session management, and multi-chain wallet tracking. It also incorporates a comprehensive subscription notification system with an admin dashboard, a professional token submission system with robust validation, and cryptocurrency payment integration via Coinbase Commerce. A unique "Crypto Cat" mascot provides interactive commentary, and a "Launching Soon" section with a countdown and presale platform design for the DarkWave token (DWLP) is included. The project aims to launch the DarkWave token on December 25, 2025, with a whitepaper outlining its mission, tokenomics, utility, and roadmap.
 
 ## Recent Changes (November 2025)
+- **Crypto.com-Style Design Overhaul**: Complete UI redesign with premium multi-dimensional aesthetic
+  - Solid dark navy backgrounds (#0A0E27, #1A1F3A) replacing gradients for clean professional look
+  - Three-column responsive grid system for sophisticated staggered layouts
+  - Depth system with elevated cards, recessed panels, box shadows, and inset glows
+  - Angular dividers with geometric accent elements
+  - Strategic use of emojis for visual interest without excess
+- **Visual Content Integration**: 5 crypto/finance stock images downloaded and integrated throughout interface
+- **News Headlines Section**: Live market headlines interspersed in three-column layout with depth styling
+- **Affiliate Monetization**: Exchange partner section with Kraken, Coinbase, and Binance affiliate links
+- **Enhanced Color Scheme**: Electric blue (#3B82F6, #60A5FA) accents with gold (#FBBF24) and purple (#8B5CF6) highlights
 - **3-Tier Pricing System**: Implemented Free Trial (7 days, 20 searches/day), Basic ($2/mo, 20 searches/day), Premium ($5/mo, unlimited)
 - **Dual Access Methods**: Users can enter "lucky 777" for free trial OR whitelisted email for instant premium access
 - **Multi-Theme System**: Added Jupiter (DeFi Dark), Robinhood (Clean Light), and Coinbase (Professional Blue) themes with localStorage persistence
-- **UI Polish**: Removed excessive emojis from action buttons for more professional appearance
-- **Theme Switcher**: Settings tab now includes visual theme selector with instant switching
 - **Projects Page Category System**: Reorganized with four distinct sections (Crypto Cat Series, Conspiracy Themed, Religious/Spiritual, Community Projects) each with custom messaging and teasers for limited editions and future airdrops
 - **Live Interactive Charts**: FREE candlestick and line charts with 7 timeframes (1M-YTD) and smart auto-refresh rates
 
