@@ -298,12 +298,14 @@ export const mastra = new Mastra({
             `);
           }
           
-          // Fetch all subscribers and whitelisted users
+          // Fetch all subscribers, whitelisted users, and token submissions
           const { db } = await import('../db/client.js');
-          const { subscriptions, whitelistedUsers } = await import('../db/schema.js');
+          const { subscriptions, whitelistedUsers, tokenSubmissions } = await import('../db/schema.js');
+          const { desc } = await import('drizzle-orm');
           
           const allSubscribers = await db.select().from(subscriptions);
           const allWhitelisted = await db.select().from(whitelistedUsers);
+          const allTokenSubmissions = await db.select().from(tokenSubmissions).orderBy(desc(tokenSubmissions.submittedAt));
           
           const premiumCount = allSubscribers.filter(s => s.plan === 'premium' && s.status === 'active').length;
           const monthlyRevenue = premiumCount * 5;
@@ -428,7 +430,140 @@ export const mastra = new Mastra({
                       </tbody>
                     </table>
                   </div>
+                  
+                  <div class="section">
+                    <h2>🚀 Token Submissions</h2>
+                    <p style="color: #aaa; margin-bottom: 20px; font-size: 14px;">
+                      Review and approve/reject user-submitted tokens. Approved tokens appear in the Projects section.
+                    </p>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Logo</th>
+                          <th>Name / Symbol</th>
+                          <th>Contract</th>
+                          <th>Chain</th>
+                          <th>Submitted By</th>
+                          <th>Status</th>
+                          <th>Submitted</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        ${allTokenSubmissions.length === 0 ? `
+                          <tr>
+                            <td colspan="8" style="text-align: center; color: #aaa;">No token submissions yet</td>
+                          </tr>
+                        ` : allTokenSubmissions.map(submission => {
+                          const statusColors = {
+                            pending: '#FFA500',
+                            approved: '#4ADE80',
+                            rejected: '#ff4444'
+                          };
+                          const statusColor = statusColors[submission.status as keyof typeof statusColors] || '#aaa';
+                          
+                          return `
+                          <tr>
+                            <td>
+                              ${submission.tokenLogo ? `
+                                <img src="${submission.tokenLogo}" 
+                                     style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" 
+                                     alt="${submission.tokenSymbol}">
+                              ` : '🪙'}
+                            </td>
+                            <td>
+                              <strong>${submission.tokenName}</strong><br>
+                              <span style="color: #aaa;">${submission.tokenSymbol}</span>
+                            </td>
+                            <td>
+                              <code style="font-size: 11px; word-break: break-all;">${submission.tokenContract}</code>
+                            </td>
+                            <td>${submission.tokenChain}</td>
+                            <td>${submission.submittedBy}</td>
+                            <td style="color: ${statusColor}; font-weight: bold;">
+                              ${submission.status.toUpperCase()}
+                            </td>
+                            <td>${new Date(submission.submittedAt).toLocaleDateString()}</td>
+                            <td>
+                              ${submission.status === 'pending' ? `
+                                <button 
+                                  onclick="approveToken('${submission.id}')" 
+                                  style="background: #4ADE80; color: #000; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">
+                                  ✅ Approve
+                                </button>
+                                <button 
+                                  onclick="rejectToken('${submission.id}')" 
+                                  style="background: #ff4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
+                                  ❌ Reject
+                                </button>
+                              ` : `
+                                <span style="color: #aaa;">—</span>
+                              `}
+                            </td>
+                          </tr>
+                        `;
+                        }).join('')}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
+                
+                <script>
+                  const adminCode = '${adminCode}';
+                  
+                  async function approveToken(submissionId) {
+                    if (!confirm('Approve this token? It will be published to the Projects section.')) return;
+                    
+                    try {
+                      const response = await fetch('/api/admin/approve-token', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          'X-Admin-Code': adminCode
+                        },
+                        body: JSON.stringify({ submissionId })
+                      });
+                      
+                      const result = await response.json();
+                      if (response.ok) {
+                        alert('✅ Token approved and published!');
+                        window.location.reload();
+                      } else {
+                        alert('❌ Error: ' + result.error);
+                      }
+                    } catch (error) {
+                      alert('❌ Error approving token');
+                      console.error(error);
+                    }
+                  }
+                  
+                  async function rejectToken(submissionId) {
+                    const reason = prompt('Why are you rejecting this token? (optional)');
+                    if (reason === null) return; // User cancelled
+                    
+                    try {
+                      const response = await fetch('/api/admin/reject-token', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          'X-Admin-Code': adminCode
+                        },
+                        body: JSON.stringify({ submissionId, reason })
+                      });
+                      
+                      const result = await response.json();
+                      if (response.ok) {
+                        alert('✅ Token rejected');
+                        window.location.reload();
+                      } else {
+                        alert('❌ Error: ' + result.error);
+                      }
+                    } catch (error) {
+                      alert('❌ Error rejecting token');
+                      console.error(error);
+                    }
+                  }
+                </script>
               </body>
             </html>
           `;
