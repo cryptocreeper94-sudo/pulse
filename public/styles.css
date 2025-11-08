@@ -105,6 +105,82 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Live Market Ticker */
+.market-ticker {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 32px;
+  background: linear-gradient(90deg, #000000 0%, #1A0A1F 50%, #000000 100%);
+  border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+  z-index: 1000;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.ticker-wrapper {
+  display: flex;
+  width: fit-content;
+  animation: tickerScroll 120s linear infinite;
+}
+
+.ticker-content {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  padding: 0 30px;
+  white-space: nowrap;
+}
+
+.ticker-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  background: rgba(26, 10, 31, 0.5);
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ticker-symbol {
+  font-weight: 700;
+  color: #FFD700;
+}
+
+.ticker-price {
+  color: #E2E8F0;
+}
+
+.ticker-change {
+  font-weight: 600;
+  font-size: 0.7rem;
+}
+
+.ticker-change.positive {
+  color: #10B981;
+}
+
+.ticker-change.negative {
+  color: #EF4444;
+}
+
+@keyframes tickerScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Add top padding to body to account for fixed ticker */
+#app {
+  padding-top: 32px;
+}
+
 /* Header */
 .app-header {
   background: var(--gradient-primary);

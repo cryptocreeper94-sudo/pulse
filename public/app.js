@@ -2770,6 +2770,94 @@ document.getElementById('refreshMoversBtn')?.addEventListener('click', () => {
 
 // Movers tab loading handled in main loadTabContent function
 
+// ===== MARKET TICKER =====
+
+// Fetch and display market ticker
+async function loadMarketTicker() {
+  const tickerContent = document.getElementById('tickerContent');
+  const tickerContentClone = document.getElementById('tickerContentClone');
+  
+  try {
+    // Top 10 cryptos from CoinGecko
+    const cryptoIds = 'bitcoin,ethereum,solana,binancecoin,ripple,cardano,dogecoin,polkadot,tron,avalanche-2';
+    const cryptoResponse = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${cryptoIds}&vs_currencies=usd&include_24hr_change=true`);
+    const cryptoData = await cryptoResponse.json();
+    
+    const cryptoTickers = [
+      { id: 'bitcoin', symbol: 'BTC' },
+      { id: 'ethereum', symbol: 'ETH' },
+      { id: 'solana', symbol: 'SOL' },
+      { id: 'binancecoin', symbol: 'BNB' },
+      { id: 'ripple', symbol: 'XRP' },
+      { id: 'cardano', symbol: 'ADA' },
+      { id: 'dogecoin', symbol: 'DOGE' },
+      { id: 'polkadot', symbol: 'DOT' },
+      { id: 'tron', symbol: 'TRX' },
+      { id: 'avalanche-2', symbol: 'AVAX' }
+    ];
+    
+    const stockTickers = [
+      { symbol: 'AAPL', name: 'Apple' },
+      { symbol: 'TSLA', name: 'Tesla' },
+      { symbol: 'NVDA', name: 'NVIDIA' },
+      { symbol: 'AMZN', name: 'Amazon' },
+      { symbol: 'GOOGL', name: 'Google' },
+      { symbol: 'MSFT', name: 'Microsoft' },
+      { symbol: 'META', name: 'Meta' },
+      { symbol: 'NFLX', name: 'Netflix' },
+      { symbol: 'AMD', name: 'AMD' },
+      { symbol: 'COIN', name: 'Coinbase' }
+    ];
+    
+    let tickerHTML = '';
+    
+    // Add crypto tickers
+    cryptoTickers.forEach(crypto => {
+      const data = cryptoData[crypto.id];
+      if (data) {
+        const price = data.usd;
+        const change = data.usd_24h_change || 0;
+        const changeClass = change >= 0 ? 'positive' : 'negative';
+        const changeSymbol = change >= 0 ? '▲' : '▼';
+        
+        tickerHTML += `
+          <div class="ticker-item">
+            <span class="ticker-symbol">${crypto.symbol}</span>
+            <span class="ticker-price">$${price >= 1 ? price.toFixed(2) : price.toFixed(6)}</span>
+            <span class="ticker-change ${changeClass}">${changeSymbol} ${Math.abs(change).toFixed(1)}%</span>
+          </div>
+        `;
+      }
+    });
+    
+    // Add stock tickers (with static Live indicator since free APIs are limited)
+    stockTickers.forEach(stock => {
+      tickerHTML += `
+        <div class="ticker-item">
+          <span class="ticker-symbol">${stock.symbol}</span>
+          <span class="ticker-price" style="color: #94A3B8;">Live</span>
+          <span class="ticker-change positive" style="opacity: 0.6;">▲ Market</span>
+        </div>
+      `;
+    });
+    
+    // Set content and clone for seamless loop
+    tickerContent.innerHTML = tickerHTML;
+    tickerContentClone.innerHTML = tickerHTML;
+    
+  } catch (error) {
+    console.error('Error loading market ticker:', error);
+    // Fallback to simple loading message
+    tickerContent.innerHTML = '<div style="padding: 0 30px; color: #999;">Loading market data...</div>';
+  }
+}
+
+// Load ticker on page load
+loadMarketTicker();
+
+// Refresh ticker every 10 minutes
+setInterval(loadMarketTicker, 10 * 60 * 1000);
+
 // Initialize on DOM ready
 console.log('🌊 DarkWave-V2 Mini App loaded with ALL features');
 if (tg) {
