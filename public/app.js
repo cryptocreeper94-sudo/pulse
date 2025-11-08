@@ -2067,15 +2067,24 @@ async function showUpgradeModal() {
         </div>
       </div>
       
-      <button class="action-btn" style="background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; font-weight: bold; width: 100%;" onclick="initiateCheckout()">
-        💳 Subscribe Now - $5/month
-      </button>
+      <div style="margin-top: 20px;">
+        <p style="margin-bottom: 12px; font-size: 0.9rem; opacity: 0.8; text-align: center;">Choose your payment method:</p>
+        
+        <button class="action-btn" style="background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; font-weight: bold; width: 100%; margin-bottom: 12px;" onclick="initiateCheckout()">
+          💳 Pay with Card - $5/month
+        </button>
+        
+        <button class="action-btn" style="background: linear-gradient(135deg, #F7931A, #E67E22); color: #fff; font-weight: bold; width: 100%;" onclick="initiateCryptoPayment()">
+          💎 Pay with Crypto - $5 (BTC, ETH, USDC)
+        </button>
+        
+        <p style="margin-top: 12px; font-size: 0.75rem; opacity: 0.6; text-align: center;">
+          Card payments: Auto-renew monthly • Cancel anytime<br>
+          Crypto payments: One-time 30-day access • No auto-renew
+        </p>
+      </div>
       
-      <p style="margin-top: 15px; font-size: 0.85rem; opacity: 0.7;">
-        Secure payment powered by Stripe. Cancel anytime.
-      </p>
-      
-      <button class="secondary-btn" style="margin-top: 10px; width: 100%;" onclick="this.closest('.modal-backdrop').remove()">
+      <button class="secondary-btn" style="margin-top: 15px; width: 100%;" onclick="this.closest('.modal-backdrop').remove()">
         Maybe Later
       </button>
     </div>
@@ -2115,6 +2124,113 @@ async function initiateCheckout() {
     showToast('Error starting checkout. Please try again.');
   } finally {
     hideLoading();
+  }
+}
+
+async function initiateCryptoPayment() {
+  try {
+    showLoading();
+    
+    const response = await fetch(`${API_BASE}/api/crypto/create-charge`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: state.userId })
+    });
+    
+    const data = await response.json();
+    
+    if (data.success && data.hostedUrl) {
+      // Close current modal
+      document.querySelector('.modal-backdrop')?.remove();
+      
+      // Open Coinbase Commerce payment page
+      if (tg) {
+        tg.openLink(data.hostedUrl);
+      } else {
+        window.open(data.hostedUrl, '_blank');
+      }
+      
+      showToast('Opening crypto payment... Complete payment to activate Premium!', 5000);
+      
+      // Show waiting modal
+      showCryptoWaitingModal();
+    } else {
+      showToast(data.error || 'Error creating crypto payment. Please try again.');
+    }
+  } catch (error) {
+    console.error('Crypto checkout error:', error);
+    showToast('Error starting crypto payment. Please try again.');
+  } finally {
+    hideLoading();
+  }
+}
+
+function showCryptoWaitingModal() {
+  const modal = document.createElement('div');
+  modal.className = 'modal-backdrop';
+  modal.id = 'cryptoWaitingModal';
+  modal.innerHTML = `
+    <div class="modal-content" style="max-width: 450px; text-align: center;">
+      <div style="font-size: 64px; margin-bottom: 16px;">💎</div>
+      <h3 style="margin-bottom: 16px;">Waiting for Payment...</h3>
+      
+      <div style="padding: 20px; background: rgba(247,147,26,0.1); border: 1px solid #F7931A; border-radius: 8px; margin-bottom: 20px;">
+        <p style="margin: 0 0 12px 0; opacity: 0.9;">
+          Complete your payment in the Coinbase Commerce window to activate Premium.
+        </p>
+        
+        <div style="margin: 16px 0;">
+          <div class="spinner" style="margin: 0 auto; width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #F7931A; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        </div>
+        
+        <p style="margin: 12px 0 0 0; font-size: 0.85rem; opacity: 0.7;">
+          ⏱️ Payment confirmation may take 1-10 minutes depending on network
+        </p>
+      </div>
+      
+      <div style="padding: 15px; background: rgba(255,215,0,0.1); border-radius: 8px; margin-bottom: 20px;">
+        <p style="margin: 0; font-size: 0.9rem;">
+          <strong>Accepted Cryptocurrencies:</strong><br>
+          Bitcoin (BTC) • Ethereum (ETH) • USD Coin (USDC)<br>
+          Litecoin (LTC) • Dogecoin (DOGE) • Bitcoin Cash (BCH)
+        </p>
+      </div>
+      
+      <button class="secondary-btn" style="width: 100%;" onclick="closeCryptoWaiting()">
+        Close
+      </button>
+      
+      <p style="margin-top: 12px; font-size: 0.75rem; opacity: 0.6;">
+        You'll be automatically upgraded once payment is confirmed
+      </p>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Check payment status every 10 seconds
+  const checkInterval = setInterval(async () => {
+    await loadSubscriptionStatus();
+    if (state.subscription.plan === 'premium' && state.subscription.status === 'active') {
+      clearInterval(checkInterval);
+      closeCryptoWaiting();
+      showToast('🎉 Payment confirmed! Premium activated!', 5000);
+      updateSubscriptionUI();
+    }
+  }, 10000); // Check every 10 seconds
+  
+  // Store interval ID to clear on close
+  modal.dataset.checkInterval = checkInterval;
+}
+
+function closeCryptoWaiting() {
+  const modal = document.getElementById('cryptoWaitingModal');
+  if (modal) {
+    // Clear the interval
+    if (modal.dataset.checkInterval) {
+      clearInterval(parseInt(modal.dataset.checkInterval));
+    }
+    modal.remove();
   }
 }
 

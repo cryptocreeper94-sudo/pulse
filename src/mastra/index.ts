@@ -2361,7 +2361,53 @@ export const mastra = new Mastra({
           try {
             logger?.info('🔔 [Crypto] Webhook received');
             
-            const body = await c.req.json();
+            // CRITICAL SECURITY: Verify Coinbase Commerce webhook signature
+            const webhookSecret = process.env.COINBASE_WEBHOOK_SECRET;
+            if (!webhookSecret) {
+              logger?.error('❌ [Crypto] COINBASE_WEBHOOK_SECRET not configured');
+              return c.json({ error: 'Webhook secret not configured' }, 500);
+            }
+            
+            // Get raw body and signature from headers
+            const signature = c.req.header('x-cc-webhook-signature');
+            if (!signature) {
+              logger?.warn('⚠️ [Crypto] Missing webhook signature header');
+              return c.json({ error: 'Missing signature' }, 400);
+            }
+            
+            // Get raw request body (need to read as text for signature verification)
+            const rawBody = await c.req.text();
+            
+            // Verify signature using HMAC-SHA256
+            const crypto = await import('crypto');
+            const hmac = crypto.createHmac('sha256', webhookSecret);
+            hmac.update(rawBody, 'utf8');
+            const computedSignature = hmac.digest('hex');
+            
+            // Timing-safe comparison to prevent timing attacks
+            let isValid = false;
+            try {
+              isValid = crypto.timingSafeEqual(
+                Buffer.from(signature),
+                Buffer.from(computedSignature)
+              );
+            } catch (err) {
+              // timingSafeEqual throws if buffers have different lengths
+              isValid = false;
+            }
+            
+            if (!isValid) {
+              logger?.warn('⚠️ [Crypto] Invalid webhook signature', { 
+                received: signature.substring(0, 10) + '...',
+                computed: computedSignature.substring(0, 10) + '...'
+              });
+              return c.json({ error: 'Invalid signature' }, 401);
+            }
+            
+            logger?.info('✅ [Crypto] Webhook signature verified');
+            
+            // Parse the verified request body
+            const body = JSON.parse(rawBody);
             const event = body.event;
             
             if (!event) {
