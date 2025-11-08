@@ -3223,7 +3223,7 @@ const UPCOMING_LAUNCHES = [
     id: '1',
     name: 'DarkWave',
     symbol: 'DWLP',
-    logo: 'attached_assets/1000015323_1762583228197.jpg', // Official DWLP token logo
+    logo: '/darkwave-coin.png', // Official DWLP token logo
     launchDate: new Date('2025-12-25T00:00:00Z'), // Christmas Day 2025 - REAL LAUNCH DATE
     launchPrice: '$0.01',
     totalSupply: '100M DWLP',
