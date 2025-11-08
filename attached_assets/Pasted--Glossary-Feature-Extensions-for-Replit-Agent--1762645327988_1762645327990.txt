@@ -1,0 +1,59 @@
+/**
+ * 🔧 Glossary Feature Extensions for Replit Agent
+ * ----------------------------------------------
+ * This module adds dynamic functionality to the existing glossary and Crypto Cat image assets.
+ * It assumes:
+ *   - All glossary terms (A–Z) are already imported and merged into a single `glossary` object.
+ *   - Each term includes: { category, smartass, plain, pose }
+ *   - Crypto Cat image assets are available and named by pose (e.g., 'celebrate.png', 'cry.png', etc.)
+ *
+ * This module enables:
+ *   ✅ Toggle between smartass and plain definitions (sass mode)
+ *   ✅ Filter glossary by category (e.g., 'Crypto', 'NFT', 'Finance')
+ *   ✅ Search glossary by keyword (term, smartass, or plain)
+ *   ✅ Render Crypto Cat pose per term using the `pose` field
+ *   ✅ Optional: fallback to neutral pose if sass mode is off
+ */
+
+// 🔁 Toggle between smartass and plain definitions
+export function getGlossaryTerm(term: string, sassMode: boolean = true) {
+  const entry = glossary[term];
+  if (!entry) return null;
+  return {
+    term,
+    definition: sassMode ? entry.smartass : entry.plain,
+    category: entry.category,
+    pose: sassMode ? entry.pose : 'neutral'
+  };
+}
+
+// 🧠 Filter glossary by category (e.g., 'Crypto', 'NFT', 'Finance')
+export function getGlossaryByCategory(category: string, sassMode: boolean = true) {
+  return Object.entries(glossary)
+    .filter(([_, entry]) => entry.category === category)
+    .map(([term, entry]) => ({
+      term,
+      definition: sassMode ? entry.smartass : entry.plain,
+      pose: sassMode ? entry.pose : 'neutral'
+    }));
+}
+
+// 🔍 Search glossary by keyword (term or substring match)
+export function searchGlossary(keyword: string, sassMode: boolean = true) {
+  const lower = keyword.toLowerCase();
+  return Object.entries(glossary)
+    .filter(([term, entry]) =>
+      term.toLowerCase().includes(lower) ||
+      entry.smartass.toLowerCase().includes(lower) ||
+      entry.plain.toLowerCase().includes(lower)
+    )
+    .map(([term, entry]) => ({
+      term,
+      definition: sassMode ? entry.smartass : entry.plain,
+      category: entry.category,
+      pose: sassMode ? entry.pose : 'neutral'
+    }));
+}
+
+// 🖼️ Render Crypto Cat pose (UI should use `pose` field to load matching image)
+// Example: <img src={`/assets/cryptocat/${pose}.png`} alt={`${term} pose`} />
