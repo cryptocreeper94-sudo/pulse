@@ -254,7 +254,7 @@ body {
   position: relative;
 }
 
-/* Subtle Dark Green to Black Gradient Background (Left to Right Sweep with Depth) */
+/* Pure Black Background */
 body::before {
   content: '';
   position: fixed;
@@ -262,7 +262,7 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, #004400 0%, #003300 25%, #002200 50%, #001100 75%, #000000 100%);
+  background: #000000;
   z-index: -1;
   pointer-events: none;
 }
@@ -351,13 +351,13 @@ body::before {
 /* Subtle neon glow on hover for desktop */
 @media (min-width: 1024px) {
   .accent-hot:hover {
-    box-shadow: 0 0 30px rgba(0, 255, 0, 0.8), 0 0 60px rgba(0, 255, 0, 0.4);
+    box-shadow: 0 0 30px rgba(6, 182, 212, 0.8), 0 0 60px rgba(6, 182, 212, 0.4);
     transform: translateY(-2px);
     transition: all 0.3s ease;
   }
   
   .accent-success:hover {
-    box-shadow: 0 0 30px rgba(0, 255, 133, 0.8), 0 0 60px rgba(0, 255, 133, 0.4);
+    box-shadow: 0 0 30px rgba(6, 182, 212, 0.8), 0 0 60px rgba(6, 182, 212, 0.4);
     transform: translateY(-2px);
     transition: all 0.3s ease;
   }
@@ -402,13 +402,13 @@ body::before {
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  background: rgba(0, 255, 133, 0.15);
+  background: rgba(6, 182, 212, 0.15);
   border: 1px solid var(--neon-green);
   border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--neon-green);
-  box-shadow: 0 0 12px rgba(0, 255, 133, 0.3);
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.3);
 }
 
 .status-pill::before {
@@ -849,7 +849,7 @@ body::before {
 }
 
 .market-table tbody tr {
-  border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+  border-bottom: 1px solid rgba(6, 182, 212, 0.2);
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
@@ -862,16 +862,16 @@ body::before {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.4), rgba(0, 255, 0, 0.4), transparent);
+  background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.4), rgba(6, 182, 212, 0.4), transparent);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 
 .market-table tbody tr:hover {
-  background: linear-gradient(90deg, rgba(0, 255, 0, 0.08), rgba(168, 85, 247, 0.08));
+  background: linear-gradient(90deg, rgba(6, 182, 212, 0.08), rgba(168, 85, 247, 0.08));
   transform: translateX(4px);
-  border-left: 3px solid #00FF00;
-  border-bottom-color: rgba(0, 255, 0, 0.5);
+  border-left: 3px solid #06B6D4;
+  border-bottom-color: rgba(6, 182, 212, 0.5);
 }
 
 .market-table tbody tr:hover::after {
@@ -929,7 +929,7 @@ body::before {
   margin-bottom: 12px;
   overflow: hidden;
   background: linear-gradient(135deg, rgba(10, 0, 5, 0.3), rgba(26, 10, 31, 0.3));
-  border: 1px solid rgba(0, 255, 0, 0.2);
+  border: 1px solid rgba(6, 182, 212, 0.2);
   border-radius: 8px;
   padding: 8px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
@@ -1024,7 +1024,7 @@ body::before {
 .trending-item:hover {
   transform: translateY(-4px) scale(1.05);
   border-color: var(--digital-green);
-  box-shadow: 0 8px 20px rgba(0, 255, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 8px 20px rgba(6, 182, 212, 0.5), 0 4px 12px rgba(0, 0, 0, 0.8);
   background: rgba(15, 15, 25, 0.9);
 }
 
@@ -3474,7 +3474,7 @@ body::before {
 .outline-pill.active {
   border-color: var(--neon-green);
   color: var(--neon-green);
-  box-shadow: 0 0 12px rgba(0, 255, 0, 0.3);
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.3);
 }
 
 /* Icon circle buttons (for settings/actions) */
@@ -3520,7 +3520,7 @@ body::before {
 }
 
 .glow-green {
-  box-shadow: 0 0 12px rgba(0, 255, 0, 0.4);
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.4);
 }
 
 .glow-gold {
