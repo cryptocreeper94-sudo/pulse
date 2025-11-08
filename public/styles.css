@@ -750,15 +750,33 @@ body::before {
 }
 
 .market-table tbody tr {
-  border-bottom: 1px solid rgba(168, 85, 247, 0.1);
+  border-bottom: 1px solid rgba(255, 0, 110, 0.2);
   cursor: pointer;
   transition: all 0.2s ease;
+  position: relative;
+}
+
+.market-table tbody tr::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.4), rgba(255, 0, 110, 0.4), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .market-table tbody tr:hover {
   background: linear-gradient(90deg, rgba(255, 0, 110, 0.08), rgba(168, 85, 247, 0.08));
   transform: translateX(4px);
   border-left: 3px solid #FF006E;
+  border-bottom-color: rgba(255, 0, 110, 0.5);
+}
+
+.market-table tbody tr:hover::after {
+  opacity: 1;
 }
 
 .market-table td {
@@ -2933,7 +2951,6 @@ body::before {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 8px;
-  margin-bottom: 10px;
 }
 
 .market-stat {

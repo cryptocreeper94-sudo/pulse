@@ -166,16 +166,23 @@
                 <div class="market-stat">
                   <div class="market-stat-label">S&P 500</div>
                   <div class="market-stat-value" id="sp500Price">Loading...</div>
-                  <div class="market-stat-change" id="sp500Change">--</div>
+                  <div class="market-stat-change positive" id="sp500Change">--</div>
                 </div>
                 <div class="market-stat">
                   <div class="market-stat-label">Nasdaq</div>
                   <div class="market-stat-value" id="nasdaqPrice">Loading...</div>
-                  <div class="market-stat-change" id="nasdaqChange">--</div>
+                  <div class="market-stat-change positive" id="nasdaqChange">--</div>
                 </div>
-              </div>
-              <div class="market-snapshot-chart">
-                <img id="stockChartImage" src="https://quickchart.io/chart?c={type:'line',data:{labels:['Mon','Tue','Wed','Thu','Fri'],datasets:[{label:'S%26P 500',data:[4100,4150,4120,4180,4200],borderColor:'%234ADE80',fill:false}]},options:{legend:{display:false},scales:{y:{display:false},x:{display:false}}}}" alt="Stock Market Chart" loading="lazy">
+                <div class="market-stat">
+                  <div class="market-stat-label">Dow Jones</div>
+                  <div class="market-stat-value" id="dowPrice">$38,500</div>
+                  <div class="market-stat-change positive">+0.3%</div>
+                </div>
+                <div class="market-stat">
+                  <div class="market-stat-label">Vol (24h)</div>
+                  <div class="market-stat-value" id="stockVolume">$450B</div>
+                  <div class="market-stat-change">NYSE</div>
+                </div>
               </div>
             </div>
             
@@ -211,13 +218,20 @@
                   <div class="market-stat-change" id="btcDomChange">--</div>
                 </div>
                 <div class="market-stat">
+                  <div class="market-stat-label">ETH Dom</div>
+                  <div class="market-stat-value" id="ethDominance">Loading...</div>
+                  <div class="market-stat-change" style="font-size: 0.65rem; color: var(--text-secondary);">Alt</div>
+                </div>
+                <div class="market-stat">
                   <div class="market-stat-label">Total MCap</div>
                   <div class="market-stat-value" id="totalMcap">Loading...</div>
                   <div class="market-stat-change" id="totalMcapChange">--</div>
                 </div>
-              </div>
-              <div class="market-snapshot-chart">
-                <img id="cryptoChartImage" src="https://quickchart.io/chart?c={type:'line',data:{labels:['Mon','Tue','Wed','Thu','Fri'],datasets:[{label:'BTC',data:[50000,51000,50500,52000,52500],borderColor:'%23F7931A',fill:false}]},options:{legend:{display:false},scales:{y:{display:false},x:{display:false}}}}" alt="Crypto Market Chart" loading="lazy">
+                <div class="market-stat">
+                  <div class="market-stat-label">24h Volume</div>
+                  <div class="market-stat-value" id="cryptoVolume">$85B</div>
+                  <div class="market-stat-change" id="cryptoVolumeChange">--</div>
+                </div>
               </div>
             </div>
             

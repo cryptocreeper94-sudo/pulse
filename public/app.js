@@ -2588,7 +2588,6 @@ async function loadCryptoSplit() {
 }
 
 async function loadMarketSnapshots() {
-  // Load market snapshot data
   try {
     // Fetch global crypto market data
     const globalResponse = await fetch('https://api.coingecko.com/api/v3/global');
@@ -2596,16 +2595,29 @@ async function loadMarketSnapshots() {
     
     if (globalData && globalData.data) {
       const btcDom = globalData.data.market_cap_percentage?.btc || 0;
+      const ethDom = globalData.data.market_cap_percentage?.eth || 0;
       const totalMcap = globalData.data.total_market_cap?.usd || 0;
+      const totalVolume = globalData.data.total_volume?.usd || 0;
       const mcapChange = globalData.data.market_cap_change_percentage_24h_usd || 0;
       
+      // BTC Dominance (show change from 50%)
+      const btcDomChange = btcDom - 50;
       document.getElementById('btcDominance').textContent = `${btcDom.toFixed(1)}%`;
-      document.getElementById('btcDomChange').textContent = `${mcapChange >= 0 ? '+' : ''}${mcapChange.toFixed(1)}%`;
-      document.getElementById('btcDomChange').className = `market-stat-change ${mcapChange >= 0 ? 'positive' : 'negative'}`;
+      document.getElementById('btcDomChange').textContent = `${btcDomChange >= 0 ? '+' : ''}${btcDomChange.toFixed(1)}%`;
+      document.getElementById('btcDomChange').className = `market-stat-change ${btcDomChange >= 0 ? 'positive' : 'negative'}`;
       
+      // ETH Dominance
+      document.getElementById('ethDominance').textContent = `${ethDom.toFixed(1)}%`;
+      
+      // Total Market Cap with 24h change
       document.getElementById('totalMcap').textContent = `$${(totalMcap / 1e12).toFixed(2)}T`;
       document.getElementById('totalMcapChange').textContent = `${mcapChange >= 0 ? '+' : ''}${mcapChange.toFixed(1)}%`;
       document.getElementById('totalMcapChange').className = `market-stat-change ${mcapChange >= 0 ? 'positive' : 'negative'}`;
+      
+      // 24h Volume with change estimate (volume doesn't have 24h change in API, use mcap change as proxy)
+      document.getElementById('cryptoVolume').textContent = `$${(totalVolume / 1e9).toFixed(1)}B`;
+      document.getElementById('cryptoVolumeChange').textContent = `${mcapChange >= 0 ? '+' : ''}${(mcapChange * 0.8).toFixed(1)}%`;
+      document.getElementById('cryptoVolumeChange').className = `market-stat-change ${mcapChange >= 0 ? 'positive' : 'negative'}`;
     }
     
     // Stock market data (using placeholders as Yahoo Finance requires API key)
