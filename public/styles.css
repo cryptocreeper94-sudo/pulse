@@ -752,20 +752,49 @@ a:hover {
 
 /* Header */
 .app-header {
+  background: var(--gradient-primary);
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 20px rgba(230, 57, 70, 0.3);
+  position: sticky;
+  top: 32px;
+  z-index: 100;
+  margin-top: 0;
+}
+
+.logo-container {
   position: relative;
-  margin-top: 32px;
 }
 
-.header-banner-image {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-.header-actions-overlay {
+.logo-glow {
   position: absolute;
-  top: var(--space-md);
-  right: var(--space-md);
+  inset: -10px;
+  background: var(--gradient-glow);
+  border-radius: 50%;
+  filter: blur(20px);
+  opacity: 0.5;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.logo-text {
+  position: relative;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-primary);
+  text-shadow: 0 0 20px rgba(230, 57, 70, 0.5);
+}
+
+.gradient-text {
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header-actions {
   display: flex;
   gap: var(--space-sm);
 }
