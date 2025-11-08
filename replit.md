@@ -20,6 +20,17 @@ The application uses a workflow-based architecture to process user messages thro
 
 **New in v2.7**: Cryptocurrency payment integration via Coinbase Commerce. Users can now pay with Bitcoin, Ethereum, USDC, Litecoin, Dogecoin, and Bitcoin Cash as an alternative to credit cards. Crypto payments grant 30-day premium access (no auto-renew). Webhook signature verification (HMAC-SHA256) prevents fraudulent payment confirmations. Admin receives Telegram notifications for both Stripe and crypto payments. 1% Coinbase Commerce transaction fee vs 2.9% + $0.30 Stripe fee.
 
+**New in v2.8**: Crypto Cat mascot integration - toggleable grumpy crypto guru with varied personality, body language, and sarcastic commentary. Appears in glossary term tooltips (20+ terms with custom quotes and poses like "*flipping middle finger up*", "*slow clapping*", "*face-palming*") and feature banners. Fully integrated with app state management and localStorage persistence. Users can toggle Crypto Cat on/off in Settings. Represents CryptoCat House branding with authentic personality from the "school of hard knocks."
+
+**New in v2.9**: Token Launchpad "Launching Soon" section with real countdown timer to December 25, 2025 (DarkWave token launch date). Features include: live countdown display (days/hours/mins/secs), whitelist signup system with modal forms, launch card UI with neon gradient borders and shimmer animations, premium-gated whitelist access, integration with existing payment systems (Stripe + Coinbase Commerce). Database schema includes tokenLaunches and launchWhitelist tables for future backend implementation. Christmas 2025 target for full DarkWave token presale and Raydium liquidity pool launch.
+
+**ROADMAP - DarkWave Token Launch (Dec 25, 2025)**:
+- **Phase 1 (Now - Dec 15)**: Whitelist collection, community building, Crypto Cat hype campaigns
+- **Phase 2 (Dec 15-24)**: Presale period via integrated payment systems, raise capital for liquidity
+- **Phase 3 (Dec 25)**: Official token launch on Raydium DEX with instant liquidity pool, listing on Jupiter aggregator
+- **Liquidity Strategy**: Use presale funds to create Raydium pool (recommended 10-20 SOL + equivalent DWLP tokens for stable liquidity)
+- **Backend TODO**: API endpoints for whitelist/purchase processing, admin dashboard for launch management, real-time allocation tracking, webhook integration for payment confirmation
+
 **Security Note**: Current implementation uses browser-generated unique user IDs for session isolation. For production Telegram Mini App deployment, implement Telegram initData HMAC-SHA256 signature validation to cryptographically verify user identity and prevent ID spoofing. Admin dashboard protected by ADMIN_ACCESS_CODE environment variable. File upload validation uses three-layer security: data URI parsing, base64 decoding with size verification, and magic byte signature checking to prevent malicious file uploads.
 
 ## User Preferences
