@@ -1,0 +1,77 @@
+// ─────────────────────────────────────────────
+// 🔤 Glossary Block G–I | DarkWave Canonical
+// Includes: category, smartass, plain
+// ─────────────────────────────────────────────
+
+export const glossary_GI = {
+  "Gas": {
+    category: "Crypto",
+    smartass: "The emotional toll of using Ethereum. Measured in Gwei and regret.",
+    plain: "The fee required to perform transactions or execute contracts on Ethereum."
+  },
+  "Gas Wars": {
+    category: "Crypto",
+    smartass: "Everyone tries to mint at once. Screaming in Gwei.",
+    plain: "A surge in gas fees due to high demand for minting or trading."
+  },
+  "Genesis Block": {
+    category: "Crypto",
+    smartass: "The first block. The birth of emotional chaos.",
+    plain: "The very first block in a blockchain network."
+  },
+  "Gwei": {
+    category: "Crypto",
+    smartass: "Tiny units of Ethereum gas. Like pennies, but more painful.",
+    plain: "A denomination of ETH used to measure gas fees."
+  },
+  "Grouped Logic": {
+    category: "DarkWave",
+    smartass: "Modular code that survives chaos. If it’s not grouped, it’s doomed.",
+    plain: "Code blocks organized for restart resilience and modular recovery."
+  },
+  "Hashrate": {
+    category: "Crypto",
+    smartass: "Mining power. Bigger hashrate = louder fan noise.",
+    plain: "The speed at which a computer can complete crypto mining operations."
+  },
+  "HODL": {
+    category: "Crypto Slang",
+    smartass: "Hold On for Dear Life. The anthem of denial.",
+    plain: "A slang term meaning to hold crypto assets long-term despite volatility."
+  },
+  "Hot Wallet": {
+    category: "Crypto",
+    smartass: "Online wallet. Convenient, but flammable.",
+    plain: "A crypto wallet connected to the internet for easy access."
+  },
+  "ICO": {
+    category: "Crypto",
+    smartass: "Initial Coin Offering. Where dreams meet funding and sometimes fraud.",
+    plain: "A fundraising method where new cryptocurrencies are sold to investors."
+  },
+  "Index Fund": {
+    category: "Finance",
+    smartass: "Passive investing. Emotionally boring, financially smart.",
+    plain: "A fund that tracks a market index and offers broad exposure."
+  },
+  "Insider Trading": {
+    category: "Finance",
+    smartass: "Trading with secrets. Emotionally unfair and legally spicy.",
+    plain: "Buying or selling assets based on non-public information."
+  },
+  "Interest Rate": {
+    category: "Finance",
+    smartass: "Cost of borrowing. Controlled by central banks. Emotionally manipulative.",
+    plain: "The percentage charged for borrowing money or earned on savings."
+  },
+  "ISO 20022": {
+    category: "Regulation",
+    smartass: "Global bank-speak upgrade. Makes money transfers sound like Shakespeare.",
+    plain: "A standardized messaging format for financial transactions used worldwide."
+  },
+  "Issuance": {
+    category: "Finance",
+    smartass: "Creating new assets. Sometimes backed by value. Sometimes by vibes.",
+    plain: "The process of creating and distributing financial instruments or tokens."
+  }
+};
