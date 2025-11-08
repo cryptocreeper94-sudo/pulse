@@ -1,49 +1,49 @@
 /* DarkWave-V2 Mini App Styles - Multi-Theme System */
 
 /* ===========================================
-   THEME 1: JUPITER (Dark DeFi Cyberpunk)
-   Default theme - Teal/Purple gradients
+   THEME 1: ELECTRIC BLUE NEON (Dark Professional)
+   Default theme - Navy + Electric Blue
    =========================================== */
 :root, body.theme-jupiter {
-  /* Jupiter Color Palette - Cyberpunk Teal/Purple */
-  --primary-maroon: #FFFFFF;
-  --deep-red: #7C3AED;
-  --primary-red: #FFFFFF;
-  --primary-purple: #FFFFFF;
-  --glow-purple: #818CF8;
-  --bg-dark: #0F172A;
-  --bg-card: #1E293B;
-  --bg-card-hover: #334155;
-  --text-primary: #F1F5F9;
+  /* Electric Blue Color Palette */
+  --primary-maroon: #3B82F6;
+  --deep-red: #2563EB;
+  --primary-red: #3B82F6;
+  --primary-purple: #3B82F6;
+  --glow-purple: #60A5FA;
+  --bg-dark: #0A0E27;
+  --bg-card: #1A1F3A;
+  --bg-card-hover: #1E2742;
+  --text-primary: #FFFFFF;
   --text-secondary: #94A3B8;
-  --accent-cyan: #FFFFFF;
-  --success-green: #3B82F6;
-  --warning-amber: #FFFFFF;
+  --accent-cyan: #60A5FA;
+  --success-green: #60A5FA;
+  --warning-amber: #FBBF24;
   --danger-red: #EF4444;
   
-  /* Jupiter Accent Colors - Pure White */
-  --digital-green: #FFFFFF;
-  --neon-green: #FFFFFF;
-  --neon-pink: #FFFFFF;
-  --digital-green-glow: 0 0 15px rgba(255, 255, 255, 0.2);
-  --neon-green-glow: 0 0 15px rgba(255, 255, 255, 0.2);
-  --neon-pink-glow: 0 0 15px rgba(255, 255, 255, 0.2);
-  --red-glow: 0 0 15px rgba(255, 255, 255, 0.2);
+  /* Neon Blue Accents */
+  --digital-green: #3B82F6;
+  --neon-green: #3B82F6;
+  --neon-pink: #60A5FA;
+  --digital-green-glow: 0 0 20px rgba(59, 130, 246, 0.6), 0 0 40px rgba(59, 130, 246, 0.3);
+  --neon-green-glow: 0 0 20px rgba(59, 130, 246, 0.6), 0 0 40px rgba(59, 130, 246, 0.3);
+  --neon-pink-glow: 0 0 20px rgba(96, 165, 250, 0.5), 0 0 40px rgba(96, 165, 250, 0.25);
+  --red-glow: 0 0 15px rgba(59, 130, 246, 0.5), 0 0 30px rgba(59, 130, 246, 0.25);
   
   /* Layout */
-  --accent-border-width: 1.5px;
-  --accent-glow-radius: 8px;
+  --accent-border-width: 2px;
+  --accent-glow-radius: 10px;
   --shell-max-width: 1160px;
   --shell-gutter: 12px;
   --sidebar-width: 0px;
   --section-spacing: 12px;
   --card-padding: 14px;
   
-  /* Jupiter Gradients - Black/White Only */
-  --gradient-primary: linear-gradient(135deg, #1E293B, #0F172A);
-  --gradient-card: linear-gradient(135deg, #1E293B, #0F172A);
-  --gradient-glow: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-  --button-glow: var(--red-glow);
+  /* Electric Blue Gradients */
+  --gradient-primary: linear-gradient(135deg, #1E3A8A, #1E40AF, #3B82F6);
+  --gradient-card: linear-gradient(135deg, #1A1F3A, #0A0E27);
+  --gradient-glow: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(96, 165, 250, 0.1));
+  --button-glow: var(--neon-green-glow);
 }
 
 /* ===========================================
@@ -256,6 +256,7 @@ body {
 
 /* Pure Black Background */
 body::before {
+  background: linear-gradient(180deg, rgba(10, 14, 39, 0.95) 0%, rgba(26, 31, 58, 0.9) 50%, rgba(10, 14, 39, 0.95) 100%) !important;
   content: '';
   position: fixed;
   top: 0;
@@ -862,7 +863,7 @@ body::before {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.4), rgba(255, 255, 255, 0.4), transparent);
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.4), rgba(255, 255, 255, 0.4), transparent);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
