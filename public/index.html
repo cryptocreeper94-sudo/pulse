@@ -126,30 +126,56 @@
     <div class="tab-content">
       <!-- Analysis Tab -->
       <div id="analysis" class="tab-pane active">
+        <!-- CMC-Style Top Stats Bar -->
+        <div class="cmc-stats-bar">
+          <div class="cmc-stat-item">
+            <span class="cmc-stat-label">Market Cap</span>
+            <span class="cmc-stat-value" id="cmcTotalMarketCap">$3.43T</span>
+            <span class="cmc-stat-change positive" id="cmcMarketCapChange">+0.48%</span>
+          </div>
+          <div class="cmc-stat-item">
+            <span class="cmc-stat-label">Fear & Greed</span>
+            <span class="cmc-stat-value" id="cmcFearGreed">25</span>
+            <span class="cmc-stat-change neutral">Fear</span>
+          </div>
+          <div class="cmc-stat-item">
+            <span class="cmc-stat-label">Altcoin Season</span>
+            <span class="cmc-stat-value" id="cmcAltSeason">29/100</span>
+            <span class="cmc-stat-change neutral">Bitcoin</span>
+          </div>
+          <div class="cmc-stat-item">
+            <span class="cmc-stat-label">Avg Crypto RSI</span>
+            <span class="cmc-stat-value" id="cmcAvgRSI">53.1</span>
+            <span class="cmc-stat-change neutral">Neutral</span>
+          </div>
+          <div class="cmc-stat-item crypto-cat-toggle">
+            <button id="toggleCryptoCat" class="crypto-cat-btn" title="Toggle Crypto Cat mascot">
+              😼
+            </button>
+          </div>
+        </div>
+
         <!-- Category Navigation -->
         <div class="category-nav">
-          <button class="category-btn active" data-category="bluechip">
-            
-            <span class="category-label">Blue Chip</span>
+          <button class="category-btn active" data-category="top">
+            <span class="category-label">🔝 Top</span>
           </button>
-          <button class="category-btn" data-category="stocks">
-            
-            <span class="category-label">Stocks</span>
+          <button class="category-btn" data-category="trending">
+            <span class="category-label">🔥 Trending</span>
           </button>
-          <button class="category-btn" data-category="meme">
-            
-            <span class="category-label">Meme</span>
+          <button class="category-btn" data-category="gainers">
+            <span class="category-label">📈 Gainers</span>
+          </button>
+          <button class="category-btn" data-category="losers">
+            <span class="category-label">📉 Losers</span>
+          </button>
+          <button class="category-btn" data-category="new">
+            <span class="category-label">✨ New</span>
           </button>
           <button class="category-btn" data-category="defi">
-            
             <span class="category-label">DeFi</span>
           </button>
-          <button class="category-btn" data-category="dex">
-            
-            <span class="category-label">DEX</span>
-          </button>
           <button class="category-btn" data-category="nft">
-            
             <span class="category-label">NFTs</span>
           </button>
         </div>
@@ -255,30 +281,26 @@
           </div>
         </div>
 
-        <!-- Original Single Table (Hidden when split view is shown) -->
-        <div id="marketOverviewSingle" class="market-overview-container">
-          <div class="market-overview-header">
-            <h3 style="margin: 0; font-size: 0.95rem; color: var(--text-primary);">
-              <span id="marketOverviewTitle">Top Blue Chip Crypto</span>
-            </h3>
-            <span style="font-size: 0.75rem; color: var(--text-secondary);">Click any row to analyze</span>
-          </div>
-          <div class="market-table-wrapper">
-            <table class="market-table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th style="text-align: left;">Name</th>
-                  <th style="text-align: right;">Price</th>
-                  <th style="text-align: right;">24h %</th>
-                  <th style="text-align: right;">Volume</th>
-                  <th style="text-align: right;">Market Cap</th>
-                </tr>
-              </thead>
-              <tbody id="marketTableBody">
-                <tr>
-                  <td colspan="6" style="text-align: center; padding: 30px;">
-                    <div class="spinner"></div>
+        <!-- CMC-Style Main Table -->
+        <div id="marketOverviewSingle" class="market-overview-container" style="margin: 16px;">
+          <table class="cmc-table">
+            <thead>
+              <tr>
+                <th style="text-align: left;">#</th>
+                <th style="text-align: left;">Name</th>
+                <th style="text-align: right;">Price</th>
+                <th style="text-align: right;">1h %</th>
+                <th style="text-align: right;">24h %</th>
+                <th style="text-align: right;">7d %</th>
+                <th style="text-align: right;">Market Cap</th>
+                <th style="text-align: right;">Volume(24h)</th>
+                <th style="text-align: center;">Last 7 Days</th>
+              </tr>
+            </thead>
+            <tbody id="marketTableBody">
+              <tr>
+                <td colspan="9" style="text-align: center; padding: 30px;">
+                  <div class="spinner"></div>
                   </td>
                 </tr>
               </tbody>

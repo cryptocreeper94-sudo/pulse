@@ -3648,3 +3648,186 @@ body::before {
   min-height: 200px;
 }
 
+
+/* ==================================================
+   CMC-STYLE LAYOUT TRANSFORMATION
+   Clean, professional CoinMarketCap design
+   ================================================== */
+
+/* CMC Top Stats Bar */
+.cmc-stats-bar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 16px 20px;
+  background: #FFFFFF;
+  border: 1px solid #EFF2F5;
+  border-radius: 12px;
+  margin: 16px;
+  overflow-x: auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.cmc-stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 120px;
+}
+
+.cmc-stat-label {
+  font-size: 0.75rem;
+  color: #616E85;
+  font-weight: 500;
+}
+
+.cmc-stat-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1E2329;
+}
+
+.cmc-stat-change {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.cmc-stat-change.positive {
+  color: #16C784;
+}
+
+.cmc-stat-change.negative {
+  color: #EA3943;
+}
+
+.cmc-stat-change.neutral {
+  color: #616E85;
+}
+
+/* Crypto Cat Toggle Button */
+.crypto-cat-toggle {
+  margin-left: auto;
+  min-width: auto;
+}
+
+.crypto-cat-btn {
+  background: linear-gradient(135deg, #A855F7, #8B5CF6);
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+}
+
+.crypto-cat-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(168, 85, 247, 0.5);
+}
+
+.crypto-cat-btn:active {
+  transform: scale(0.95);
+}
+
+/* CMC-Style Clean Table */
+.cmc-table {
+  width: 100%;
+  background: #FFFFFF;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #EFF2F5;
+}
+
+.cmc-table thead {
+  background: #FAFAFA;
+  border-bottom: 1px solid #EFF2F5;
+}
+
+.cmc-table th {
+  padding: 12px 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #616E85;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cmc-table tbody tr {
+  border-bottom: 1px solid #EFF2F5;
+  transition: background-color 0.2s;
+  cursor: pointer;
+}
+
+.cmc-table tbody tr:hover {
+  background: #F8FAFD;
+}
+
+.cmc-table td {
+  padding: 16px;
+  color: #1E2329;
+  font-size: 0.9rem;
+}
+
+.cmc-rank {
+  font-weight: 600;
+  color: #616E85;
+  width: 50px;
+}
+
+.cmc-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cmc-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.cmc-symbol {
+  color: #616E85;
+  font-size: 0.8rem;
+  margin-left: 4px;
+}
+
+.cmc-price {
+  font-weight: 600;
+  color: #1E2329;
+}
+
+.cmc-change-positive {
+  color: #16C784;
+  font-weight: 500;
+}
+
+.cmc-change-negative {
+  color: #EA3943;
+  font-weight: 500;
+}
+
+.cmc-sparkline {
+  width: 120px;
+  height: 40px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .cmc-stats-bar {
+    gap: 16px;
+    padding: 12px 16px;
+  }
+  
+  .cmc-stat-item {
+    min-width: 100px;
+  }
+  
+  .cmc-stat-value {
+    font-size: 1rem;
+  }
+}
+
