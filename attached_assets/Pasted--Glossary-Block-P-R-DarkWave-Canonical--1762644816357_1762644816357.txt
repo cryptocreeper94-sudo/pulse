@@ -1,0 +1,92 @@
+// ─────────────────────────────────────────────
+// 🔤 Glossary Block P–R | DarkWave Canonical
+// Includes: category, smartass, plain
+// ─────────────────────────────────────────────
+
+export const glossary_PR = {
+  "P2P": {
+    category: "Crypto",
+    smartass: "Peer-to-peer. Trade directly. No middlemen. No excuses.",
+    plain: "A decentralized exchange of assets directly between users without intermediaries."
+  },
+  "Paper Hands": {
+    category: "Crypto Slang",
+    smartass: "Sells too early. Folds under pressure. Emotionally fragile.",
+    plain: "A term for investors who sell at the first sign of volatility."
+  },
+  "Patriot Act": {
+    category: "Regulation",
+    smartass: "Surveillance law. Sometimes used in finance. Emotionally invasive.",
+    plain: "U.S. legislation that expanded government surveillance powers, including financial monitoring."
+  },
+  "PE Ratio": {
+    category: "Finance",
+    smartass: "Price-to-Earnings. Measures how delusional the market is.",
+    plain: "A valuation metric comparing a company’s share price to its earnings per share."
+  },
+  "Portfolio": {
+    category: "Finance",
+    smartass: "Your collection of assets. Emotional scrapbook.",
+    plain: "A group of financial investments held by an individual or institution."
+  },
+  "Private Key": {
+    category: "Crypto",
+    smartass: "Your wallet’s soul. Lose it, and you lose everything.",
+    plain: "A secret cryptographic key used to access and manage crypto assets."
+  },
+  "Proof of Stake": {
+    category: "Crypto",
+    smartass: "Validate with locked coins. Less energy, more emotional commitment.",
+    plain: "A consensus mechanism where validators stake coins to secure the network."
+  },
+  "Proof of Work": {
+    category: "Crypto",
+    smartass: "Validate with brute force. Burn electricity, earn coins.",
+    plain: "A consensus mechanism requiring computational effort to validate transactions."
+  },
+  "Pump": {
+    category: "Crypto Slang",
+    smartass: "Price goes up. Everyone cheers. Then it dumps.",
+    plain: "A rapid increase in asset price, often driven by hype or manipulation."
+  },
+  "Rarity": {
+    category: "NFT",
+    smartass: "How special your JPEG is. Determines flex level.",
+    plain: "A measure of how uncommon traits are in an NFT collection."
+  },
+  "Recession": {
+    category: "Finance",
+    smartass: "Economic slowdown. Emotional panic. Everyone Googles 'how to buy beans'.",
+    plain: "A period of economic decline marked by reduced GDP and rising unemployment."
+  },
+  "Regulation": {
+    category: "Finance",
+    smartass: "Rules written by people who don’t use crypto.",
+    plain: "Laws and guidelines governing financial markets and institutions."
+  },
+  "Rekt": {
+    category: "Crypto Slang",
+    smartass: "Emotionally destroyed by a bad trade. No survivors.",
+    plain: "Slang for suffering major financial losses in crypto."
+  },
+  "Retail Investor": {
+    category: "Finance",
+    smartass: "You. Me. Everyone not wearing a suit.",
+    plain: "An individual investor who trades with personal funds, not professionally."
+  },
+  "Reveal": {
+    category: "NFT",
+    smartass: "When hidden NFTs show their true face. Often disappointing.",
+    plain: "The moment when NFT metadata is made visible to buyers."
+  },
+  "Rugpull": {
+    category: "Crypto",
+    smartass: "Dev disappears. Your money goes poof. Classic heartbreak.",
+    plain: "A scam where developers abandon a project and steal investor funds."
+  },
+  "Royalties": {
+    category: "NFT",
+    smartass: "Creator tax. Sometimes enforced. Sometimes ignored.",
+    plain: "A percentage of resale value paid to the original creator of an NFT."
+  }
+};
