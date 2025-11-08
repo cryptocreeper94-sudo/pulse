@@ -2918,6 +2918,22 @@ function renderGlossary(searchTerm = '', category = null) {
               </div>
             </div>
             <div id="term-${termId}" class="glossary-term-content" style="display: ${isExpanded ? 'block' : 'none'}; padding: 0 12px 12px 12px;">
+              ${(() => {
+                const catData = cryptoCatEnabled ? getCryptoCatQuote(term.term) : null;
+                if (catData) {
+                  return `
+                    <div style="display: flex; gap: 10px; align-items: start; margin-bottom: 12px; background: rgba(255, 0, 110, 0.05); padding: 10px; border-radius: 8px; border: 1px solid rgba(255, 0, 110, 0.2);">
+                      <img src="assets/crypto-cat.png" alt="Crypto Cat" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--neon-green); flex-shrink: 0;">
+                      <div style="flex: 1;">
+                        <div style="font-size: 0.7rem; color: var(--neon-green); font-weight: 700; margin-bottom: 4px;">🐱 CRYPTO CAT SAYS:</div>
+                        <div style="font-size: 0.75rem; color: var(--neon-pink); font-style: italic; margin-bottom: 4px;">${catData.pose}</div>
+                        <div style="font-size: 0.85rem; color: var(--text-primary); font-style: italic; line-height: 1.4;">"${catData.quote}"</div>
+                      </div>
+                    </div>
+                  `;
+                }
+                return '';
+              })()}
               <div style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 8px;">${term.definition}</div>
               ${term.example ? `<div style="background: rgba(168, 85, 247, 0.1); padding: 8px; border-radius: 4px; font-size: 0.9rem;"><strong>Example:</strong> ${term.example}</div>` : ''}
             </div>
@@ -3197,8 +3213,277 @@ async function fetchTokenData(tokenAddress) {
   }
 }
 
+// ===== LAUNCHING SOON SECTION =====
+let countdownIntervals = [];
+
+// Mock data for upcoming token launches (will be replaced with API calls later)
+const UPCOMING_LAUNCHES = [
+  {
+    id: '1',
+    name: 'MoonShot Protocol',
+    symbol: 'MOON',
+    logo: 'https://via.placeholder.com/60',
+    launchDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days from now
+    launchPrice: '$0.01',
+    totalSupply: '1,000,000,000',
+    initialMarketCap: '$10M',
+    maxWhitelistSpots: 1000,
+    currentWhitelistCount: 347,
+    minAllocation: '0.1 SOL',
+    maxAllocation: '5 SOL'
+  },
+  {
+    id: '2',
+    name: 'DeFi Legends',
+    symbol: 'LEGEND',
+    logo: 'https://via.placeholder.com/60',
+    launchDate: new Date(Date.now() + 12 * 24 * 60 * 60 * 1000), // 12 days from now
+    launchPrice: '$0.05',
+    totalSupply: '500,000,000',
+    initialMarketCap: '$25M',
+    maxWhitelistSpots: 500,
+    currentWhitelistCount: 89,
+    minAllocation: '0.5 SOL',
+    maxAllocation: '10 SOL'
+  }
+];
+
+function calculateCountdown(targetDate) {
+  const now = new Date().getTime();
+  const distance = targetDate - now;
+  
+  if (distance < 0) {
+    return { days: 0, hours: 0, minutes: 0, seconds: 0, expired: true };
+  }
+  
+  return {
+    days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+    minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+    seconds: Math.floor((distance % (1000 * 60)) / 1000),
+    expired: false
+  };
+}
+
+function renderLaunchingSoon() {
+  const container = document.getElementById('launchingTokens');
+  
+  if (!UPCOMING_LAUNCHES || UPCOMING_LAUNCHES.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state" style="text-align: center; padding: 40px 20px;">
+        <div style="font-size: 3rem; margin-bottom: 16px;">🚀</div>
+        <h3 style="color: var(--text-primary); margin-bottom: 8px;">No Upcoming Launches</h3>
+        <p style="color: var(--text-secondary); font-size: 0.9rem;">Check back soon for new IDOs and presales!</p>
+      </div>
+    `;
+    return;
+  }
+  
+  // Clear existing intervals
+  countdownIntervals.forEach(interval => clearInterval(interval));
+  countdownIntervals = [];
+  
+  container.innerHTML = UPCOMING_LAUNCHES.map(launch => {
+    const spotsRemaining = launch.maxWhitelistSpots - launch.currentWhitelistCount;
+    const spotsPercentage = (launch.currentWhitelistCount / launch.maxWhitelistSpots * 100).toFixed(0);
+    
+    return `
+      <div class="launch-card" data-launch-id="${launch.id}">
+        <div class="launch-header">
+          <img src="${launch.logo}" alt="${launch.name}" class="launch-logo" onerror="this.src='https://via.placeholder.com/60'">
+          <div class="launch-info">
+            <h3 class="launch-name">${launch.name}</h3>
+            <div class="launch-symbol">$${launch.symbol}</div>
+          </div>
+        </div>
+        
+        <div class="launch-countdown">
+          <div class="countdown-label">Launch Countdown</div>
+          <div class="countdown-timer" id="countdown-${launch.id}">
+            <div class="countdown-unit">
+              <div class="countdown-value" data-unit="days">00</div>
+              <div class="countdown-unit-label">Days</div>
+            </div>
+            <div class="countdown-unit">
+              <div class="countdown-value" data-unit="hours">00</div>
+              <div class="countdown-unit-label">Hrs</div>
+            </div>
+            <div class="countdown-unit">
+              <div class="countdown-value" data-unit="minutes">00</div>
+              <div class="countdown-unit-label">Min</div>
+            </div>
+            <div class="countdown-unit">
+              <div class="countdown-value" data-unit="seconds">00</div>
+              <div class="countdown-unit-label">Sec</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="launch-details">
+          <div class="launch-detail">
+            <div class="launch-detail-label">Launch Price</div>
+            <div class="launch-detail-value">${launch.launchPrice}</div>
+          </div>
+          <div class="launch-detail">
+            <div class="launch-detail-label">Market Cap</div>
+            <div class="launch-detail-value">${launch.initialMarketCap}</div>
+          </div>
+          <div class="launch-detail">
+            <div class="launch-detail-label">Min/Max</div>
+            <div class="launch-detail-value">${launch.minAllocation} - ${launch.maxAllocation}</div>
+          </div>
+          <div class="launch-detail">
+            <div class="launch-detail-label">Total Supply</div>
+            <div class="launch-detail-value">${launch.totalSupply}</div>
+          </div>
+        </div>
+        
+        <div class="launch-whitelist-status">
+          <div>
+            <div style="font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 4px;">Whitelist Progress</div>
+            <div class="whitelist-spots">${launch.currentWhitelistCount} / ${launch.maxWhitelistSpots} spots filled (${spotsPercentage}%)</div>
+          </div>
+          <div style="font-size: 1.5rem; color: var(--neon-green);">✓</div>
+        </div>
+        
+        <button class="launch-action-btn" onclick="joinWhitelist('${launch.id}', '${launch.name}')">
+          🚀 Join Whitelist
+        </button>
+      </div>
+    `;
+  }).join('');
+  
+  // Start countdown timers
+  UPCOMING_LAUNCHES.forEach(launch => {
+    const interval = setInterval(() => {
+      const countdown = calculateCountdown(new Date(launch.launchDate).getTime());
+      const container = document.querySelector(`#countdown-${launch.id}`);
+      
+      if (!container) {
+        clearInterval(interval);
+        return;
+      }
+      
+      if (countdown.expired) {
+        container.innerHTML = '<div style="color: var(--neon-green); font-weight: 700;">🎉 LIVE NOW!</div>';
+        clearInterval(interval);
+        return;
+      }
+      
+      container.querySelector('[data-unit="days"]').textContent = String(countdown.days).padStart(2, '0');
+      container.querySelector('[data-unit="hours"]').textContent = String(countdown.hours).padStart(2, '0');
+      container.querySelector('[data-unit="minutes"]').textContent = String(countdown.minutes).padStart(2, '0');
+      container.querySelector('[data-unit="seconds"]').textContent = String(countdown.seconds).padStart(2, '0');
+    }, 1000);
+    
+    countdownIntervals.push(interval);
+  });
+}
+
+function joinWhitelist(launchId, launchName) {
+  // Check if user is subscribed
+  if (!isUserSubscribed()) {
+    showModal(`
+      <div style="text-align: center; padding: 20px;">
+        <div style="font-size: 3rem; margin-bottom: 16px;">🔒</div>
+        <h3 style="margin-bottom: 12px;">Premium Feature</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 20px;">
+          Join the whitelist for <strong>${launchName}</strong> with a premium subscription
+        </p>
+        <button class="subscribe-button" onclick="closeModal(); switchTab('subscribe')" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #FF006E, #A855F7); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">
+          Subscribe Now
+        </button>
+      </div>
+    `);
+    return;
+  }
+  
+  // Show whitelist signup modal
+  showModal(`
+    <div style="padding: 20px;">
+      <h3 style="margin-bottom: 16px; color: var(--neon-pink);">🚀 Join ${launchName} Whitelist</h3>
+      <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.9rem;">
+        Enter your wallet address to secure your spot in the ${launchName} presale
+      </p>
+      
+      <form id="whitelistForm" onsubmit="submitWhitelist(event, '${launchId}', '${launchName}')">
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; margin-bottom: 8px; font-size: 0.85rem; color: var(--text-secondary);">
+            Wallet Address *
+          </label>
+          <input 
+            type="text" 
+            id="walletAddress" 
+            required
+            placeholder="Enter your Solana wallet address"
+            style="width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 0, 110, 0.3); border-radius: 8px; color: var(--text-primary); font-size: 0.9rem;"
+          >
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" required style="width: 18px; height: 18px;">
+            <span style="font-size: 0.85rem; color: var(--text-secondary);">
+              I agree to the terms and understand investment risks
+            </span>
+          </label>
+        </div>
+        
+        <div style="display: flex; gap: 12px;">
+          <button type="button" onclick="closeModal()" style="flex: 1; padding: 12px; background: rgba(255, 255, 255, 0.1); color: var(--text-primary); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; font-weight: 600; cursor: pointer;">
+            Cancel
+          </button>
+          <button type="submit" style="flex: 2; padding: 12px; background: linear-gradient(135deg, #FF006E, #A855F7); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">
+            Join Whitelist
+          </button>
+        </div>
+      </form>
+    </div>
+  `);
+}
+
+function submitWhitelist(event, launchId, launchName) {
+  event.preventDefault();
+  
+  const walletAddress = document.getElementById('walletAddress').value;
+  
+  // In production, this would make an API call to save the whitelist entry
+  console.log('Whitelist signup:', { launchId, launchName, walletAddress, userId: USER_ID });
+  
+  closeModal();
+  
+  // Show success message
+  showModal(`
+    <div style="text-align: center; padding: 30px 20px;">
+      <div style="font-size: 4rem; margin-bottom: 16px;">✅</div>
+      <h3 style="margin-bottom: 12px; color: var(--neon-green);">Whitelist Joined!</h3>
+      <p style="color: var(--text-secondary); margin-bottom: 20px;">
+        You've successfully joined the <strong>${launchName}</strong> whitelist
+      </p>
+      <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 20px;">
+        We'll notify you when the presale goes live
+      </p>
+      <button onclick="closeModal()" style="padding: 12px 32px; background: linear-gradient(135deg, #4ADE80, #22C55E); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">
+        Got it!
+      </button>
+    </div>
+  `);
+  
+  // Update the button in the launch card
+  const launchCard = document.querySelector(`[data-launch-id="${launchId}"]`);
+  if (launchCard) {
+    const btn = launchCard.querySelector('.launch-action-btn');
+    btn.textContent = '✓ Whitelist Joined';
+    btn.classList.add('joined');
+    btn.disabled = true;
+  }
+}
+
 // Render Projects Tab
 async function renderProjectsTab() {
+  // Render launching soon section first
+  renderLaunchingSoon();
+  
   const container = document.getElementById('projectsContent');
   
   if (!FEATURED_TOKENS || FEATURED_TOKENS.length === 0) {
@@ -4284,3 +4569,132 @@ function initializeDarkMode() {
 
 // Initialize dark mode
 initializeDarkMode();
+
+// ===== CRYPTO CAT MASCOT FUNCTIONALITY =====
+let cryptoCatEnabled = true;
+
+const CRYPTO_CAT_QUOTES = {
+  // Glossary terms - sarcastic explanations with varied moods
+  'ATH': { quote: "All-Time High... yeah, that moment before everyone panic sold. Classic.", mood: "eye-roll", pose: "*flipping middle finger up*" },
+  'DYOR': { quote: "Do Your Own Research. Translation: Don't blame me when you FOMO into a rugpull.", mood: "grumpy", pose: "*arms crossed, scowling*" },
+  'FOMO': { quote: "Fear Of Missing Out. The crypto investor's eternal curse. You're welcome.", mood: "sarcastic", pose: "*shrugging with attitude*" },
+  'FUD': { quote: "Fear, Uncertainty, and Doubt. Usually spread by people who sold too early. Meow.", mood: "annoyed", pose: "*tail swishing irritably*" },
+  'HODL': { quote: "Hold On for Dear Life. Or just a drunk typo that became legendary. Either works.", mood: "amused", pose: "*smirking slightly*" },
+  'Whale': { quote: "Someone with enough crypto to manipulate markets while you watch in horror.", mood: "knowing", pose: "*tapping temple with paw*" },
+  'Bag Holder': { quote: "You, after buying at ATH. It builds character though!", mood: "sympathetic-ish", pose: "*patting your shoulder half-heartedly*" },
+  'Diamond Hands': { quote: "Refusing to sell even when it's clearly a good idea. Stubborn or genius? Time will tell.", mood: "skeptical", pose: "*raising one eyebrow*" },
+  'Paper Hands': { quote: "Selling at the first sign of trouble. Smart risk management or cowardice? I'll let you decide.", mood: "judging", pose: "*staring intensely*" },
+  'Rug Pull': { quote: "When developers take the money and run. Always fun to watch... from a distance.", mood: "bitter", pose: "*showing frown face t-shirt*" },
+  'Pump and Dump': { quote: "Classic market manipulation. Don't be the dump.", mood: "warning", pose: "*pointing finger accusingly*" },
+  'To the Moon': { quote: "Unrealistic price expectations. But hey, dream big!", mood: "mocking", pose: "*looking upward dramatically*" },
+  'Gas Fees': { quote: "The price you pay for using Ethereum. Sometimes more than your actual transaction. Yikes.", mood: "frustrated", pose: "*face-palming with both paws*" },
+  'Airdrop': { quote: "Free tokens! Usually worth nothing, but free is free.", mood: "unimpressed", pose: "*yawning*" },
+  'Staking': { quote: "Locking up your crypto to earn rewards. Hope the project doesn't rug!", mood: "concerned", pose: "*ears pinned back nervously*" },
+  'DEX': { quote: "Decentralized Exchange. No KYC, no problem... until you need customer support.", mood: "wise", pose: "*stroking whiskers thoughtfully*" },
+  'Smart Contract': { quote: "Code that executes automatically. Smart until it's not.", mood: "experienced", pose: "*adjusting glasses knowingly*" },
+  'Tokenomics': { quote: "How a token's economy works. Usually designed to make early investors rich.", mood: "cynical", pose: "*counting money*" },
+  'Utility': { quote: "What a token supposedly does. Often just marketing fluff.", mood: "dismissive", pose: "*waving paw dismissively*" },
+  'Whitepaper': { quote: "The project's manifesto. 90% buzzwords, 10% actual info.", mood: "bored", pose: "*pretending to fall asleep*" },
+  
+  // Feature announcements with personality
+  'launching_soon': { quote: "Oh look, another presale! This one's definitely not going to rug... probably.", mood: "skeptical", pose: "*rolling eyes hard*" },
+  'whitelist': { quote: "Congrats! You're on the whitelist. Now you get to lose money first!", mood: "sarcastic-congratulations", pose: "*slow clapping*" },
+  'premium': { quote: "Premium features unlocked! Time to make slightly more informed bad decisions.", mood: "helpful-ish", pose: "*thumbs up with attitude*" },
+  'wallet_tracking': { quote: "Track your portfolio losses in real-time. Technological progress!", mood: "proud", pose: "*chest puffed out proudly*" },
+  'market_overview': { quote: "Fresh data for your doom scrolling pleasure. You're welcome.", mood: "serving", pose: "*presenting data like a waiter*" },
+  'price_alerts': { quote: "I'll notify you when things go south. Which is basically always.", mood: "resigned", pose: "*shrugging with phone*" },
+};
+
+function initializeCryptoCat() {
+  const cryptoCatToggle = document.getElementById('toggleCryptoCat');
+  if (!cryptoCatToggle) return;
+  
+  // Load saved preference
+  cryptoCatEnabled = localStorage.getItem('darkwave_crypto_cat') !== 'false';
+  cryptoCatToggle.checked = cryptoCatEnabled;
+  
+  // Handle toggle
+  cryptoCatToggle.addEventListener('change', (e) => {
+    cryptoCatEnabled = e.target.checked;
+    localStorage.setItem('darkwave_crypto_cat', cryptoCatEnabled.toString());
+    
+    if (cryptoCatEnabled) {
+      showToast('🐱 Crypto Cat is back! Prepare for sarcasm.');
+    } else {
+      showToast('😿 Crypto Cat will miss you...');
+    }
+    
+    if (tg) tg.HapticFeedback?.impactOccurred('medium');
+  });
+}
+
+// Initialize crypto cat
+initializeCryptoCat();
+
+// Function to get Crypto Cat's commentary
+function getCryptoCatQuote(term) {
+  if (!cryptoCatEnabled) return null;
+  const catData = CRYPTO_CAT_QUOTES[term];
+  return catData || null;
+}
+
+// Function to create Crypto Cat tooltip
+function createCryptoCatTooltip(term, definition) {
+  if (!cryptoCatEnabled) {
+    return `
+      <div style="padding: 12px;">
+        <strong>${term}</strong>
+        <p style="margin: 8px 0 0 0; font-size: 0.9rem; color: var(--text-secondary);">${definition}</p>
+      </div>
+    `;
+  }
+  
+  const catData = getCryptoCatQuote(term);
+  
+  return `
+    <div style="padding: 12px;">
+      <div style="display: flex; gap: 12px; align-items: start; margin-bottom: 12px;">
+        <img src="assets/crypto-cat.png" alt="Crypto Cat" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--neon-green);">
+        <div style="flex: 1;">
+          <strong style="color: var(--neon-pink);">${term}</strong>
+          <p style="margin: 8px 0 0 0; font-size: 0.9rem; color: var(--text-secondary);">${definition}</p>
+        </div>
+      </div>
+      ${catData ? `
+        <div style="background: rgba(0, 255, 133, 0.1); border-left: 3px solid var(--neon-green); padding: 8px 12px; border-radius: 4px;">
+          <div style="font-size: 0.75rem; color: var(--neon-green); font-weight: 700; margin-bottom: 4px;">🐱 CRYPTO CAT SAYS:</div>
+          <div style="font-size: 0.75rem; color: var(--neon-pink); font-style: italic; margin-bottom: 4px;">${catData.pose}</div>
+          <div style="font-size: 0.85rem; color: var(--text-secondary); font-style: italic;">"${catData.quote}"</div>
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+// Function to show Crypto Cat banner
+function showCryptoCatBanner(type, title, message) {
+  if (!cryptoCatEnabled) {
+    showToast(`${title}: ${message}`);
+    return;
+  }
+  
+  const catData = getCryptoCatQuote(type);
+  
+  showModal(`
+    <div style="padding: 24px; text-align: center;">
+      <img src="assets/crypto-cat.png" alt="Crypto Cat" style="width: 100px; height: 100px; margin: 0 auto 16px; border-radius: 50%; border: 3px solid var(--neon-pink); animation: bounce 2s ease-in-out infinite;">
+      <h3 style="margin-bottom: 12px; color: var(--neon-pink);">${title}</h3>
+      <p style="color: var(--text-secondary); margin-bottom: 16px;">${message}</p>
+      ${catData ? `
+        <div style="background: linear-gradient(135deg, rgba(255, 0, 110, 0.1), rgba(168, 85, 247, 0.1)); border: 2px solid rgba(255, 0, 110, 0.3); padding: 16px; border-radius: 12px; margin-bottom: 20px;">
+          <div style="font-size: 0.8rem; color: var(--neon-green); font-weight: 700; margin-bottom: 4px;">🐱 CRYPTO CAT'S HOT TAKE:</div>
+          <div style="font-size: 0.8rem; color: var(--neon-pink); font-style: italic; margin-bottom: 8px;">${catData.pose}</div>
+          <div style="font-size: 0.95rem; color: var(--text-primary); font-style: italic;">"${catData.quote}"</div>
+        </div>
+      ` : ''}
+      <button onclick="closeModal()" style="padding: 12px 32px; background: linear-gradient(135deg, #FF006E, #A855F7); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">
+        Got it!
+      </button>
+    </div>
+  `);
+}
