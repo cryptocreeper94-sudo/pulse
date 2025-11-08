@@ -1,6 +1,6 @@
 import { db } from "../../db/client.js";
 import { subscriptions, userUsage, whitelistedUsers } from "../../db/schema.js";
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 
 // Helper: Get email from session token
 async function getEmailFromSession(sessionToken?: string): Promise<string | null> {
@@ -25,17 +25,23 @@ export async function checkSubscriptionLimit(userId: string, feature: 'search' |
     const userEmail = await getEmailFromSession(sessionToken);
     
     // Check if user is whitelisted first (by userId OR email)
-    const { or } = await import('drizzle-orm');
-    
-    const whitelistConditions = [eq(whitelistedUsers.userId, userId)];
+    let whitelist;
     if (userEmail) {
-      whitelistConditions.push(eq(whitelistedUsers.email, userEmail));
+      // Check by userId OR email
+      whitelist = await db.select()
+        .from(whitelistedUsers)
+        .where(or(
+          eq(whitelistedUsers.userId, userId),
+          eq(whitelistedUsers.email, userEmail)
+        ))
+        .limit(1);
+    } else {
+      // Check by userId only
+      whitelist = await db.select()
+        .from(whitelistedUsers)
+        .where(eq(whitelistedUsers.userId, userId))
+        .limit(1);
     }
-    
-    const whitelist = await db.select()
-      .from(whitelistedUsers)
-      .where(or(...whitelistConditions))
-      .limit(1);
     
     if (whitelist.length > 0) {
       const whitelistEntry = whitelist[0];
