@@ -285,16 +285,70 @@
             <li>Hold 10,000+ DWLP: <strong>FREE lifetime premium</strong></li>
         </ul>
 
-        <h3>4.2 Staking for Revenue Sharing</h3>
+        <h3>4.2 Staking for Revenue Sharing & Yield Generation</h3>
         <p>
-            Stake DWLP tokens to earn quarterly distributions from platform revenue:
+            DarkWave implements a multi-tiered staking protocol designed to incentivize long-term commitment while providing sustainable yield generation through platform revenue distribution and token emission schedules. Staking rewards derive from two primary sources: real platform revenue (subscription fees, transaction costs, and partnership commissions) and programmatic token emissions from the Community Rewards allocation pool.
         </p>
+        
+        <h4>Tiered Staking Structure</h4>
+        <table class="tokenomics-table">
+            <thead>
+                <tr>
+                    <th>Lock Period</th>
+                    <th>Base APY</th>
+                    <th>Platform Access</th>
+                    <th>Additional Benefits</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Flexible (No Lock)</td>
+                    <td>8-12%</td>
+                    <td>Standard Premium</td>
+                    <td>Unstake anytime</td>
+                </tr>
+                <tr>
+                    <td>3 Months</td>
+                    <td>15-20%</td>
+                    <td>Premium + Priority Support</td>
+                    <td>Airdrop eligibility</td>
+                </tr>
+                <tr>
+                    <td>6 Months</td>
+                    <td>25-35%</td>
+                    <td>Premium + Advanced Analytics</td>
+                    <td>Airdrops + 1.5x governance weight</td>
+                </tr>
+                <tr>
+                    <td>12 Months</td>
+                    <td>40-60%</td>
+                    <td>Lifetime VIP Access</td>
+                    <td>Airdrops + 2x governance + revenue share boost</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h4>Reward Distribution Mechanisms</h4>
         <ul>
-            <li><strong>20% of all subscription revenue</strong> distributed to stakers every quarter</li>
-            <li><strong>10% of token transaction fees</strong> added to reward pool</li>
-            <li><strong>No lock-up period</strong>: Unstake anytime, rewards calculated proportionally</li>
+            <li><strong>Revenue Sharing Pool:</strong> 20% of all platform subscription revenue distributed proportionally to stakers based on staked amount and lock multiplier</li>
+            <li><strong>Transaction Fee Redistribution:</strong> 10% of DWLP transaction fees allocated to staking reward pool</li>
+            <li><strong>Programmatic Emissions:</strong> Community Rewards allocation (30M DWLP) distributed over 48 months via staking incentives, with emission rate dynamically adjusted based on total staked supply to maintain target APY ranges</li>
+            <li><strong>Auto-Compounding Option:</strong> Stakers can elect to auto-compound rewards, increasing their staked principal and future yield</li>
         </ul>
-        <p><em>Example: Platform generates $50,000 monthly from 10,000 subscribers. Quarterly distribution = $30,000 to all stakers. If you stake 100,000 DWLP (0.1% of supply), you earn ~$300/quarter.</em></p>
+        
+        <h4>Technical Implementation</h4>
+        <p>
+            The staking protocol utilizes Solana's high-throughput SPL token program architecture with custom smart contract logic for time-weighted reward calculations. Lock periods are enforced on-chain with timestamp verification, and rewards accrue per-block based on proportional stake weight. Early unstaking from locked positions incurs a 5-10% penalty fee (redistributed to remaining stakers), ensuring commitment integrity while maintaining liquidity options for participants.
+        </p>
+        
+        <p><em><strong>Baseline 6-Month Lock Example (assumes $0.01 presale price, mature staking at 70M DWLP):</strong> Platform achieves $50,000 monthly revenue. A user staking 100,000 DWLP (worth $1,000) receives quarterly:</em></p>
+        <ul style="margin-left: 30px; margin-top: 10px;">
+            <li><em>Revenue Share: ~$43 (0.143% of $30k quarterly pool)</em></li>
+            <li><em>Emission Rewards: ~2,700 DWLP (worth $27 at presale price)</em></li>
+            <li><em><strong>Total:</strong> ~$70/quarter = <strong>28% annualized APY</strong> (within 25-35% tier range)</em></li>
+        </ul>
+        <p><em><strong>With Early Staker Bonus (first 10M staked):</strong> Add 1.5x emission multiplier for 90 days = extra ~1,350 DWLP/quarter (~$14) = ~$84 total = <strong>34% APY</strong> during bonus period.</em></p>
+        <p><em><strong>Important Disclaimer:</strong> Returns depend on platform revenue, total staked supply, DWLP market price, and lock period. APY ranges are estimates. Early stakers benefit from higher proportional rewards when total staked supply is lower. No guaranteed returns.</em></p>
 
         <h3>4.3 Governance Rights</h3>
         <p>Token holders vote on critical platform decisions:</p>
@@ -482,15 +536,32 @@
         </div>
 
         <div class="roadmap-item">
-            <div class="roadmap-quarter">Q1 2026 - Growth</div>
+            <div class="roadmap-quarter">Q1 2026 - Growth & Staking Launch</div>
             <ul>
-                <li>Staking platform deployment</li>
-                <li>First revenue sharing distribution</li>
-                <li>Mobile app beta (iOS/Android)</li>
-                <li>Advanced charting tools</li>
-                <li>Partnership with 3 major crypto influencers</li>
-                <li>CoinGecko/CoinMarketCap listings</li>
+                <li><strong>🎯 Staking Protocol Deployment (January 2026)</strong>
+                    <ul style="margin-top: 8px; font-size: 0.95em;">
+                        <li>Multi-tiered staking contracts audited and deployed on Solana mainnet</li>
+                        <li>Flexible, 3-month, 6-month, and 12-month lock options go live</li>
+                        <li>Auto-compounding mechanism activated for yield optimization</li>
+                        <li>Early stakers receive bonus 1.5x multiplier for first 30 days</li>
+                    </ul>
+                </li>
+                <li>First revenue sharing distribution to stakers (February 2026)</li>
+                <li>Mobile app beta (iOS/Android) with native staking interface</li>
+                <li>Advanced charting tools and custom indicator builder</li>
+                <li>Partnership with 3 major crypto influencers for educational content</li>
+                <li>CoinGecko/CoinMarketCap listings with verified contract</li>
             </ul>
+        </div>
+        
+        <div class="highlight-box">
+            <h3>Why Staking Matters for Early Holders</h3>
+            <p>
+                The staking launch in Q1 2026 represents a critical inflection point for DWLP tokenomics. As platform revenue scales from early adopters to mass-market users, stakers will capture 20% of all subscription income plus programmatic token emissions. Early participants benefit from lower total staked supply (meaning higher proportional rewards per staker) compared to later entrants when staking participation matures.
+            </p>
+            <p>
+                <strong>Early Staker Bonus:</strong> The first 10M DWLP staked in January 2026 receives a 1.5x emission multiplier for 90 days (applied to emission rewards only, not revenue share). For example, instead of receiving 2,679 DWLP/quarter in emissions, early stakers receive ~4,018 DWLP - approximately $40 extra value at presale price. This temporary boost rewards conviction holders who stake before mainstream adoption, potentially adding 10-15% to baseline APY during the bonus period.
+            </p>
         </div>
 
         <div class="roadmap-item">
