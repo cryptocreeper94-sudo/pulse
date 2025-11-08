@@ -46,32 +46,21 @@
   </header>
 
   <!-- Desktop Experience Banner (only shows in Telegram) -->
-  <div id="desktopBanner" style="display: none; margin: 15px; padding: 16px; background: linear-gradient(135deg, rgba(6,182,212,0.2), rgba(139,92,246,0.2)); border: 2px solid #FFFFFF; border-radius: 12px; text-align: center; animation: pulse 2s infinite;">
-    
-    <h3 style="margin: 0 0 8px 0; color: #FFFFFF; font-size: 1rem;">Want the Full Desktop Experience?</h3>
-    <p style="margin: 0 0 12px 0; color: #ccc; font-size: 0.85rem;">Open in your browser for the best wide-screen view!</p>
-    <a id="webAppLink" href="#" target="_blank" style="
-      display: inline-block;
-      padding: 12px 24px;
-      background: linear-gradient(135deg, #FFFFFF, #E5E7EB);
-      color: #000;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: bold;
-      font-size: 0.95rem;
-      box-shadow: 0 4px 12px rgba(6,182,212,0.3);
-    ">
+  <div id="desktopBanner" class="card text-center" style="display: none; margin: var(--space-md); padding: var(--space-md);">
+    <h3 style="margin: 0 0 var(--space-sm) 0;">Want the Full Desktop Experience?</h3>
+    <p style="margin: 0 0 var(--space-md) 0; color: var(--text-secondary);">Open in your browser for the best wide-screen view!</p>
+    <a id="webAppLink" href="#" target="_blank" class="btn btn-primary">
       Open Full Version
     </a>
-    <p style="margin: 8px 0 0 0; font-size: 0.7rem; opacity: 0.6;">Bookmark it for quick access!</p>
+    <p style="margin: var(--space-sm) 0 0 0; font-size: var(--font-size-xs); color: var(--text-tertiary);">Bookmark it for quick access!</p>
   </div>
 
   <!-- Main Content -->
   <main class="app-main">
     <!-- Trust Status Pill -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 16px; padding: 12px 16px; background: rgba(10, 0, 5, 0.6); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);">
+    <div class="card flex justify-between items-center" style="margin: var(--space-md); padding: var(--space-md);">
       <span class="status-pill">Live Trading Data</span>
-      <span style="font-size: 0.75rem; color: var(--text-secondary);">Premium Active</span>
+      <span style="font-size: var(--font-size-xs); color: var(--text-secondary);">Premium Active</span>
     </div>
     
     <!-- Tab Navigation -->
@@ -150,7 +139,7 @@
           </div>
           <div class="cmc-stat-item crypto-cat-toggle">
             <button id="toggleCryptoCat" class="crypto-cat-btn" title="Toggle Crypto Cat mascot">
-              😼
+              <img src="/crypto-cat-mascot.png" alt="Crypto Cat" style="width: 32px; height: 32px; object-fit: contain; border-radius: var(--radius-md);">
             </button>
           </div>
         </div>
@@ -210,25 +199,13 @@
         <!-- Action Banners Grid (Side-by-side on desktop) -->
         <div class="content-grid">
           <!-- Premium Upgrade Banner (Hidden for premium users) -->
-          <div id="upgradeBanner" class="upgrade-banner glass-card accent-hot" style="display: none; padding: 20px; background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,165,0,0.15)); text-align: center;">
-            
-            <h3 style="margin: 0 0 8px 0; color: #FFD700; font-size: 1.1rem;">Unlock Premium Features</h3>
-            <p style="margin: 0 0 15px 0; color: #ccc; font-size: 0.9rem;">Get unlimited searches, alerts & advanced analysis</p>
-            <button onclick="showUpgradeModal()" style="
-              width: 100%;
-              padding: 14px;
-              background: linear-gradient(135deg, #FFD700, #FFA500);
-              color: #000;
-              border: none;
-              border-radius: 8px;
-              font-weight: bold;
-              font-size: 1rem;
-              cursor: pointer;
-              box-shadow: 0 4px 12px rgba(255,215,0,0.3);
-            ">
+          <div id="upgradeBanner" class="card text-center" style="display: none; border-color: var(--warning);">
+            <h3 style="margin: 0 0 var(--space-sm) 0; color: var(--warning);">Unlock Premium Features</h3>
+            <p style="margin: 0 0 var(--space-md) 0; color: var(--text-secondary);">Get unlimited searches, alerts & advanced analysis</p>
+            <button onclick="showUpgradeModal()" class="btn btn-primary" style="width: 100%;">
               Upgrade to Premium - $5/month
             </button>
-            <p style="margin: 10px 0 0 0; font-size: 0.75rem; opacity: 0.6;">Cancel anytime • Instant access</p>
+            <p style="margin: var(--space-sm) 0 0 0; font-size: var(--font-size-xs); color: var(--text-tertiary);">Cancel anytime • Instant access</p>
           </div>
 
         </div>
@@ -319,7 +296,7 @@
       <div id="wallet" class="tab-pane">
         <div class="section-header">
           <h2>Tracked Wallets</h2>
-          <button class="action-btn" id="clearAllWalletsBtn" style="background: rgba(230, 57, 70, 0.2); border-color: #E63946;">
+          <button class="btn btn-secondary" id="clearAllWalletsBtn" style="border-color: var(--danger);">
             Clear All
           </button>
         </div>
@@ -329,7 +306,8 @@
             <h3 style="margin-bottom: 12px; font-size: 1rem;">Add Wallet (Read-Only)</h3>
             <select 
               id="walletChainSelect" 
-              style="width: 100%; padding: 12px; border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 8px; background: rgba(255,255,255,0.05); color: white; font-size: 0.9rem; margin-bottom: 8px;"
+              class="input"
+              style="margin-bottom: var(--space-sm);"
             >
               <option value="solana">Solana (SOL)</option>
               <option value="ethereum">Ethereum (ETH)</option>
@@ -342,13 +320,15 @@
               type="text" 
               id="walletAddressInput" 
               placeholder="Paste wallet address"
-              style="width: 100%; padding: 12px; border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 8px; background: rgba(255,255,255,0.05); color: white; font-size: 0.9rem; margin-bottom: 8px; font-family: monospace;"
+              class="input"
+              style="margin-bottom: var(--space-sm); font-family: monospace;"
             />
             <input 
               type="text" 
               id="walletNicknameInput" 
               placeholder="Nickname (optional)"
-              style="width: 100%; padding: 12px; border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 8px; background: rgba(255,255,255,0.05); color: white; font-size: 0.9rem; margin-bottom: 12px;"
+              class="input"
+              style="margin-bottom: var(--space-md);"
             />
             <button class="primary-btn" id="addWalletBtn" style="width: 100%;">
               Track Wallet
@@ -448,16 +428,16 @@
         </div>
         <div class="settings-content">
           <!-- Subscription Section -->
-          <div class="settings-section" style="background: linear-gradient(135deg, rgba(107,0,0,0.3), rgba(26,10,31,0.5)); border: 1px solid rgba(255,215,0,0.2); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-              <h3 style="margin: 0;">Subscription Plan</h3>
-              <span id="planBadge" style="padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; background: rgba(107,0,0,0.3); color: #fff;">Free</span>
+          <div class="settings-section">
+            <div class="flex justify-between items-center mb-md">
+              <h3>Subscription Plan</h3>
+              <span id="planBadge" class="status-pill">Free</span>
             </div>
-            <div id="subscriptionStatus" style="margin-bottom: 15px;">
-              <p style="opacity: 0.8; margin: 5px 0;">Limited to 10 searches/day</p>
-              <p style="font-size: 0.9rem; color: #FFD700; margin: 5px 0;">Upgrade for unlimited access!</p>
+            <div id="subscriptionStatus" class="mb-md">
+              <p style="color: var(--text-secondary); margin: var(--space-xs) 0;">Limited to 10 searches/day</p>
+              <p style="color: var(--warning);">Upgrade for unlimited access!</p>
             </div>
-            <button id="upgradeBtn" class="action-btn" style="width: 100%; background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; font-weight: bold;">
+            <button id="upgradeBtn" class="btn btn-primary" style="width: 100%;">
               Upgrade to Premium
             </button>
           </div>
@@ -595,16 +575,16 @@
           </div>
 
           <!-- Admin Access Button (Settings Tab) -->
-          <div class="settings-section elevated-card" style="margin-top: 24px; text-align: center; border: 2px solid rgba(59, 130, 246, 0.3);">
-            <h3 style="font-size: 1rem; margin-bottom: 12px; color: #60A5FA;">⚙️ Admin Dashboard</h3>
+          <div class="settings-section text-center" style="margin-top: var(--space-lg); border-color: var(--primary);">
+            <h3 style="margin-bottom: var(--space-md); color: var(--primary);">⚙️ Admin Dashboard</h3>
             <button 
               onclick="openAdminLogin()" 
-              class="action-btn"
-              style="width: 100%; background: rgba(59, 130, 246, 0.2); border: 1px solid #3B82F6; color: #3B82F6;"
+              class="btn btn-secondary"
+              style="width: 100%;"
             >
               Access Admin Panel
             </button>
-            <p style="margin-top: 8px; font-size: 0.75rem; color: var(--text-secondary);">
+            <p style="margin-top: var(--space-sm); font-size: var(--font-size-xs); color: var(--text-secondary);">
               Manage subscribers, whitelist, and view analytics
             </p>
           </div>
