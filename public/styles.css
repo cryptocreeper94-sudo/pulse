@@ -17,6 +17,21 @@
   --warning-amber: #F59E0B;
   --danger-red: #DC143C;
   
+  /* NEW: Neon Accent Colors for Trust & Impact */
+  --neon-pink: #FF006E;
+  --neon-green: #00FF85;
+  --neon-pink-glow: 0 0 20px rgba(255, 0, 110, 0.6), 0 0 40px rgba(255, 0, 110, 0.3);
+  --neon-green-glow: 0 0 20px rgba(0, 255, 133, 0.6), 0 0 40px rgba(0, 255, 133, 0.3);
+  
+  /* Responsive Accent Scaling */
+  --accent-border-width: 1.5px; /* Mobile */
+  --accent-glow-radius: 8px; /* Mobile */
+  
+  /* App Shell Constraints */
+  --shell-max-width: 1160px;
+  --shell-gutter: 16px; /* Mobile */
+  --sidebar-width: 0px; /* Mobile: no sidebar */
+  
   /* Gradients - Maroon to Very Dark Purple to Black */
   --gradient-primary: linear-gradient(135deg, #6B0000, #1A0A1F, #000000);
   --gradient-card: linear-gradient(135deg, #150A10, #0A0005, #000000);
