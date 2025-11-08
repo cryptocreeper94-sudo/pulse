@@ -18,6 +18,21 @@ if (tg) {
   }
   
   tg.enableClosingConfirmation();
+  
+  // Show desktop experience banner when running in Telegram
+  // You can change this URL to your Squarespace site when ready
+  const desktopBanner = document.getElementById('desktopBanner');
+  const webAppLink = document.getElementById('webAppLink');
+  
+  if (desktopBanner && webAppLink) {
+    // Set the link to the standalone web app (change to your Squarespace URL later)
+    const standaloneURL = window.location.origin; // Use your published Replit URL or Squarespace URL
+    webAppLink.href = standaloneURL;
+    
+    // Show banner in Telegram environment
+    desktopBanner.style.display = 'block';
+    console.log('💻 Desktop experience banner shown for Telegram users');
+  }
 }
 
 // API Configuration
