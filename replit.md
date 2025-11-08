@@ -4,14 +4,19 @@
 DarkWave-V2 is an advanced technical analysis bot built with the Mastra framework, providing comprehensive cryptocurrency, stock market, and NFT analysis. It integrates with Telegram to deliver real-time buy/sell signals based on technical indicators like RSI, MACD, moving averages, and Bollinger Bands. The system uses a workflow-based architecture, processes user messages via an AI agent, and stores conversation history and user watchlists in PostgreSQL for personalized interactions. Key features include DEX pair and meme coin support with rug-risk detection, NFT collection analysis, a live trending carousel, database-backed session management, and multi-chain wallet tracking. It also incorporates a comprehensive subscription notification system with an admin dashboard, a professional token submission system with robust validation, and cryptocurrency payment integration via Coinbase Commerce. A unique "Crypto Cat" mascot provides interactive commentary, and a "Launching Soon" section with a countdown and presale platform design for the DarkWave token (DWLP) is included. The project aims to launch the DarkWave token on December 25, 2025, with a whitepaper outlining its mission, tokenomics, utility, and roadmap.
 
 ## Recent Changes (November 2025)
-- **Bot Detection System** (November 8, 2025):
-  - New `botDetectionTool` analyzes DEX pairs for bot holder activity and rug risk
-  - Calculates bot percentage estimate (0-100%) from liquidity, age, transaction patterns
-  - Color-coded risk levels: 🟢 Safe (<20%), 🟡 Low (20-40%), 🟠 Medium (40-60%), 🔴 High (60-80%), ⚫ Extreme (>80%)
-  - Detects red flags: low liquidity, newly created pairs, suspicious price pumps, low transaction count
-  - Integrated into agent workflow - automatically runs before meme coin/DEX analysis
-  - Agent instructed to warn users for HIGH/EXTREME risk and never recommend BUY for EXTREME risk tokens
+- **Bot Detection System - LIVE FOR SAFETY** (November 8, 2025):
+  - **Backend**: `botDetectionTool` analyzes DEX pairs for rug risk using Dexscreener API
+  - **Frontend**: Automatic bot/rug detection in Mini App for tokens with price <$0.01 or long addresses (Solana DEX pairs)
+  - **Risk Scoring**: <$1K liquidity (+40), <$10K liquidity (+30), no socials (+25), new pairs (+30), extreme volatility (+25)
+  - **Color-coded Levels**: 🟢 Safe (<20%), 🟡 Low (20-40%), 🟠 Medium (40-60%), 🔴 High (60-80%), ⚫ Extreme (>80%)
+  - **Safety Features**: 
+    - Extreme risk tokens show "⛔ DO NOT BUY - EXTREME RUG RISK" warning
+    - Error handling defaults to EXTREME risk (fail-safe for live trading)
+    - Red flags list displayed (low liquidity, new pair, suspicious pumps, no social links)
+  - **UI Integration**: Risk badge animates into analysis results with full breakdown of detected issues
+  - **Agent Integration**: Telegram bot automatically runs bot detection before DEX/meme coin analysis
   - Uses Dexscreener public API (no API key required)
+  - Approved for live trading by architect review
   - Future enhancement: Helius/Alchemy integration for detailed on-chain holder analysis
   
 ## Recent Changes (November 2025 - UI)
