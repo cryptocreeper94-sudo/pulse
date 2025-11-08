@@ -2503,6 +2503,13 @@ function showToast(message) {
   }, 3000);
 }
 
+function openAdminLogin() {
+  const code = prompt('Enter admin access code:');
+  if (code && code.trim()) {
+    window.location.href = `/admin?code=${encodeURIComponent(code.trim())}`;
+  }
+}
+
 document.getElementById('refreshBtn')?.addEventListener('click', () => {
   if (state.currentTab === 'analysis' && searchInput.value) {
     performSearch();
