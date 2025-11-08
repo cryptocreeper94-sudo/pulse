@@ -69,9 +69,7 @@ body.light {
 }
 
 body.light::before {
-  background: radial-gradient(ellipse at 20% 30%, rgba(220, 20, 60, 0.15) 0%, transparent 50%),
-              radial-gradient(ellipse at 80% 70%, rgba(139, 71, 137, 0.2) 0%, transparent 50%),
-              radial-gradient(ellipse at 50% 50%, rgba(155, 89, 182, 0.15) 0%, transparent 70%);
+  background: linear-gradient(90deg, rgba(220, 20, 60, 0.2) 0%, rgba(178, 34, 34, 0.15) 25%, rgba(139, 0, 0, 0.1) 50%, rgba(89, 0, 0, 0.05) 75%, transparent 100%);
   opacity: 0.6;
 }
 
@@ -157,7 +155,7 @@ body {
   position: relative;
 }
 
-/* Animated Background Layer */
+/* Clean Maroon to Black Gradient Background (Left to Right Sweep) */
 body::before {
   content: '';
   position: fixed;
@@ -165,38 +163,163 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(ellipse at 20% 30%, rgba(139, 0, 0, 0.4) 0%, transparent 50%),
-              radial-gradient(ellipse at 80% 70%, rgba(26, 10, 31, 0.5) 0%, transparent 50%),
-              radial-gradient(ellipse at 50% 50%, rgba(107, 0, 0, 0.3) 0%, transparent 70%);
-  background-size: 200% 200%;
-  animation: floatGlow 30s ease-in-out infinite;
-  opacity: 0.4;
+  background: linear-gradient(90deg, #8B0000 0%, #6B0000 25%, #3D0000 50%, #1A0000 75%, #000000 100%);
   z-index: -1;
   pointer-events: none;
 }
 
-@keyframes floatGlow {
-  0%, 100% {
-    background-position: 0% 0%;
-  }
-  25% {
-    background-position: 100% 50%;
-  }
-  50% {
-    background-position: 50% 100%;
-  }
-  75% {
-    background-position: 0% 50%;
+/* RESPONSIVE BREAKPOINT SYSTEM */
+/* Mobile: <768px (default) */
+:root {
+  --content-grid-columns: 1; /* Single column on mobile */
+  --card-gap: 16px;
+  --shell-padding: 16px;
+}
+
+/* Tablet: 768px-1199px */
+@media (min-width: 768px) {
+  :root {
+    --accent-border-width: 2px;
+    --accent-glow-radius: 12px;
+    --content-grid-columns: 2; /* Two columns on tablet */
+    --card-gap: 20px;
+    --shell-padding: 32px;
   }
 }
 
-/* Desktop: Max-width centered layout */
-@media (min-width: 1024px) {
-  #app {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 0 32px;
+/* Desktop: Max-width centered layout with complementary background */
+@media (min-width: 1200px) {
+  :root {
+    --accent-border-width: 3px;
+    --accent-glow-radius: 16px;
+    --content-grid-columns: 2;
+    --card-gap: 24px;
+    --shell-padding: 48px;
   }
+  
+  #app {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--shell-padding);
+    position: relative;
+  }
+  
+  /* Carbon fiber background in margins */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -3;
+    background: 
+      repeating-linear-gradient(
+        0deg,
+        #0a0a0a 0px,
+        #0a0a0a 1px,
+        #050505 1px,
+        #050505 2px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        #0a0a0a 0px,
+        #0a0a0a 1px,
+        #050505 1px,
+        #050505 2px
+      );
+    opacity: 0.3;
+  }
+}
+
+/* ========================================
+   NEON ACCENT SYSTEM & GLASSMORPHISM
+   ======================================== */
+
+/* Neon Accent Utility Classes */
+.accent-hot {
+  border: var(--accent-border-width) solid var(--neon-pink) !important;
+  box-shadow: var(--neon-pink-glow);
+  position: relative;
+}
+
+.accent-success {
+  border: var(--accent-border-width) solid var(--neon-green) !important;
+  box-shadow: var(--neon-green-glow);
+  position: relative;
+}
+
+/* Subtle neon glow on hover for desktop */
+@media (min-width: 1024px) {
+  .accent-hot:hover {
+    box-shadow: 0 0 30px rgba(255, 0, 110, 0.8), 0 0 60px rgba(255, 0, 110, 0.4);
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+  }
+  
+  .accent-success:hover {
+    box-shadow: 0 0 30px rgba(0, 255, 133, 0.8), 0 0 60px rgba(0, 255, 133, 0.4);
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+  }
+}
+
+/* Glassmorphism Cards */
+.glass-card {
+  background: rgba(10, 0, 5, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive grid for side-by-side content */
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--content-grid-columns), 1fr);
+  gap: var(--card-gap);
+  margin-bottom: 24px;
+}
+
+/* Grid item can span full width when needed */
+.grid-full {
+  grid-column: 1 / -1;
+}
+
+/* Ensure single column on mobile for specific grids */
+@media (max-width: 767px) {
+  .content-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Trust & Status Indicators */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(0, 255, 133, 0.15);
+  border: 1px solid var(--neon-green);
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--neon-green);
+  box-shadow: 0 0 12px rgba(0, 255, 133, 0.3);
+}
+
+.status-pill::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--neon-green);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--neon-green);
+  animation: pulse 2s infinite;
 }
 
 /* Live Market Ticker */
@@ -206,7 +329,7 @@ body::before {
   left: 0;
   right: 0;
   height: 32px;
-  background: linear-gradient(90deg, #000000 0%, #1A0A1F 50%, #000000 100%);
+  background: linear-gradient(90deg, #000000 0%, #3D0000 50%, #000000 100%);
   border-bottom: 1px solid rgba(255, 215, 0, 0.3);
   z-index: 1000;
   overflow: hidden;
