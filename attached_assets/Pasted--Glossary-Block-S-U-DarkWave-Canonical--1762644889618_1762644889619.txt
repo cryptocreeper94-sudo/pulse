@@ -1,0 +1,112 @@
+// ─────────────────────────────────────────────
+// 🔤 Glossary Block S–U | DarkWave Canonical
+// Includes: category, smartass, plain
+// ─────────────────────────────────────────────
+
+export const glossary_SU = {
+  "Satoshi": {
+    category: "Crypto",
+    smartass: "The ghost who started it all. Also the smallest unit of Bitcoin. Coincidence? Probably not.",
+    plain: "The pseudonymous creator of Bitcoin, also the name of the smallest unit of BTC (0.00000001 BTC)."
+  },
+  "SEC": {
+    category: "Regulation",
+    smartass: "The fun police. Regulates everything and ruins your token launch.",
+    plain: "The U.S. Securities and Exchange Commission, which oversees securities markets and protects investors."
+  },
+  "Seed Phrase": {
+    category: "Crypto",
+    smartass: "Your wallet’s soul in 12 words. Lose it, and you’re spiritually bankrupt.",
+    plain: "A sequence of words used to recover a crypto wallet. Must be kept secure and private."
+  },
+  "Sentiment Score": {
+    category: "DarkWave",
+    smartass: "How the internet feels about your coin. Basically, Reddit’s emotional weather report.",
+    plain: "A metric that gauges public opinion or mood toward a specific asset or topic."
+  },
+  "Sharding": {
+    category: "Crypto",
+    smartass: "Blockchain’s way of multitasking. Break it up so it doesn’t break down.",
+    plain: "A method of splitting a blockchain into smaller parts to improve scalability and speed."
+  },
+  "Shitcoin": {
+    category: "Crypto Slang",
+    smartass: "Low-value coin. High emotional damage.",
+    plain: "A cryptocurrency with little to no value or utility, often created as a joke or scam."
+  },
+  "Short Selling": {
+    category: "Finance",
+    smartass: "Betting against a stock. Emotionally risky, sometimes smug.",
+    plain: "Selling borrowed assets in hopes of buying them back at a lower price for profit."
+  },
+  "Slippage": {
+    category: "Finance",
+    smartass: "The price you wanted vs. the price you got. Oops.",
+    plain: "The difference between expected and actual execution price of a trade."
+  },
+  "Smart Contract": {
+    category: "Crypto",
+    smartass: "Code that runs itself. Like a vending machine with attitude.",
+    plain: "Self-executing code on a blockchain that enforces agreements automatically."
+  },
+  "Snapshot": {
+    category: "NFT",
+    smartass: "A moment in time. Used to decide who gets the goodies.",
+    plain: "A record of wallet states at a specific time, often used for airdrops or voting."
+  },
+  "Solana": {
+    category: "Crypto",
+    smartass: "Fast, cheap, sometimes offline. Like a caffeinated squirrel with Wi-Fi issues.",
+    plain: "A high-performance blockchain known for fast transactions and low fees."
+  },
+  "Stablecoin": {
+    category: "Crypto",
+    smartass: "Crypto pretending to be cash. Sometimes it forgets.",
+    plain: "A cryptocurrency pegged to a stable asset like USD to reduce volatility."
+  },
+  "Staking": {
+    category: "Crypto",
+    smartass: "Lock your coins and pray. Earn rewards while they nap.",
+    plain: "Holding crypto in a wallet to support network operations and earn rewards."
+  },
+  "Stop Loss": {
+    category: "Finance",
+    smartass: "The moment you cry. Automatically.",
+    plain: "An order to sell an asset when it reaches a certain price to limit losses."
+  },
+  "Sweep": {
+    category: "NFT",
+    smartass: "Buy up the floor. Emotional power move or panic buy.",
+    plain: "Purchasing multiple NFTs at the floor price to influence or invest in a collection."
+  },
+  "Token": {
+    category: "Crypto",
+    smartass: "Digital asset with dreams. Sometimes utility, sometimes just vibes.",
+    plain: "A digital unit of value issued on a blockchain, often representing assets or access."
+  },
+  "Tokenomics": {
+    category: "Crypto",
+    smartass: "The math behind your coin’s mood swings.",
+    plain: "The economic model and distribution strategy of a cryptocurrency."
+  },
+  "TP": {
+    category: "Finance",
+    smartass: "Take Profit. The moment you smile.",
+    plain: "A predefined price at which a trader exits a position to secure gains."
+  },
+  "Travel Rule": {
+    category: "Regulation",
+    smartass: "Crypto transfers must carry sender info. Emotional baggage included.",
+    plain: "A regulation requiring financial institutions to share sender and receiver info in crypto transfers."
+  },
+  "TVL": {
+    category: "Crypto",
+    smartass: "Total Value Locked. The size of the DeFi playground.",
+    plain: "The total amount of assets locked in a DeFi protocol or platform."
+  },
+  "Utility": {
+    category: "NFT",
+    smartass: "What your NFT actually does. Often vague. Sometimes real.",
+    plain: "The functional benefit or use case provided by an NFT or token."
+  }
+};
