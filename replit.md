@@ -4,6 +4,17 @@
 DarkWave-V2 is an advanced technical analysis bot built with the Mastra framework, providing comprehensive cryptocurrency, stock market, and NFT analysis. It integrates with Telegram to deliver real-time buy/sell signals based on technical indicators like RSI, MACD, moving averages, and Bollinger Bands. The system uses a workflow-based architecture, processes user messages via an AI agent, and stores conversation history and user watchlists in PostgreSQL for personalized interactions. Key features include DEX pair and meme coin support with rug-risk detection, NFT collection analysis, a live trending carousel, database-backed session management, and multi-chain wallet tracking. It also incorporates a comprehensive subscription notification system with an admin dashboard, a professional token submission system with robust validation, and cryptocurrency payment integration via Coinbase Commerce. A unique "Crypto Cat" mascot provides interactive commentary, and a "Launching Soon" section with a countdown and presale platform design for the DarkWave token (DWLP) is included. The project aims to launch the DarkWave token on December 25, 2025, with a whitepaper outlining its mission, tokenomics, utility, and roadmap.
 
 ## Recent Changes (November 2025)
+- **Bot Detection System** (November 8, 2025):
+  - New `botDetectionTool` analyzes DEX pairs for bot holder activity and rug risk
+  - Calculates bot percentage estimate (0-100%) from liquidity, age, transaction patterns
+  - Color-coded risk levels: 🟢 Safe (<20%), 🟡 Low (20-40%), 🟠 Medium (40-60%), 🔴 High (60-80%), ⚫ Extreme (>80%)
+  - Detects red flags: low liquidity, newly created pairs, suspicious price pumps, low transaction count
+  - Integrated into agent workflow - automatically runs before meme coin/DEX analysis
+  - Agent instructed to warn users for HIGH/EXTREME risk and never recommend BUY for EXTREME risk tokens
+  - Uses Dexscreener public API (no API key required)
+  - Future enhancement: Helius/Alchemy integration for detailed on-chain holder analysis
+  
+## Recent Changes (November 2025 - UI)
 - **CoinMarketCap-Style Market Overview Transformation** (November 8, 2025):
   - Complete redesign of market overview with professional CMC-inspired layout
   - 9-column data table: Rank, Name/Icon, Price, 1h%, 24h%, 7d%, Volume, Market Cap, 7d Sparkline Chart
