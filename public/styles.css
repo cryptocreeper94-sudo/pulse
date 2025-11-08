@@ -1665,29 +1665,25 @@ body::before {
 }
 
 .theme-btn.active::before {
-  content: '✓';
+  content: '';
   position: absolute;
-  top: 4px;
-  right: 6px;
-  font-size: 0.75rem;
-  color: var(--neon-green);
-  font-weight: bold;
-}
-
-.theme-icon {
-  font-size: 1.8rem;
-  margin-bottom: 6px;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--neon-green);
+  border-radius: 12px 12px 0 0;
 }
 
 .theme-name {
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: var(--text-primary);
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
 
 .theme-desc {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   color: var(--text-secondary);
   font-weight: 400;
 }

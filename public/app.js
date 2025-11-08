@@ -4576,19 +4576,14 @@ function initializeThemeSwitcher() {
       // Save preference
       localStorage.setItem('darkwave_active_theme', newTheme);
       
-      // Show toast with theme-specific emoji
-      const themeEmojis = {
-        jupiter: '🚀',
-        robinhood: '📈',
-        coinbase: '💼'
-      };
+      // Show toast
       const themeNames = {
         jupiter: 'Jupiter',
         robinhood: 'Robinhood',
         coinbase: 'Coinbase'
       };
       
-      showToast(`${themeEmojis[newTheme]} ${themeNames[newTheme]} theme activated!`);
+      showToast(`${themeNames[newTheme]} theme activated`);
       
       if (tg) tg.HapticFeedback?.impactOccurred('medium');
     });
