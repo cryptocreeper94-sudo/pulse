@@ -3249,7 +3249,7 @@ const UPCOMING_LAUNCHES = [
     currentWhitelistCount: null,
     minAllocation: null,
     maxAllocation: null,
-    description: 'Next-gen predictive trading intelligence. Multi-signal scoring combines RSI, MACD, and sentiment for higher accuracy. Emotional AI system learns from market patterns. Track record monitoring shows signal performance. Advanced learning tools help you master technical analysis. The bot that feels the market.',
+    description: 'Stop chasing pumps. Start conviction trading. Learn to identify real opportunities vs liquidity traps that wreck beginners. Multi-signal scoring combines RSI, MACD, and sentiment to filter noise from signal. Track record monitoring proves accuracy over time. Emotional AI learns patterns the market repeats. Educational tools teach you WHY signals work, not just WHEN to buy. Build confidence through understanding.',
     presaleStart: null,
     whitepaper: null,
     isFeature: true // Flag to render differently
