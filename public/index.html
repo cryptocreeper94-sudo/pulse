@@ -153,6 +153,37 @@
           </button>
         </div>
 
+        <!-- Market Overview Table -->
+        <div id="marketOverview" class="market-overview-container">
+          <div class="market-overview-header">
+            <h3 style="margin: 0; font-size: 1rem; color: var(--text-primary);">
+              <span id="marketOverviewTitle">🔵 Top Blue Chip Crypto</span>
+            </h3>
+            <span style="font-size: 0.8rem; color: var(--text-secondary);">Click any row to analyze</span>
+          </div>
+          <div class="market-table-wrapper">
+            <table class="market-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th style="text-align: left;">Name</th>
+                  <th style="text-align: right;">Price</th>
+                  <th style="text-align: right;">24h %</th>
+                  <th style="text-align: right;">Volume</th>
+                  <th style="text-align: right;">Market Cap</th>
+                </tr>
+              </thead>
+              <tbody id="marketTableBody">
+                <tr>
+                  <td colspan="6" style="text-align: center; padding: 30px;">
+                    <div class="spinner"></div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         <!-- Action Banners Grid (Side-by-side on desktop) -->
         <div class="content-grid">
           <!-- Premium Upgrade Banner (Hidden for premium users) -->

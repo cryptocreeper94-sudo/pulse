@@ -679,6 +679,9 @@ function switchCategory(category) {
   // Update UI for category
   updateCategoryUI(category);
   
+  // Load market overview table for the category
+  loadMarketOverview(category);
+  
   // Update trending carousel
   loadTrendingCarousel(category);
 }
@@ -1633,6 +1636,8 @@ document.addEventListener('DOMContentLoaded', () => {
     showAccessGate();
   } else {
     state.accessGranted = true;
+    // Load initial market overview table for bluechip category
+    loadMarketOverview('bluechip');
   }
   
   const closeBtn = document.getElementById('closeChartModal');
@@ -2508,6 +2513,170 @@ function openAdminLogin() {
   if (code && code.trim()) {
     window.location.href = `/admin?code=${encodeURIComponent(code.trim())}`;
   }
+}
+
+// ===== MARKET OVERVIEW TABLE =====
+async function loadMarketOverview(category) {
+  const tableBody = document.getElementById('marketTableBody');
+  const titleEl = document.getElementById('marketOverviewTitle');
+  
+  // Show loading
+  tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 30px;"><div class="spinner"></div></td></tr>';
+  
+  try {
+    let data = [];
+    let title = '';
+    
+    if (category === 'bluechip') {
+      title = '🔵 Top Blue Chip Crypto';
+      const cryptoIds = 'bitcoin,ethereum,solana,binancecoin,ripple,cardano,polkadot,avalanche-2,chainlink,polygon';
+      const response = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${cryptoIds}&order=market_cap_desc&per_page=10&sparkline=false`);
+      data = await response.json();
+      renderCryptoTable(data);
+    } else if (category === 'stocks') {
+      title = '📈 Top Stocks';
+      // Use popular stock tickers
+      const stocks = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'META', 'TSLA', 'BRK.B', 'V', 'JPM'];
+      renderStocksTable(stocks);
+    } else if (category === 'meme') {
+      title = '🐸 Top Meme Coins';
+      const memeIds = 'dogecoin,shiba-inu,pepe,bonk,floki,baby-doge-coin,dogwifcoin,meme,popcat,mog-coin';
+      const response = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${memeIds}&order=market_cap_desc&per_page=10&sparkline=false`);
+      data = await response.json();
+      renderCryptoTable(data);
+    } else if (category === 'defi') {
+      title = '💎 Top DeFi Tokens';
+      const defiIds = 'uniswap,aave,maker,lido-dao,curve-dao-token,compound-governance-token,pancakeswap-token,synthetix-network-token,yearn-finance,sushi';
+      const response = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${defiIds}&order=market_cap_desc&per_page=10&sparkline=false`);
+      data = await response.json();
+      renderCryptoTable(data);
+    } else if (category === 'dex') {
+      title = '🔄 Trending DEX Pairs';
+      renderDEXTable();
+    } else if (category === 'nft') {
+      title = '🎨 Top NFT Collections';
+      renderNFTTable();
+    }
+    
+    titleEl.textContent = title;
+  } catch (error) {
+    console.error('Error loading market overview:', error);
+    tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: #999;">Failed to load data</td></tr>';
+  }
+}
+
+function renderCryptoTable(data) {
+  const tableBody = document.getElementById('marketTableBody');
+  
+  if (!data || data.length === 0) {
+    tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: #999;">No data available</td></tr>';
+    return;
+  }
+  
+  tableBody.innerHTML = data.slice(0, 10).map((coin, index) => {
+    const priceChange = coin.price_change_percentage_24h || 0;
+    const changeClass = priceChange >= 0 ? 'price-change-positive' : 'price-change-negative';
+    const changeSymbol = priceChange >= 0 ? '▲' : '▼';
+    
+    return `
+      <tr onclick="analyzeAssetFromTable('${coin.symbol.toUpperCase()}')">
+        <td style="color: var(--text-secondary);">${index + 1}</td>
+        <td>
+          <div class="coin-name">
+            <span style="font-weight: 600;">${coin.name}</span>
+            <span class="coin-symbol">${coin.symbol.toUpperCase()}</span>
+          </div>
+        </td>
+        <td style="text-align: right; font-weight: 600;">$${coin.current_price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 6})}</td>
+        <td style="text-align: right;" class="${changeClass}">${changeSymbol} ${Math.abs(priceChange).toFixed(2)}%</td>
+        <td style="text-align: right; color: var(--text-secondary);">$${formatLargeNumber(coin.total_volume)}</td>
+        <td style="text-align: right; color: var(--text-secondary);">$${formatLargeNumber(coin.market_cap)}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderStocksTable(stocks) {
+  const tableBody = document.getElementById('marketTableBody');
+  
+  tableBody.innerHTML = stocks.map((ticker, index) => {
+    return `
+      <tr onclick="analyzeAssetFromTable('${ticker}')">
+        <td style="color: var(--text-secondary);">${index + 1}</td>
+        <td>
+          <div class="coin-name">
+            <span style="font-weight: 600;">${ticker}</span>
+          </div>
+        </td>
+        <td colspan="4" style="text-align: center; color: var(--text-secondary); font-size: 0.8rem;">
+          Click to analyze
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderDEXTable() {
+  const tableBody = document.getElementById('marketTableBody');
+  const pairs = ['SOL/USDC', 'ETH/USDC', 'BONK/SOL', 'WIF/SOL', 'PEPE/ETH', 'MATIC/USDC', 'ARB/ETH', 'OP/USDC', 'AVAX/USDC', 'BNB/USDT'];
+  
+  tableBody.innerHTML = pairs.map((pair, index) => {
+    return `
+      <tr onclick="analyzeAssetFromTable('${pair.split('/')[0]}')">
+        <td style="color: var(--text-secondary);">${index + 1}</td>
+        <td>
+          <div class="coin-name">
+            <span style="font-weight: 600;">${pair}</span>
+          </div>
+        </td>
+        <td colspan="4" style="text-align: center; color: var(--text-secondary); font-size: 0.8rem;">
+          Click to search on Dexscreener
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderNFTTable() {
+  const tableBody = document.getElementById('marketTableBody');
+  const collections = [
+    { name: 'Bored Ape Yacht Club', symbol: 'BAYC' },
+    { name: 'Azuki', symbol: 'AZUKI' },
+    { name: 'Pudgy Penguins', symbol: 'PPG' },
+    { name: 'DeGods', symbol: 'DEGODS' },
+    { name: 'Milady', symbol: 'MIL' },
+    { name: 'Lil Pudgys', symbol: 'LILPPG' }
+  ];
+  
+  tableBody.innerHTML = collections.map((nft, index) => {
+    return `
+      <tr onclick="analyzeAssetFromTable('${nft.symbol}')">
+        <td style="color: var(--text-secondary);">${index + 1}</td>
+        <td>
+          <div class="coin-name">
+            <span style="font-weight: 600;">${nft.name}</span>
+            <span class="coin-symbol">${nft.symbol}</span>
+          </div>
+        </td>
+        <td colspan="4" style="text-align: center; color: var(--text-secondary); font-size: 0.8rem;">
+          Click to analyze
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function analyzeAssetFromTable(ticker) {
+  searchInput.value = ticker;
+  performSearch();
+  if (tg) tg.HapticFeedback?.impactOccurred('medium');
+}
+
+function formatLargeNumber(num) {
+  if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
+  if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+  if (num >= 1e3) return (num / 1e3).toFixed(2) + 'K';
+  return num.toFixed(2);
 }
 
 document.getElementById('refreshBtn')?.addEventListener('click', () => {

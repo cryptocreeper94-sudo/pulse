@@ -686,6 +686,107 @@ body::before {
   font-weight: 600;
 }
 
+/* Market Overview Table */
+.market-overview-container {
+  background: rgba(10, 0, 5, 0.6);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.market-overview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(168, 85, 247, 0.15);
+}
+
+.market-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.market-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.market-table thead {
+  background: rgba(26, 10, 31, 0.3);
+}
+
+.market-table th {
+  padding: 10px 8px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.market-table tbody tr {
+  border-bottom: 1px solid rgba(168, 85, 247, 0.1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.market-table tbody tr:hover {
+  background: rgba(168, 85, 247, 0.1);
+  transform: scale(1.01);
+}
+
+.market-table td {
+  padding: 12px 8px;
+  white-space: nowrap;
+}
+
+.market-table .coin-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.market-table .coin-symbol {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.market-table .price-change-positive {
+  color: #4ADE80;
+  font-weight: 600;
+}
+
+.market-table .price-change-negative {
+  color: #FF4444;
+  font-weight: 600;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+  .market-table {
+    font-size: 0.75rem;
+  }
+  
+  .market-table th,
+  .market-table td {
+    padding: 8px 4px;
+  }
+  
+  .market-table th:nth-child(5),
+  .market-table td:nth-child(5),
+  .market-table th:nth-child(6),
+  .market-table td:nth-child(6) {
+    display: none; /* Hide volume and market cap on very small screens */
+  }
+}
+
 /* Trending Carousel */
 .trending-carousel {
   margin-bottom: 1.5rem;
