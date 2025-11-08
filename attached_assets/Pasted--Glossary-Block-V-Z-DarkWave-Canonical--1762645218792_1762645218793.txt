@@ -1,0 +1,72 @@
+// ─────────────────────────────────────────────
+// 🔤 Glossary Block V–Z | DarkWave Canonical
+// Includes: category, smartass, plain
+// ─────────────────────────────────────────────
+
+export const glossary_VZ = {
+  "Validator": {
+    category: "Crypto",
+    smartass: "The blockchain’s hall monitor. Approves transactions and judges your gas fees.",
+    plain: "A participant in a blockchain network who verifies transactions and maintains consensus."
+  },
+  "Vesting": {
+    category: "Finance",
+    smartass: "Lock your tokens and wait. Like emotional layaway.",
+    plain: "A schedule that releases tokens or shares over time to prevent immediate selling."
+  },
+  "Volatility": {
+    category: "Finance",
+    smartass: "How wild the price swings are. Emotional rollercoaster included.",
+    plain: "A measure of how much an asset’s price fluctuates over time."
+  },
+  "Volume": {
+    category: "Finance",
+    smartass: "How loud the market is. High volume = drama.",
+    plain: "The total amount of an asset traded during a specific time period."
+  },
+  "Wallet": {
+    category: "Crypto",
+    smartass: "Your crypto purse. If you lose it, you cry in private.",
+    plain: "A digital tool used to store, send, and receive cryptocurrencies."
+  },
+  "Wash Trading": {
+    category: "Finance",
+    smartass: "Trade with yourself to fake volume. Market cosplay.",
+    plain: "A form of market manipulation where assets are bought and sold to create false activity."
+  },
+  "Weak Hands": {
+    category: "Crypto Slang",
+    smartass: "Sells at the first dip. Emotionally allergic to red candles.",
+    plain: "Investors who quickly sell assets during downturns or volatility."
+  },
+  "Web3": {
+    category: "Crypto",
+    smartass: "The internet with tokens. Also with bugs.",
+    plain: "A decentralized version of the internet powered by blockchain and crypto assets."
+  },
+  "Whitelist": {
+    category: "Crypto/NFT",
+    smartass: "VIP access to mint. Usually rigged.",
+    plain: "A list of approved users allowed early access to a token or NFT launch."
+  },
+  "Yield": {
+    category: "Finance",
+    smartass: "The part where you pretend you’re making money. Sometimes it’s true.",
+    plain: "The earnings generated from an investment over a period of time."
+  },
+  "Yield Farming": {
+    category: "Crypto",
+    smartass: "Chasing returns across protocols. Often ends in emotional bankruptcy.",
+    plain: "Using DeFi platforms to earn rewards by lending or staking crypto assets."
+  },
+  "Zero Knowledge Proof": {
+    category: "Crypto",
+    smartass: "Prove you know something without showing it. Like a blockchain magic trick.",
+    plain: "A cryptographic method that verifies information without revealing the actual data."
+  },
+  "Zombie Chain": {
+    category: "Crypto Slang",
+    smartass: "A blockchain that’s technically alive but emotionally dead.",
+    plain: "A blockchain network with little to no activity or developer support."
+  }
+};
