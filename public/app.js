@@ -47,6 +47,7 @@ const state = {
   currentAnalysis: null,
   trendingCache: {}, // Cache for trending data
   trendingCacheTime: {}, // Cache timestamps
+  cryptoCatEnabled: localStorage.getItem('darkwave_crypto_cat') !== 'false', // Crypto Cat mascot toggle
   subscription: {
     plan: 'free',
     status: 'inactive',
@@ -2919,7 +2920,7 @@ function renderGlossary(searchTerm = '', category = null) {
             </div>
             <div id="term-${termId}" class="glossary-term-content" style="display: ${isExpanded ? 'block' : 'none'}; padding: 0 12px 12px 12px;">
               ${(() => {
-                const catData = cryptoCatEnabled ? getCryptoCatQuote(term.term) : null;
+                const catData = state.cryptoCatEnabled ? getCryptoCatQuote(term.term) : null;
                 if (catData) {
                   return `
                     <div style="display: flex; gap: 10px; align-items: start; margin-bottom: 12px; background: rgba(255, 0, 110, 0.05); padding: 10px; border-radius: 8px; border: 1px solid rgba(255, 0, 110, 0.2);">
@@ -3216,35 +3217,22 @@ async function fetchTokenData(tokenAddress) {
 // ===== LAUNCHING SOON SECTION =====
 let countdownIntervals = [];
 
-// Mock data for upcoming token launches (will be replaced with API calls later)
+// Token launches data (will be fetched from API in production)
 const UPCOMING_LAUNCHES = [
   {
     id: '1',
-    name: 'MoonShot Protocol',
-    symbol: 'MOON',
-    logo: 'https://via.placeholder.com/60',
-    launchDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days from now
-    launchPrice: '$0.01',
-    totalSupply: '1,000,000,000',
-    initialMarketCap: '$10M',
+    name: 'DarkWave Launchpad',
+    symbol: 'DWLP',
+    logo: 'assets/crypto-cat.png', // Using Crypto Cat as the logo for now
+    launchDate: new Date('2025-12-25T00:00:00Z'), // Christmas Day 2025 - REAL LAUNCH DATE
+    launchPrice: 'TBA',
+    totalSupply: 'TBA',
+    initialMarketCap: 'TBA',
     maxWhitelistSpots: 1000,
-    currentWhitelistCount: 347,
+    currentWhitelistCount: 0, // Will be fetched from database
     minAllocation: '0.1 SOL',
-    maxAllocation: '5 SOL'
-  },
-  {
-    id: '2',
-    name: 'DeFi Legends',
-    symbol: 'LEGEND',
-    logo: 'https://via.placeholder.com/60',
-    launchDate: new Date(Date.now() + 12 * 24 * 60 * 60 * 1000), // 12 days from now
-    launchPrice: '$0.05',
-    totalSupply: '500,000,000',
-    initialMarketCap: '$25M',
-    maxWhitelistSpots: 500,
-    currentWhitelistCount: 89,
-    minAllocation: '0.5 SOL',
-    maxAllocation: '10 SOL'
+    maxAllocation: '5 SOL',
+    description: 'The official DarkWave token launchpad platform - your gateway to vetted crypto projects'
   }
 ];
 
@@ -4571,7 +4559,6 @@ function initializeDarkMode() {
 initializeDarkMode();
 
 // ===== CRYPTO CAT MASCOT FUNCTIONALITY =====
-let cryptoCatEnabled = true;
 
 const CRYPTO_CAT_QUOTES = {
   // Glossary terms - sarcastic explanations with varied moods
@@ -4609,19 +4596,23 @@ function initializeCryptoCat() {
   const cryptoCatToggle = document.getElementById('toggleCryptoCat');
   if (!cryptoCatToggle) return;
   
-  // Load saved preference
-  cryptoCatEnabled = localStorage.getItem('darkwave_crypto_cat') !== 'false';
-  cryptoCatToggle.checked = cryptoCatEnabled;
+  // Set toggle to match state
+  cryptoCatToggle.checked = state.cryptoCatEnabled;
   
   // Handle toggle
   cryptoCatToggle.addEventListener('change', (e) => {
-    cryptoCatEnabled = e.target.checked;
-    localStorage.setItem('darkwave_crypto_cat', cryptoCatEnabled.toString());
+    state.cryptoCatEnabled = e.target.checked;
+    localStorage.setItem('darkwave_crypto_cat', state.cryptoCatEnabled.toString());
     
-    if (cryptoCatEnabled) {
+    if (state.cryptoCatEnabled) {
       showToast('🐱 Crypto Cat is back! Prepare for sarcasm.');
     } else {
       showToast('😿 Crypto Cat will miss you...');
+    }
+    
+    // Re-render glossary if we're on the learn tab
+    if (state.currentTab === 'learn') {
+      renderGlossary(document.getElementById('glossarySearch')?.value || '');
     }
     
     if (tg) tg.HapticFeedback?.impactOccurred('medium');
@@ -4633,14 +4624,14 @@ initializeCryptoCat();
 
 // Function to get Crypto Cat's commentary
 function getCryptoCatQuote(term) {
-  if (!cryptoCatEnabled) return null;
+  if (!state.cryptoCatEnabled) return null;
   const catData = CRYPTO_CAT_QUOTES[term];
   return catData || null;
 }
 
 // Function to create Crypto Cat tooltip
 function createCryptoCatTooltip(term, definition) {
-  if (!cryptoCatEnabled) {
+  if (!state.cryptoCatEnabled) {
     return `
       <div style="padding: 12px;">
         <strong>${term}</strong>
@@ -4673,7 +4664,7 @@ function createCryptoCatTooltip(term, definition) {
 
 // Function to show Crypto Cat banner
 function showCryptoCatBanner(type, title, message) {
-  if (!cryptoCatEnabled) {
+  if (!state.cryptoCatEnabled) {
     showToast(`${title}: ${message}`);
     return;
   }
