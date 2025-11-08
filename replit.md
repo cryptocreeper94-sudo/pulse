@@ -3,6 +3,15 @@
 ## Overview
 DarkWave-V2 is an advanced technical analysis bot built with the Mastra framework, providing comprehensive cryptocurrency, stock market, and NFT analysis. It integrates with Telegram to deliver real-time buy/sell signals based on technical indicators like RSI, MACD, moving averages, and Bollinger Bands. The system uses a workflow-based architecture, processes user messages via an AI agent, and stores conversation history and user watchlists in PostgreSQL for personalized interactions. Key features include DEX pair and meme coin support with rug-risk detection, NFT collection analysis, a live trending carousel, database-backed session management, and multi-chain wallet tracking. It also incorporates a comprehensive subscription notification system with an admin dashboard, a professional token submission system with robust validation, and cryptocurrency payment integration via Coinbase Commerce. A unique "Crypto Cat" mascot provides interactive commentary, and a "Launching Soon" section with a countdown and presale platform design for the DarkWave token (DWLP) is included. The project aims to launch the DarkWave token on December 25, 2025, with a whitepaper outlining its mission, tokenomics, utility, and roadmap.
 
+## Recent Changes (November 2025)
+- **Multi-Theme System**: Added Jupiter (DeFi Dark), Robinhood (Clean Light), and Coinbase (Professional Blue) themes with localStorage persistence
+- **UI Polish**: Removed excessive emojis from action buttons for more professional appearance
+- **Theme Switcher**: Settings tab now includes visual theme selector with instant switching
+
+## Future Features (Deferred)
+See `FUTURE_FEATURES.md` for detailed specs on planned features:
+- **TP/SL Trade Manager**: Restart-safe take profit/stop loss monitoring (requires wallet integration + testing)
+
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
