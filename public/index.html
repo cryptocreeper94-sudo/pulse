@@ -153,13 +153,100 @@
           </button>
         </div>
 
-        <!-- Market Overview Table -->
-        <div id="marketOverview" class="market-overview-container">
+        <!-- Market Overview - Split Layout -->
+        <div id="marketOverview" class="market-split-grid" style="display: none;">
+          <!-- Stocks Section -->
+          <div class="market-section">
+            <!-- Stock Market Snapshot -->
+            <div class="market-snapshot">
+              <div class="market-snapshot-header">
+                <span class="market-snapshot-title">📈 US Stock Market</span>
+              </div>
+              <div class="market-snapshot-stats">
+                <div class="market-stat">
+                  <div class="market-stat-label">S&P 500</div>
+                  <div class="market-stat-value" id="sp500Price">Loading...</div>
+                  <div class="market-stat-change" id="sp500Change">--</div>
+                </div>
+                <div class="market-stat">
+                  <div class="market-stat-label">Nasdaq</div>
+                  <div class="market-stat-value" id="nasdaqPrice">Loading...</div>
+                  <div class="market-stat-change" id="nasdaqChange">--</div>
+                </div>
+              </div>
+              <div class="market-snapshot-chart">
+                <img id="stockChartImage" src="https://quickchart.io/chart?c={type:'line',data:{labels:['Mon','Tue','Wed','Thu','Fri'],datasets:[{label:'S%26P 500',data:[4100,4150,4120,4180,4200],borderColor:'%234ADE80',fill:false}]},options:{legend:{display:false},scales:{y:{display:false},x:{display:false}}}}" alt="Stock Market Chart" loading="lazy">
+              </div>
+            </div>
+            
+            <!-- Top 10 Stocks Table -->
+            <h4 class="market-section-title">📊 Top 10 Stocks</h4>
+            <div class="market-table-wrapper">
+              <table class="market-table">
+                <thead>
+                  <tr>
+                    <th style="text-align: left;">Ticker</th>
+                    <th style="text-align: right;">Price</th>
+                    <th style="text-align: right;">24h %</th>
+                  </tr>
+                </thead>
+                <tbody id="stocksTableBody">
+                  <tr><td colspan="3" style="text-align: center; padding: 20px;"><div class="spinner"></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Crypto Section -->
+          <div class="market-section">
+            <!-- Crypto Market Snapshot -->
+            <div class="market-snapshot">
+              <div class="market-snapshot-header">
+                <span class="market-snapshot-title">💎 Crypto Market</span>
+              </div>
+              <div class="market-snapshot-stats">
+                <div class="market-stat">
+                  <div class="market-stat-label">BTC Dom</div>
+                  <div class="market-stat-value" id="btcDominance">Loading...</div>
+                  <div class="market-stat-change" id="btcDomChange">--</div>
+                </div>
+                <div class="market-stat">
+                  <div class="market-stat-label">Total MCap</div>
+                  <div class="market-stat-value" id="totalMcap">Loading...</div>
+                  <div class="market-stat-change" id="totalMcapChange">--</div>
+                </div>
+              </div>
+              <div class="market-snapshot-chart">
+                <img id="cryptoChartImage" src="https://quickchart.io/chart?c={type:'line',data:{labels:['Mon','Tue','Wed','Thu','Fri'],datasets:[{label:'BTC',data:[50000,51000,50500,52000,52500],borderColor:'%23F7931A',fill:false}]},options:{legend:{display:false},scales:{y:{display:false},x:{display:false}}}}" alt="Crypto Market Chart" loading="lazy">
+              </div>
+            </div>
+            
+            <!-- Top 10 Crypto Table -->
+            <h4 class="market-section-title">🔵 Top 10 Crypto</h4>
+            <div class="market-table-wrapper">
+              <table class="market-table">
+                <thead>
+                  <tr>
+                    <th style="text-align: left;">Name</th>
+                    <th style="text-align: right;">Price</th>
+                    <th style="text-align: right;">24h %</th>
+                  </tr>
+                </thead>
+                <tbody id="cryptoTableBody">
+                  <tr><td colspan="3" style="text-align: center; padding: 20px;"><div class="spinner"></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Original Single Table (Hidden when split view is shown) -->
+        <div id="marketOverviewSingle" class="market-overview-container">
           <div class="market-overview-header">
-            <h3 style="margin: 0; font-size: 1rem; color: var(--text-primary);">
+            <h3 style="margin: 0; font-size: 0.95rem; color: var(--text-primary);">
               <span id="marketOverviewTitle">🔵 Top Blue Chip Crypto</span>
             </h3>
-            <span style="font-size: 0.8rem; color: var(--text-secondary);">Click any row to analyze</span>
+            <span style="font-size: 0.75rem; color: var(--text-secondary);">Click any row to analyze</span>
           </div>
           <div class="market-table-wrapper">
             <table class="market-table">
@@ -208,26 +295,19 @@
             <p style="margin: 10px 0 0 0; font-size: 0.75rem; opacity: 0.6;">Cancel anytime • Instant access</p>
           </div>
 
-          <!-- Submit Your Token Banner -->
-          <div class="glass-card accent-success" style="padding: 20px; background: linear-gradient(135deg, rgba(74, 222, 128, 0.15), rgba(34, 197, 94, 0.15)); text-align: center;">
-            <div style="font-size: 32px; margin-bottom: 10px;">🚀</div>
-            <h3 style="margin: 0 0 8px 0; color: #4ADE80; font-size: 1.2rem;">Got a Token Worth Featuring?</h3>
-            <p style="margin: 0 0 15px 0; color: #ccc; font-size: 0.9rem;">Submit your project for potential listing and promotion!</p>
-            <button onclick="switchTab('feedback')" style="
-              width: 100%;
-              padding: 14px;
-              background: linear-gradient(135deg, #4ADE80, #22C55E);
-              color: #000;
-              border: none;
-              border-radius: 8px;
-              font-weight: bold;
-              font-size: 1rem;
-              cursor: pointer;
-              box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
-            ">
-              📝 Submit Your Token
+        </div>
+
+        <!-- Pirate Flag Token Submission Banner -->
+        <div class="pirate-flag-banner" onclick="switchTab('feedback')" style="cursor: pointer;">
+          <div class="pirate-flag-content">
+            <span class="pirate-flag-icon">🏴‍☠️</span>
+            <div class="pirate-flag-text">
+              <h4>Got a Token? Submit for Featuring!</h4>
+              <p>Sail with us – submit your project for potential listing</p>
+            </div>
+            <button class="pirate-flag-btn" onclick="event.stopPropagation(); switchTab('feedback');">
+              Submit 🚀
             </button>
-            <p style="margin: 10px 0 0 0; font-size: 0.75rem; opacity: 0.6;">We review all submissions based on contract security & legitimacy</p>
           </div>
         </div>
 
