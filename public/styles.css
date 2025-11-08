@@ -254,16 +254,15 @@ body {
   position: relative;
 }
 
-/* Pure Black Background */
+/* Solid Dark Navy Background - Crypto.com Style */
 body::before {
-  background: linear-gradient(180deg, rgba(10, 14, 39, 0.95) 0%, rgba(26, 31, 58, 0.9) 50%, rgba(10, 14, 39, 0.95) 100%) !important;
   content: '';
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: #000000;
+  background: #0A0E27;
   z-index: -1;
   pointer-events: none;
 }
@@ -3553,3 +3552,99 @@ body::before {
   border-color: var(--neon-pink);
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
+
+/* ==================================================
+   CRYPTO.COM-STYLE DEPTH SYSTEM
+   Angular sections with layered depth
+   ================================================== */
+
+/* Three-Column Grid System */
+.content-grid-thirds {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin: 20px 0;
+}
+
+@media (max-width: 1024px) {
+  .content-grid-thirds {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Elevated Card with Depth */
+.elevated-card {
+  background: #1A1F3A;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 12px;
+  padding: 24px;
+  position: relative;
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.3),
+    0 10px 20px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.elevated-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 8px 12px rgba(0, 0, 0, 0.4),
+    0 16px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 0 1px rgba(59, 130, 246, 0.4);
+}
+
+/* Recessed Panel - Inset Glow */
+.recessed-panel {
+  background: #0F1429;
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.4),
+    inset 0 0 12px rgba(59, 130, 246, 0.1);
+}
+
+/* Angular Divider */
+.angular-divider {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #3B82F6, transparent);
+  margin: 32px 0;
+  position: relative;
+  transform: skewY(-1deg);
+}
+
+.angular-divider::before,
+.angular-divider::after {
+  content: '';
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border: 2px solid #3B82F6;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+}
+
+.angular-divider::before {
+  left: 20%;
+}
+
+.angular-divider::after {
+  right: 20%;
+}
+
+/* Staggered Heights for Depth */
+.stagger-tall {
+  min-height: 400px;
+}
+
+.stagger-medium {
+  min-height: 300px;
+}
+
+.stagger-short {
+  min-height: 200px;
+}
+
