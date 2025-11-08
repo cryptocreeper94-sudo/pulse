@@ -4539,31 +4539,64 @@ function initializeCompare() {
   // Already handled by onclick attributes in HTML
 }
 
-// ===== DARK MODE FUNCTIONALITY =====
-function initializeDarkMode() {
-  const darkModeToggle = document.getElementById('toggleDarkMode');
-  if (!darkModeToggle) return;
+// ===== THEME SWITCHING FUNCTIONALITY =====
+function initializeThemeSwitcher() {
+  const themeButtons = document.querySelectorAll('.theme-btn');
+  if (!themeButtons.length) return;
   
-  // Load saved preference
-  const savedTheme = localStorage.getItem('darkwave_theme') || 'dark';
-  document.body.classList.add(savedTheme);
-  darkModeToggle.checked = (savedTheme === 'dark');
+  // Load saved theme preference (default to jupiter)
+  const savedTheme = localStorage.getItem('darkwave_active_theme') || 'jupiter';
   
-  // Handle toggle
-  darkModeToggle.addEventListener('change', (e) => {
-    const newTheme = e.target.checked ? 'dark' : 'light';
-    document.body.classList.remove('dark', 'light');
-    document.body.classList.add(newTheme);
-    localStorage.setItem('darkwave_theme', newTheme);
-    
-    showToast(newTheme === 'dark' ? '🌙 Dark mode enabled' : '☀️ Light mode enabled');
-    
-    if (tg) tg.HapticFeedback?.impactOccurred('medium');
+  // Apply saved theme on load
+  document.body.className = ''; // Clear all classes
+  document.body.classList.add(`theme-${savedTheme}`);
+  
+  // Set active button
+  themeButtons.forEach(btn => {
+    if (btn.dataset.theme === savedTheme) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+  
+  // Handle theme button clicks
+  themeButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const newTheme = btn.dataset.theme;
+      
+      // Remove all theme classes
+      document.body.className = '';
+      document.body.classList.add(`theme-${newTheme}`);
+      
+      // Update active button
+      themeButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      // Save preference
+      localStorage.setItem('darkwave_active_theme', newTheme);
+      
+      // Show toast with theme-specific emoji
+      const themeEmojis = {
+        jupiter: '🚀',
+        robinhood: '📈',
+        coinbase: '💼'
+      };
+      const themeNames = {
+        jupiter: 'Jupiter',
+        robinhood: 'Robinhood',
+        coinbase: 'Coinbase'
+      };
+      
+      showToast(`${themeEmojis[newTheme]} ${themeNames[newTheme]} theme activated!`);
+      
+      if (tg) tg.HapticFeedback?.impactOccurred('medium');
+    });
   });
 }
 
-// Initialize dark mode
-initializeDarkMode();
+// Initialize theme switcher
+initializeThemeSwitcher();
 
 // ===== CRYPTO CAT MASCOT FUNCTIONALITY =====
 

@@ -1,46 +1,140 @@
-/* DarkWave-V2 Mini App Styles */
+/* DarkWave-V2 Mini App Styles - Multi-Theme System */
 
-:root, body.dark {
-  /* DarkWave Color Palette - Maroon to Very Dark Purple to Black */
-  --primary-maroon: #6B0000;
-  --deep-red: #8B0000;
-  --primary-red: #6B0000; /* Alias for backwards compatibility */
-  --primary-purple: #1A0A1F;
-  --glow-purple: #2A1530;
-  --bg-dark: #000000;
-  --bg-card: #0A0005;
-  --bg-card-hover: #150A10;
-  --text-primary: #E2E8F0;
+/* ===========================================
+   THEME 1: JUPITER (Dark DeFi Cyberpunk)
+   Default theme - Teal/Purple gradients
+   =========================================== */
+:root, body.theme-jupiter {
+  /* Jupiter Color Palette - Cyberpunk Teal/Purple */
+  --primary-maroon: #8B5CF6;
+  --deep-red: #7C3AED;
+  --primary-red: #8B5CF6;
+  --primary-purple: #6366F1;
+  --glow-purple: #818CF8;
+  --bg-dark: #0F172A;
+  --bg-card: #1E293B;
+  --bg-card-hover: #334155;
+  --text-primary: #F1F5F9;
   --text-secondary: #94A3B8;
   --accent-cyan: #06B6D4;
   --success-green: #10B981;
   --warning-amber: #F59E0B;
-  --danger-red: #DC143C;
+  --danger-red: #EF4444;
   
-  /* NEW: Digital Green Accent Colors for Tech Aesthetic */
-  --digital-green: #00FF00;
-  --neon-green: #00FF00;
-  --neon-pink: #00FF00; /* Aliased to digital green for backward compatibility */
-  --digital-green-glow: 0 0 20px rgba(0, 255, 0, 0.6), 0 0 40px rgba(0, 255, 0, 0.3);
-  --neon-green-glow: 0 0 20px rgba(0, 255, 0, 0.6), 0 0 40px rgba(0, 255, 0, 0.3);
-  --neon-pink-glow: 0 0 20px rgba(0, 255, 0, 0.6), 0 0 40px rgba(0, 255, 0, 0.3); /* Aliased */
-  --red-glow: 0 0 10px rgba(178, 34, 34, 0.4), 0 0 20px rgba(178, 34, 34, 0.2); /* Softened */
+  /* Jupiter Accent Colors */
+  --digital-green: #06B6D4;
+  --neon-green: #06B6D4;
+  --neon-pink: #8B5CF6;
+  --digital-green-glow: 0 0 20px rgba(6, 182, 212, 0.6), 0 0 40px rgba(6, 182, 212, 0.3);
+  --neon-green-glow: 0 0 20px rgba(6, 182, 212, 0.6), 0 0 40px rgba(6, 182, 212, 0.3);
+  --neon-pink-glow: 0 0 20px rgba(139, 92, 246, 0.6), 0 0 40px rgba(139, 92, 246, 0.3);
+  --red-glow: 0 0 15px rgba(139, 92, 246, 0.5), 0 0 30px rgba(139, 92, 246, 0.3);
   
-  /* Responsive Accent Scaling */
-  --accent-border-width: 1.5px; /* Mobile */
-  --accent-glow-radius: 8px; /* Mobile */
-  
-  /* App Shell Constraints - Tightened */
+  /* Layout */
+  --accent-border-width: 1.5px;
+  --accent-glow-radius: 8px;
   --shell-max-width: 1160px;
-  --shell-gutter: 12px; /* Mobile - reduced by 25% */
-  --sidebar-width: 0px; /* Mobile: no sidebar */
-  --section-spacing: 12px; /* Tightened vertical spacing */
-  --card-padding: 14px; /* Reduced from 20px */
+  --shell-gutter: 12px;
+  --sidebar-width: 0px;
+  --section-spacing: 12px;
+  --card-padding: 14px;
   
-  /* Gradients - Dark Green to Black with Depth */
-  --gradient-primary: linear-gradient(135deg, #003300, #001a00, #000000);
-  --gradient-card: linear-gradient(135deg, #0a100a, #050a05, #000000);
-  --gradient-glow: linear-gradient(135deg, rgba(0, 51, 0, 0.4), rgba(0, 26, 0, 0.4));
+  /* Jupiter Gradients */
+  --gradient-primary: linear-gradient(135deg, #8B5CF6, #6366F1, #06B6D4);
+  --gradient-card: linear-gradient(135deg, #1E293B, #0F172A);
+  --gradient-glow: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(6, 182, 212, 0.3));
+  --button-glow: var(--red-glow);
+}
+
+/* ===========================================
+   THEME 2: ROBINHOOD (Clean Minimalist)
+   Light & approachable
+   =========================================== */
+body.theme-robinhood {
+  /* Robinhood Color Palette - Clean Green */
+  --primary-maroon: #00C805;
+  --deep-red: #00A804;
+  --primary-red: #00C805;
+  --primary-purple: #2C3E50;
+  --glow-purple: #34495E;
+  --bg-dark: #FFFFFF;
+  --bg-card: #F8F9FA;
+  --bg-card-hover: #E9ECEF;
+  --text-primary: #1A1A1A;
+  --text-secondary: #6C757D;
+  --accent-cyan: #17A2B8;
+  --success-green: #00C805;
+  --warning-amber: #FFC107;
+  --danger-red: #FF5733;
+  
+  /* Robinhood Accent Colors */
+  --digital-green: #00C805;
+  --neon-green: #00C805;
+  --neon-pink: #00C805;
+  --digital-green-glow: 0 0 12px rgba(0, 200, 5, 0.3), 0 0 24px rgba(0, 200, 5, 0.15);
+  --neon-green-glow: 0 0 12px rgba(0, 200, 5, 0.3), 0 0 24px rgba(0, 200, 5, 0.15);
+  --neon-pink-glow: 0 0 12px rgba(0, 200, 5, 0.3), 0 0 24px rgba(0, 200, 5, 0.15);
+  --red-glow: 0 0 8px rgba(0, 200, 5, 0.2), 0 0 16px rgba(0, 200, 5, 0.1);
+  
+  /* Layout */
+  --accent-border-width: 1.5px;
+  --accent-glow-radius: 6px;
+  --shell-max-width: 1160px;
+  --shell-gutter: 16px;
+  --sidebar-width: 0px;
+  --section-spacing: 16px;
+  --card-padding: 16px;
+  
+  /* Robinhood Gradients - Subtle */
+  --gradient-primary: linear-gradient(135deg, #00C805, #00A804);
+  --gradient-card: linear-gradient(135deg, #FFFFFF, #F8F9FA);
+  --gradient-glow: linear-gradient(135deg, rgba(0, 200, 5, 0.1), rgba(0, 168, 4, 0.05));
+  --button-glow: var(--red-glow);
+}
+
+/* ===========================================
+   THEME 3: COINBASE (Professional Blue)
+   Trustworthy & polished
+   =========================================== */
+body.theme-coinbase {
+  /* Coinbase Color Palette - Professional Blue */
+  --primary-maroon: #0052FF;
+  --deep-red: #0040CC;
+  --primary-red: #0052FF;
+  --primary-purple: #1652F0;
+  --glow-purple: #3366FF;
+  --bg-dark: #0A0E27;
+  --bg-card: #1A1F3A;
+  --bg-card-hover: #252C4D;
+  --text-primary: #F5F7FA;
+  --text-secondary: #8A8FA3;
+  --accent-cyan: #17A2B8;
+  --success-green: #05B169;
+  --warning-amber: #F4A51C;
+  --danger-red: #DF5F67;
+  
+  /* Coinbase Accent Colors */
+  --digital-green: #17A2B8;
+  --neon-green: #17A2B8;
+  --neon-pink: #0052FF;
+  --digital-green-glow: 0 0 18px rgba(23, 162, 184, 0.5), 0 0 36px rgba(23, 162, 184, 0.25);
+  --neon-green-glow: 0 0 18px rgba(23, 162, 184, 0.5), 0 0 36px rgba(23, 162, 184, 0.25);
+  --neon-pink-glow: 0 0 18px rgba(0, 82, 255, 0.5), 0 0 36px rgba(0, 82, 255, 0.25);
+  --red-glow: 0 0 12px rgba(0, 82, 255, 0.4), 0 0 24px rgba(0, 82, 255, 0.2);
+  
+  /* Layout */
+  --accent-border-width: 2px;
+  --accent-glow-radius: 10px;
+  --shell-max-width: 1160px;
+  --shell-gutter: 14px;
+  --sidebar-width: 0px;
+  --section-spacing: 14px;
+  --card-padding: 16px;
+  
+  /* Coinbase Gradients */
+  --gradient-primary: linear-gradient(135deg, #0052FF, #1652F0, #17A2B8);
+  --gradient-card: linear-gradient(135deg, #1A1F3A, #0A0E27);
+  --gradient-glow: linear-gradient(135deg, rgba(0, 82, 255, 0.25), rgba(23, 162, 184, 0.25));
   --button-glow: var(--red-glow);
 }
 
@@ -1535,6 +1629,67 @@ body::before {
 .settings-section h3 {
   margin-bottom: 1rem;
   color: var(--accent-cyan);
+}
+
+/* Theme Selector Styles */
+.theme-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.theme-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px 10px;
+  background: var(--bg-card);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--accent-cyan);
+  transform: translateY(-2px);
+}
+
+.theme-btn.active {
+  border-color: var(--neon-green);
+  background: linear-gradient(135deg, var(--bg-card), var(--bg-card-hover));
+  box-shadow: var(--digital-green-glow);
+}
+
+.theme-btn.active::before {
+  content: '✓';
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 0.75rem;
+  color: var(--neon-green);
+  font-weight: bold;
+}
+
+.theme-icon {
+  font-size: 1.8rem;
+  margin-bottom: 6px;
+}
+
+.theme-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.theme-desc {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  font-weight: 400;
 }
 
 .toggle-row {
