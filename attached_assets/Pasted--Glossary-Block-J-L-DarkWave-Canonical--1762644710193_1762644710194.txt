@@ -1,0 +1,77 @@
+// ─────────────────────────────────────────────
+// 🔤 Glossary Block J–L | DarkWave Canonical
+// Includes: category, smartass, plain
+// ─────────────────────────────────────────────
+
+export const glossary_JL = {
+  "JPEG": {
+    category: "NFT",
+    smartass: "The sacred image format of overpriced monkey art.",
+    plain: "A common image file format often used for NFTs and digital art."
+  },
+  "KYC": {
+    category: "Regulation",
+    smartass: "Know Your Customer. Emotional paperwork and selfies.",
+    plain: "A process to verify user identity for financial compliance."
+  },
+  "Layer 1": {
+    category: "Crypto",
+    smartass: "The blockchain’s foundation. If this breaks, everything breaks.",
+    plain: "The base protocol of a blockchain network, like Ethereum or Solana."
+  },
+  "Layer 2": {
+    category: "Crypto",
+    smartass: "Scalability band-aid. Faster, cheaper, still emotionally unstable.",
+    plain: "A secondary framework built on Layer 1 to improve speed and reduce costs."
+  },
+  "Ledger": {
+    category: "Crypto",
+    smartass: "The blockchain’s diary. Every transaction, every regret, immortalized.",
+    plain: "A digital record of all transactions on a blockchain."
+  },
+  "Liquidity": {
+    category: "Finance",
+    smartass: "How easily you can escape your trade. Low liquidity = emotional trap.",
+    plain: "The ease with which assets can be bought or sold without affecting price."
+  },
+  "Liquidity Pool": {
+    category: "Crypto",
+    smartass: "A puddle of tokens for trading. Sometimes deep, sometimes shallow.",
+    plain: "A collection of funds locked in a smart contract to facilitate decentralized trading."
+  },
+  "Limit Order": {
+    category: "Finance",
+    smartass: "Trade only if the price behaves. Emotional boundaries for your wallet.",
+    plain: "An order to buy or sell an asset at a specific price or better."
+  },
+  "Leverage": {
+    category: "Finance",
+    smartass: "Borrowed power. Amplifies gains and emotional damage.",
+    plain: "Using borrowed funds to increase the potential return of an investment."
+  },
+  "LTV": {
+    category: "Finance",
+    smartass: "Loan-to-Value. How deep you’re in debt compared to your assets.",
+    plain: "A ratio that compares the value of a loan to the value of the collateral."
+  },
+  "Long": {
+    category: "Finance",
+    smartass: "Betting the price goes up. Sometimes it does. Sometimes it mocks you.",
+    plain: "An investment strategy where you buy an asset expecting it to rise in value."
+  },
+  "Lambo": {
+    category: "Crypto Slang",
+    smartass: "The mythical car you’ll buy when your coin moons. Still waiting.",
+    plain: "A slang term symbolizing wealth from crypto gains, referring to a Lamborghini."
+  },
+  "Liquidity Crisis": {
+    category: "Finance",
+    smartass: "When no one wants to buy. Emotional freeze.",
+    plain: "A situation where assets can’t be sold quickly due to lack of buyers."
+  },
+  "Limit Sell": {
+    category: "Finance",
+    smartass: "Sell only if the market behaves. Emotional exit strategy.",
+    plain: "An order to sell an asset at a specified price or higher."
+  }
+};
