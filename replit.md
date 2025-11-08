@@ -69,6 +69,7 @@ Pino logger (`@mastra/loggers`) is used for structured JSON logging with custom 
 
 ### System Design Choices
 -   **Security**: Browser-generated unique user IDs for session isolation. Admin dashboard protected by `ADMIN_ACCESS_CODE`. File upload validation with three-layer security (data URI parsing, base64 decoding, magic byte signature checking).
+-   **Access Control**: Dual-method access system supporting both access code ("lucky 777" for free tier) and email whitelist (for premium tier). Whitelisted emails automatically grant premium access when entered at login.
 -   **Performance**: 5-minute browser caching for live data to minimize API calls.
 
 ## External Dependencies

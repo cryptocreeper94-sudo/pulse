@@ -849,6 +849,7 @@ export const mastra = new Mastra({
               return c.json({ error: 'Access code system not configured' }, 500);
             }
             
+            // METHOD 1: Check if code matches "lucky 777"
             if (code === correctCode) {
               // Generate session token with user ID
               const { generateSessionToken } = await import('./middleware/accessControl.js');
@@ -860,10 +861,56 @@ export const mastra = new Mastra({
                 message: 'Access granted',
                 sessionToken 
               });
-            } else {
-              logger?.warn('❌ [Access Code] Invalid code attempt', { userId: userId.trim() });
-              return c.json({ success: false, message: 'Invalid access code' }, 401);
             }
+            
+            // METHOD 2: Check if input is an email and if it's whitelisted
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (emailRegex.test(code)) {
+              const cleanEmail = code.trim().toLowerCase();
+              const { db } = await import('../db/client.js');
+              const { whitelistedUsers } = await import('../db/schema.js');
+              const { eq, or } = await import('drizzle-orm');
+              
+              // Check if email is in whitelist
+              const whitelist = await db.select()
+                .from(whitelistedUsers)
+                .where(eq(whitelistedUsers.email, cleanEmail))
+                .limit(1);
+              
+              if (whitelist.length > 0) {
+                const whitelistEntry = whitelist[0];
+                
+                // Check if whitelist has expired
+                if (whitelistEntry.expiresAt && new Date(whitelistEntry.expiresAt) < new Date()) {
+                  logger?.warn('❌ [Email Access] Whitelist expired', { email: cleanEmail });
+                  return c.json({ success: false, message: 'Email whitelist has expired' }, 401);
+                }
+                
+                // Generate session token with email attached
+                const { generateSessionToken } = await import('./middleware/accessControl.js');
+                const sessionToken = await generateSessionToken(userId.trim(), cleanEmail);
+                
+                logger?.info('✅ [Email Access] Whitelisted email granted access', { 
+                  email: cleanEmail, 
+                  userId: userId.trim(),
+                  reason: whitelistEntry.reason || 'Whitelisted'
+                });
+                
+                return c.json({ 
+                  success: true, 
+                  message: 'Whitelisted email - access granted',
+                  sessionToken,
+                  isPremium: true // Whitelisted users get premium
+                });
+              } else {
+                logger?.warn('❌ [Email Access] Email not whitelisted', { email: cleanEmail });
+                return c.json({ success: false, message: 'Email not found on whitelist' }, 401);
+              }
+            }
+            
+            // Neither access code nor whitelisted email
+            logger?.warn('❌ [Access] Invalid input (not code or whitelisted email)', { userId: userId.trim() });
+            return c.json({ success: false, message: 'Invalid access code or email' }, 401);
           } catch (error: any) {
             logger?.error('🚨 [Access Code] Verification error', error);
             return c.json({ error: 'Verification failed' }, 500);

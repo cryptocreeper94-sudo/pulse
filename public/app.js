@@ -1840,12 +1840,12 @@ function showAccessGate() {
       ">
         <div style="font-size: 48px; margin-bottom: 20px;">🔒</div>
         <h2 style="color: #fff; margin-bottom: 10px; font-size: 24px;">DarkWave-V2</h2>
-        <p style="color: #999; margin-bottom: 30px; font-size: 14px;">Enter access code to continue</p>
+        <p style="color: #999; margin-bottom: 30px; font-size: 14px;">Enter access code or whitelisted email</p>
         
         <input 
           type="text" 
           id="accessCodeInput" 
-          placeholder="Enter access code"
+          placeholder="Access code or email"
           style="
             width: 100%;
             padding: 15px;
@@ -1884,7 +1884,7 @@ function showAccessGate() {
           margin-top: 15px;
           font-size: 14px;
           display: none;
-        ">Invalid access code</div>
+        ">Invalid access code or email not whitelisted</div>
       </div>
     </div>
   `;

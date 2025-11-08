@@ -6,7 +6,7 @@ import { eq, lt } from 'drizzle-orm';
 // Session expiry: 30 days
 const SESSION_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
 
-export async function generateSessionToken(userId: string): Promise<string> {
+export async function generateSessionToken(userId: string, email?: string): Promise<string> {
   if (!userId || userId === 'demo-user') {
     throw new Error('Valid userId required for session generation');
   }
@@ -18,6 +18,7 @@ export async function generateSessionToken(userId: string): Promise<string> {
   await db.insert(sessions).values({
     token,
     userId,
+    email: email || null,
     issuedAt: now,
     expiresAt,
     lastUsed: now
