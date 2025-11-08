@@ -1828,8 +1828,8 @@ function showPremiumWelcome(email) {
       padding: 20px;
     ">
       <div style="
-        background: linear-gradient(135deg, #1a0000 0%, #0d0011 50%, #000000 100%);
-        border: 3px solid #8b0000;
+        background: #000000;
+        border: 2px solid rgba(6, 182, 212, 0.5);
         border-radius: 20px;
         padding: 40px 30px;
         max-width: 500px;
@@ -1919,7 +1919,7 @@ function showAccessGate() {
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(135deg, #1a0000 0%, #0d0011 50%, #000000 100%);
+      background: #000000;
       display: flex;
       align-items: center;
       justify-content: center;
