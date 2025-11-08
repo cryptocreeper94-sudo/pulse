@@ -3221,18 +3221,20 @@ let countdownIntervals = [];
 const UPCOMING_LAUNCHES = [
   {
     id: '1',
-    name: 'DarkWave Launchpad',
+    name: 'DarkWave',
     symbol: 'DWLP',
-    logo: 'assets/crypto-cat.png', // Using Crypto Cat as the logo for now
+    logo: 'attached_assets/1000015323_1762583228197.jpg', // Official DWLP token logo
     launchDate: new Date('2025-12-25T00:00:00Z'), // Christmas Day 2025 - REAL LAUNCH DATE
-    launchPrice: 'TBA',
-    totalSupply: 'TBA',
-    initialMarketCap: 'TBA',
+    launchPrice: '$0.01',
+    totalSupply: '100M DWLP',
+    initialMarketCap: '$1M Target',
     maxWhitelistSpots: 1000,
     currentWhitelistCount: 0, // Will be fetched from database
-    minAllocation: '0.1 SOL',
-    maxAllocation: '5 SOL',
-    description: 'The official DarkWave token launchpad platform - your gateway to vetted crypto projects'
+    minAllocation: '100 DWLP ($1)',
+    maxAllocation: '500,000 DWLP ($5,000)',
+    description: 'The official DarkWave utility token - Staking rewards, subscription discounts, governance rights, and revenue sharing from the platform',
+    presaleStart: new Date('2025-12-01T00:00:00Z'), // Dec 1 presale start
+    whitepaper: 'whitepaper.html'
   }
 ];
 
@@ -3334,9 +3336,14 @@ function renderLaunchingSoon() {
           <div style="font-size: 1.5rem; color: var(--neon-green);">✓</div>
         </div>
         
-        <button class="launch-action-btn" onclick="joinWhitelist('${launch.id}', '${launch.name}')">
-          🚀 Join Whitelist
-        </button>
+        <div style="display: flex; gap: 8px; margin-top: 16px;">
+          <button class="launch-action-btn" onclick="joinWhitelist('${launch.id}', '${launch.name}')" style="flex: 1;">
+            🚀 Join Whitelist
+          </button>
+          ${launch.whitepaper ? `<button class="launch-action-btn" onclick="window.open('${launch.whitepaper}', '_blank')" style="flex: 1; background: linear-gradient(135deg, #8B0000, #FF006E);">
+            📄 Whitepaper
+          </button>` : ''}
+        </div>
       </div>
     `;
   }).join('');
