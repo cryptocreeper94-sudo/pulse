@@ -1293,11 +1293,25 @@ function displayAnalysis(data) {
         </div>
       </div>
     ` : ''}
+  `;
+  
+  // Add Crypto Cat commentary (30% chance based on signal)
+  if (Math.random() < 0.3) {
+    const signalLower = signal.toLowerCase();
+    let catKey = 'hold';
+    if (signalLower.includes('strong buy')) catKey = 'strong_buy';
+    else if (signalLower.includes('buy')) catKey = 'buy';
+    else if (signalLower.includes('strong sell')) catKey = 'strong_sell';
+    else if (signalLower.includes('sell')) catKey = 'sell';
     
+    card.innerHTML += createCryptoCatAppearance(catKey, 'medium');
+  }
+  
+  card.innerHTML += `
     <div class="action-buttons" style="margin-top: 20px; display: flex; gap: 8px;">
-      <button class="action-btn" style="flex: 1;" onclick="setAlert('${data.ticker}')">🔔 Alert</button>
-      <button class="action-btn" style="flex: 1;" onclick="createOrder('${data.ticker}')">💰 Trade</button>
-      <button class="action-btn" style="flex: 1;" onclick="addToHoldings('${data.ticker}')">⭐ Hold</button>
+      <button class="action-btn" style="flex: 1;" onclick="setAlert('${data.ticker}')">Alert</button>
+      <button class="action-btn" style="flex: 1;" onclick="createOrder('${data.ticker}')">Trade</button>
+      <button class="action-btn" style="flex: 1;" onclick="addToHoldings('${data.ticker}')">Hold</button>
     </div>
   `;
   
@@ -2894,7 +2908,18 @@ function renderGlossary(searchTerm = '', category = null) {
   
   const groupKeys = Object.keys(grouped).sort();
   
-  glossaryContent.innerHTML = groupKeys.map(key => {
+  // Crypto Cat hide-and-seek banner at top
+  const cryptoCatBanner = state.cryptoCatEnabled ? `
+    <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; padding: 16px; background: linear-gradient(135deg, rgba(255, 0, 110, 0.1), rgba(168, 85, 247, 0.1)); border-radius: 12px; border: 2px solid rgba(255, 0, 110, 0.3);">
+      <img src="assets/crypto-cat-emblem.png" alt="Crypto Cat Emblem" style="width: 120px; height: auto; margin-bottom: 12px;">
+      <div style="text-align: center;">
+        <div style="font-size: 0.75rem; color: var(--neon-green); font-weight: 700; margin-bottom: 3px;">🐱 CRYPTO CAT</div>
+        <div style="font-size: 0.85rem; color: var(--text-primary); font-style: italic; line-height: 1.3;">"This glossary is the ONLY place you're guaranteed to find me. Think you can spot me lurking throughout the rest of the app? Good luck with that."</div>
+      </div>
+    </div>
+  ` : '';
+  
+  glossaryContent.innerHTML = cryptoCatBanner + groupKeys.map(key => {
     const isCategory = currentCategory === 'all' && !searchTerm && currentLetter === 'ALL';
     const groupTitle = isCategory ? (CATEGORY_NAMES[key] || key) : key;
     
@@ -4615,34 +4640,61 @@ initializeThemeSwitcher();
 
 const CRYPTO_CAT_QUOTES = {
   // Glossary terms - sarcastic explanations with varied moods
-  'ATH': { quote: "All-Time High... yeah, that moment before everyone panic sold. Classic.", mood: "eye-roll", pose: "*flipping middle finger up*" },
-  'DYOR': { quote: "Do Your Own Research. Translation: Don't blame me when you FOMO into a rugpull.", mood: "grumpy", pose: "*arms crossed, scowling*" },
-  'FOMO': { quote: "Fear Of Missing Out. The crypto investor's eternal curse. You're welcome.", mood: "sarcastic", pose: "*shrugging with attitude*" },
-  'FUD': { quote: "Fear, Uncertainty, and Doubt. Usually spread by people who sold too early. Meow.", mood: "annoyed", pose: "*tail swishing irritably*" },
-  'HODL': { quote: "Hold On for Dear Life. Or just a drunk typo that became legendary. Either works.", mood: "amused", pose: "*smirking slightly*" },
-  'Whale': { quote: "Someone with enough crypto to manipulate markets while you watch in horror.", mood: "knowing", pose: "*tapping temple with paw*" },
-  'Bag Holder': { quote: "You, after buying at ATH. It builds character though!", mood: "sympathetic-ish", pose: "*patting your shoulder half-heartedly*" },
-  'Diamond Hands': { quote: "Refusing to sell even when it's clearly a good idea. Stubborn or genius? Time will tell.", mood: "skeptical", pose: "*raising one eyebrow*" },
-  'Paper Hands': { quote: "Selling at the first sign of trouble. Smart risk management or cowardice? I'll let you decide.", mood: "judging", pose: "*staring intensely*" },
-  'Rug Pull': { quote: "When developers take the money and run. Always fun to watch... from a distance.", mood: "bitter", pose: "*showing frown face t-shirt*" },
-  'Pump and Dump': { quote: "Classic market manipulation. Don't be the dump.", mood: "warning", pose: "*pointing finger accusingly*" },
-  'To the Moon': { quote: "Unrealistic price expectations. But hey, dream big!", mood: "mocking", pose: "*looking upward dramatically*" },
-  'Gas Fees': { quote: "The price you pay for using Ethereum. Sometimes more than your actual transaction. Yikes.", mood: "frustrated", pose: "*face-palming with both paws*" },
-  'Airdrop': { quote: "Free tokens! Usually worth nothing, but free is free.", mood: "unimpressed", pose: "*yawning*" },
-  'Staking': { quote: "Locking up your crypto to earn rewards. Hope the project doesn't rug!", mood: "concerned", pose: "*ears pinned back nervously*" },
-  'DEX': { quote: "Decentralized Exchange. No KYC, no problem... until you need customer support.", mood: "wise", pose: "*stroking whiskers thoughtfully*" },
-  'Smart Contract': { quote: "Code that executes automatically. Smart until it's not.", mood: "experienced", pose: "*adjusting glasses knowingly*" },
-  'Tokenomics': { quote: "How a token's economy works. Usually designed to make early investors rich.", mood: "cynical", pose: "*counting money*" },
-  'Utility': { quote: "What a token supposedly does. Often just marketing fluff.", mood: "dismissive", pose: "*waving paw dismissively*" },
-  'Whitepaper': { quote: "The project's manifesto. 90% buzzwords, 10% actual info.", mood: "bored", pose: "*pretending to fall asleep*" },
+  'ATH': { quote: "All-Time High... yeah, that moment before everyone panic sold. Classic.", mood: "eye-roll", pose: "*flipping middle finger up*", hideSeek: "Now try finding me in the market movers. I dare you." },
+  'DYOR': { quote: "Do Your Own Research. Translation: Don't blame me when you FOMO into a rugpull.", mood: "grumpy", pose: "*arms crossed, scowling*", hideSeek: "Good luck spotting me next time. I'm sneakier than a rug pull." },
+  'FOMO': { quote: "Fear Of Missing Out. The crypto investor's eternal curse. You're welcome.", mood: "sarcastic", pose: "*shrugging with attitude*", hideSeek: "Can you find where I'm hiding next? Probably not." },
+  'FUD': { quote: "Fear, Uncertainty, and Doubt. Usually spread by people who sold too early. Meow.", mood: "annoyed", pose: "*tail swishing irritably*", hideSeek: "I'll be somewhere unexpected. See if you can find me." },
+  'HODL': { quote: "Hold On for Dear Life. Or just a drunk typo that became legendary. Either works.", mood: "amused", pose: "*smirking slightly*", hideSeek: "Try to catch me in my next hiding spot. Good luck." },
+  'Whale': { quote: "Someone with enough crypto to manipulate markets while you watch in horror.", mood: "knowing", pose: "*tapping temple with paw*", hideSeek: "I'm playing hide and seek now. Your move." },
+  'Bag Holder': { quote: "You, after buying at ATH. It builds character though!", mood: "sympathetic-ish", pose: "*patting your shoulder half-heartedly*", hideSeek: "Wonder where I'll pop up next... Keep exploring." },
+  'Diamond Hands': { quote: "Refusing to sell even when it's clearly a good idea. Stubborn or genius? Time will tell.", mood: "skeptical", pose: "*raising one eyebrow*", hideSeek: "Find my next hiding spot if you can. I'm elusive." },
+  'Paper Hands': { quote: "Selling at the first sign of trouble. Smart risk management or cowardice? I'll let you decide.", mood: "judging", pose: "*staring intensely*", hideSeek: "I'm somewhere in this app... Can you find me?" },
+  'Rug Pull': { quote: "When developers take the money and run. Always fun to watch... from a distance.", mood: "bitter", pose: "*showing frown face t-shirt*", hideSeek: "I vanish like a rug pull. Try finding me again." },
+  'Pump and Dump': { quote: "Classic market manipulation. Don't be the dump.", mood: "warning", pose: "*pointing finger accusingly*", hideSeek: "I'll be lurking somewhere. Keep your eyes open." },
+  'To the Moon': { quote: "Unrealistic price expectations. But hey, dream big!", mood: "mocking", pose: "*looking upward dramatically*", hideSeek: "To the next hiding spot! Can you find it?" },
+  'Gas Fees': { quote: "The price you pay for using Ethereum. Sometimes more than your actual transaction. Yikes.", mood: "frustrated", pose: "*face-palming with both paws*", hideSeek: "I'm hiding from these fees somewhere in the app..." },
+  'Airdrop': { quote: "Free tokens! Usually worth nothing, but free is free.", mood: "unimpressed", pose: "*yawning*", hideSeek: "Free hint: I might be in your watchlist next. Maybe." },
+  'Staking': { quote: "Locking up your crypto to earn rewards. Hope the project doesn't rug!", mood: "concerned", pose: "*ears pinned back nervously*", hideSeek: "I'm staking my claim somewhere else now. Find me." },
+  'DEX': { quote: "Decentralized Exchange. No KYC, no problem... until you need customer support.", mood: "wise", pose: "*stroking whiskers thoughtfully*", hideSeek: "Decentralized and hidden. That's me. Good luck." },
+  'Smart Contract': { quote: "Code that executes automatically. Smart until it's not.", mood: "experienced", pose: "*adjusting glasses knowingly*", hideSeek: "My contract says I get to hide. Your job: find me." },
+  'Tokenomics': { quote: "How a token's economy works. Usually designed to make early investors rich.", mood: "cynical", pose: "*counting money*", hideSeek: "The economics of hide and seek: you lose, I win." },
+  'Utility': { quote: "What a token supposedly does. Often just marketing fluff.", mood: "dismissive", pose: "*waving paw dismissively*", hideSeek: "My utility? Being impossible to find. Try anyway." },
+  'Whitepaper': { quote: "The project's manifesto. 90% buzzwords, 10% actual info.", mood: "bored", pose: "*pretending to fall asleep*", hideSeek: "TLDR: I'm hiding. Go find me." },
+  
+  // Signal analysis commentary (30% random chance)
+  'strong_buy': { quote: "Strong buy signal? Sure, until it dumps tomorrow. But hey, this one MIGHT work.", mood: "cautiously-optimistic", pose: "*shrugging with mild hope*", hideSeek: "Bought the signal? Now find where I'm hiding next." },
+  'buy': { quote: "Buy signal detected. Don't say I didn't warn you when it goes sideways.", mood: "resigned", pose: "*sighing heavily*", hideSeek: "Enjoy that buy. I'll be hiding somewhere laughing." },
+  'hold': { quote: "HOLD means 'I have no idea what's happening either.' Classic.", mood: "confused", pose: "*scratching head*", hideSeek: "While you HOLD, I'm hiding. Can you find me?" },
+  'sell': { quote: "Sell signal! Finally, some wisdom in this market. Take profits while you can.", mood: "wise", pose: "*nodding approvingly*", hideSeek: "Sold? Smart. Now hunt for my next location." },
+  'strong_sell': { quote: "STRONG SELL. Get out. Now. Before this becomes a tax write-off.", mood: "urgent", pose: "*waving arms frantically*", hideSeek: "Flee the position, then flee to find me. Good luck." },
+  
+  // Holdings commentary
+  'empty_watchlist': { quote: "No holdings? Smart move. Can't lose money if you don't invest. Big brain energy.", mood: "approving", pose: "*tapping temple wisely*", hideSeek: "Empty watchlist, empty hiding spots... or ARE they?" },
+  'added_holding': { quote: "Added to watchlist! Now you can watch it dump in real-time. Progress!", mood: "sarcastic-cheerful", pose: "*fake enthusiasm*", hideSeek: "Congrats on the bag. Now go find where I'm hiding." },
+  
+  // Wallet tracking
+  'wallet_connected': { quote: "Wallet connected! Time to see your losses in HD. Exciting times.", mood: "entertained", pose: "*munching popcorn*", hideSeek: "Nice wallet. Too bad you can't find where I am." },
+  'low_balance': { quote: "That balance though... Have you considered a savings account instead?", mood: "concerned", pose: "*offering financial advice pamphlet*", hideSeek: "Low balance, low chances of finding me. Prove me wrong." },
+  
+  // Market movers (appears on volatile tokens 15% chance)
+  'extreme_pump': { quote: "15%+ pump in 24h? Yeah, that's totally sustainable. Definitely not a trap.", mood: "dripping-sarcasm", pose: "*rolling eyes so hard they're stuck*", hideSeek: "Pumps don't last. My hiding spots do. Find me." },
+  'extreme_dump': { quote: "Ouch. That's gonna leave a mark. Want me to call someone?", mood: "sympathetic", pose: "*offering ice pack*", hideSeek: "Brutal dump. Now take your mind off it: find me!" },
+  
+  // News commentary (5% chance)
+  'bullish_news': { quote: "Bullish news? Let me guess: 'Major partnership' with a company nobody's heard of?", mood: "skeptical", pose: "*air quotes*", hideSeek: "News fades. My hiding game is eternal. Seek me out." },
+  'bearish_news': { quote: "Bearish news means discount prices! Or just the beginning of the end. Who knows?", mood: "philosophical", pose: "*contemplating universe*", hideSeek: "Bad news travels fast. I travel faster. Find me if you can." },
+  
+  // Easter eggs
+  'launch_countdown': { quote: "December 25th launch? Bold move launching on Christmas. I respect the audacity.", mood: "impressed", pose: "*slow nod of respect*", hideSeek: "Found me at the launch! Now find me everywhere else..." },
+  'scanner_results': { quote: "Scanner found signals? Cute. I found the best hiding spots. Beat that.", mood: "competitive", pose: "*flexing*", hideSeek: "You scan the market. I challenge you to scan the app for me." },
   
   // Feature announcements with personality
-  'launching_soon': { quote: "Oh look, another presale! This one's definitely not going to rug... probably.", mood: "skeptical", pose: "*rolling eyes hard*" },
-  'whitelist': { quote: "Congrats! You're on the whitelist. Now you get to lose money first!", mood: "sarcastic-congratulations", pose: "*slow clapping*" },
-  'premium': { quote: "Premium features unlocked! Time to make slightly more informed bad decisions.", mood: "helpful-ish", pose: "*thumbs up with attitude*" },
-  'wallet_tracking': { quote: "Track your portfolio losses in real-time. Technological progress!", mood: "proud", pose: "*chest puffed out proudly*" },
-  'market_overview': { quote: "Fresh data for your doom scrolling pleasure. You're welcome.", mood: "serving", pose: "*presenting data like a waiter*" },
-  'price_alerts': { quote: "I'll notify you when things go south. Which is basically always.", mood: "resigned", pose: "*shrugging with phone*" },
+  'launching_soon': { quote: "Oh look, another presale! This one's definitely not going to rug... probably.", mood: "skeptical", pose: "*rolling eyes hard*", hideSeek: "Presale hype! While you're distracted, I'm hiding. Find me." },
+  'whitelist': { quote: "Congrats! You're on the whitelist. Now you get to lose money first!", mood: "sarcastic-congratulations", pose: "*slow clapping*", hideSeek: "Whitelisted? Great. Now see if you're smart enough to find me." },
+  'premium': { quote: "Premium features unlocked! Time to make slightly more informed bad decisions.", mood: "helpful-ish", pose: "*thumbs up with attitude*", hideSeek: "Premium unlocked. Now unlock my location. I'm hiding." },
+  'wallet_tracking': { quote: "Track your portfolio losses in real-time. Technological progress!", mood: "proud", pose: "*chest puffed out proudly*", hideSeek: "Track your bags, then track me down. Game on." },
+  'market_overview': { quote: "Fresh data for your doom scrolling pleasure. You're welcome.", mood: "serving", pose: "*presenting data like a waiter*", hideSeek: "Market data served. Now serve yourself by finding me." },
+  'price_alerts': { quote: "I'll notify you when things go south. Which is basically always.", mood: "resigned", pose: "*shrugging with phone*", hideSeek: "Alerts set. Now set your sights on finding my hiding spot." },
 };
 
 function initializeCryptoCat() {
@@ -4680,6 +4732,27 @@ function getCryptoCatQuote(term) {
   if (!state.cryptoCatEnabled) return null;
   const catData = CRYPTO_CAT_QUOTES[term];
   return catData || null;
+}
+
+// Helper function to create a compact Crypto Cat appearance
+function createCryptoCatAppearance(quoteKey, size = 'small') {
+  if (!state.cryptoCatEnabled) return '';
+  
+  const catData = getCryptoCatQuote(quoteKey);
+  if (!catData) return '';
+  
+  const imgSize = size === 'small' ? '30px' : size === 'medium' ? '50px' : '70px';
+  const fontSize = size === 'small' ? '0.75rem' : size === 'medium' ? '0.85rem' : '0.95rem';
+  
+  return `
+    <div style="display: flex; gap: 8px; align-items: center; margin: 10px 0; padding: 8px 12px; background: linear-gradient(135deg, rgba(255, 0, 110, 0.08), rgba(168, 85, 247, 0.08)); border-radius: 8px; border: 1px solid rgba(255, 0, 110, 0.25);">
+      <img src="assets/crypto-cat.png" alt="Crypto Cat" style="width: ${imgSize}; height: ${imgSize}; border-radius: 50%; border: 2px solid var(--neon-pink); flex-shrink: 0;">
+      <div style="flex: 1;">
+        <div style="font-size: ${fontSize}; color: var(--text-primary); font-style: italic; line-height: 1.3; margin-bottom: 3px;">"${catData.quote}"</div>
+        ${catData.hideSeek ? `<div style="font-size: calc(${fontSize} - 0.1rem); color: var(--text-secondary); opacity: 0.7; font-style: italic;">💭 ${catData.hideSeek}</div>` : ''}
+      </div>
+    </div>
+  `;
 }
 
 // Function to create Crypto Cat tooltip
