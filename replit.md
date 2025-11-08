@@ -4,6 +4,16 @@
 DarkWave-V2 is an advanced technical analysis bot built with the Mastra framework, providing comprehensive cryptocurrency, stock market, and NFT analysis. It integrates with Telegram to deliver real-time buy/sell signals based on technical indicators like RSI, MACD, moving averages, and Bollinger Bands. The system uses a workflow-based architecture, processes user messages via an AI agent, and stores conversation history and user watchlists in PostgreSQL for personalized interactions. Key features include DEX pair and meme coin support with rug-risk detection, NFT collection analysis, a live trending carousel, database-backed session management, and multi-chain wallet tracking. It also incorporates a comprehensive subscription notification system with an admin dashboard, a professional token submission system with robust validation, and cryptocurrency payment integration via Coinbase Commerce. A unique "Crypto Cat" mascot provides interactive commentary, and a "Launching Soon" section with a countdown and presale platform design for the DarkWave token (DWLP) is included. The project aims to launch the DarkWave token on December 25, 2025, with a whitepaper outlining its mission, tokenomics, utility, and roadmap.
 
 ## Recent Changes (November 2025)
+- **CoinMarketCap-Style Market Overview Transformation** (November 8, 2025):
+  - Complete redesign of market overview with professional CMC-inspired layout
+  - 9-column data table: Rank, Name/Icon, Price, 1h%, 24h%, 7d%, Volume, Market Cap, 7d Sparkline Chart
+  - 7 distinct category tabs: Top (market cap), Trending (volume), Gainers (24h+), Losers (24h-), New (gecko trending), DeFi (curated), NFTs
+  - Live 7-day sparkline charts with color-coded green/red performance indicators
+  - CMC stats bar with auto-refreshing Market Cap, Fear & Greed Index, Altcoin Season Index, Average RSI
+  - Each category fetches unique CoinGecko datasets with 1h/24h/7d percentage changes
+  - Crypto Cat toggle button upgraded with visual feedback (opacity changes, title updates, localStorage persistence)
+  - Removed legacy split-view layout for unified professional table experience
+  - Real-time coin logo integration for visual recognition
 - **Crypto.com-Style Design Overhaul**: Complete UI redesign with premium multi-dimensional aesthetic
   - Solid dark navy backgrounds (#0A0E27, #1A1F3A) replacing gradients for clean professional look
   - Three-column responsive grid system for sophisticated staggered layouts
