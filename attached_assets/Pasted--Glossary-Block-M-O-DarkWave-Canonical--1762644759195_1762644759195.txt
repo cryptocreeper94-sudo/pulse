@@ -1,0 +1,97 @@
+// ─────────────────────────────────────────────
+// 🔤 Glossary Block M–O | DarkWave Canonical
+// Includes: category, smartass, plain
+// ─────────────────────────────────────────────
+
+export const glossary_MO = {
+  "MACD": {
+    category: "Finance",
+    smartass: "Two lines playing tag. When they cross, someone’s portfolio gets slapped.",
+    plain: "A trend-following momentum indicator showing the relationship between two moving averages."
+  },
+  "Mainnet": {
+    category: "Crypto",
+    smartass: "The real deal. No more test tokens. Mistakes now cost actual money.",
+    plain: "The live blockchain network where real transactions occur."
+  },
+  "Margin": {
+    category: "Finance",
+    smartass: "Borrowed money. Can amplify gains or destroy souls.",
+    plain: "Money borrowed to invest, increasing both potential returns and risks."
+  },
+  "Market Cap": {
+    category: "Finance",
+    smartass: "Total value of a coin. Bigger cap, bigger ego.",
+    plain: "The total value of a cryptocurrency or stock, calculated by price × supply."
+  },
+  "Meme Coin": {
+    category: "Crypto",
+    smartass: "Born from jokes. Sometimes becomes serious. Usually doesn’t.",
+    plain: "A cryptocurrency created as a joke or meme, often with viral appeal."
+  },
+  "Metadata": {
+    category: "NFT",
+    smartass: "The traits behind your overpriced JPEG. Sometimes broken. Always judged.",
+    plain: "Descriptive data attached to an NFT, including traits, rarity, and origin."
+  },
+  "MiCA": {
+    category: "Regulation",
+    smartass: "EU’s attempt to tame crypto chaos. Spoiler: it’s still chaotic.",
+    plain: "Markets in Crypto-Assets regulation—EU framework for crypto oversight."
+  },
+  "Mint": {
+    category: "Crypto/NFT",
+    smartass: "Create new tokens. Usually followed by hype and gas fees.",
+    plain: "The process of generating new tokens or NFTs on a blockchain."
+  },
+  "Missy": {
+    category: "DarkWave",
+    smartass: "The yellow frowny face. If she’s on your shirt, you’re not smiling.",
+    plain: "The official sad-face icon used in DarkWave UI to signal disappointment or loss."
+  },
+  "Moon": {
+    category: "Crypto Slang",
+    smartass: "Price goes way up. Everyone cheers. Then it crashes.",
+    plain: "A slang term for a dramatic increase in asset price."
+  },
+  "Multisig": {
+    category: "Crypto",
+    smartass: "Wallet with trust issues. Needs multiple approvals to do anything.",
+    plain: "A wallet requiring multiple signatures to authorize transactions."
+  },
+  "NFT": {
+    category: "Crypto",
+    smartass: "Non-Fungible Token. A fancy way to own a JPEG. Sometimes art, sometimes regret.",
+    plain: "Unique digital assets stored on a blockchain, often used for art or collectibles."
+  },
+  "Node": {
+    category: "Crypto",
+    smartass: "The blockchain’s gossip hub. Keeps everyone honest.",
+    plain: "A computer that participates in a blockchain network by validating transactions."
+  },
+  "Onboarding Blurb": {
+    category: "DarkWave",
+    smartass: "Your coin’s emotional handshake. If it doesn’t resonate, it gets ghosted.",
+    plain: "A short, emotionally resonant description used to introduce a token or asset."
+  },
+  "Onchain": {
+    category: "Crypto",
+    smartass: "Data written in stone. Transparent and eternal. Like your bad trades.",
+    plain: "Information stored directly on the blockchain."
+  },
+  "OpenSea": {
+    category: "NFT",
+    smartass: "The eBay of NFTs. Sometimes treasure, mostly trash.",
+    plain: "A popular marketplace for buying and selling NFTs."
+  },
+  "Options": {
+    category: "Finance",
+    smartass: "Financial bets with expiration dates. Emotionally volatile.",
+    plain: "Contracts giving the right to buy or sell assets at a set price before a deadline."
+  },
+  "Order Book": {
+    category: "Finance",
+    smartass: "The market’s dating app. Buyers and sellers swipe until matched.",
+    plain: "A list of buy and sell orders for an asset organized by price."
+  }
+};
