@@ -1,0 +1,122 @@
+// ─────────────────────────────────────────────
+// 🔤 Glossary Block A–C | DarkWave Canonical
+// Includes: category, smartass, plain
+// ─────────────────────────────────────────────
+
+export const glossary_AC = {
+  "Address": {
+    category: "Crypto",
+    smartass: "Your blockchain mailbox. If you lose it, you’re emotionally homeless.",
+    plain: "A unique string used to send or receive crypto assets, like a bank account number."
+  },
+  "Airdrop": {
+    category: "Crypto",
+    smartass: "Free tokens raining from the sky. Usually followed by disappointment.",
+    plain: "Distribution of free tokens to promote a project or reward users."
+  },
+  "Algorithm": {
+    category: "Tech",
+    smartass: "The robot’s rulebook. If it’s broken, so is your bot.",
+    plain: "A set of instructions used to solve problems or perform tasks."
+  },
+  "Altcoin": {
+    category: "Crypto",
+    smartass: "Anything that’s not Bitcoin. Some are brilliant. Most are memes.",
+    plain: "Any cryptocurrency other than Bitcoin."
+  },
+  "AML": {
+    category: "Regulation",
+    smartass: "Anti-Money Laundering. Emotional surveillance with paperwork.",
+    plain: "Laws and procedures to prevent illegal financial activities."
+  },
+  "Apeing": {
+    category: "Crypto Slang",
+    smartass: "Buying into a project without thinking. Usually ends in regret.",
+    plain: "Impulsive investment in a new crypto project."
+  },
+  "APR": {
+    category: "Finance",
+    smartass: "Annual Pain Rate. What you earn before compounding. Still not enough.",
+    plain: "Annual interest rate earned on investments, excluding compounding."
+  },
+  "APY": {
+    category: "Finance",
+    smartass: "Annual Profit You’ll never see. Includes compounding. Still disappointing.",
+    plain: "Annual return on investment including compounding interest."
+  },
+  "ATH": {
+    category: "Crypto",
+    smartass: "All-Time High. The moment you brag and forget to sell.",
+    plain: "The highest price ever reached by an asset."
+  },
+  "ATL": {
+    category: "Crypto",
+    smartass: "All-Time Low. The moment you disappear from Discord.",
+    plain: "The lowest price ever reached by an asset."
+  },
+  "Bear Market": {
+    category: "Finance",
+    smartass: "Prices falling. Everyone’s grumpy. Crypto Cat thrives here.",
+    plain: "A market condition where asset prices decline over time."
+  },
+  "Block": {
+    category: "Crypto",
+    smartass: "A chunk of blockchain history. Like a diary entry, but with math.",
+    plain: "A record of transactions stored on the blockchain."
+  },
+  "Block Height": {
+    category: "Crypto",
+    smartass: "How tall the blockchain stack is. Measured in emotional layers.",
+    plain: "The number of blocks in a blockchain since its inception."
+  },
+  "Bluechip": {
+    category: "Crypto",
+    smartass: "Crypto royalty. BTC, ETH, SOL. Emotionally stable-ish.",
+    plain: "Established, high-value cryptocurrencies with strong reputations."
+  },
+  "Broker": {
+    category: "Finance",
+    smartass: "The middleman. Sometimes helpful, sometimes expensive.",
+    plain: "An entity that facilitates buying and selling of financial assets."
+  },
+  "Bull Market": {
+    category: "Finance",
+    smartass: "Prices rising. Everyone’s a genius. Until they’re not.",
+    plain: "A market condition where asset prices increase over time."
+  },
+  "Burn": {
+    category: "Crypto",
+    smartass: "Token destruction ritual. Emotional cleansing for supply control.",
+    plain: "The process of permanently removing tokens from circulation."
+  },
+  "CBDC": {
+    category: "Regulation",
+    smartass: "Government crypto. Trust level: TBD.",
+    plain: "Central Bank Digital Currency issued by a government."
+  },
+  "CEX": {
+    category: "Crypto",
+    smartass: "Centralized Exchange. Trade with middlemen. Sometimes they vanish.",
+    plain: "A crypto exchange operated by a company that manages user funds."
+  },
+  "Cold Wallet": {
+    category: "Crypto",
+    smartass: "Offline storage. Emotionally safe, physically risky.",
+    plain: "A wallet that stores crypto assets offline for security."
+  },
+  "Coin": {
+    category: "Crypto",
+    smartass: "Digital money with dreams. Some moon. Some vanish.",
+    plain: "A cryptocurrency that operates on its own blockchain."
+  },
+  "Collection": {
+    category: "NFT",
+    smartass: "Group of NFTs. Some are art. Some are chaos.",
+    plain: "A set of NFTs released under a common theme or project."
+  },
+  "Cross-Chain": {
+    category: "Crypto",
+    smartass: "Blockchain teleportation. Sometimes your assets get lost in transit.",
+    plain: "Technology that allows assets to move between different blockchains."
+  }
+};

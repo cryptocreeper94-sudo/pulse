@@ -1,0 +1,122 @@
+// ─────────────────────────────────────────────
+// 🔤 Glossary Block D–F | DarkWave Canonical
+// Includes: category, smartass, plain
+// ─────────────────────────────────────────────
+
+export const glossary_DF = {
+  "DAO": {
+    category: "Crypto",
+    smartass: "Decentralized Autonomous Organization. Democracy with code. Sometimes chaos.",
+    plain: "A blockchain-based organization governed by smart contracts and community voting."
+  },
+  "Dapp": {
+    category: "Crypto",
+    smartass: "Decentralized app. Runs on blockchain. Usually buggy but idealistic.",
+    plain: "An application built on a blockchain that operates without centralized control."
+  },
+  "DeFi": {
+    category: "Crypto",
+    smartass: "Decentralized Finance. Banking without banks. Also without mercy.",
+    plain: "Financial services built on blockchain that operate without traditional intermediaries."
+  },
+  "Delist": {
+    category: "NFT",
+    smartass: "Pull your NFT off the market. Usually after regret or panic.",
+    plain: "Removing an NFT or asset from public sale or exchange."
+  },
+  "DEX": {
+    category: "Crypto",
+    smartass: "Decentralized Exchange. No middlemen. No refunds.",
+    plain: "A platform for peer-to-peer crypto trading without centralized intermediaries."
+  },
+  "Dividend": {
+    category: "Stocks",
+    smartass: "Cash reward for holding. Like emotional interest.",
+    plain: "A payment made by a company to its shareholders from profits."
+  },
+  "DoS Attack": {
+    category: "Security",
+    smartass: "Denial of Service. When your app gets bullied offline.",
+    plain: "An attack that overwhelms a system to make it unavailable to users."
+  },
+  "Drawdown": {
+    category: "Finance",
+    smartass: "The part where your portfolio cries. Measured in regret per second.",
+    plain: "A decline in value from a peak to a trough in an investment."
+  },
+  "Dusting": {
+    category: "Crypto",
+    smartass: "Tiny token drops used to track or scam. Sneaky and rude.",
+    plain: "Sending small amounts of crypto to wallets to deanonymize users."
+  },
+  "DYOR": {
+    category: "Crypto Slang",
+    smartass: "Do Your Own Research. Translation: Don’t blame me when it dumps.",
+    plain: "A reminder to investigate a project before investing."
+  },
+  "ERC-20": {
+    category: "Crypto",
+    smartass: "Ethereum’s token standard. Like a dress code for coins.",
+    plain: "A technical standard for fungible tokens on Ethereum."
+  },
+  "ETF": {
+    category: "Finance",
+    smartass: "Exchange-Traded Fund. A basket of assets. Emotionally diversified.",
+    plain: "A fund that trades on exchanges and holds a mix of assets."
+  },
+  "ETH": {
+    category: "Crypto",
+    smartass: "Ethereum. Smart contracts, gas fees, and existential dread.",
+    plain: "A blockchain platform supporting smart contracts and decentralized apps."
+  },
+  "Exit Liquidity": {
+    category: "Crypto Slang",
+    smartass: "You bought so someone else could sell. Congrats.",
+    plain: "A situation where late investors enable early ones to cash out."
+  },
+  "FATF": {
+    category: "Regulation",
+    smartass: "Global anti-money laundering squad. Wears suits, hates fun.",
+    plain: "An international body that sets standards for financial crime prevention."
+  },
+  "Fiat": {
+    category: "Finance",
+    smartass: "Government money. Real-world emotional baggage.",
+    plain: "Traditional currency issued by governments, like USD or EUR."
+  },
+  "FinCEN": {
+    category: "Regulation",
+    smartass: "Financial Crimes Enforcement Network. Sounds scary. Is scary.",
+    plain: "A U.S. agency that monitors financial transactions to prevent crime."
+  },
+  "Flippening": {
+    category: "Crypto",
+    smartass: "When one coin overtakes another. Usually ETH vs BTC. Drama guaranteed.",
+    plain: "A hypothetical event where a cryptocurrency surpasses another in market cap."
+  },
+  "Floor Price": {
+    category: "NFT",
+    smartass: "Cheapest NFT in the collection. The emotional basement.",
+    plain: "Lowest listed price for an NFT in a collection."
+  },
+  "FOMO": {
+    category: "Crypto Slang",
+    smartass: "Fear of Missing Out. Emotional bait for bad trades.",
+    plain: "Anxiety about missing a profitable opportunity."
+  },
+  "Fork": {
+    category: "Crypto",
+    smartass: "Blockchain split. Like a messy divorce with code.",
+    plain: "A change in blockchain protocol that creates a new version."
+  },
+  "FUD": {
+    category: "Crypto Slang",
+    smartass: "Fear, Uncertainty, Doubt. Usually spread by your uncle who hates crypto.",
+    plain: "Negative sentiment that can influence market behavior."
+  },
+  "Futures": {
+    category: "Finance",
+    smartass: "Contracts for future prices. Emotionally speculative.",
+    plain: "Agreements to buy or sell assets at a future date and price."
+  }
+};
