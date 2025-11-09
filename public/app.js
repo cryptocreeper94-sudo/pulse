@@ -78,6 +78,7 @@ const state = {
   trendingCache: {}, // Cache for trending data
   trendingCacheTime: {}, // Cache timestamps
   cryptoCatEnabled: localStorage.getItem('darkwave_crypto_cat') !== 'false', // Crypto Cat mascot toggle
+  catMode: localStorage.getItem('darkwave_cat_mode') || 'smartass', // 'smartass' or 'plain'
   subscription: {
     plan: 'free',
     status: 'inactive',
@@ -4206,25 +4207,27 @@ function toggleCryptoCatImage() {
   const catImage = document.getElementById('catToggleImage');
   
   if (newState) {
-    // ON - Smart-ass mode
+    // ON - Show current mode
     statusIndicator.classList.add('active');
     statusIndicator.textContent = 'ON';
-    statusText.textContent = 'Smart-ass Mode';
     catImage.style.opacity = '1';
     catImage.style.filter = 'none';
-    showNotification('😼 Crypto Cat smart-ass mode activated!', 'success');
+    showNotification(`😼 Crypto Cat activated in ${state.catMode} mode!`, 'success');
     setTimeout(startRandomCatAppearances, 5000);
   } else {
-    // OFF - Plain mode
+    // OFF - Cat disabled
     statusIndicator.classList.remove('active');
     statusIndicator.textContent = 'OFF';
-    statusText.textContent = 'Plain Mode';
+    statusText.textContent = 'Disabled';
     catImage.style.opacity = '0.4';
     catImage.style.filter = 'grayscale(100%)';
     const existingPopup = document.querySelector('.crypto-cat-popup');
     if (existingPopup) existingPopup.remove();
-    showNotification('😿 Crypto Cat taking a nap - plain mode', 'info');
+    showNotification('😿 Crypto Cat disabled', 'info');
   }
+  
+  // Update mode UI (show/hide mode switcher button)
+  updateCatModeUI();
   
   if (tg) tg.HapticFeedback?.impactOccurred('medium');
 }
@@ -4240,16 +4243,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isCatEnabled) {
       statusIndicator.classList.add('active');
       statusIndicator.textContent = 'ON';
-      statusText.textContent = 'Smart-ass Mode';
+      statusText.textContent = state.catMode === 'smartass' ? 'Smart-ass Mode' : 'Plain Mode';
       catImage.style.opacity = '1';
       catImage.style.filter = 'none';
     } else {
       statusIndicator.classList.remove('active');
       statusIndicator.textContent = 'OFF';
-      statusText.textContent = 'Plain Mode';
+      statusText.textContent = 'Disabled';
       catImage.style.opacity = '0.4';
       catImage.style.filter = 'grayscale(100%)';
     }
+    // Update mode switcher button visibility
+    updateCatModeUI();
   }
 });
 
@@ -6484,8 +6489,11 @@ if (state.cryptoCatEnabled) {
 // Function to get Crypto Cat's commentary
 function getCryptoCatQuote(term) {
   if (!state.cryptoCatEnabled) return null;
-  const catData = CRYPTO_CAT_QUOTES[term];
-  return catData || null;
+  const normalizedData = NORMALIZED_CAT_QUOTES[term];
+  if (!normalizedData) return null;
+  
+  // Return the quote based on current mode (smartass or plain)
+  return normalizedData[state.catMode] || normalizedData.smartass;
 }
 
 // Helper function to create a compact Crypto Cat appearance
@@ -7510,15 +7518,25 @@ function openDetailedAnalysis() {
   
   contentEl.innerHTML = analysisHTML;
   
-  // Crypto Cat sarcastic comment based on recommendation
-  const catComments = {
+  // Crypto Cat comment based on recommendation and mode
+  const catCommentsSmartass = {
     'BUY': `"Alright, ${data.ticker} is looking decent. But don't come crying to me when it dumps tomorrow. I told you what to do." - Crypto Cat`,
     'STRONG BUY': `"Yeah, ${data.ticker} looks good. Go ahead and FOMO in. Just remember: I was right, and you'll probably still mess it up somehow." - Crypto Cat`,
     'SELL': `"Time to dump ${data.ticker} before you lose your shirt. But hey, you probably won't listen anyway. You never do." - Crypto Cat`,
     'STRONG SELL': `"Get out of ${data.ticker} NOW. Seriously. Even I wouldn't touch this garbage with a ten-foot pole. But you'll probably hold anyway." - Crypto Cat`,
     'HOLD': `"Just HODL ${data.ticker} and stop checking the charts every 5 minutes. You're stressing me out more than yourself." - Crypto Cat`
   };
-  catCommentEl.textContent = catComments[signal] || `"Not sure what to tell you about ${data.ticker}. Maybe flip a coin?" - Crypto Cat`;
+  
+  const catCommentsPlain = {
+    'BUY': `"${data.ticker} shows bullish indicators. Technical analysis supports a buy position at current levels." - Crypto Cat`,
+    'STRONG BUY': `"${data.ticker} demonstrates strong buy signals across multiple indicators. High confidence recommendation." - Crypto Cat`,
+    'SELL': `"${data.ticker} technical indicators suggest taking profits. Consider reducing exposure at current levels." - Crypto Cat`,
+    'STRONG SELL': `"${data.ticker} shows multiple sell signals. Strong recommendation to exit position." - Crypto Cat`,
+    'HOLD': `"${data.ticker} signals suggest maintaining current position. Monitor for trend changes." - Crypto Cat`
+  };
+  
+  const catComments = state.catMode === 'smartass' ? catCommentsSmartass : catCommentsPlain;
+  catCommentEl.textContent = catComments[signal] || `"Analysis complete for ${data.ticker}." - Crypto Cat`;
   
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
@@ -7667,3 +7685,140 @@ setTimeout(() => {
   loadCategoryData('trending');
   console.log('📊 Category navigation initialized with Trending');
 }, 2000);
+// Plain mode commentary - helpful and professional
+const CRYPTO_CAT_PLAIN_OVERRIDES = {
+  // Glossary terms - helpful explanations
+  'ATH': { quote: "All-Time High - The highest price level this asset has ever reached. A key reference point for investors.", mood: "helpful" },
+  'DYOR': { quote: "Do Your Own Research - Always verify information and understand investments before committing capital.", mood: "helpful" },
+  'FOMO': { quote: "Fear Of Missing Out - An emotional response that can lead to impulsive investment decisions.", mood: "helpful" },
+  'FUD': { quote: "Fear, Uncertainty, and Doubt - Negative information (sometimes intentional) that can affect market sentiment.", mood: "helpful" },
+  'HODL': { quote: "Hold On for Dear Life - A long-term investment strategy despite short-term volatility.", mood: "helpful" },
+  'Whale': { quote: "An investor holding large amounts of cryptocurrency capable of influencing market movements.", mood: "helpful" },
+  'Bag Holder': { quote: "Someone holding an asset that has decreased significantly in value.", mood: "helpful" },
+  'Diamond Hands': { quote: "Investors who maintain positions through volatility, showing strong conviction.", mood: "helpful" },
+  'Paper Hands': { quote: "Investors who sell quickly during downturns, prioritizing capital preservation.", mood: "helpful" },
+  'Rug Pull': { quote: "A scam where developers abandon a project and take investor funds. Always verify project legitimacy.", mood: "warning" },
+  'Pump and Dump': { quote: "Market manipulation where price is artificially inflated then sold off. Stay vigilant.", mood: "warning" },
+  'To the Moon': { quote: "A phrase expressing optimism about significant price increases.", mood: "helpful" },
+  'Gas Fees': { quote: "Transaction costs on blockchain networks, particularly Ethereum. Consider timing and network congestion.", mood: "helpful" },
+  'Airdrop': { quote: "Free token distribution, often for marketing or rewarding early supporters.", mood: "helpful" },
+  'Staking': { quote: "Locking cryptocurrency to support network operations and earn rewards.", mood: "helpful" },
+  'DEX': { quote: "Decentralized Exchange - Trade directly from your wallet without intermediaries.", mood: "helpful" },
+  'Smart Contract': { quote: "Self-executing code on the blockchain that automates transactions.", mood: "helpful" },
+  'Tokenomics': { quote: "The economic model governing a token's supply, distribution, and utility.", mood: "helpful" },
+  'Utility': { quote: "The practical use cases and value proposition of a cryptocurrency.", mood: "helpful" },
+  'Whitepaper': { quote: "Technical document explaining a project's vision, technology, and roadmap.", mood: "helpful" },
+  
+  // Signal analysis
+  'strong_buy': { quote: "Strong buy signal detected. Multiple indicators suggest bullish momentum.", mood: "helpful" },
+  'buy': { quote: "Buy signal identified. Technical indicators show positive potential.", mood: "helpful" },
+  'hold': { quote: "Hold recommended. Current conditions suggest maintaining position.", mood: "helpful" },
+  'sell': { quote: "Sell signal detected. Consider taking profits or reducing exposure.", mood: "helpful" },
+  'strong_sell': { quote: "Strong sell signal. Multiple indicators suggest downside risk.", mood: "warning" },
+  
+  // Holdings
+  'empty_watchlist': { quote: "Your watchlist is empty. Search for tokens to start tracking.", mood: "helpful" },
+  'added_holding': { quote: "Token added to watchlist. You can now track its performance.", mood: "helpful" },
+  
+  // Wallet tracking
+  'wallet_connected': { quote: "Wallet connected successfully. Your holdings are now tracked.", mood: "helpful" },
+  'low_balance': { quote: "Low balance detected. Consider your investment allocation carefully.", mood: "helpful" },
+  
+  // Market movers
+  'extreme_pump': { quote: "Significant 15%+ increase in 24 hours. Monitor for profit-taking opportunities.", mood: "helpful" },
+  'extreme_dump': { quote: "Sharp price decline detected. Review your risk management strategy.", mood: "helpful" },
+  
+  // News commentary
+  'bullish_news': { quote: "Positive news identified. Verify sources and consider market impact.", mood: "helpful" },
+  'bearish_news': { quote: "Negative news detected. Stay informed and assess your positions.", mood: "helpful" },
+  
+  // Features
+  'launch_countdown': { quote: "Token launch scheduled for December 25th. Mark your calendar.", mood: "helpful" },
+  'scanner_results': { quote: "Scanner analysis complete. Review signals for trading opportunities.", mood: "helpful" },
+  'launching_soon': { quote: "New token launching soon. Research thoroughly before participating.", mood: "helpful" },
+  'whitelist': { quote: "Whitelist access granted. You have priority access to this opportunity.", mood: "helpful" },
+  'premium': { quote: "Premium features unlocked. Enjoy advanced analysis and insights.", mood: "helpful" },
+  'wallet_tracking': { quote: "Portfolio tracking enabled. Monitor your holdings in real-time.", mood: "helpful" },
+  'market_overview': { quote: "Market data updated. Stay informed with the latest trends.", mood: "helpful" },
+  'price_alerts': { quote: "Price alerts configured. You'll be notified of significant movements.", mood: "helpful" },
+  
+  // Hide-and-Seek
+  'hideseek_1': { quote: "Quick tip: Set price alerts to avoid constant checking.", mood: "helpful" },
+  'hideseek_2': { quote: "Pro tip: Explore all features to maximize your analysis.", mood: "helpful" },
+  'hideseek_3': { quote: "Reminder: Diversification is key to managing risk.", mood: "helpful" },
+  'hideseek_4': { quote: "Stay disciplined. Emotional trading rarely leads to good outcomes.", mood: "helpful" }
+};
+
+// Normalize quotes to support both modes
+function normalizeQuotes() {
+  const normalized = {};
+  
+  for (const [key, value] of Object.entries(CRYPTO_CAT_QUOTES)) {
+    normalized[key] = {
+      smartass: value,
+      plain: CRYPTO_CAT_PLAIN_OVERRIDES[key] || value // Fallback to smartass if no plain version
+    };
+  }
+  
+  return normalized;
+}
+
+// Cache normalized quotes
+const NORMALIZED_CAT_QUOTES = normalizeQuotes();
+
+// Toggle between Smartass and Plain modes
+function toggleCatMode() {
+  if (!state.cryptoCatEnabled) {
+    showToast('Turn on Crypto Cat first!');
+    return;
+  }
+  
+  const newMode = state.catMode === 'smartass' ? 'plain' : 'smartass';
+  state.catMode = newMode;
+  localStorage.setItem('darkwave_cat_mode', newMode);
+  
+  // Update UI
+  const modeText = document.getElementById('catModeText');
+  const modeSwitchBtn = document.getElementById('catModeSwitchBtn');
+  
+  if (modeText) {
+    modeText.textContent = newMode === 'smartass' ? 'Smart-ass Mode' : 'Plain Mode';
+  }
+  
+  if (modeSwitchBtn) {
+    modeSwitchBtn.textContent = newMode === 'smartass' ? '🔄 Plain' : '🔄 Smartass';
+  }
+  
+  // Show notification
+  const notification = newMode === 'smartass' 
+    ? '😼 Smart-ass mode activated! Sarcastic commentary enabled.' 
+    : '😺 Plain mode activated! Helpful commentary enabled.';
+  showToast(notification);
+  
+  // Haptic feedback
+  if (tg) {
+    tg.HapticFeedback?.impactOccurred('medium');
+  }
+  
+  console.log(`🔄 Crypto Cat mode switched to: ${newMode}`);
+}
+
+// Initialize mode switcher button visibility
+function updateCatModeUI() {
+  const modeSwitchBtn = document.getElementById('catModeSwitchBtn');
+  const modeText = document.getElementById('catModeText');
+  
+  if (modeSwitchBtn) {
+    modeSwitchBtn.style.display = state.cryptoCatEnabled ? 'block' : 'none';
+    modeSwitchBtn.textContent = state.catMode === 'smartass' ? '🔄 Plain' : '🔄 Smartass';
+  }
+  
+  if (modeText) {
+    modeText.textContent = state.catMode === 'smartass' ? 'Smart-ass Mode' : 'Plain Mode';
+  }
+}
+
+// Call this on page load and when toggling cat
+setTimeout(() => {
+  updateCatModeUI();
+}, 1000);
