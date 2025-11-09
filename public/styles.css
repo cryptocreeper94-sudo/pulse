@@ -1525,3 +1525,273 @@ table {
     transform: rotate(5deg);
   }
 }
+
+/* ==========================================
+   MOBILE RESPONSIVE STYLES
+   ========================================== */
+
+/* Tablet and below (768px) */
+@media (max-width: 768px) {
+  /* Container adjustments */
+  .category-nav,
+  .tab-nav,
+  .market-overview-container,
+  .trending-carousel,
+  .featured-banner,
+  .pirate-flag-banner,
+  .search-container,
+  .blockchain-filter,
+  .content-grid,
+  .glossary-content,
+  .quick-picks-section,
+  .analysis-result,
+  .cmc-stats-bar {
+    width: calc(100% - 16px);
+    margin-left: 8px;
+    margin-right: 8px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  /* CMC Stats Bar - Horizontal scroll with smaller items */
+  .cmc-stats-bar {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .cmc-stat-item {
+    padding: 12px 8px;
+    min-width: 140px;
+  }
+
+  .stat-emoji {
+    font-size: 1.5rem;
+    margin-bottom: 4px;
+  }
+
+  .cmc-stat-label {
+    font-size: 0.65rem;
+  }
+
+  .cmc-stat-value {
+    font-size: 1rem;
+  }
+
+  .cmc-stat-change {
+    font-size: 0.75rem;
+  }
+
+  /* Buttons - Make them smaller */
+  .timeframe-btn, .chart-type-btn, .tool-btn {
+    padding: 4px 8px;
+    font-size: 0.7rem;
+  }
+
+  .action-btn, .primary-btn {
+    padding: 10px 16px;
+    font-size: 0.875rem;
+  }
+
+  /* Tab buttons - smaller on mobile */
+  .tab-button {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+
+  /* Typography adjustments */
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+  }
+
+  /* Modal adjustments */
+  .modal-content {
+    max-width: calc(100% - 16px);
+    margin: 8px;
+  }
+
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding: 12px;
+  }
+
+  /* Charts - full width on mobile */
+  #chartContainer {
+    width: 100% !important;
+    height: 300px !important;
+  }
+
+  /* Grid layouts - single column on mobile */
+  .content-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Reduce spacing */
+  .app-container {
+    padding: 8px;
+  }
+
+  /* Search container */
+  .search-container {
+    padding: 8px;
+  }
+
+  .search-input {
+    font-size: 0.9rem;
+    padding: 10px 12px;
+  }
+
+  /* Fix banner overflow */
+  .featured-banner,
+  .pirate-flag-banner,
+  .wave-banner-image {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  /* Table responsiveness */
+  table {
+    font-size: 0.8rem;
+  }
+
+  th, td {
+    padding: 8px 4px;
+  }
+
+  /* Wallet cards */
+  .wallet-card,
+  .holding-card {
+    padding: 12px;
+  }
+
+  /* Category nav - horizontal scroll */
+  .category-nav {
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Glossary items */
+  .glossary-item {
+    padding: 12px;
+  }
+
+  .glossary-term {
+    font-size: 1rem;
+  }
+
+  .glossary-definition {
+    font-size: 0.875rem;
+  }
+}
+
+/* Small mobile (480px and below) */
+@media (max-width: 480px) {
+  /* Even more compact on small phones */
+  .cmc-stats-bar {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 6px;
+  }
+
+  .cmc-stat-item {
+    padding: 10px 6px;
+    min-width: 120px;
+  }
+
+  .stat-emoji {
+    font-size: 1.2rem;
+  }
+
+  .cmc-stat-label {
+    font-size: 0.6rem;
+  }
+
+  .cmc-stat-value {
+    font-size: 0.9rem;
+  }
+
+  .cmc-stat-change {
+    font-size: 0.7rem;
+  }
+
+  /* Very small buttons */
+  .timeframe-btn, .chart-type-btn, .tool-btn {
+    padding: 3px 6px;
+    font-size: 0.65rem;
+  }
+
+  /* Typography - even smaller */
+  h1 {
+    font-size: 1.25rem;
+  }
+
+  h2 {
+    font-size: 1.1rem;
+  }
+
+  h3 {
+    font-size: 1rem;
+  }
+
+  /* Minimal padding everywhere */
+  .app-container {
+    padding: 4px;
+  }
+
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding: 8px;
+  }
+
+  /* Smaller chart on tiny screens */
+  #chartContainer {
+    height: 250px !important;
+  }
+
+  /* Table - very compact */
+  table {
+    font-size: 0.7rem;
+  }
+
+  th, td {
+    padding: 6px 3px;
+  }
+
+  /* Compact cards */
+  .wallet-card,
+  .holding-card,
+  .glossary-item {
+    padding: 8px;
+  }
+
+  /* Search input */
+  .search-input {
+    font-size: 0.85rem;
+    padding: 8px 10px;
+  }
+
+  /* Tab buttons - very compact */
+  .tab-button {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+  }
+
+  /* Action buttons - compact */
+  .action-btn, .primary-btn {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+}
