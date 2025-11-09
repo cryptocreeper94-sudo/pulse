@@ -632,6 +632,234 @@ a:hover {
     inset 0 1px 3px rgba(255, 255, 255, 0.3);
 }
 
+/* ============================================
+   UNIVERSAL BUTTON STYLING - ROYAL BLUE + WHITE GLOW
+   ============================================ */
+
+/* Mover Category Buttons (Top Gainers, Top Losers, Volume Leaders) */
+.mover-category-btn {
+  padding: 8px 18px;
+  font-size: 0.9rem;
+  font-weight: var(--font-semibold);
+  color: white;
+  background: linear-gradient(135deg, #2563EB, #1d4ed8);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  box-shadow: 
+    0 0 10px rgba(255, 255, 255, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.15);
+}
+
+.mover-category-btn:hover {
+  background: linear-gradient(135deg, #3b82f6, #2563EB);
+  border-color: rgba(255, 255, 255, 0.7);
+  transform: translateY(-1px);
+  box-shadow: 
+    0 0 16px rgba(255, 255, 255, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.25);
+}
+
+.mover-category-btn.active {
+  background: linear-gradient(135deg, #1e40af, #1d4ed8);
+  border-color: rgba(255, 255, 255, 1);
+  box-shadow: 
+    0 0 20px rgba(255, 255, 255, 0.5),
+    0 0 32px rgba(37, 99, 235, 0.4),
+    inset 0 1px 3px rgba(255, 255, 255, 0.3);
+}
+
+/* Category Filter Buttons (Learn tab: All Topics, Indicators, etc.) */
+.category-filter-btn {
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: var(--font-semibold);
+  color: white;
+  background: linear-gradient(135deg, #2563EB, #1d4ed8);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  box-shadow: 
+    0 0 10px rgba(255, 255, 255, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.15);
+}
+
+.category-filter-btn:hover {
+  background: linear-gradient(135deg, #3b82f6, #2563EB);
+  border-color: rgba(255, 255, 255, 0.7);
+  transform: translateY(-1px);
+  box-shadow: 
+    0 0 16px rgba(255, 255, 255, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.25);
+}
+
+.category-filter-btn.active {
+  background: linear-gradient(135deg, #1e40af, #1d4ed8);
+  border-color: rgba(255, 255, 255, 1);
+  box-shadow: 
+    0 0 20px rgba(255, 255, 255, 0.5),
+    0 0 32px rgba(37, 99, 235, 0.4),
+    inset 0 1px 3px rgba(255, 255, 255, 0.3);
+}
+
+/* News Filter Buttons */
+.news-filter-btn {
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: var(--font-semibold);
+  color: white;
+  background: linear-gradient(135deg, #2563EB, #1d4ed8);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  box-shadow: 
+    0 0 10px rgba(255, 255, 255, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.15);
+}
+
+.news-filter-btn:hover {
+  background: linear-gradient(135deg, #3b82f6, #2563EB);
+  border-color: rgba(255, 255, 255, 0.7);
+  transform: translateY(-1px);
+  box-shadow: 
+    0 0 16px rgba(255, 255, 255, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.25);
+}
+
+.news-filter-btn.active {
+  background: linear-gradient(135deg, #1e40af, #1d4ed8);
+  border-color: rgba(255, 255, 255, 1);
+  box-shadow: 
+    0 0 20px rgba(255, 255, 255, 0.5),
+    0 0 32px rgba(37, 99, 235, 0.4),
+    inset 0 1px 3px rgba(255, 255, 255, 0.3);
+}
+
+/* Scope, Path, Theme Buttons */
+.scope-btn, .path-btn, .theme-btn {
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: var(--font-semibold);
+  color: white;
+  background: linear-gradient(135deg, #2563EB, #1d4ed8);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  box-shadow: 
+    0 0 10px rgba(255, 255, 255, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.15);
+}
+
+.scope-btn:hover, .path-btn:hover, .theme-btn:hover {
+  background: linear-gradient(135deg, #3b82f6, #2563EB);
+  border-color: rgba(255, 255, 255, 0.7);
+  transform: translateY(-1px);
+  box-shadow: 
+    0 0 16px rgba(255, 255, 255, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.25);
+}
+
+.scope-btn.active, .path-btn.active, .theme-btn.active {
+  background: linear-gradient(135deg, #1e40af, #1d4ed8);
+  border-color: rgba(255, 255, 255, 1);
+  box-shadow: 
+    0 0 20px rgba(255, 255, 255, 0.5),
+    0 0 32px rgba(37, 99, 235, 0.4),
+    inset 0 1px 3px rgba(255, 255, 255, 0.3);
+}
+
+/* Search Button, Chat Send Button */
+.search-btn, .chat-send-btn {
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: var(--font-bold);
+  color: white;
+  background: linear-gradient(135deg, #2563EB, #1d4ed8);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 
+    0 0 12px rgba(255, 255, 255, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2);
+}
+
+.search-btn:hover, .chat-send-btn:hover {
+  background: linear-gradient(135deg, #3b82f6, #2563EB);
+  border-color: rgba(255, 255, 255, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 
+    0 0 20px rgba(255, 255, 255, 0.5),
+    inset 0 1px 3px rgba(255, 255, 255, 0.3);
+}
+
+/* Primary Buttons (Submit, Add, etc.) */
+.primary-btn, .pirate-flag-btn {
+  padding: 10px 20px !important;
+  font-size: 0.9rem !important;
+  font-weight: var(--font-bold) !important;
+  color: white !important;
+  background: linear-gradient(135deg, #2563EB, #1d4ed8) !important;
+  border: 2px solid rgba(255, 255, 255, 0.6) !important;
+  border-radius: 10px !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 
+    0 0 12px rgba(255, 255, 255, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2) !important;
+}
+
+.primary-btn:hover, .pirate-flag-btn:hover {
+  background: linear-gradient(135deg, #3b82f6, #2563EB) !important;
+  border-color: rgba(255, 255, 255, 0.8) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 
+    0 0 20px rgba(255, 255, 255, 0.5),
+    inset 0 1px 3px rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Reset, Clear, Compare Buttons */
+.reset-btn, .clear-btn, .compare-btn {
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: var(--font-semibold);
+  color: white;
+  background: linear-gradient(135deg, #2563EB, #1d4ed8);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 
+    0 0 10px rgba(255, 255, 255, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.15);
+}
+
+.reset-btn:hover, .clear-btn:hover, .compare-btn:hover {
+  background: linear-gradient(135deg, #3b82f6, #2563EB);
+  border-color: rgba(255, 255, 255, 0.7);
+  transform: translateY(-1px);
+  box-shadow: 
+    0 0 16px rgba(255, 255, 255, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.25);
+}
+
+/* Mover Categories Container */
+.mover-categories {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: var(--space-md) 0;
+  padding: var(--space-sm);
+}
+
 /* ===========================================
    STATS BAR - CLEAN MINIMAL
    =========================================== */
@@ -1415,14 +1643,27 @@ textarea::placeholder {
 /* Fix all buttons globally */
 .primary-btn,
 .action-btn {
-  background: var(--primary) !important;
+  padding: 8px 16px !important;
+  font-size: 0.85rem !important;
+  font-weight: var(--font-semibold) !important;
   color: white !important;
-  border: none !important;
+  background: linear-gradient(135deg, #2563EB, #1d4ed8) !important;
+  border: 2px solid rgba(255, 255, 255, 0.5) !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 
+    0 0 10px rgba(255, 255, 255, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.15) !important;
 }
 
-.primary-btn:hover,
 .action-btn:hover {
-  background: var(--primary-hover) !important;
+  background: linear-gradient(135deg, #3b82f6, #2563EB) !important;
+  border-color: rgba(255, 255, 255, 0.7) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 
+    0 0 16px rgba(255, 255, 255, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.25) !important;
 }
 
 /* Fix pirate flag banner */
