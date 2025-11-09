@@ -944,29 +944,37 @@ a:hover {
   font-size: var(--font-size-base);
 }
 
-/* CMC Stats Bar */
+/* CMC Stats Bar Container with Logo */
+.cmc-stats-container {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
 .cmc-stats-bar {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--space-md);
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-sm);
   padding: 0;
   background: transparent;
   border: none;
+  flex: 1;
 }
 
 .cmc-stat-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-xs);
-  padding: var(--space-lg);
+  gap: 4px;
+  padding: var(--space-sm) var(--space-md);
   background: var(--bg-secondary);
-  border: 2px solid var(--primary);
-  border-radius: var(--radius-lg);
+  border: 2px solid #a855f7;
+  border-radius: var(--radius-md);
   box-shadow: 
-    0 0 15px rgba(59, 130, 246, 0.4),
-    0 0 30px rgba(59, 130, 246, 0.2),
-    inset 0 0 15px rgba(59, 130, 246, 0.1);
+    0 0 12px rgba(168, 85, 247, 0.3),
+    0 0 24px rgba(168, 85, 247, 0.15),
+    inset 0 0 12px rgba(168, 85, 247, 0.08);
   transition: all var(--transition-base);
   white-space: nowrap;
 }
@@ -974,18 +982,19 @@ a:hover {
 .cmc-stat-item:hover {
   transform: translateY(-2px);
   box-shadow: 
-    0 0 20px rgba(59, 130, 246, 0.6),
-    0 0 40px rgba(59, 130, 246, 0.3),
-    inset 0 0 20px rgba(59, 130, 246, 0.15);
+    0 0 16px rgba(168, 85, 247, 0.5),
+    0 0 32px rgba(168, 85, 247, 0.25),
+    inset 0 0 16px rgba(168, 85, 247, 0.12);
+  border-color: #c084fc;
 }
 
 .stat-emoji {
-  font-size: 2rem;
-  margin-bottom: var(--space-xs);
+  font-size: 1.3rem;
+  margin-bottom: 2px;
 }
 
 .cmc-stat-label {
-  font-size: var(--font-size-xs);
+  font-size: 0.65rem;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -993,15 +1002,39 @@ a:hover {
 }
 
 .cmc-stat-value {
-  font-size: var(--font-size-xl);
+  font-size: 1rem;
   font-weight: var(--font-bold);
-  color: var(--primary);
+  color: #a855f7;
   text-align: center;
 }
 
 .cmc-stat-change {
-  font-size: var(--font-size-sm);
+  font-size: 0.75rem;
   text-align: center;
+}
+
+/* Floating DarkWave Logo */
+.darkwave-logo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #a855f7;
+  box-shadow: 
+    0 0 20px rgba(168, 85, 247, 0.5),
+    0 0 40px rgba(168, 85, 247, 0.3),
+    0 4px 15px rgba(0, 0, 0, 0.3);
+  animation: float 3s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 /* Crypto Cat Toggle - Make it prominent */
@@ -1636,6 +1669,18 @@ table {
 
   .cmc-stat-change {
     font-size: 0.75rem;
+  }
+
+  /* Stats Container - Stack on mobile */
+  .cmc-stats-container {
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .darkwave-logo {
+    width: 70px;
+    height: 70px;
+    align-self: center;
   }
 
   /* Asset Class Toggle - Stack vertically on mobile */

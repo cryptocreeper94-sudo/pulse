@@ -111,32 +111,38 @@
     <div class="tab-content">
       <!-- Analysis Tab -->
       <div id="analysis" class="tab-pane active">
-        <!-- CMC-Style Top Stats Bar -->
-        <div class="cmc-stats-bar">
-          <div class="cmc-stat-item">
-            <span class="stat-emoji">😨</span>
-            <span class="cmc-stat-label">Fear & Greed</span>
-            <span class="cmc-stat-value" id="cmcFearGreed">25</span>
-            <span class="cmc-stat-change neutral">Fear</span>
+        <!-- Stats Bar with Logo -->
+        <div class="cmc-stats-container">
+          <!-- CMC-Style Top Stats Bar -->
+          <div class="cmc-stats-bar">
+            <div class="cmc-stat-item">
+              <span class="stat-emoji">😨</span>
+              <span class="cmc-stat-label">Fear & Greed</span>
+              <span class="cmc-stat-value" id="cmcFearGreed">25</span>
+              <span class="cmc-stat-change neutral">Fear</span>
+            </div>
+            <div class="cmc-stat-item">
+              <span class="stat-emoji">🔄</span>
+              <span class="cmc-stat-label">Altcoin Season</span>
+              <span class="cmc-stat-value" id="cmcAltSeason">29/100</span>
+              <span class="cmc-stat-change neutral">Bitcoin</span>
+            </div>
+            <div class="cmc-stat-item">
+              <span class="stat-emoji">📊</span>
+              <span class="cmc-stat-label">Avg Crypto RSI</span>
+              <span class="cmc-stat-value" id="cmcAvgRSI">53.1</span>
+              <span class="cmc-stat-change neutral">Neutral</span>
+            </div>
+            <div class="cmc-stat-item">
+              <span class="stat-emoji">💰</span>
+              <span class="cmc-stat-label">Market Cap</span>
+              <span class="cmc-stat-value" id="cmcTotalMarketCap">$3.43T</span>
+              <span class="cmc-stat-change positive" id="cmcMarketCapChange">+0.48%</span>
+            </div>
           </div>
-          <div class="cmc-stat-item">
-            <span class="stat-emoji">🔄</span>
-            <span class="cmc-stat-label">Altcoin Season</span>
-            <span class="cmc-stat-value" id="cmcAltSeason">29/100</span>
-            <span class="cmc-stat-change neutral">Bitcoin</span>
-          </div>
-          <div class="cmc-stat-item">
-            <span class="stat-emoji">📊</span>
-            <span class="cmc-stat-label">Avg Crypto RSI</span>
-            <span class="cmc-stat-value" id="cmcAvgRSI">53.1</span>
-            <span class="cmc-stat-change neutral">Neutral</span>
-          </div>
-          <div class="cmc-stat-item">
-            <span class="stat-emoji">💰</span>
-            <span class="cmc-stat-label">Market Cap</span>
-            <span class="cmc-stat-value" id="cmcTotalMarketCap">$3.43T</span>
-            <span class="cmc-stat-change positive" id="cmcMarketCapChange">+0.48%</span>
-          </div>
+          
+          <!-- Floating DarkWave Logo -->
+          <img src="/darkwave-logo.jpg" alt="DarkWave" class="darkwave-logo">
         </div>
 
         <!-- Asset Class Toggle (Stocks vs Crypto) -->
