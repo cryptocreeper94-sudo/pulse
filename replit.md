@@ -30,7 +30,17 @@ The project uses TypeScript with strict mode and ES2022 target. Zod schemas prov
 Pino logger (`@mastra/loggers`) is used for structured JSON logging with custom formatters, including trace context.
 
 ### UI/UX Decisions
-The UI features a CoinMarketCap-style market overview with a 9-column data table and 7 distinct category tabs. It incorporates a Crypto.com-style design overhaul with dark navy backgrounds, a three-column responsive grid, elevated cards, and angular dividers. Visual content integration includes stock images and a live news headlines section. An enhanced color scheme uses electric blue accents with gold and purple highlights. The system includes a multi-theme system (Jupiter, Robinhood, Coinbase) and live interactive charts. The Crypto Cat mascot is toggleable with varied personality, body language, and sarcastic commentary in glossary tooltips and feature banners. Projects are organized into category-based pages.
+The UI features a CoinMarketCap-style market overview with a 9-column data table and 7 distinct category tabs. It incorporates a Crypto.com-style design overhaul with dark navy backgrounds, a three-column responsive grid, elevated cards, and angular dividers. Visual content integration includes stock images and a live news headlines section. An enhanced color scheme uses electric blue accents with gold and purple highlights. 
+
+**Personalized 9-Theme System:** The application includes a sophisticated theme system with subtle organic CSS gradient patterns (watermark-style backgrounds) for personalization:
+- **Default Themes (3):** Electric Night (blue), Clean Green (light), Pro Blue (dark)
+- **Feminine Themes (2):** Cherry Blossom (soft pink flow), Pastel Dreams (lavender/mint blend)
+- **Masculine Themes (2):** Cyber Glitch (matrix green grid), Neon Grid (electric pink geometric)
+- **Neutral Themes (2):** Ocean Waves (teal flow), Galaxy (cosmic purple with stars)
+
+Each theme uses ::before pseudo-elements with low-opacity radial/linear gradients mixed with whites for natural depth without interfering with content readability. The system maintains the same layout across all themes while changing color schemes and background patterns.
+
+The Crypto Cat mascot is toggleable with varied personality, body language, and sarcastic first-person commentary in console logs, glossary tooltips, and feature banners. Banner system: sound wave banner on all pages except Glossary, which displays "Good, I was bored anyway" Crypto Cat image. Projects are organized into category-based pages.
 
 ### Feature Specifications
 Key features include DEX pair support with rug-risk detection and liquidity scoring, NFT collection analysis, a live trending carousel, and database-backed session management. It supports tracked, multi-chain wallets (Solana, Ethereum, Polygon, Arbitrum, Base, BSC). A subscription notification system, admin dashboard, and a professional token submission system with robust three-layer file validation are implemented. Cryptocurrency payments are integrated via Coinbase Commerce. A DarkWave Token Launchpad features a live countdown, whitelist signup, and premium-gated access. The system also includes a "Bot Detection System" for DEX pair rug risk analysis.
