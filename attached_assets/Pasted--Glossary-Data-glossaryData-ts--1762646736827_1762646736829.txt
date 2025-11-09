@@ -1,0 +1,94 @@
+// ─────────────────────────────────────────────
+// 📦 Glossary Data (glossaryData.ts)
+// ─────────────────────────────────────────────
+export const glossary = {
+  Rugpull: {
+    category: "Crypto",
+    smartass: "Dev disappears. Your money goes poof. Classic heartbreak.",
+    plain: "A scam where developers abandon a project and steal investor funds.",
+    pose: "facepalm",
+    emotionTag: "regret"
+  },
+  Moon: {
+    category: "Crypto Slang",
+    smartass: "Price goes way up. Everyone cheers. Then it crashes.",
+    plain: "A slang term for a dramatic increase in asset price.",
+    pose: "celebrate",
+    emotionTag: "hope"
+  },
+  // Add more terms here...
+};
+
+
+
+// ─────────────────────────────────────────────
+// 📦 Glossary Engine (glossaryEngine.ts)
+// ─────────────────────────────────────────────
+import { glossary } from "./glossaryData.js";
+
+export function getGlossaryTerm(term, sassMode = true) {
+  const entry = glossary[term];
+  if (!entry) return null;
+  return {
+    term,
+    definition: sassMode ? entry.smartass : entry.plain,
+    category: entry.category,
+    pose: sassMode ? entry.pose : "neutral",
+    emotionTag: entry.emotionTag || "default"
+  };
+}
+
+export function filterGlossaryByCategory(category, sassMode = true) {
+  return Object.entries(glossary)
+    .filter(([_, entry]) => entry.category === category)
+    .map(([term, entry]) => ({
+      term,
+      definition: sassMode ? entry.smartass : entry.plain,
+      pose: sassMode ? entry.pose : "neutral",
+      emotionTag: entry.emotionTag || "default"
+    }));
+}
+
+
+
+// ─────────────────────────────────────────────
+// 📦 Glossary Card Renderer (GlossaryCard.js)
+// ─────────────────────────────────────────────
+export function GlossaryCard({ termData }) {
+  const { term, definition, pose } = termData;
+  return `
+    <div class="glossary-card">
+      <h2>${term}</h2>
+      <p>${definition}</p>
+      <img src="/assets/cryptocat/${pose}.png" alt="Crypto Cat ${pose}" class="crypto-cat" />
+    </div>
+  `;
+}
+
+
+
+// ─────────────────────────────────────────────
+// 📦 Sass Toggle Button (SassToggle.js)
+// ─────────────────────────────────────────────
+export function SassToggle(currentState, onToggleFnName) {
+  return `
+    <button onclick="${onToggleFnName}()" class="toggle-button">
+      ${currentState ? "Switch to Plain Mode" : "Switch to Sass Mode"}
+    </button>
+  `;
+}
+
+
+
+// ─────────────────────────────────────────────
+// 📦 Glossary Initialization (initGlossary.js)
+// ─────────────────────────────────────────────
+import { getGlossaryTerm } from "./glossaryEngine.js";
+import { GlossaryCard } from "./GlossaryCard.js";
+
+export function initGlossary(term, sassMode = true) {
+  const entry = getGlossaryTerm(term, sassMode);
+  if (!entry) return;
+  const cardHTML = GlossaryCard({ termData: entry });
+  document.getElementById("glossary-container").innerHTML = cardHTML;
+}
