@@ -6481,41 +6481,169 @@ function startRandomCatAppearances() {
 // Start random appearances after 30 seconds
 setTimeout(startRandomCatAppearances, 30000);
 
-// ===== POPULATE NEWSPAPER BOXES =====
-function populateNewspaperBoxes() {
-  // Whale Alert
+// ===== POPULATE NEWSPAPER BOXES WITH LIVE DATA =====
+let marketDataCache = {
+  trending: null,
+  global: null,
+  timestamp: 0
+};
+
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+async function fetchMarketData() {
+  const now = Date.now();
+  
+  // Return cached data if still valid
+  if (marketDataCache.timestamp && (now - marketDataCache.timestamp < CACHE_TTL)) {
+    console.log('📦 Using cached market data');
+    return marketDataCache;
+  }
+  
+  try {
+    console.log('🌐 Fetching fresh market data...');
+    
+    // Fetch multiple data sources in parallel
+    const [trendingResponse, globalResponse] = await Promise.all([
+      fetch('https://api.coingecko.com/api/v3/search/trending'),
+      fetch('https://api.coingecko.com/api/v3/global')
+    ]);
+    
+    const trendingData = await trendingResponse.json();
+    const globalData = await globalResponse.json();
+    
+    // Update cache
+    marketDataCache = {
+      trending: trendingData,
+      global: globalData,
+      timestamp: now
+    };
+    
+    console.log('✅ Market data fetched and cached');
+    return marketDataCache;
+  } catch (error) {
+    console.error('❌ Error fetching market data:', error);
+    // Return cached data even if expired, or null
+    return marketDataCache.trending ? marketDataCache : null;
+  }
+}
+
+async function populateAllNewspaperBoxes() {
+  const data = await fetchMarketData();
+  if (!data) {
+    console.warn('No market data available, using fallback');
+    populateNewspaperBoxesStatic();
+    return;
+  }
+  
+  const { trending, global } = data;
+  
+  //  Populate Hot Right Now
+  const hotNow = document.getElementById('hotNow');
+  if (hotNow && trending?.coins) {
+    const top3 = trending.coins.slice(0, 3).map(c => c.item.symbol).join(', ');
+    hotNow.innerHTML = `🔥 <strong>Trending Now:</strong> ${top3}<br>📈 <strong>Most Searched:</strong> ${trending.coins[0]?.item.name || 'Bitcoin'}<br>💡 <strong>Market Cap Rank:</strong> #${trending.coins[0]?.item.market_cap_rank || '1'}`;
+  }
+    
+  // Populate Whale Alert - use global BTC dominance data
+  const whaleAlert = document.getElementById('whaleAlert');
+  if (whaleAlert && global?.data) {
+    const btcDom = global.data.market_cap_percentage?.btc?.toFixed(1) || '56.2';
+    const ethDom = global.data.market_cap_percentage?.eth?.toFixed(1) || '13.5';
+    whaleAlert.innerHTML = `<strong>BTC Dominance:</strong> ${btcDom}%<br><strong>ETH Dominance:</strong> ${ethDom}%<br><strong>Total Volume 24h:</strong> $${(global.data.total_volume?.usd / 1e9).toFixed(1)}B`;
+  }
+    
+  // Populate Market Pulse with global data
+  const marketPulse = document.getElementById('marketPulse');
+  if (marketPulse && global?.data) {
+    const fgValue = document.getElementById('cmcFearGreed')?.textContent || '50';
+    const fgNum = parseInt(fgValue);
+    const fgText = fgNum < 25 ? 'Extreme Fear' : fgNum < 45 ? 'Fear' : fgNum < 55 ? 'Neutral' : fgNum < 75 ? 'Greed' : 'Extreme Greed';
+    const marketCap = `$${(global.data.total_market_cap?.usd / 1e12).toFixed(2)}T`;
+    const btcDom = global.data.market_cap_percentage?.btc?.toFixed(1) || '56.2';
+    marketPulse.innerHTML = `<strong>${fgText}:</strong> Index at ${fgValue}/100<br><strong>Total Market Cap:</strong> ${marketCap}<br><strong>BTC Dominance:</strong> ${btcDom}%`;
+  }
+    
+  // Populate Flash Updates with real data
+  const flashUpdates = document.getElementById('flashUpdates');
+  if (flashUpdates && global?.data) {
+    const btcDom = global.data.market_cap_percentage?.btc?.toFixed(1) || '56.2';
+    const activeCoins = global.data.active_cryptocurrencies?.toLocaleString() || '13,000';
+    const markets = global.data.markets || 'N/A';
+    flashUpdates.innerHTML = `<strong>BTC Dominance:</strong> ${btcDom}%<br><strong>Active Coins:</strong> ${activeCoins}<br><strong>Markets:</strong> ${markets}`;
+  }
+    
+  // Populate Support/Resistance - using trending data  
+  const srLevels = document.getElementById('srLevels');
+  if (srLevels && trending?.coins) {
+    const top3 = trending.coins.slice(0, 3);
+    srLevels.innerHTML = top3.map(c => {
+      const symbol = c.item.symbol;
+      const price = c.item.data?.price || 'N/A';
+      return `<strong>${symbol}:</strong> $${price} - Trending #${c.item.market_cap_rank || 'N/A'}`;
+    }).join('<br>');
+  }
+    
+  // Populate Holdings Portfolio Stats
+  const portfolioStats = document.getElementById('portfolioStats');
+  if (portfolioStats) {
+    const holdings = state.holdings || [];
+    const totalValue = holdings.reduce((sum, h) => sum + (h.value || 0), 0);
+    portfolioStats.innerHTML = `<strong>Total Tracked:</strong> ${holdings.length} assets<br><strong>Total Value:</strong> $${totalValue.toFixed(2)}<br><strong>Alerts Set:</strong> 0`;
+  }
+    
+  // Populate Top Picks
+  const topPicks = document.getElementById('topPicks');
+  if (topPicks && trending?.coins) {
+    const picks = trending.coins.slice(0, 3);
+    topPicks.innerHTML = picks.map(p => {
+      const symbol = p.item.symbol;
+      const rank = p.item.market_cap_rank;
+      return `<strong>${symbol}:</strong> Rank #${rank} - Trending`;
+    }).join('<br>');
+  }
+    
+  // Populate Breaking News
+  const breakingNews = document.getElementById('breakingNews');
+  if (breakingNews && trending?.coins) {
+    const topCoin = trending.coins[0].item;
+    breakingNews.innerHTML = `<strong>${topCoin.name} (${topCoin.symbol})</strong> hits #1 trending<br><strong>Market Cap Rank:</strong> #${topCoin.market_cap_rank || 'N/A'}<br><strong>Search Volume:</strong> Surging 📈`;
+  }
+    
+  // Populate Sentiment Box
+  const sentimentBox = document.getElementById('sentimentBox');
+  if (sentimentBox) {
+    const fgValue = parseInt(document.getElementById('cmcFearGreed')?.textContent || '50');
+    const sentiment = fgValue < 40 ? '🔴 Bearish' : fgValue > 60 ? '🟢 Bullish' : '🟡 Neutral';
+    sentimentBox.innerHTML = `<strong>Overall Mood:</strong> ${sentiment}<br><strong>Fear & Greed:</strong> ${fgValue}/100<br><strong>Market State:</strong> ${fgValue < 40 ? 'Fearful' : fgValue > 60 ? 'Greedy' : 'Balanced'}`;
+  }
+    
+  // Update Headlines
+  const headlines = document.getElementById('headlines');
+  if (headlines && trending?.coins) {
+    const coin1 = trending.coins[0]?.item.name;
+    const coin2 = trending.coins[1]?.item.name;
+    headlines.innerHTML = `<strong>Top Trending:</strong> ${coin1}, ${coin2}<br><strong>Market Activity:</strong> High search volume<br><strong>Latest:</strong> Check News feed below`;
+  }
+    
+  console.log('✅ All newspaper boxes updated with live data');
+}
+
+function populateNewspaperBoxesStatic() {
+  // Fallback static content
   const whaleAlert = document.getElementById('whaleAlert');
   if (whaleAlert) {
     whaleAlert.innerHTML = '<strong>BTC:</strong> $124M moved to cold storage<br><strong>ETH:</strong> Whale accumulated 15,000 ETH<br><strong>SOL:</strong> Major exchange outflow detected';
   }
   
-  // Hot Right Now
   const hotNow = document.getElementById('hotNow');
   if (hotNow) {
     hotNow.innerHTML = '🔥 <strong>Trending:</strong> AI agents, Solana memes, Base ecosystem<br>📈 <strong>Volume Leaders:</strong> BTC, ETH, SOL<br>💡 <strong>New Listings:</strong> Check Projects tab';
   }
-  
-  // Market Pulse
-  const marketPulse = document.getElementById('marketPulse');
-  if (marketPulse) {
-    const fgValue = document.getElementById('cmcFearGreed')?.textContent || '50';
-    const fgText = parseInt(fgValue) < 40 ? 'Fear' : parseInt(fgValue) > 60 ? 'Greed' : 'Neutral';
-    marketPulse.innerHTML = `<strong>${fgText} Mode:</strong> F&G Index at ${fgValue}<br><strong>Trend:</strong> ${Math.random() > 0.5 ? 'Sideways consolidation' : 'Upward momentum'}<br><strong>Volume:</strong> ${Math.random() > 0.5 ? 'Above average' : 'Below average'}`;
-  }
-  
-  // Portfolio Stats (Holdings page)
-  const portfolioStats = document.getElementById('portfolioStats');
-  if (portfolioStats) {
-    portfolioStats.innerHTML = '<strong>Total Tracked:</strong> 0 assets<br><strong>24h Change:</strong> --<br><strong>Alerts Set:</strong> 0';
-  }
-  
-  // Top Picks
-  const topPicks = document.getElementById('topPicks');
-  if (topPicks) {
-    topPicks.innerHTML = '<strong>BTC:</strong> Accumulation zone<br><strong>ETH:</strong> Watch $3,500 resistance<br><strong>SOL:</strong> Strong support at $180';
-  }
 }
 
-// Initialize newspaper boxes when market data loads
-setTimeout(populateNewspaperBoxes, 2000);
+// Initialize newspaper boxes with live data
+setTimeout(populateAllNewspaperBoxes, 2000);
+
+// Refresh every 5 minutes
+setInterval(populateAllNewspaperBoxes, 5 * 60 * 1000);
 
