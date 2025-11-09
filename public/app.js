@@ -1317,6 +1317,7 @@ function displayAnalysis(data) {
         <div style="display: flex; gap: 8px;">
           <button class="chart-type-btn active" data-type="candle" onclick="changeChartType('candle')">Candlestick</button>
           <button class="chart-type-btn" data-type="line" onclick="changeChartType('line')">Line</button>
+          <button class="chart-type-btn" data-type="bar" onclick="changeChartType('bar')">Bar</button>
         </div>
       </div>
     </div>
@@ -1672,11 +1673,48 @@ function displayNFTAnalysis(nft) {
   analysisResult.appendChild(card);
 }
 
+// Ticker to CoinGecko ID mapping
+const TICKER_TO_COIN_ID = {
+  'BTC': 'bitcoin',
+  'ETH': 'ethereum',
+  'SOL': 'solana',
+  'BNB': 'binancecoin',
+  'XRP': 'ripple',
+  'ADA': 'cardano',
+  'DOGE': 'dogecoin',
+  'DOT': 'polkadot',
+  'MATIC': 'matic-network',
+  'AVAX': 'avalanche-2',
+  'LINK': 'chainlink',
+  'UNI': 'uniswap',
+  'ATOM': 'cosmos',
+  'LTC': 'litecoin',
+  'BCH': 'bitcoin-cash',
+  'XLM': 'stellar',
+  'ALGO': 'algorand',
+  'ICP': 'internet-computer',
+  'FIL': 'filecoin',
+  'NEAR': 'near',
+  'APT': 'aptos',
+  'ARB': 'arbitrum',
+  'OP': 'optimism',
+  'SUI': 'sui',
+  'SHIB': 'shiba-inu',
+  'PEPE': 'pepe',
+  'TRX': 'tron'
+};
+
+// Helper function to resolve ticker to CoinGecko ID
+function resolveCoinId(ticker) {
+  const upperTicker = ticker.toUpperCase();
+  return TICKER_TO_COIN_ID[upperTicker] || ticker.toLowerCase();
+}
+
 // Live Chart State
 let liveChart = null;
 let chartRefreshInterval = null;
 let currentChartTimeframe = '1m'; // 1m, 5m, 1h, 1d, 7d, 30d, ytd
-let currentChartType = 'candle'; // candle or line
+let currentChartType = 'candle'; // candle, line, or bar
 let currentChartTicker = null;
 
 // Timeframe configuration: days for API + refresh interval
@@ -1710,9 +1748,14 @@ async function loadChart(ticker) {
     chartContainer.innerHTML = '<div style="padding: 20px; color: var(--text-secondary);">📈 Loading live chart...</div>';
     
     // Try to load chart based on type
-    const success = currentChartType === 'candle' 
-      ? await createLiveCandlestickChart(ticker, chartContainer, currentChartTimeframe)
-      : await createSimplePriceChart(ticker, chartContainer, currentChartTimeframe);
+    let success;
+    if (currentChartType === 'candle') {
+      success = await createLiveCandlestickChart(ticker, chartContainer, currentChartTimeframe);
+    } else if (currentChartType === 'bar') {
+      success = await createBarChart(ticker, chartContainer, currentChartTimeframe);
+    } else {
+      success = await createSimplePriceChart(ticker, chartContainer, currentChartTimeframe);
+    }
     
     if (!success) {
       // Fallback to static chart
@@ -1724,6 +1767,8 @@ async function loadChart(ticker) {
         console.log(`Refreshing ${currentChartTimeframe} chart for ${ticker}...`);
         if (currentChartType === 'candle') {
           await createLiveCandlestickChart(ticker, chartContainer, currentChartTimeframe);
+        } else if (currentChartType === 'bar') {
+          await createBarChart(ticker, chartContainer, currentChartTimeframe);
         } else {
           await createSimplePriceChart(ticker, chartContainer, currentChartTimeframe);
         }
@@ -1784,7 +1829,7 @@ async function createLiveCandlestickChart(ticker, container, timeframe = '1m') {
     `;
     
     // Fetch OHLC data from CoinGecko with appropriate timeframe
-    const coinId = ticker.toLowerCase();
+    const coinId = resolveCoinId(ticker);
     const days = TIMEFRAME_CONFIG[timeframe].days;
     const response = await fetch(`https://api.coingecko.com/api/v3/coins/${coinId}/ohlc?vs_currency=usd&days=${days}`);
     
@@ -1887,7 +1932,7 @@ async function createLiveCandlestickChart(ticker, container, timeframe = '1m') {
 async function createSimplePriceChart(ticker, container, timeframe = '1m') {
   try {
     // Fallback: Simple price line chart using market_chart endpoint
-    const coinId = ticker.toLowerCase();
+    const coinId = resolveCoinId(ticker);
     const days = TIMEFRAME_CONFIG[timeframe].days;
     const response = await fetch(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}`);
     
@@ -1966,6 +2011,115 @@ async function createSimplePriceChart(ticker, container, timeframe = '1m') {
     return true;
   } catch (error) {
     console.error('Simple chart error:', error);
+    return false;
+  }
+}
+
+// Bar Chart (Histogram Volume Chart)
+async function createBarChart(ticker, container, timeframe = '1m') {
+  try {
+    // Show loading state
+    container.innerHTML = `
+      <div style="display: flex; align-items: center; justify-content: center; height: 300px; color: var(--text-secondary);">
+        <div class="spinner"></div>
+        <span style="margin-left: 12px;">Loading bar chart...</span>
+      </div>
+    `;
+    
+    // Fetch OHLC data from CoinGecko with appropriate timeframe
+    const coinId = resolveCoinId(ticker);
+    const days = TIMEFRAME_CONFIG[timeframe].days;
+    const response = await fetch(`https://api.coingecko.com/api/v3/coins/${coinId}/ohlc?vs_currency=usd&days=${days}`);
+    
+    if (!response.ok) {
+      console.warn(`CoinGecko OHLC not available for ${ticker}, cannot create bar chart`);
+      return false;
+    }
+    
+    const ohlcData = await response.json();
+    
+    if (!ohlcData || ohlcData.length === 0) {
+      container.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; color: var(--text-secondary); text-align: center; padding: 20px;">
+          <div style="font-size: 48px; margin-bottom: 16px;">📊</div>
+          <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">No Chart Data Available</div>
+          <div style="font-size: 14px; opacity: 0.7;">Try a different timeframe or check back later</div>
+        </div>
+      `;
+      return false;
+    }
+    
+    // Clear container and create chart
+    container.innerHTML = '';
+    container.style.minHeight = '300px';
+    container.style.background = 'rgba(0,0,0,0.3)';
+    
+    // Initialize chart
+    const chart = LightweightCharts.createChart(container, {
+      width: container.clientWidth,
+      height: 300,
+      layout: {
+        background: { color: 'transparent' },
+        textColor: '#d1d5db',
+      },
+      grid: {
+        vertLines: { color: 'rgba(255, 255, 255, 0.05)' },
+        horzLines: { color: 'rgba(255, 255, 255, 0.05)' },
+      },
+      crosshair: {
+        mode: LightweightCharts.CrosshairMode.Normal,
+      },
+      rightPriceScale: {
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+      },
+      timeScale: {
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+        timeVisible: true,
+        secondsVisible: false,
+      },
+    });
+    
+    // Add histogram series for bar chart
+    const histogramSeries = chart.addHistogramSeries({
+      priceFormat: {
+        type: 'volume',
+      },
+      priceScaleId: 'right',
+    });
+    
+    // Format OHLC data for histogram (using close - open as bar height, colored by direction)
+    const formattedData = ohlcData.map(item => {
+      const time = Math.floor(item[0] / 1000); // Convert to seconds
+      const open = item[1];
+      const close = item[4];
+      const value = Math.abs(close - open); // Bar height
+      const color = close >= open ? '#26a69a' : '#ef5350'; // Green for up, red for down
+      
+      return {
+        time,
+        value,
+        color
+      };
+    });
+    
+    histogramSeries.setData(formattedData);
+    chart.timeScale().fitContent();
+    
+    // Handle resize
+    const resizeObserver = new ResizeObserver(entries => {
+      if (entries.length === 0 || entries[0].target !== container) return;
+      const newRect = entries[0].contentRect;
+      chart.applyOptions({ width: newRect.width });
+    });
+    resizeObserver.observe(container);
+    
+    // Store chart reference
+    liveChart = chart;
+    
+    console.log(`✅ Bar chart loaded for ${ticker} with ${formattedData.length} bars`);
+    return true;
+  } catch (error) {
+    console.error(`Bar chart error for ${ticker}:`, error);
     return false;
   }
 }
