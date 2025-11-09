@@ -1,5 +1,34 @@
 // DarkWave-V2 Mini App JavaScript - Complete Edition with ALL Features
 
+// Glossary Module Loader (loaded dynamically)
+let glossaryModuleLoaded = false;
+async function initGlossaryTab() {
+  if (!glossaryModuleLoaded) {
+    try {
+      // Dynamically import glossary modules
+      const { initGlossary } = await import('./glossary/glossaryUI.js');
+      window.initGlossary = initGlossary;
+      glossaryModuleLoaded = true;
+      console.log('📖 Glossary module loaded successfully');
+    } catch (error) {
+      console.error('Failed to load glossary module:', error);
+      document.getElementById('glossary-container').innerHTML = `
+        <div style="padding: 40px; text-align: center;">
+          <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
+          <h3>Glossary temporarily unavailable</h3>
+          <p style="color: var(--text-secondary);">Please try again later</p>
+        </div>
+      `;
+      return;
+    }
+  }
+  
+  // Initialize glossary UI
+  if (window.initGlossary) {
+    window.initGlossary();
+  }
+}
+
 // Initialize Telegram WebApp
 const tg = window.Telegram?.WebApp;
 if (tg) {
@@ -665,6 +694,9 @@ async function loadTabContent(tabName) {
       break;
     case 'learn':
       renderGlossary('', 'all');
+      break;
+    case 'glossary':
+      await initGlossaryTab();
       break;
     case 'projects':
       await renderProjectsTab();

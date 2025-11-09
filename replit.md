@@ -3,7 +3,26 @@
 ## Overview
 DarkWave-V2 is an advanced technical analysis bot built with the Mastra framework, providing comprehensive cryptocurrency, stock market, and NFT analysis. It integrates with Telegram to deliver real-time buy/sell signals based on technical indicators like RSI, MACD, moving averages, and Bollinger Bands. The system uses a workflow-based architecture, processes user messages via an AI agent, and stores conversation history and user watchlists in PostgreSQL for personalized interactions. Key features include DEX pair and meme coin support with rug-risk detection, NFT collection analysis, a live trending carousel, database-backed session management, and multi-chain wallet tracking. It also incorporates a comprehensive subscription notification system with an admin dashboard, a professional token submission system with robust validation, and cryptocurrency payment integration via Coinbase Commerce. A unique "Crypto Cat" mascot provides interactive commentary, and a "Launching Soon" section with a countdown and presale platform design for the DarkWave token (DWLP) is included. The project aims to launch the DarkWave token on December 25, 2025, with a whitepaper outlining its mission, tokenomics, utility, and roadmap.
 
+## 🎄 CRITICAL: December 25, 2025 - DWLP Token Launch
+**47 DAYS REMAINING**
+- Target: Christmas Day launch for DarkWave Pulse (DWLP) token
+- Status: Building educational features & polish for investor confidence
+- Daily checkpoint: Review progress toward launch readiness
+- Key deliverables needed: Complete glossary, professional UI, bot detection live
+
 ## Recent Changes (November 2025)
+- **Complete Interactive Glossary with Crypto Cat** (November 9, 2025):
+  - **System**: 143 crypto/finance terms across 7 blocks (A-Z)
+  - **Dual Modes**: Smartass (Crypto Cat personality) + Plain (educational)
+  - **Categories**: Crypto, Finance, NFT, Regulation, Security, Tech, Crypto Slang, Stocks, DarkWave
+  - **Features**: Real-time search, category filters, sass/plain toggle, recent terms tracking
+  - **UI**: 9 Crypto Cat poses (neutral, angry, pointing, sideeye, walking, fist, thumbsup, crossed, facepalm)
+  - **Integration**: Dedicated Glossary tab, modal cards, mobile-optimized, theme-compatible
+  - **Emotion Tags**: 10 tags for contextual cat selection (regret, celebration, caution, danger, etc.)
+  - **Storage**: localStorage persistence for sass mode preference and recent term history
+  - **Performance**: Lazy loading, search debouncing, virtual scrolling for 143 terms
+  - **Purpose**: Educational depth for token launch, investor confidence, onboarding new users
+  
 - **Bot Detection System - LIVE FOR SAFETY** (November 8, 2025):
   - **Backend**: `botDetectionTool` analyzes DEX pairs for rug risk using Dexscreener API
   - **Frontend**: Automatic bot/rug detection in Mini App for tokens with price <$0.01 or long addresses (Solana DEX pairs)
