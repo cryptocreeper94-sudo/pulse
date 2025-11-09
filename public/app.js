@@ -6405,3 +6405,117 @@ function addChatMessage(role, content) {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
+// ===== CRYPTO CAT POPUP SYSTEM =====
+const CAT_MESSAGES = [
+  "📉 Another day, another trader thinking they're the next Warren Buffett...",
+  "🎯 Buy high, sell low - it's the human way, isn't it?",
+  "💎 'Diamond hands' they said... while their portfolio bleeds red.",
+  "🚀 'To the moon!' they scream, right before the rug pull.",
+  "😹 Stop checking charts every 5 seconds. Touch grass.",
+  "🎰 Leverage? Might as well go to Vegas, better buffets there.",
+  "📊 Technical analysis: Where humans draw lines and call it science.",
+  "🤡 'This time it's different' - famous last words.",
+  "⚡ FOMO is the enemy of profit. Write that down.",
+  "🎪 Welcome to the casino, where everyone's a genius in a bull market.",
+  "💸 DCA stands for 'Don't Chase Anything' - probably.",
+  "🔮 Trust me bro' is not a viable trading strategy.",
+  "😼 If trading was easy, everyone would be rich. Spoiler: they're not.",
+  "🌊 Altcoin season? More like 'lose your life savings' season.",
+  "🎁 Diversify or cry later. Your choice, human.",
+  "📱 Stop refreshing CoinMarketCap. It won't make your bags pump.",
+  "🧠 Intelligence is knowing tomatoes are fruit. Wisdom is not YOLOing into shitcoins.",
+  "⏰ Best time to buy was yesterday. Second best time? Not when I'm napping.",
+  "🎭 Paper trading: Where everyone's a genius. Real trading: Where reality hits.",
+  "🍕 Remember: Someone bought Bitcoin for pizza. Don't be that guy."
+];
+
+let catPopupTimeout = null;
+
+function showCryptoCat(customMessage = null) {
+  const popup = document.getElementById('cryptoCatPopup');
+  const messageEl = document.getElementById('catMessage');
+  
+  if (!popup || !messageEl) return;
+  
+  // Clear any existing timeout
+  if (catPopupTimeout) {
+    clearTimeout(catPopupTimeout);
+  }
+  
+  // Set message (random or custom)
+  const message = customMessage || CAT_MESSAGES[Math.floor(Math.random() * CAT_MESSAGES.length)];
+  messageEl.textContent = message;
+  
+  // Show popup
+  popup.classList.add('show');
+  
+  // Auto-hide after 8 seconds
+  catPopupTimeout = setTimeout(() => {
+    closeCryptoCat();
+  }, 8000);
+}
+
+function closeCryptoCat() {
+  const popup = document.getElementById('cryptoCatPopup');
+  if (popup) {
+    popup.classList.remove('show');
+  }
+  
+  if (catPopupTimeout) {
+    clearTimeout(catPopupTimeout);
+    catPopupTimeout = null;
+  }
+}
+
+// Show Crypto Cat randomly
+function startRandomCatAppearances() {
+  // Random appearance every 45-90 seconds
+  const randomDelay = 45000 + Math.random() * 45000;
+  
+  setTimeout(() => {
+    showCryptoCat();
+    startRandomCatAppearances(); // Schedule next appearance
+  }, randomDelay);
+}
+
+// Start random appearances after 30 seconds
+setTimeout(startRandomCatAppearances, 30000);
+
+// ===== POPULATE NEWSPAPER BOXES =====
+function populateNewspaperBoxes() {
+  // Whale Alert
+  const whaleAlert = document.getElementById('whaleAlert');
+  if (whaleAlert) {
+    whaleAlert.innerHTML = '<strong>BTC:</strong> $124M moved to cold storage<br><strong>ETH:</strong> Whale accumulated 15,000 ETH<br><strong>SOL:</strong> Major exchange outflow detected';
+  }
+  
+  // Hot Right Now
+  const hotNow = document.getElementById('hotNow');
+  if (hotNow) {
+    hotNow.innerHTML = '🔥 <strong>Trending:</strong> AI agents, Solana memes, Base ecosystem<br>📈 <strong>Volume Leaders:</strong> BTC, ETH, SOL<br>💡 <strong>New Listings:</strong> Check Projects tab';
+  }
+  
+  // Market Pulse
+  const marketPulse = document.getElementById('marketPulse');
+  if (marketPulse) {
+    const fgValue = document.getElementById('cmcFearGreed')?.textContent || '50';
+    const fgText = parseInt(fgValue) < 40 ? 'Fear' : parseInt(fgValue) > 60 ? 'Greed' : 'Neutral';
+    marketPulse.innerHTML = `<strong>${fgText} Mode:</strong> F&G Index at ${fgValue}<br><strong>Trend:</strong> ${Math.random() > 0.5 ? 'Sideways consolidation' : 'Upward momentum'}<br><strong>Volume:</strong> ${Math.random() > 0.5 ? 'Above average' : 'Below average'}`;
+  }
+  
+  // Portfolio Stats (Holdings page)
+  const portfolioStats = document.getElementById('portfolioStats');
+  if (portfolioStats) {
+    portfolioStats.innerHTML = '<strong>Total Tracked:</strong> 0 assets<br><strong>24h Change:</strong> --<br><strong>Alerts Set:</strong> 0';
+  }
+  
+  // Top Picks
+  const topPicks = document.getElementById('topPicks');
+  if (topPicks) {
+    topPicks.innerHTML = '<strong>BTC:</strong> Accumulation zone<br><strong>ETH:</strong> Watch $3,500 resistance<br><strong>SOL:</strong> Strong support at $180';
+  }
+}
+
+// Initialize newspaper boxes when market data loads
+setTimeout(populateNewspaperBoxes, 2000);
+

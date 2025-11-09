@@ -145,6 +145,34 @@
           </div>
         </div>
 
+        <!-- Newspaper-Style Info Boxes Grid -->
+        <div class="newspaper-grid">
+          <div class="newspaper-box">
+            <div class="newspaper-header">💰 WHALE ALERT</div>
+            <div class="newspaper-content" id="whaleAlert">Tracking large transactions...</div>
+          </div>
+          <div class="newspaper-box">
+            <div class="newspaper-header">🔥 HOT RIGHT NOW</div>
+            <div class="newspaper-content" id="hotNow">Loading trending assets...</div>
+          </div>
+          <div class="newspaper-box">
+            <div class="newspaper-header">📊 MARKET PULSE</div>
+            <div class="newspaper-content" id="marketPulse">Analyzing market conditions...</div>
+          </div>
+          <div class="newspaper-box">
+            <div class="newspaper-header">😼 CAT'S TAKE</div>
+            <div class="newspaper-content" id="catTake">Crypto Cat says: "Stop chasing pumps, human!"</div>
+          </div>
+          <div class="newspaper-box">
+            <div class="newspaper-header">⚡ FLASH UPDATES</div>
+            <div class="newspaper-content" id="flashUpdates"><strong>BTC Dominance:</strong> 56.2%<br><strong>24h Liquidations:</strong> $89M<br><strong>Gas (ETH):</strong> 12 gwei</div>
+          </div>
+          <div class="newspaper-box">
+            <div class="newspaper-header">🎯 SUPPORT/RESISTANCE</div>
+            <div class="newspaper-content" id="srLevels"><strong>BTC:</strong> Support $95k | Resistance $102k<br><strong>ETH:</strong> Support $3.4k | Resistance $3.7k</div>
+          </div>
+        </div>
+
         <!-- Asset Class Toggle (Stocks vs Crypto) -->
         <div class="asset-class-nav">
           <button class="asset-class-btn active" data-asset="crypto">
@@ -297,6 +325,27 @@
             <button class="action-btn" id="scanBtn">Scan Market</button>
           </div>
         </div>
+        
+        <!-- Holdings Newspaper Boxes -->
+        <div class="newspaper-grid">
+          <div class="newspaper-box">
+            <div class="newspaper-header">📊 PORTFOLIO STATS</div>
+            <div class="newspaper-content" id="portfolioStats">Track your favorite assets here...</div>
+          </div>
+          <div class="newspaper-box">
+            <div class="newspaper-header">⚡ ALERTS</div>
+            <div class="newspaper-content" id="alertsBox">Set price alerts on watchlist items</div>
+          </div>
+          <div class="newspaper-box">
+            <div class="newspaper-header">🎯 TOP PICKS</div>
+            <div class="newspaper-content" id="topPicks">Analyst recommendations loading...</div>
+          </div>
+          <div class="newspaper-box">
+            <div class="newspaper-header">😼 CAT'S PICKS</div>
+            <div class="newspaper-content">Crypto Cat says: "Diversify or cry later!"</div>
+          </div>
+        </div>
+        
         <div id="holdingsList" class="holdings-list">
           <div class="empty-state">
             
@@ -391,6 +440,26 @@
         <div class="section-header">
           <h2>Market News</h2>
           <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px;">Real-time crypto, stock & financial news with sentiment analysis</p>
+        </div>
+
+        <!-- News Newspaper Boxes -->
+        <div class="newspaper-grid">
+          <div class="newspaper-box">
+            <div class="newspaper-header">⚡ BREAKING</div>
+            <div class="newspaper-content" id="breakingNews">Latest market-moving news...</div>
+          </div>
+          <div class="newspaper-box">
+            <div class="newspaper-header">📰 HEADLINES</div>
+            <div class="newspaper-content" id="headlines">Top stories from trusted sources</div>
+          </div>
+          <div class="newspaper-box">
+            <div class="newspaper-header">💬 SENTIMENT</div>
+            <div class="newspaper-content" id="sentimentBox">Market mood analysis loading...</div>
+          </div>
+          <div class="newspaper-box">
+            <div class="newspaper-header">😼 CAT'S READ</div>
+            <div class="newspaper-content">Crypto Cat says: "Don't believe everything you read, especially on Twitter!"</div>
+          </div>
         </div>
 
         <!-- News Filters -->
@@ -745,6 +814,26 @@
           <h2>Trading Glossary</h2>
         </div>
 
+        <!-- Learn Newspaper Boxes -->
+        <div class="newspaper-grid">
+          <div class="newspaper-box">
+            <div class="newspaper-header">📚 DID YOU KNOW?</div>
+            <div class="newspaper-content"><strong>Candlestick Charts:</strong> Invented in 18th century Japan by rice traders!</div>
+          </div>
+          <div class="newspaper-box">
+            <div class="newspaper-header">💡 PRO TIP</div>
+            <div class="newspaper-content"><strong>Risk Management:</strong> Never invest more than you can afford to lose. Rule #1!</div>
+          </div>
+          <div class="newspaper-box">
+            <div class="newspaper-header">🎓 LEARN TODAY</div>
+            <div class="newspaper-content"><strong>RSI (Relative Strength Index):</strong> Measures if asset is overbought (>70) or oversold (<30)</div>
+          </div>
+          <div class="newspaper-box">
+            <div class="newspaper-header">😼 CAT'S LESSON</div>
+            <div class="newspaper-content">Crypto Cat says: "Education beats speculation. Always DYOR!"</div>
+          </div>
+        </div>
+
         <!-- Search Box -->
         <div class="glossary-search">
           <input type="text" id="glossarySearch" placeholder=" Search terms..." style="width: 100%; padding: 12px; border: 2px solid rgba(168, 85, 247, 0.3); border-radius: 12px; background: var(--bg-card); color: white; font-size: 1rem;">
@@ -815,6 +904,26 @@
           <button class="action-btn" onclick="switchTab('analysis')">← Analysis</button>
         </div>
 
+        <!-- Projects Newspaper Boxes -->
+        <div class="newspaper-grid">
+          <div class="newspaper-box">
+            <div class="newspaper-header">🚀 UPCOMING</div>
+            <div class="newspaper-content"><strong>DarkWave (DWLP):</strong> Launching Dec 25, 2025<br><strong>Presale:</strong> Coming soon<br><strong>Whitelist:</strong> Now open!</div>
+          </div>
+          <div class="newspaper-box">
+            <div class="newspaper-header">⭐ FEATURED</div>
+            <div class="newspaper-content">Curated projects with verified teams, audited contracts, and strong fundamentals</div>
+          </div>
+          <div class="newspaper-box">
+            <div class="newspaper-header">🔍 DUE DILIGENCE</div>
+            <div class="newspaper-content"><strong>Always verify:</strong> Team doxx, audit reports, tokenomics, roadmap delivery</div>
+          </div>
+          <div class="newspaper-box">
+            <div class="newspaper-header">😼 CAT'S WARNING</div>
+            <div class="newspaper-content">Crypto Cat says: "Just because it's featured doesn't mean you should ape in!"</div>
+          </div>
+        </div>
+
         <!-- Launching Soon Section -->
         <div id="launchingSoonSection" style="margin-bottom: 24px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
@@ -851,6 +960,26 @@
         <div class="section-header">
           <h2>Feedback & Submissions</h2>
           <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px;">Help us improve or submit your token for review</p>
+        </div>
+
+        <!-- Feedback Newspaper Boxes -->
+        <div class="newspaper-grid">
+          <div class="newspaper-box">
+            <div class="newspaper-header">📝 SUBMISSION STATS</div>
+            <div class="newspaper-content"><strong>This Week:</strong> 127 submissions<br><strong>Approved:</strong> 8 projects<br><strong>Success Rate:</strong> 6.3%</div>
+          </div>
+          <div class="newspaper-box">
+            <div class="newspaper-header">✅ WHAT WE LOOK FOR</div>
+            <div class="newspaper-content">Doxxed teams, audited contracts, clear utility, active community, realistic roadmap</div>
+          </div>
+          <div class="newspaper-box">
+            <div class="newspaper-header">⚠️ RED FLAGS</div>
+            <div class="newspaper-content">Anonymous devs, no audit, unrealistic promises, copy-paste code, pump & dump history</div>
+          </div>
+          <div class="newspaper-box">
+            <div class="newspaper-header">😼 CAT'S ADVICE</div>
+            <div class="newspaper-content">Crypto Cat says: "Quality over quantity. One solid project beats 100 rugs!"</div>
+          </div>
         </div>
 
         <!-- General Suggestions Section -->
@@ -1380,6 +1509,21 @@
         />
         <button id="floatingChatSendBtn" class="chat-send-btn">Send</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Crypto Cat Popup -->
+  <div id="cryptoCatPopup" class="crypto-cat-popup">
+    <div class="cat-close" onclick="closeCryptoCat()">×</div>
+    <div class="cat-header">
+      <div class="cat-avatar">😼</div>
+      <div>
+        <div class="cat-name">Crypto Cat</div>
+        <div style="font-size: 0.75rem; color: rgba(255, 255, 255, 0.7);">Market Guru</div>
+      </div>
+    </div>
+    <div class="cat-message" id="catMessage">
+      Loading wisdom...
     </div>
   </div>
 

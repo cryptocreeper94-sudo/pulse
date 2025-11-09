@@ -870,6 +870,169 @@ a:hover {
 }
 
 /* ============================================
+   NEWSPAPER-STYLE INFO BOXES
+   ============================================ */
+
+.newspaper-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.newspaper-box {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 8px;
+  padding: 0;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(255, 215, 0, 0.1),
+    inset 0 1px 2px rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  transform: rotate(-0.5deg);
+  transition: all 0.3s ease;
+}
+
+.newspaper-box:nth-child(even) {
+  transform: rotate(0.5deg);
+}
+
+.newspaper-box:hover {
+  transform: rotate(0deg) translateY(-4px);
+  box-shadow: 
+    0 8px 20px rgba(0, 0, 0, 0.4),
+    0 0 30px rgba(255, 215, 0, 0.2);
+  border-color: rgba(255, 215, 0, 0.5);
+}
+
+.newspaper-header {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #000;
+  font-weight: var(--font-bold);
+  font-size: 0.75rem;
+  padding: 8px 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+  font-family: 'Courier New', monospace;
+}
+
+.newspaper-content {
+  padding: 12px;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  min-height: 80px;
+  font-family: Georgia, serif;
+}
+
+.newspaper-content strong {
+  color: var(--primary);
+}
+
+/* Crypto Cat Popup */
+.crypto-cat-popup {
+  position: fixed;
+  bottom: 80px;
+  right: 80px;
+  width: 320px;
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  border: 3px solid #FFD700;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.6),
+    0 0 40px rgba(255, 215, 0, 0.4),
+    inset 0 1px 3px rgba(255, 255, 255, 0.2);
+  z-index: 10000;
+  animation: catSlideIn 0.5s ease-out;
+  display: none;
+}
+
+.crypto-cat-popup.show {
+  display: block;
+}
+
+@keyframes catSlideIn {
+  from {
+    transform: translateX(400px) rotate(10deg);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.cat-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.cat-avatar {
+  font-size: 3rem;
+  animation: catWiggle 2s infinite;
+}
+
+@keyframes catWiggle {
+  0%, 100% { transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
+}
+
+.cat-name {
+  font-weight: var(--font-bold);
+  color: #FFD700;
+  font-size: 1.1rem;
+}
+
+.cat-message {
+  color: white;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 16px;
+  font-style: italic;
+}
+
+.cat-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+.cat-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+@media (max-width: 768px) {
+  .crypto-cat-popup {
+    width: calc(100vw - 40px);
+    right: 20px;
+    bottom: 100px;
+  }
+  
+  .newspaper-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* ============================================
    FLOATING AI CHAT WIDGET
    ============================================ */
 
