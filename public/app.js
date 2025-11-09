@@ -3810,9 +3810,129 @@ document.getElementById('refreshBtn')?.addEventListener('click', () => {
 });
 
 document.getElementById('settingsBtn')?.addEventListener('click', () => {
-  switchTab('settings');
+  openSettingsModal();
   if (tg) tg.HapticFeedback?.impactOccurred('light');
 });
+
+// Settings Modal
+function openSettingsModal() {
+  const existingModal = document.getElementById('settingsModal');
+  if (existingModal) {
+    existingModal.remove();
+  }
+
+  // Get current cat enabled state from localStorage
+  const isCatEnabled = localStorage.getItem('cryptoCatEnabled') !== 'false';
+
+  const modal = document.createElement('div');
+  modal.id = 'settingsModal';
+  modal.className = 'modal-overlay';
+  modal.innerHTML = `
+    <div class="modal-content" style="max-width: 500px; max-height: 80vh; overflow-y: auto;">
+      <div class="modal-header">
+        <h2>⚙️ Settings</h2>
+        <button class="close-btn" onclick="document.getElementById('settingsModal').remove()">✕</button>
+      </div>
+      <div class="modal-body">
+        <!-- Theme Selector -->
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 10px; font-weight: 600; color: var(--text-primary);">🎨 Theme Style</label>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+            <button class="theme-btn ${document.body.classList.contains('theme-jupiter') ? 'active' : ''}" data-theme="jupiter" onclick="changeTheme('jupiter')">
+              <span style="font-size: 0.85rem;">⚡ Electric Night</span>
+            </button>
+            <button class="theme-btn ${document.body.classList.contains('theme-robinhood') ? 'active' : ''}" data-theme="robinhood" onclick="changeTheme('robinhood')">
+              <span style="font-size: 0.85rem;">🍃 Clean Green</span>
+            </button>
+            <button class="theme-btn ${document.body.classList.contains('theme-coinbase') ? 'active' : ''}" data-theme="coinbase" onclick="changeTheme('coinbase')">
+              <span style="font-size: 0.85rem;">💎 Pro Blue</span>
+            </button>
+            <button class="theme-btn ${document.body.classList.contains('theme-sakura') ? 'active' : ''}" data-theme="sakura" onclick="changeTheme('sakura')">
+              <span style="font-size: 0.85rem;">🌸 Sakura Pink</span>
+            </button>
+            <button class="theme-btn ${document.body.classList.contains('theme-sunset') ? 'active' : ''}" data-theme="sunset" onclick="changeTheme('sunset')">
+              <span style="font-size: 0.85rem;">🌅 Sunset</span>
+            </button>
+            <button class="theme-btn ${document.body.classList.contains('theme-ocean') ? 'active' : ''}" data-theme="ocean" onclick="changeTheme('ocean')">
+              <span style="font-size: 0.85rem;">🌊 Ocean</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Crypto Cat Toggle -->
+        <div style="padding: 12px; background: rgba(255, 215, 0, 0.1); border: 2px solid rgba(255, 215, 0, 0.3); border-radius: 8px; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <span style="font-weight: 600;">😼 Crypto Cat Guide</span>
+              <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 4px 0 0 0;">Sarcastic trading commentary</p>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="toggleCryptoCatModal" ${isCatEnabled ? 'checked' : ''} onchange="toggleCryptoCatFromModal(this)">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Subscription Info -->
+        <div style="padding: 12px; background: rgba(37, 99, 235, 0.1); border: 2px solid rgba(37, 99, 235, 0.3); border-radius: 8px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-weight: 600;">Subscription Plan</span>
+            <span class="status-pill">Premium Active</span>
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0;">Unlimited searches & analysis</p>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Close on background click
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.remove();
+    }
+  });
+}
+
+function changeTheme(themeName) {
+  // Remove all theme classes
+  document.body.classList.remove('theme-jupiter', 'theme-robinhood', 'theme-coinbase', 'theme-sakura', 'theme-sunset', 'theme-ocean');
+  
+  // Add new theme
+  document.body.classList.add(`theme-${themeName}`);
+  
+  // Save preference
+  localStorage.setItem('selectedTheme', themeName);
+  
+  // Update button states in modal
+  document.querySelectorAll('.theme-btn').forEach(btn => {
+    btn.classList.remove('active');
+    if (btn.dataset.theme === themeName) {
+      btn.classList.add('active');
+    }
+  });
+  
+  showNotification(`Theme changed to ${themeName}`, 'success');
+}
+
+function toggleCryptoCatFromModal(checkbox) {
+  const isEnabled = checkbox.checked;
+  localStorage.setItem('cryptoCatEnabled', isEnabled);
+  
+  // Sync with main toggle
+  const mainToggle = document.getElementById('cryptoCatToggle');
+  if (mainToggle) mainToggle.checked = isEnabled;
+  
+  if (!isEnabled) {
+    const existingPopup = document.querySelector('.crypto-cat-popup');
+    if (existingPopup) existingPopup.remove();
+    showNotification('😿 Crypto Cat is taking a nap', 'info');
+  } else {
+    showNotification('😼 Crypto Cat is back!', 'success');
+    setTimeout(startRandomCatAppearances, 5000);
+  }
+}
 
 document.getElementById('walletBtn')?.addEventListener('click', () => {
   switchTab('wallet');
@@ -6646,4 +6766,111 @@ setTimeout(populateAllNewspaperBoxes, 2000);
 
 // Refresh every 5 minutes
 setInterval(populateAllNewspaperBoxes, 5 * 60 * 1000);
+
+// ===== UNIVERSAL WEB3 SEARCH FUNCTIONALITY =====
+const universalSearchInput = document.getElementById('universalSearchInput');
+const universalSearchBtn = document.getElementById('universalSearchBtn');
+
+async function performUniversalSearch() {
+  const query = universalSearchInput.value.trim();
+  if (!query) {
+    showNotification('Please enter a token, stock, NFT, or contract address', 'warning');
+    return;
+  }
+
+  console.log('🔍 Universal search query:', query);
+  showNotification(`Analyzing ${query}...`, 'info');
+  
+  try {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: `Analyze ${query}. Provide comprehensive technical analysis.`,
+        userId: state.userId
+      })
+    });
+
+    if (!response.ok) throw new Error('Search failed');
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let fullResponse = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      
+      const chunk = decoder.decode(value);
+      const lines = chunk.split('\n');
+      
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          try {
+            const data = JSON.parse(line.slice(6));
+            if (data.content) {
+              fullResponse += data.content;
+            }
+          } catch (e) {}
+        }
+      }
+    }
+
+    // Show results in Analysis tab
+    switchTab('analysis');
+    const analysisContent = document.getElementById('analysisContent');
+    if (analysisContent) {
+      analysisContent.innerHTML = `
+        <div class="analysis-result" style="padding: 20px; background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(124, 58, 237, 0.1)); border: 2px solid rgba(37, 99, 235, 0.3); border-radius: 12px; margin: 16px 0;">
+          <h3 style="color: #FFD700; margin-bottom: 12px;">📊 Analysis: ${query}</h3>
+          <div style="color: var(--text-primary); line-height: 1.8; white-space: pre-wrap;">${fullResponse}</div>
+        </div>
+      `;
+    }
+
+    showNotification(`Analysis complete for ${query}`, 'success');
+    universalSearchInput.value = '';
+  } catch (error) {
+    console.error('Search error:', error);
+    showNotification('Search failed. Please try again.', 'error');
+  }
+}
+
+universalSearchBtn.addEventListener('click', performUniversalSearch);
+universalSearchInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') performUniversalSearch();
+});
+
+// ===== CRYPTO CAT MASTER TOGGLE =====
+const cryptoCatToggle = document.getElementById('cryptoCatToggle');
+let catEnabled = true;
+
+// Load saved preference
+const savedCatPref = localStorage.getItem('cryptoCatEnabled');
+if (savedCatPref !== null) {
+  catEnabled = savedCatPref === 'true';
+  cryptoCatToggle.checked = catEnabled;
+}
+
+cryptoCatToggle.addEventListener('change', (e) => {
+  catEnabled = e.target.checked;
+  localStorage.setItem('cryptoCatEnabled', catEnabled);
+  
+  if (!catEnabled) {
+    const existingPopup = document.querySelector('.crypto-cat-popup');
+    if (existingPopup) existingPopup.remove();
+    showNotification('😿 Crypto Cat is taking a nap', 'info');
+  } else {
+    showNotification('😼 Crypto Cat is back!', 'success');
+    setTimeout(startRandomCatAppearances, 5000);
+  }
+});
+
+// Update showCryptoCat to respect toggle
+const originalShowCryptoCat = window.showCryptoCat;
+window.showCryptoCat = function(message) {
+  if (catEnabled) {
+    originalShowCryptoCat(message);
+  }
+};
 

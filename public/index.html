@@ -55,6 +55,30 @@
       <span style="font-size: var(--font-size-xs); color: var(--text-secondary);">Premium Active</span>
     </div>
     
+    <!-- Universal Web3 Search Box (Appears on All Pages) -->
+    <div class="universal-search-container">
+      <div class="search-box-wrapper">
+        <input 
+          type="text" 
+          id="universalSearchInput" 
+          class="universal-search-input" 
+          placeholder="🔍 Search any token, stock, NFT, or contract address..."
+          autocomplete="off"
+        />
+        <button id="universalSearchBtn" class="universal-search-btn">Analyze</button>
+      </div>
+      <div class="search-suggestions" id="searchSuggestions" style="display: none;"></div>
+    </div>
+
+    <!-- Crypto Cat Master Toggle (Persists Across Pages) -->
+    <div class="cat-toggle-container">
+      <label class="cat-toggle">
+        <input type="checkbox" id="cryptoCatToggle" checked />
+        <span class="cat-toggle-slider"></span>
+        <span class="cat-toggle-label">😼 Crypto Cat</span>
+      </label>
+    </div>
+
     <!-- Tab Navigation -->
     <nav class="tab-nav">
       <button class="tab-btn active" data-tab="analysis">
@@ -100,10 +124,6 @@
       <button class="tab-btn" data-tab="feedback">
         
         <span class="tab-label">Feedback</span>
-      </button>
-      <button class="tab-btn" data-tab="settings">
-        
-        <span class="tab-label">Settings</span>
       </button>
     </nav>
 
