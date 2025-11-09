@@ -34,6 +34,7 @@ import { priceAlertTool } from "./tools/priceAlertTool";
 import { nftTool } from "./tools/nftTool";
 import { subscriptionTool } from "./tools/subscriptionTool";
 import { botDetectionTool } from "./tools/botDetectionTool";
+import { sentimentTool } from "./tools/sentimentTool";
 
 class ProductionPinoLogger extends MastraLogger {
   protected logger: pino.Logger;
@@ -106,6 +107,7 @@ export const mastra = new Mastra({
         'nft-tool': nftTool,
         'subscription-tool': subscriptionTool,
         'bot-detection-tool': botDetectionTool,
+        'sentiment-tool': sentimentTool,
       },
     }),
   },

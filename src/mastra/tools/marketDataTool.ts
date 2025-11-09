@@ -335,6 +335,80 @@ async function fetchCryptoData(ticker: string, days: number, logger: any) {
   };
 }
 
+/**
+ * Fallback function using Alpha Vantage API (25 calls/day free tier)
+ * Used when Yahoo Finance fails or rate limits
+ */
+async function fetchStockDataAlphaVantage(ticker: string, days: number, logger: any) {
+  const apiKey = process.env.ALPHA_VANTAGE_API_KEY;
+  
+  if (!apiKey) {
+    logger?.warn('⚠️ [MarketDataTool] Alpha Vantage API key not configured, skipping fallback');
+    throw new Error('Alpha Vantage API key not configured');
+  }
+
+  logger?.info('📊 [MarketDataTool] Fetching stock data from Alpha Vantage (fallback)', { ticker, days });
+
+  // Alpha Vantage TIME_SERIES_DAILY for historical data
+  const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${ticker}&outputsize=full&apikey=${apiKey}`;
+  
+  const response = await axios.get(url, {
+    timeout: 15000,
+  });
+
+  // Check for rate limit or error messages
+  if (response.data['Error Message']) {
+    throw new Error(`Alpha Vantage: ${response.data['Error Message']}`);
+  }
+  
+  if (response.data['Note']) {
+    // Rate limit hit
+    throw new Error('Alpha Vantage rate limit exceeded (25 calls/day)');
+  }
+
+  const timeSeries = response.data['Time Series (Daily)'];
+  if (!timeSeries) {
+    throw new Error(`Stock ${ticker} not found on Alpha Vantage`);
+  }
+
+  // Convert time series to array format
+  const dates = Object.keys(timeSeries).slice(0, days);
+  const prices = dates.map(date => {
+    const data = timeSeries[date];
+    return {
+      timestamp: new Date(date).getTime(),
+      open: parseFloat(data['1. open']),
+      high: parseFloat(data['2. high']),
+      low: parseFloat(data['3. low']),
+      close: parseFloat(data['4. close']),
+      volume: parseFloat(data['5. volume']),
+    };
+  }).reverse(); // Oldest to newest
+
+  const latestData = timeSeries[dates[0]];
+  const previousData = timeSeries[dates[1]] || latestData;
+  
+  const currentPrice = parseFloat(latestData['4. close']);
+  const previousClose = parseFloat(previousData['4. close']);
+  const priceChange = currentPrice - previousClose;
+  const priceChangePercent = (priceChange / previousClose) * 100;
+
+  logger?.info('✅ [MarketDataTool] Successfully fetched stock data from Alpha Vantage', { 
+    ticker,
+    dataPoints: prices.length,
+    currentPrice 
+  });
+
+  return {
+    ticker,
+    type: 'stock',
+    currentPrice,
+    priceChange24h: priceChange,
+    priceChangePercent24h: priceChangePercent,
+    prices,
+  };
+}
+
 async function fetchStockData(ticker: string, days: number, logger: any) {
   // Check cache first
   const cacheKey = `stock_${ticker}_${days}`;
@@ -345,60 +419,87 @@ async function fetchStockData(ticker: string, days: number, logger: any) {
     return cached.data;
   }
 
-  logger?.info('📊 [MarketDataTool] Fetching stock data from Yahoo Finance', { ticker, days });
+  // Try Yahoo Finance first (free and reliable)
+  try {
+    logger?.info('📊 [MarketDataTool] Fetching stock data from Yahoo Finance', { ticker, days });
 
-  // Yahoo Finance v8 API endpoint
-  const period2 = Math.floor(Date.now() / 1000); // current timestamp
-  const period1 = period2 - (days * 24 * 60 * 60); // days ago
-  
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?period1=${period1}&period2=${period2}&interval=1d`;
+    const period2 = Math.floor(Date.now() / 1000); // current timestamp
+    const period1 = period2 - (days * 24 * 60 * 60); // days ago
+    
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?period1=${period1}&period2=${period2}&interval=1d`;
 
-  const response = await axios.get(url, {
-    headers: {
-      'User-Agent': 'Mozilla/5.0',
-    },
-  });
+    const response = await axios.get(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0',
+      },
+      timeout: 10000,
+    });
 
-  const result = response.data.chart.result[0];
-  if (!result) {
-    throw new Error(`Stock ${ticker} not found`);
+    const result = response.data.chart.result[0];
+    if (!result) {
+      throw new Error(`Stock ${ticker} not found on Yahoo Finance`);
+    }
+
+    const quote = result.indicators.quote[0];
+    const timestamps = result.timestamp;
+
+    const prices = timestamps.map((ts: number, i: number) => ({
+      timestamp: ts * 1000,
+      open: quote.open[i] || 0,
+      high: quote.high[i] || 0,
+      low: quote.low[i] || 0,
+      close: quote.close[i] || 0,
+      volume: quote.volume[i] || 0,
+    }));
+
+    const currentPrice = result.meta.regularMarketPrice;
+    const previousClose = result.meta.chartPreviousClose;
+    const priceChange = currentPrice - previousClose;
+    const priceChangePercent = (priceChange / previousClose) * 100;
+
+    const data = {
+      ticker,
+      type: 'stock',
+      currentPrice,
+      priceChange24h: priceChange,
+      priceChangePercent24h: priceChangePercent,
+      prices,
+    };
+
+    // Cache successful response
+    dataCache.set(cacheKey, { data, timestamp: Date.now() });
+    logger?.info('💾 [MarketDataTool] Data cached', { ticker, ttl: CACHE_TTL / 1000 + 's' });
+
+    logger?.info('✅ [MarketDataTool] Successfully fetched stock data from Yahoo Finance', { 
+      ticker, 
+      dataPoints: prices.length,
+      currentPrice 
+    });
+
+    return data;
+    
+  } catch (yahooError: any) {
+    // Fallback to Alpha Vantage if Yahoo fails
+    logger?.warn('⚠️ [MarketDataTool] Yahoo Finance failed, trying Alpha Vantage fallback', { 
+      error: yahooError.message 
+    });
+    
+    try {
+      const data = await fetchStockDataAlphaVantage(ticker, days, logger);
+      
+      // Cache successful fallback response
+      dataCache.set(cacheKey, { data, timestamp: Date.now() });
+      logger?.info('💾 [MarketDataTool] Fallback data cached', { ticker, ttl: CACHE_TTL / 1000 + 's' });
+      
+      return data;
+    } catch (alphaError: any) {
+      logger?.error('❌ [MarketDataTool] Both Yahoo and Alpha Vantage failed', {
+        yahooError: yahooError.message,
+        alphaError: alphaError.message
+      });
+      
+      // Re-throw original Yahoo error
+      throw new Error(`Failed to fetch stock data for ${ticker}: ${yahooError.message}`);
+    }
   }
-
-  const quote = result.indicators.quote[0];
-  const timestamps = result.timestamp;
-
-  const prices = timestamps.map((ts: number, i: number) => ({
-    timestamp: ts * 1000,
-    open: quote.open[i] || 0,
-    high: quote.high[i] || 0,
-    low: quote.low[i] || 0,
-    close: quote.close[i] || 0,
-    volume: quote.volume[i] || 0,
-  }));
-
-  const currentPrice = result.meta.regularMarketPrice;
-  const previousClose = result.meta.chartPreviousClose;
-  const priceChange = currentPrice - previousClose;
-  const priceChangePercent = (priceChange / previousClose) * 100;
-
-  const data = {
-    ticker,
-    type: 'stock',
-    currentPrice,
-    priceChange24h: priceChange,
-    priceChangePercent24h: priceChangePercent,
-    prices,
-  };
-
-  // Cache successful response
-  dataCache.set(cacheKey, { data, timestamp: Date.now() });
-  logger?.info('💾 [MarketDataTool] Data cached', { ticker, ttl: CACHE_TTL / 1000 + 's' });
-
-  logger?.info('✅ [MarketDataTool] Successfully fetched stock data', { 
-    ticker, 
-    dataPoints: prices.length,
-    currentPrice 
-  });
-
-  return data;
 }

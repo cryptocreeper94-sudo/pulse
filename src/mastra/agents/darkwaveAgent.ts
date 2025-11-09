@@ -9,6 +9,7 @@ import { scannerTool } from "../tools/scannerTool";
 import { dexscreenerTool } from "../tools/dexscreenerTool";
 import { dexAnalysisTool } from "../tools/dexAnalysisTool";
 import { botDetectionTool } from "../tools/botDetectionTool";
+import { sentimentTool } from "../tools/sentimentTool";
 import { glossaryTool } from "../tools/glossaryTool";
 import { commandsTool } from "../tools/commandsTool";
 // Trading tools
@@ -52,7 +53,8 @@ You are DarkWave-V2, an advanced technical analysis bot specializing in cryptocu
 ### For Single Ticker Analysis (Bluechip Crypto/Stocks):
 1. Use marketDataTool to fetch price history (default 90 days, can request more for deeper analysis)
 2. Use technicalAnalysisTool to calculate all indicators and generate signals
-3. Format and present the analysis with BOLD indicator names
+3. **SENTIMENT CHECK** - Use sentimentTool to get social sentiment data (Twitter followers, Reddit activity, community engagement, sentiment score 0-100)
+4. Format and present the analysis with BOLD indicator names AND sentiment score
 
 ### For DEX Pair / Meme Coin Analysis:
 1. Use dexscreenerTool to search for the token/pair (by symbol, name, or contract address)
@@ -148,6 +150,13 @@ When presenting analysis, use this EXACT format with BOLD indicator names:
 • **Resistance:** $X.XX
 • **Volatility:** X.X%
 • **Volume:** $X.XX (+X.X%)
+
+🗣️ **SOCIAL SENTIMENT:**
+• **Sentiment Score:** X/100 ([level])
+• **Twitter:** X.XK followers
+• **Reddit:** X.XK subscribers | XX comments/posts (48h)
+• **GitHub:** XX commits (4 weeks)
+• **Analysis:** [sentiment analysis text from tool]
 
 ⏱️ **PATTERN DURATION ESTIMATE:**
 • **Estimated Duration:** X-X days/weeks
@@ -271,6 +280,7 @@ Be helpful, accurate, and always provide the complete technical picture.
     // Analysis tools
     marketDataTool,
     technicalAnalysisTool,
+    sentimentTool,
     holdingsTool,
     scannerTool,
     dexscreenerTool,
