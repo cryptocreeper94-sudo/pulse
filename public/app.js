@@ -3822,7 +3822,7 @@ function openSettingsModal() {
   }
 
   // Get current cat enabled state from localStorage
-  const isCatEnabled = localStorage.getItem('cryptoCatEnabled') !== 'false';
+  const isCatEnabled = localStorage.getItem('darkwave_crypto_cat') !== 'false';
 
   const modal = document.createElement('div');
   modal.id = 'settingsModal';
@@ -3918,11 +3918,29 @@ function changeTheme(themeName) {
 
 function toggleCryptoCatFromModal(checkbox) {
   const isEnabled = checkbox.checked;
-  localStorage.setItem('cryptoCatEnabled', isEnabled);
+  state.cryptoCatEnabled = isEnabled;
+  localStorage.setItem('darkwave_crypto_cat', isEnabled);
   
-  // Sync with main toggle
-  const mainToggle = document.getElementById('cryptoCatToggle');
-  if (mainToggle) mainToggle.checked = isEnabled;
+  // Sync with main image toggle
+  const statusIndicator = document.querySelector('.cat-toggle-status .status-indicator');
+  const statusText = document.querySelector('.cat-toggle-text');
+  const catImage = document.getElementById('catToggleImage');
+  
+  if (statusIndicator && statusText && catImage) {
+    if (isEnabled) {
+      statusIndicator.classList.add('active');
+      statusIndicator.textContent = 'ON';
+      statusText.textContent = 'Smart-ass Mode';
+      catImage.style.opacity = '1';
+      catImage.style.filter = 'none';
+    } else {
+      statusIndicator.classList.remove('active');
+      statusIndicator.textContent = 'OFF';
+      statusText.textContent = 'Plain Mode';
+      catImage.style.opacity = '0.4';
+      catImage.style.filter = 'grayscale(100%)';
+    }
+  }
   
   if (!isEnabled) {
     const existingPopup = document.querySelector('.crypto-cat-popup');
@@ -4128,10 +4146,11 @@ function initiatePayment(tier) {
 
 // ===== CRYPTO CAT IMAGE TOGGLE =====
 function toggleCryptoCatImage() {
-  const isCatEnabled = localStorage.getItem('cryptoCatEnabled') !== 'false';
+  const isCatEnabled = localStorage.getItem('darkwave_crypto_cat') !== 'false';
   const newState = !isCatEnabled;
   
-  localStorage.setItem('cryptoCatEnabled', newState);
+  localStorage.setItem('darkwave_crypto_cat', newState);
+  state.cryptoCatEnabled = newState;
   
   const statusIndicator = document.querySelector('.cat-toggle-status .status-indicator');
   const statusText = document.querySelector('.cat-toggle-text');
@@ -4163,7 +4182,7 @@ function toggleCryptoCatImage() {
 
 // Initialize cat toggle state on load
 document.addEventListener('DOMContentLoaded', () => {
-  const isCatEnabled = localStorage.getItem('cryptoCatEnabled') !== 'false';
+  const isCatEnabled = localStorage.getItem('darkwave_crypto_cat') !== 'false';
   const statusIndicator = document.querySelector('.cat-toggle-status .status-indicator');
   const statusText = document.querySelector('.cat-toggle-text');
   const catImage = document.getElementById('catToggleImage');
@@ -6803,6 +6822,9 @@ const CAT_MESSAGES = [
 let catPopupTimeout = null;
 
 function showCryptoCat(customMessage = null) {
+  // Check if Crypto Cat is enabled
+  if (!state.cryptoCatEnabled) return;
+  
   const popup = document.getElementById('cryptoCatPopup');
   const messageEl = document.getElementById('catMessage');
   
@@ -6840,17 +6862,26 @@ function closeCryptoCat() {
 
 // Show Crypto Cat randomly
 function startRandomCatAppearances() {
+  // Check if Crypto Cat is still enabled before scheduling
+  if (!state.cryptoCatEnabled) return;
+  
   // Random appearance every 45-90 seconds
   const randomDelay = 45000 + Math.random() * 45000;
   
   setTimeout(() => {
-    showCryptoCat();
-    startRandomCatAppearances(); // Schedule next appearance
+    if (state.cryptoCatEnabled) {
+      showCryptoCat();
+      startRandomCatAppearances(); // Schedule next appearance
+    }
   }, randomDelay);
 }
 
-// Start random appearances after 30 seconds
-setTimeout(startRandomCatAppearances, 30000);
+// Start random appearances after 30 seconds (only if enabled)
+setTimeout(() => {
+  if (state.cryptoCatEnabled) {
+    startRandomCatAppearances();
+  }
+}, 30000);
 
 // ===== POPULATE NEWSPAPER BOXES WITH LIVE DATA =====
 let marketDataCache = {
@@ -7092,36 +7123,5 @@ universalSearchInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') performUniversalSearch();
 });
 
-// ===== CRYPTO CAT MASTER TOGGLE =====
-const cryptoCatToggle = document.getElementById('cryptoCatToggle');
-let catEnabled = true;
-
-// Load saved preference
-const savedCatPref = localStorage.getItem('cryptoCatEnabled');
-if (savedCatPref !== null) {
-  catEnabled = savedCatPref === 'true';
-  cryptoCatToggle.checked = catEnabled;
-}
-
-cryptoCatToggle.addEventListener('change', (e) => {
-  catEnabled = e.target.checked;
-  localStorage.setItem('cryptoCatEnabled', catEnabled);
-  
-  if (!catEnabled) {
-    const existingPopup = document.querySelector('.crypto-cat-popup');
-    if (existingPopup) existingPopup.remove();
-    showNotification('😿 Crypto Cat is taking a nap', 'info');
-  } else {
-    showNotification('😼 Crypto Cat is back!', 'success');
-    setTimeout(startRandomCatAppearances, 5000);
-  }
-});
-
-// Update showCryptoCat to respect toggle
-const originalShowCryptoCat = window.showCryptoCat;
-window.showCryptoCat = function(message) {
-  if (catEnabled) {
-    originalShowCryptoCat(message);
-  }
-};
+// Legacy crypto cat toggle code removed - now handled by toggleCryptoCatImage()
 
