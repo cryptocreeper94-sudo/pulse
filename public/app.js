@@ -3980,7 +3980,7 @@ function toggleCryptoCatFromModal(checkbox) {
     if (isEnabled) {
       statusIndicator.classList.add('active');
       statusIndicator.textContent = 'ON';
-      statusText.textContent = 'Smart-ass Mode';
+      statusText.textContent = 'Crypto Cat';
       catImage.style.opacity = '1';
       catImage.style.filter = 'none';
     } else {
@@ -4243,7 +4243,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isCatEnabled) {
       statusIndicator.classList.add('active');
       statusIndicator.textContent = 'ON';
-      statusText.textContent = state.catMode === 'smartass' ? 'Smart-ass Mode' : 'Plain Mode';
+      statusText.textContent = 'Crypto Cat';
       catImage.style.opacity = '1';
       catImage.style.filter = 'none';
     } else {
@@ -7782,7 +7782,7 @@ function toggleCatMode() {
   const modeSwitchBtn = document.getElementById('catModeSwitchBtn');
   
   if (modeText) {
-    modeText.textContent = newMode === 'smartass' ? 'Smart-ass Mode' : 'Plain Mode';
+    modeText.textContent = 'Crypto Cat';
   }
   
   if (modeSwitchBtn) {
@@ -7791,7 +7791,7 @@ function toggleCatMode() {
   
   // Show notification
   const notification = newMode === 'smartass' 
-    ? '😼 Smart-ass mode activated! Sarcastic commentary enabled.' 
+    ? '😼 Crypto Cat activated!' 
     : '😺 Plain mode activated! Helpful commentary enabled.';
   showToast(notification);
   
