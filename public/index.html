@@ -42,12 +42,36 @@
     <header class="app-header wave-banner-header">
       <img src="/darkwave-wave-banner.png" alt="DarkWave-V2" class="wave-banner-image">
       <div class="header-actions-overlay">
+        <button class="icon-btn premium-btn" id="subscribeBtn" title="Subscribe" onclick="openSubscriptionPage()" style="background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; font-weight: bold; border: 2px solid #FFF; box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);">👑</button>
         <button class="icon-btn" id="adminBtn" title="Admin" onclick="openAdminLogin()" style="background: linear-gradient(135deg, #FF006E, #8B5CF6); font-weight: bold;">🔐</button>
         <button class="icon-btn" id="walletBtn" title="Wallet">💰</button>
         <button class="icon-btn" id="refreshBtn" title="Refresh">🔄</button>
         <button class="icon-btn" id="settingsBtn" title="Settings">⚙️</button>
       </div>
     </header>
+    
+    <!-- AI Agent Chat Widget (Floating, On All Pages) -->
+    <div class="ai-agent-widget" id="aiAgentWidget">
+      <button class="ai-agent-toggle" id="aiAgentToggle" onclick="toggleAIAgent()">
+        <span class="ai-pulse"></span>
+        🤖 AI
+      </button>
+      <div class="ai-agent-box" id="aiAgentBox" style="display: none;">
+        <div class="ai-agent-header">
+          <h3>💬 DarkWave AI Assistant</h3>
+          <button class="close-btn-sm" onclick="toggleAIAgent()">✕</button>
+        </div>
+        <div class="ai-agent-messages" id="aiAgentMessages">
+          <div class="ai-message">
+            <strong>🤖 DarkWave:</strong> Hello! I can help you analyze tokens, explain metrics, or answer any trading questions. Ask me anything!
+          </div>
+        </div>
+        <div class="ai-agent-input-area">
+          <input type="text" id="aiAgentInput" placeholder="Ask me anything..." onkeypress="if(event.key==='Enter') sendAIMessage()" />
+          <button class="ai-send-btn" onclick="sendAIMessage()">➤</button>
+        </div>
+      </div>
+    </div>
 
     <!-- Trust Status Pill -->
     <div class="card flex justify-between items-center" style="width: calc(100% - 32px); margin: var(--space-md) auto; padding: var(--space-md);">
@@ -72,11 +96,13 @@
 
     <!-- Crypto Cat Master Toggle (Persists Across Pages) -->
     <div class="cat-toggle-container">
-      <label class="cat-toggle">
-        <input type="checkbox" id="cryptoCatToggle" checked />
-        <span class="cat-toggle-slider"></span>
-        <span class="cat-toggle-label">😼 Crypto Cat</span>
-      </label>
+      <div class="cat-image-toggle" id="catImageToggle" onclick="toggleCryptoCatImage()">
+        <img src="/crypto-cat-poses/angry.png" alt="Crypto Cat" class="cat-toggle-image" id="catToggleImage" />
+        <div class="cat-toggle-status" id="catToggleStatus">
+          <span class="status-indicator active">ON</span>
+          <span class="cat-toggle-text">Smart-ass Mode</span>
+        </div>
+      </div>
     </div>
 
     <!-- Tab Navigation -->

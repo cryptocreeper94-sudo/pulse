@@ -3934,6 +3934,257 @@ function toggleCryptoCatFromModal(checkbox) {
   }
 }
 
+// ===== AI AGENT WIDGET FUNCTIONS =====
+function toggleAIAgent() {
+  const aiBox = document.getElementById('aiAgentBox');
+  const aiToggle = document.getElementById('aiAgentToggle');
+  
+  if (aiBox.style.display === 'none') {
+    aiBox.style.display = 'flex';
+    aiToggle.style.display = 'none';
+  } else {
+    aiBox.style.display = 'none';
+    aiToggle.style.display = 'flex';
+  }
+}
+
+async function sendAIMessage() {
+  const input = document.getElementById('aiAgentInput');
+  const messagesContainer = document.getElementById('aiAgentMessages');
+  const message = input.value.trim();
+  
+  if (!message) return;
+  
+  // Add user message
+  const userMsg = document.createElement('div');
+  userMsg.className = 'ai-message user-message';
+  userMsg.innerHTML = `<strong>You:</strong> ${message}`;
+  messagesContainer.appendChild(userMsg);
+  
+  input.value = '';
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  
+  // Add typing indicator
+  const typingDiv = document.createElement('div');
+  typingDiv.className = 'ai-message typing-indicator';
+  typingDiv.innerHTML = '<span></span><span></span><span></span>';
+  messagesContainer.appendChild(typingDiv);
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  
+  try {
+    const response = await fetch('/api/agents/DarkWave-V2/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: [{
+          role: 'user',
+          content: `[HELPFUL ASSISTANT MODE] ${message}`
+        }],
+        userId: state.userId
+      })
+    });
+    
+    const data = await response.json();
+    
+    // Remove typing indicator
+    typingDiv.remove();
+    
+    // Add AI response
+    const aiMsg = document.createElement('div');
+    aiMsg.className = 'ai-message ai-response';
+    aiMsg.innerHTML = `<strong>🤖 DarkWave:</strong> ${data.text || 'Sorry, I encountered an error.'}`;
+    messagesContainer.appendChild(aiMsg);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  } catch (error) {
+    console.error('AI Agent error:', error);
+    typingDiv.remove();
+    const errorMsg = document.createElement('div');
+    errorMsg.className = 'ai-message ai-response';
+    errorMsg.innerHTML = '<strong>🤖 DarkWave:</strong> Connection error. Please try again.';
+    messagesContainer.appendChild(errorMsg);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+}
+
+// ===== SUBSCRIPTION PAGE FUNCTION =====
+function openSubscriptionPage() {
+  const modal = document.createElement('div');
+  modal.className = 'modal-backdrop';
+  modal.innerHTML = `
+    <div class="modal-content subscription-modal" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+      <div class="modal-header">
+        <h2>👑 Upgrade to Premium</h2>
+        <button class="close-btn" onclick="this.closest('.modal-backdrop').remove()">✕</button>
+      </div>
+      
+      <div class="modal-body">
+        <!-- Pricing Tiers -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px;">
+          
+          <!-- Free Tier -->
+          <div class="pricing-card free-tier">
+            <h3 style="margin: 0 0 10px 0; color: var(--text-secondary);">Free Trial</h3>
+            <div class="price-tag">
+              <span class="price">$0</span>
+              <span class="period">/forever</span>
+            </div>
+            <ul class="feature-list">
+              <li>✓ 10 searches per day</li>
+              <li>✓ Basic charts</li>
+              <li>✓ 3 price alerts</li>
+              <li>✓ Standard support</li>
+              <li>✗ Advanced analytics</li>
+              <li>✗ Unlimited searches</li>
+            </ul>
+            <button class="btn-tier current-plan" disabled>Current Plan</button>
+          </div>
+          
+          <!-- Basic Tier -->
+          <div class="pricing-card basic-tier">
+            <h3 style="margin: 0 0 10px 0; color: #60A5FA;">Basic</h3>
+            <div class="price-tag">
+              <span class="price">$2</span>
+              <span class="period">/month</span>
+            </div>
+            <ul class="feature-list">
+              <li>✓ 50 searches per day</li>
+              <li>✓ Advanced charts</li>
+              <li>✓ 10 price alerts</li>
+              <li>✓ Priority support</li>
+              <li>✓ NFT analysis</li>
+              <li>✗ Unlimited searches</li>
+            </ul>
+            <button class="btn-tier basic-btn" onclick="initiatePayment('basic')">Select Basic</button>
+          </div>
+          
+          <!-- Premium Tier (Recommended) -->
+          <div class="pricing-card premium-tier recommended">
+            <div class="recommended-badge">⭐ RECOMMENDED</div>
+            <h3 style="margin: 0 0 10px 0; color: #FFD700;">Premium</h3>
+            <div class="price-tag">
+              <span class="price">$5</span>
+              <span class="period">/month</span>
+            </div>
+            <ul class="feature-list">
+              <li>✓ Unlimited searches</li>
+              <li>✓ Advanced charts & indicators</li>
+              <li>✓ Unlimited price alerts</li>
+              <li>✓ VIP support</li>
+              <li>✓ NFT & DEX analysis</li>
+              <li>✓ Predictive analytics</li>
+              <li>✓ Rug-risk detection</li>
+              <li>✓ DWLP token presale access</li>
+            </ul>
+            <button class="btn-tier premium-btn" onclick="initiatePayment('premium')">Select Premium</button>
+          </div>
+        </div>
+        
+        <!-- Payment Methods -->
+        <div style="margin-top: 40px; padding: 20px; background: rgba(255, 255, 255, 0.05); border-radius: 12px;">
+          <h3 style="margin: 0 0 20px 0; text-align: center;">Secure Payment Options</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+            
+            <!-- Stripe Payment -->
+            <div class="payment-option">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" alt="Stripe" style="height: 30px; margin-bottom: 12px;" />
+              <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">
+                Credit & Debit Cards<br/>
+                <small>Powered by Stripe</small>
+              </p>
+            </div>
+            
+            <!-- Coinbase Commerce -->
+            <div class="payment-option">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/1/1a/Coinbase.svg" alt="Coinbase" style="height: 30px; margin-bottom: 12px;" />
+              <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">
+                Crypto Payments<br/>
+                <small>Powered by Coinbase Commerce</small>
+              </p>
+            </div>
+          </div>
+          
+          <p style="text-align: center; margin: 20px 0 0 0; font-size: 0.75rem; color: var(--text-tertiary);">
+            🔒 All transactions are encrypted and secure. Cancel anytime.
+          </p>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Close on background click
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.remove();
+    }
+  });
+}
+
+function initiatePayment(tier) {
+  showNotification(`Payment processing for ${tier} plan coming soon! Integration with Stripe/Coinbase pending.`, 'info');
+  // TODO: Integrate actual Stripe/Coinbase payment flow
+}
+
+// ===== CRYPTO CAT IMAGE TOGGLE =====
+function toggleCryptoCatImage() {
+  const isCatEnabled = localStorage.getItem('cryptoCatEnabled') !== 'false';
+  const newState = !isCatEnabled;
+  
+  localStorage.setItem('cryptoCatEnabled', newState);
+  
+  const statusIndicator = document.querySelector('.cat-toggle-status .status-indicator');
+  const statusText = document.querySelector('.cat-toggle-text');
+  const catImage = document.getElementById('catToggleImage');
+  
+  if (newState) {
+    // ON - Smart-ass mode
+    statusIndicator.classList.add('active');
+    statusIndicator.textContent = 'ON';
+    statusText.textContent = 'Smart-ass Mode';
+    catImage.style.opacity = '1';
+    catImage.style.filter = 'none';
+    showNotification('😼 Crypto Cat smart-ass mode activated!', 'success');
+    setTimeout(startRandomCatAppearances, 5000);
+  } else {
+    // OFF - Plain mode
+    statusIndicator.classList.remove('active');
+    statusIndicator.textContent = 'OFF';
+    statusText.textContent = 'Plain Mode';
+    catImage.style.opacity = '0.4';
+    catImage.style.filter = 'grayscale(100%)';
+    const existingPopup = document.querySelector('.crypto-cat-popup');
+    if (existingPopup) existingPopup.remove();
+    showNotification('😿 Crypto Cat taking a nap - plain mode', 'info');
+  }
+  
+  if (tg) tg.HapticFeedback?.impactOccurred('medium');
+}
+
+// Initialize cat toggle state on load
+document.addEventListener('DOMContentLoaded', () => {
+  const isCatEnabled = localStorage.getItem('cryptoCatEnabled') !== 'false';
+  const statusIndicator = document.querySelector('.cat-toggle-status .status-indicator');
+  const statusText = document.querySelector('.cat-toggle-text');
+  const catImage = document.getElementById('catToggleImage');
+  
+  if (statusIndicator && statusText && catImage) {
+    if (isCatEnabled) {
+      statusIndicator.classList.add('active');
+      statusIndicator.textContent = 'ON';
+      statusText.textContent = 'Smart-ass Mode';
+      catImage.style.opacity = '1';
+      catImage.style.filter = 'none';
+    } else {
+      statusIndicator.classList.remove('active');
+      statusIndicator.textContent = 'OFF';
+      statusText.textContent = 'Plain Mode';
+      catImage.style.opacity = '0.4';
+      catImage.style.filter = 'grayscale(100%)';
+    }
+  }
+});
+
 document.getElementById('walletBtn')?.addEventListener('click', () => {
   switchTab('wallet');
   if (tg) tg.HapticFeedback?.impactOccurred('light');
