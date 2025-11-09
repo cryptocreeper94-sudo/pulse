@@ -1293,7 +1293,7 @@ option {
    GLOBAL CONSISTENCY - Rounded Edges & Widths
    =========================================== */
 
-/* Unified container system with neon blue frame */
+/* Unified container system - all same size */
 .cmc-stats-bar,
 .category-nav,
 .tab-nav,
@@ -1304,37 +1304,26 @@ option {
 .search-container,
 .blockchain-filter {
   border-radius: var(--radius-lg);
-  width: calc(100% - 32px);
-  max-width: 1200px;
-  margin: var(--space-md) auto;
+  width: 100%;
   background: var(--bg-secondary);
-  border: 2px solid transparent;
-  border-left: 4px solid var(--primary);
-  box-shadow: 
-    var(--shadow-md),
-    -4px 0 12px rgba(59, 130, 246, 0.3);
+  border: 1px solid var(--border-primary);
+  margin-bottom: var(--space-md);
   position: relative;
 }
 
-/* Add glow effect to frame */
-.cmc-stats-bar::before,
-.category-nav::before,
-.tab-nav::before,
-.market-overview-container::before,
-.trending-carousel::before,
-.featured-banner::before,
-.pirate-flag-banner::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(135deg, var(--primary) 0%, transparent 50%, var(--primary) 100%);
+/* Main content wrapper with neon blue frame */
+.app-main {
+  width: calc(100% - 32px);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-lg);
+  border: 3px solid var(--primary);
   border-radius: var(--radius-lg);
-  opacity: 0.15;
-  z-index: -1;
-  pointer-events: none;
+  box-shadow: 
+    0 0 20px rgba(59, 130, 246, 0.5),
+    0 0 40px rgba(59, 130, 246, 0.3),
+    inset 0 0 20px rgba(59, 130, 246, 0.1);
+  background: rgba(15, 23, 42, 0.6);
 }
 
 /* Stats and category bars need horizontal scroll, not hidden */
