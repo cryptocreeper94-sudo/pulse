@@ -99,6 +99,25 @@
       <div class="search-suggestions" id="searchSuggestions" style="display: none;"></div>
     </div>
 
+    <!-- Category Navigation Menu -->
+    <div class="category-nav-container">
+      <button class="category-btn active" data-category="trending" onclick="selectCategory('trending')">
+        🔥 Trending
+      </button>
+      <button class="category-btn" data-category="dex" onclick="selectCategory('dex')">
+        💱 DEX Pairs
+      </button>
+      <button class="category-btn" data-category="defi" onclick="selectCategory('defi')">
+        🏦 DeFi
+      </button>
+      <button class="category-btn" data-category="meme" onclick="selectCategory('meme')">
+        🐕 Meme
+      </button>
+      <button class="category-btn" data-category="bluechip" onclick="selectCategory('bluechip')">
+        💎 Blue Chip
+      </button>
+    </div>
+
     <!-- Crypto Cat Master Toggle (Persists Across Pages) -->
     <div class="cat-toggle-container">
       <div class="cat-image-toggle" id="catImageToggle" onclick="toggleCryptoCatImage()">

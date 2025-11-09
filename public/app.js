@@ -7537,3 +7537,133 @@ function closeDetailedAnalysis() {
     tg.HapticFeedback?.impactOccurred('light');
   }
 }
+
+// ===== CATEGORY NAVIGATION =====
+let currentCategory = 'trending';
+
+function selectCategory(category) {
+  currentCategory = category;
+  
+  // Update button states
+  document.querySelectorAll('.category-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  document.querySelector(`[data-category="${category}"]`).classList.add('active');
+  
+  // Show toast with category name
+  const categoryNames = {
+    'trending': '🔥 Trending Tokens',
+    'dex': '💱 DEX Pairs',
+    'defi': '🏦 DeFi Tokens',
+    'meme': '🐕 Meme Coins',
+    'bluechip': '💎 Blue Chip Tokens'
+  };
+  
+  showToast(`Loading ${categoryNames[category]}...`);
+  
+  // Trigger haptic feedback on Telegram
+  if (tg) {
+    tg.HapticFeedback?.impactOccurred('light');
+  }
+  
+  console.log(`Selected category: ${category}`);
+  
+  // Load category-specific trending data
+  loadCategoryData(category);
+}
+
+async function loadCategoryData(category) {
+  console.log(`📊 Loading data for category: ${category}`);
+  
+  const container = document.getElementById('analysisResult');
+  if (!container) return;
+  
+  // Show loading state
+  container.innerHTML = `
+    <div style="text-align: center; padding: 40px 0; color: var(--text-secondary);">
+      <div style="font-size: 2rem; margin-bottom: 12px;">📊</div>
+      <div>Loading ${category} tokens...</div>
+    </div>
+  `;
+  
+  try {
+    // Category-specific token lists
+    const categoryTokens = {
+      'trending': ['BTC', 'ETH', 'SOL', 'AVAX', 'MATIC'],
+      'dex': ['UNI', 'SUSHI', 'CAKE', 'JOE', 'DYDX'],
+      'defi': ['AAVE', 'MKR', 'COMP', 'CRV', 'YFI'],
+      'meme': ['DOGE', 'SHIB', 'PEPE', 'FLOKI', 'BONK'],
+      'bluechip': ['BTC', 'ETH', 'BNB', 'XRP', 'ADA']
+    };
+    
+    const tokens = categoryTokens[category] || categoryTokens['trending'];
+    
+    // Build category view with token cards
+    let html = `
+      <div style="margin: 20px 0;">
+        <h3 style="color: var(--primary); font-size: 1.2rem; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+          ${category === 'trending' ? '🔥' : category === 'dex' ? '💱' : category === 'defi' ? '🏦' : category === 'meme' ? '🐕' : '💎'}
+          ${category.charAt(0).toUpperCase() + category.slice(1)} Tokens
+        </h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px;">
+    `;
+    
+    for (const token of tokens) {
+      html += `
+        <div class="category-token-card" onclick="searchToken('${token}')" style="
+          background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05));
+          border: 1px solid rgba(59, 130, 246, 0.3);
+          border-radius: 12px;
+          padding: 16px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        ">
+          <div style="font-size: 1.5rem; text-align: center; margin-bottom: 8px;">
+            ${token === 'BTC' ? '₿' : token === 'ETH' ? '⟠' : token === 'SOL' ? '◎' : '🪙'}
+          </div>
+          <div style="font-weight: 600; color: var(--text-primary); text-align: center; font-size: 1rem;">
+            ${token}
+          </div>
+          <div style="font-size: 0.75rem; color: var(--text-secondary); text-align: center; margin-top: 4px;">
+            Tap to Analyze
+          </div>
+        </div>
+      `;
+    }
+    
+    html += `
+        </div>
+        <div style="margin-top: 20px; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 8px; text-align: center; color: var(--text-secondary);">
+          💡 Click any token to analyze, or use the search bar above
+        </div>
+      </div>
+    `;
+    
+    container.innerHTML = html;
+    console.log(`✅ Loaded ${tokens.length} tokens for ${category} category`);
+    
+  } catch (error) {
+    console.error('Category data loading error:', error);
+    container.innerHTML = `
+      <div style="text-align: center; padding: 40px 0; color: var(--text-secondary);">
+        <div style="font-size: 2rem; margin-bottom: 12px;">⚠️</div>
+        <div>Failed to load category data</div>
+      </div>
+    `;
+  }
+}
+
+// Helper function to search a token from category view
+function searchToken(ticker) {
+  const searchInput = document.getElementById('universalSearchInput');
+  if (searchInput) {
+    searchInput.value = ticker;
+    performUniversalSearch();
+  }
+}
+
+// Initialize with default category on page load
+setTimeout(() => {
+  loadCategoryData('trending');
+  console.log('📊 Category navigation initialized with Trending');
+}, 2000);
