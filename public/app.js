@@ -3224,23 +3224,35 @@ async function loadMarketSnapshots() {
 async function loadSingleMarketView(category) {
   const tableBody = document.getElementById('marketTableBody');
   
+  // Check cache first (5-minute cache)
+  const cacheKey = `market_${category}`;
+  const cached = localStorage.getItem(cacheKey);
+  const cacheTime = localStorage.getItem(`${cacheKey}_time`);
+  
+  if (cached && cacheTime && (Date.now() - parseInt(cacheTime)) < 5 * 60 * 1000) {
+    console.log('📦 Using cached data for', category);
+    const data = JSON.parse(cached);
+    renderCMCTable(data);
+    return;
+  }
+  
   // Show loading
   tableBody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 30px;"><div class="spinner"></div></td></tr>';
   
   try {
     let url = '';
     
-    // Build API URL based on category
+    // Build API URL based on category - REDUCED per_page for faster loading
     if (category === 'top') {
-      url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&sparkline=true&price_change_percentage=1h,24h,7d';
+      url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&sparkline=true&price_change_percentage=1h,24h,7d';
     } else if (category === 'trending') {
-      url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=volume_desc&per_page=100&sparkline=true&price_change_percentage=1h,24h,7d';
+      url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=volume_desc&per_page=50&sparkline=true&price_change_percentage=1h,24h,7d';
     } else if (category === 'gainers') {
-      url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&sparkline=true&price_change_percentage=1h,24h,7d';
+      url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&sparkline=true&price_change_percentage=1h,24h,7d';
     } else if (category === 'losers') {
-      url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&sparkline=true&price_change_percentage=1h,24h,7d';
+      url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&sparkline=true&price_change_percentage=1h,24h,7d';
     } else if (category === 'new') {
-      url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=gecko_desc&per_page=100&sparkline=true&price_change_percentage=1h,24h,7d';
+      url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=gecko_desc&per_page=50&sparkline=true&price_change_percentage=1h,24h,7d';
     } else if (category === 'defi') {
       const defiIds = 'uniswap,aave,maker,lido-dao,curve-dao-token,compound-governance-token,pancakeswap-token,synthetix-network-token,yearn-finance,sushi,thorchain,convex-finance,frax-share,rocket-pool,balancer,1inch,0x,raydium,gmx,ribbon-finance';
       url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${defiIds}&order=market_cap_desc&per_page=50&sparkline=true&price_change_percentage=1h,24h,7d`;
@@ -3251,6 +3263,10 @@ async function loadSingleMarketView(category) {
     
     const response = await fetch(url);
     let data = await response.json();
+    
+    // Cache the data
+    localStorage.setItem(cacheKey, JSON.stringify(data));
+    localStorage.setItem(`${cacheKey}_time`, Date.now().toString());
     
     // Filter/sort data based on category
     if (category === 'gainers') {

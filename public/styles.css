@@ -755,7 +755,9 @@ a:hover {
 /* Header */
 .app-header.wave-banner-header {
   position: relative;
-  margin-top: 0;
+  margin: var(--space-md) auto;
+  width: calc(100% - 32px);
+  max-width: 1200px;
   background: transparent;
 }
 
@@ -764,7 +766,8 @@ a:hover {
   height: auto;
   display: block;
   border-radius: var(--radius-lg);
-  box-shadow: 0 4px 20px rgba(230, 57, 70, 0.3);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.6);
+  border: 2px solid var(--primary);
 }
 
 .header-actions-overlay {
