@@ -1302,12 +1302,31 @@ option {
 .featured-banner,
 .pirate-flag-banner,
 .search-container,
+.blockchain-filter,
+.content-grid,
+.glossary-content,
+.quick-picks-section,
+.analysis-result {
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: var(--space-md);
+}
+
+/* Add consistent styling to containers that need it */
+.cmc-stats-bar,
+.category-nav,
+.tab-nav,
+.market-overview-container,
+.trending-carousel,
+.featured-banner,
+.pirate-flag-banner,
+.search-container,
 .blockchain-filter {
   border-radius: var(--radius-lg);
-  width: 100%;
   background: var(--bg-secondary);
   border: 1px solid var(--border-primary);
-  margin-bottom: var(--space-md);
   position: relative;
 }
 
