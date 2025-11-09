@@ -954,7 +954,7 @@ a:hover {
 
 .cmc-stats-bar {
   display: grid;
-  grid-template-columns: 1.2fr 0.9fr 1.1fr 0.8fr; /* Irregular widths for unique, eye-catching depth */
+  grid-template-columns: repeat(4, 1fr); /* Equal size boxes in same section */
   gap: var(--space-sm);
   padding: 0;
   background: transparent;
@@ -1018,12 +1018,10 @@ a:hover {
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 
-    0 0 20px rgba(59, 130, 246, 0.5),
-    0 0 40px rgba(59, 130, 246, 0.3),
-    0 4px 15px rgba(0, 0, 0, 0.3);
+  object-fit: contain; /* Preserve logo transparency */
+  background: transparent; /* Transparent background */
+  border: none; /* No border - just show the red circle with DW */
+  box-shadow: none; /* No glow - keep it clean */
   animation: float 3s ease-in-out infinite;
   flex-shrink: 0;
 }
@@ -1680,7 +1678,7 @@ table {
   }
 
   .cmc-stats-bar {
-    grid-template-columns: 1.2fr 0.9fr 1.1fr 0.8fr; /* Keep irregular sizing on mobile */
+    grid-template-columns: repeat(4, 1fr); /* Equal size boxes */
     gap: 6px;
   }
 
@@ -1825,7 +1823,7 @@ table {
 @media (max-width: 480px) {
   /* Even more compact on small phones - tight side-by-side */
   .cmc-stats-bar {
-    grid-template-columns: 1.2fr 0.9fr 1.1fr 0.8fr; /* Keep irregular sizing on small mobile too */
+    grid-template-columns: repeat(4, 1fr); /* Equal size boxes */
     gap: 4px;
   }
 
