@@ -1,0 +1,75 @@
+/**
+ * 🛠️ UI Repair Block: Restores button functionality and data loading
+ * 🧠 Agent must apply these fixes immediately to restore core interactivity.
+ */
+
+export const uiRepair = {
+  status: "approved",
+  tasks: [
+    {
+      id: "button-wiring",
+      description: "Wire buttons to JS functions using addEventListener.",
+      files: ["scripts/ui.js", "public/index.html"],
+      code: `
+// public/index.html
+<button id="submit-button">Submit Token</button>
+
+// scripts/ui.js
+window.addEventListener("DOMContentLoaded", () => {
+  const submitBtn = document.getElementById("submit-button");
+  if (submitBtn) {
+    submitBtn.addEventListener("click", () => {
+      console.log("Crypto Cat received your token.");
+      submitToken();
+    });
+  }
+});
+
+function submitToken() {
+  // Token submission logic here
+}
+`
+    },
+    {
+      id: "script-loading",
+      description: "Ensure scripts load properly after DOM is ready.",
+      files: ["public/index.html"],
+      code: `
+// public/index.html (before </body>)
+<script type="module" src="scripts/ui.js"></script>
+`
+    },
+    {
+      id: "dom-safety",
+      description: "Wrap all DOM access in DOMContentLoaded.",
+      files: ["scripts/*.js"],
+      code: `
+// scripts/example.js
+window.addEventListener("DOMContentLoaded", () => {
+  const el = document.getElementById("some-element");
+  if (el) {
+    // Safe logic here
+  }
+});
+`
+    },
+    {
+      id: "error-feedback",
+      description: "Add fallback UI and console logs for broken flows.",
+      files: ["components/Feedback.html", "scripts/wallet.js", "scripts/payments.js"],
+      code: `
+// components/Feedback.html
+<div id="error-message" style="display:none; color:red;">
+  Something went wrong. Crypto Cat is investigating.
+</div>
+
+// scripts/wallet.js
+console.error("Crypto Cat is confused: wallet failed to connect");
+
+// scripts/payments.js
+console.error("Crypto Cat is hissing: payment error detected");
+document.getElementById("error-message").style.display = "block";
+`
+    }
+  ]
+};
