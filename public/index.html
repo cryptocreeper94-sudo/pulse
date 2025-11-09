@@ -111,49 +111,47 @@
     <div class="tab-content">
       <!-- Analysis Tab -->
       <div id="analysis" class="tab-pane active">
-        <!-- Stats Bar with Logo -->
-        <div class="cmc-stats-container">
-          <!-- CMC-Style Top Stats Bar -->
-          <div class="cmc-stats-bar">
-            <div class="cmc-stat-item">
-              <span class="stat-emoji">😨</span>
-              <span class="cmc-stat-label">Fear & Greed</span>
-              <span class="cmc-stat-value" id="cmcFearGreed">25</span>
-              <span class="cmc-stat-change neutral">Fear</span>
-            </div>
-            <div class="cmc-stat-item">
-              <span class="stat-emoji">🔄</span>
-              <span class="cmc-stat-label">Altcoin Season</span>
-              <span class="cmc-stat-value" id="cmcAltSeason">29/100</span>
-              <span class="cmc-stat-change neutral">Bitcoin</span>
-            </div>
-            <div class="cmc-stat-item">
-              <span class="stat-emoji">📊</span>
-              <span class="cmc-stat-label">Avg Crypto RSI</span>
-              <span class="cmc-stat-value" id="cmcAvgRSI">53.1</span>
-              <span class="cmc-stat-change neutral">Neutral</span>
-            </div>
-            <div class="cmc-stat-item">
-              <span class="stat-emoji">💰</span>
-              <span class="cmc-stat-label">Market Cap</span>
-              <span class="cmc-stat-value" id="cmcTotalMarketCap">$3.43T</span>
-              <span class="cmc-stat-change positive" id="cmcMarketCapChange">+0.48%</span>
-            </div>
+        <!-- Stats Bar with Logo in Center -->
+        <div class="cmc-stats-bar">
+          <div class="cmc-stat-item">
+            <span class="stat-icon">⚡</span>
+            <span class="cmc-stat-label">Fear & Greed</span>
+            <span class="cmc-stat-value" id="cmcFearGreed">25</span>
+            <span class="cmc-stat-change neutral">Fear</span>
+          </div>
+          <div class="cmc-stat-item">
+            <span class="stat-icon">🌊</span>
+            <span class="cmc-stat-label">Altcoin Season</span>
+            <span class="cmc-stat-value" id="cmcAltSeason">29/100</span>
+            <span class="cmc-stat-change neutral">Bitcoin</span>
           </div>
           
-          <!-- Floating DarkWave Logo -->
-          <img src="/darkwave-coin.png" alt="DarkWave" class="darkwave-logo">
+          <!-- DarkWave Logo (Center) -->
+          <a href="https://www.cryptocathouse.com" target="_blank" rel="noopener noreferrer" class="logo-link">
+            <img src="/darkwave-coin.png" alt="DarkWave" class="darkwave-logo">
+          </a>
+          
+          <div class="cmc-stat-item">
+            <span class="stat-icon">📈</span>
+            <span class="cmc-stat-label">Avg RSI</span>
+            <span class="cmc-stat-value" id="cmcAvgRSI">53.1</span>
+            <span class="cmc-stat-change neutral">Neutral</span>
+          </div>
+          <div class="cmc-stat-item">
+            <span class="stat-icon">💎</span>
+            <span class="cmc-stat-label">Market Cap</span>
+            <span class="cmc-stat-value" id="cmcTotalMarketCap">$3.43T</span>
+            <span class="cmc-stat-change positive" id="cmcMarketCapChange">+0.48%</span>
+          </div>
         </div>
 
         <!-- Asset Class Toggle (Stocks vs Crypto) -->
         <div class="asset-class-nav">
           <button class="asset-class-btn active" data-asset="crypto">
-            <span class="asset-icon">🪙</span>
-            <span class="asset-label">Cryptocurrency</span>
+            <span class="asset-toggle-text">🪙 Cryptocurrency</span>
           </button>
           <button class="asset-class-btn" data-asset="stocks">
-            <span class="asset-icon">📊</span>
-            <span class="asset-label">Stocks</span>
+            <span class="asset-toggle-text">📊 Stocks</span>
           </button>
         </div>
 
