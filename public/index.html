@@ -85,15 +85,16 @@
     
     <!-- Universal Web3 Search Box (Appears on All Pages) -->
     <div class="universal-search-container">
-      <div class="search-box-wrapper">
+      <div class="search-box-wrapper-oval">
+        <span class="search-icon">🔍</span>
         <input 
           type="text" 
           id="universalSearchInput" 
-          class="universal-search-input" 
-          placeholder="🔍 Search any token, stock, NFT, or contract address..."
+          class="universal-search-input-oval" 
+          placeholder="Search token here..."
           autocomplete="off"
         />
-        <button id="universalSearchBtn" class="universal-search-btn">Analyze</button>
+        <button id="universalSearchBtn" class="universal-search-btn-oval">Analyze</button>
       </div>
       <div class="search-suggestions" id="searchSuggestions" style="display: none;"></div>
     </div>
@@ -1871,6 +1872,28 @@
         <button class="tool-btn" onclick="clearDrawings()" title="Clear All Drawings">
           🗑️ Clear
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Analysis Modal -->
+  <div id="detailedAnalysisModal" class="stat-modal" style="z-index: 10001;">
+    <div class="stat-modal-content" style="max-width: 95vw; width: 700px; max-height: 90vh; overflow-y: auto;">
+      <button class="stat-modal-close" onclick="closeDetailedAnalysis()">&times;</button>
+      <div class="stat-modal-header" style="margin-bottom: 20px;">
+        <div class="stat-modal-icon">📊</div>
+        <h2 class="stat-modal-title" id="detailedAnalysisTicker">Token Analysis</h2>
+      </div>
+      
+      <div id="detailedAnalysisContent" style="color: var(--text-primary);">
+        <!-- Content will be populated dynamically -->
+      </div>
+      
+      <div class="stat-modal-cat" style="margin-top: 24px;">
+        <img src="/crypto-cat-poses/pointing.png" alt="Crypto Cat" class="stat-modal-cat-icon">
+        <div class="stat-modal-cat-text" id="detailedAnalysisCatComment">
+          "Click the 'Analyze' button to load my full analysis. I'll tell you what to do." - Crypto Cat
+        </div>
       </div>
     </div>
   </div>

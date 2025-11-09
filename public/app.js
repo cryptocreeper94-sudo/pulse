@@ -1285,10 +1285,16 @@ function displayAnalysis(data) {
   card.className = 'analysis-card';
   card.style.cssText = 'animation: slideUp 0.3s ease-out;';
   
+  // Store analysis data for detailed modal
+  window.currentAnalysisData = data;
+  
   card.innerHTML = `
     <div class="analysis-header">
       <div>
-        <div class="ticker-name">${data.ticker}</div>
+        <div class="ticker-name-clickable" onclick="openDetailedAnalysis()" style="cursor: pointer; transition: all 0.3s ease;">
+          <div class="ticker-name" style="display: inline-block;">${data.ticker}</div>
+          <div style="font-size: 0.7rem; color: rgba(59, 130, 246, 0.8); margin-top: 2px;">📊 Click for Full Analysis</div>
+        </div>
         <div class="price-value">$${data.price?.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) || '0.00'}</div>
         <div class="price-change ${priceChangeClass}">
           ${priceChange >= 0 ? '+' : ''}${priceChange.toFixed(2)}% (${data.priceChangeDollar >= 0 ? '+' : ''}$${Math.abs(data.priceChangeDollar).toFixed(2)})
@@ -7405,3 +7411,129 @@ setInterval(() => {
   updateMarketPulse();
 }, 120000);
 
+
+// ===== DETAILED ANALYSIS MODAL =====
+function openDetailedAnalysis() {
+  const modal = document.getElementById('detailedAnalysisModal');
+  const titleEl = document.getElementById('detailedAnalysisTicker');
+  const contentEl = document.getElementById('detailedAnalysisContent');
+  const catCommentEl = document.getElementById('detailedAnalysisCatComment');
+  
+  const data = window.currentAnalysisData;
+  if (!data) {
+    showToast('No analysis data available');
+    return;
+  }
+  
+  titleEl.textContent = `${data.ticker} - Full Analysis`;
+  
+  // Build detailed analysis content
+  const signal = data.recommendation || 'HOLD';
+  const signalClass = signal.includes('BUY') ? 'buy' : signal.includes('SELL') ? 'sell' : 'hold';
+  const signalColor = signal.includes('BUY') ? '#00FF88' : signal.includes('SELL') ? '#FF4444' : '#FFD700';
+  
+  let analysisHTML = `
+    <div style="background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(147, 51, 234, 0.1)); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 2px solid ${signalColor}40;">
+      <h3 style="margin: 0 0 12px 0; color: ${signalColor}; font-size: 1.5rem; display: flex; align-items: center; gap: 12px;">
+        ${signal.includes('BUY') ? '🟢' : signal.includes('SELL') ? '🔴' : '🟡'}
+        ${signal}
+      </h3>
+      <p style="margin: 0; font-size: 0.95rem; color: var(--text-secondary);">
+        Current Price: <strong style="color: var(--text-primary);">$${data.price?.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) || '0.00'}</strong>
+      </p>
+      <p style="margin: 8px 0 0 0; font-size: 0.95rem; color: var(--text-secondary);">
+        24h Change: <strong style="color: ${data.priceChange >= 0 ? '#00FF88' : '#FF4444'};">${data.priceChange >= 0 ? '+' : ''}${data.priceChange?.toFixed(2)}%</strong>
+      </p>
+    </div>
+  `;
+  
+  // Technical Indicators
+  if (data.technicalIndicators) {
+    analysisHTML += `
+      <h3 style="margin: 24px 0 12px 0; color: var(--primary); font-size: 1.1rem;">📈 Technical Indicators</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px;">
+    `;
+    
+    const indicators = data.technicalIndicators;
+    if (indicators.rsi !== undefined) {
+      const rsiColor = indicators.rsi > 70 ? '#FF4444' : indicators.rsi < 30 ? '#00FF88' : '#FFD700';
+      analysisHTML += `
+        <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; border-left: 4px solid ${rsiColor};">
+          <div style="font-size: 0.75rem; color: var(--text-tertiary); margin-bottom: 4px;">RSI (14)</div>
+          <div style="font-size: 1.2rem; font-weight: 600; color: ${rsiColor};">${indicators.rsi.toFixed(2)}</div>
+          <div style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 4px;">
+            ${indicators.rsi > 70 ? 'Overbought' : indicators.rsi < 30 ? 'Oversold' : 'Neutral'}
+          </div>
+        </div>
+      `;
+    }
+    
+    if (indicators.macd !== undefined) {
+      analysisHTML += `
+        <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; border-left: 4px solid var(--primary);">
+          <div style="font-size: 0.75rem; color: var(--text-tertiary); margin-bottom: 4px;">MACD</div>
+          <div style="font-size: 1.2rem; font-weight: 600; color: var(--text-primary);">${indicators.macd.toFixed(4)}</div>
+        </div>
+      `;
+    }
+    
+    if (indicators.ema20 !== undefined) {
+      analysisHTML += `
+        <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; border-left: 4px solid #00FF88;">
+          <div style="font-size: 0.75rem; color: var(--text-tertiary); margin-bottom: 4px;">EMA (20)</div>
+          <div style="font-size: 1.2rem; font-weight: 600; color: #00FF88;">$${indicators.ema20.toFixed(2)}</div>
+        </div>
+      `;
+    }
+    
+    if (indicators.volume !== undefined) {
+      analysisHTML += `
+        <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; border-left: 4px solid #8B5CF6;">
+          <div style="font-size: 0.75rem; color: var(--text-tertiary); margin-bottom: 4px;">24h Volume</div>
+          <div style="font-size: 1.2rem; font-weight: 600; color: #8B5CF6;">$${formatVolume(indicators.volume)}</div>
+        </div>
+      `;
+    }
+    
+    analysisHTML += `</div>`;
+  }
+  
+  // Reasoning/Analysis
+  if (data.reasoning) {
+    analysisHTML += `
+      <h3 style="margin: 24px 0 12px 0; color: var(--primary); font-size: 1.1rem;">🧠 Analysis Reasoning</h3>
+      <div style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; margin-bottom: 20px; line-height: 1.6;">
+        ${data.reasoning}
+      </div>
+    `;
+  }
+  
+  contentEl.innerHTML = analysisHTML;
+  
+  // Crypto Cat sarcastic comment based on recommendation
+  const catComments = {
+    'BUY': `"Alright, ${data.ticker} is looking decent. But don't come crying to me when it dumps tomorrow. I told you what to do." - Crypto Cat`,
+    'STRONG BUY': `"Yeah, ${data.ticker} looks good. Go ahead and FOMO in. Just remember: I was right, and you'll probably still mess it up somehow." - Crypto Cat`,
+    'SELL': `"Time to dump ${data.ticker} before you lose your shirt. But hey, you probably won't listen anyway. You never do." - Crypto Cat`,
+    'STRONG SELL': `"Get out of ${data.ticker} NOW. Seriously. Even I wouldn't touch this garbage with a ten-foot pole. But you'll probably hold anyway." - Crypto Cat`,
+    'HOLD': `"Just HODL ${data.ticker} and stop checking the charts every 5 minutes. You're stressing me out more than yourself." - Crypto Cat`
+  };
+  catCommentEl.textContent = catComments[signal] || `"Not sure what to tell you about ${data.ticker}. Maybe flip a coin?" - Crypto Cat`;
+  
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  
+  if (tg) {
+    tg.HapticFeedback?.impactOccurred('medium');
+  }
+}
+
+function closeDetailedAnalysis() {
+  const modal = document.getElementById('detailedAnalysisModal');
+  modal.style.display = 'none';
+  document.body.style.overflow = '';
+  
+  if (tg) {
+    tg.HapticFeedback?.impactOccurred('light');
+  }
+}
