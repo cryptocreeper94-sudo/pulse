@@ -3489,15 +3489,34 @@ async function loadMarketSnapshots() {
 async function loadSingleMarketView(category) {
   const tableBody = document.getElementById('marketTableBody');
   
-  // Check cache first (5-minute cache)
-  const cacheKey = `market_${category}`;
+  // Get current asset class from state (crypto or stocks)
+  const assetClass = state.assetClass || 'crypto';
+  
+  // NFT rendering is special (crypto-only)
+  if (category === 'nft') {
+    if (assetClass === 'crypto') {
+      renderNFTTable();
+      return;
+    } else {
+      // Stocks don't have NFTs, show empty message
+      tableBody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 30px; color: var(--text-secondary);">NFT category not available for stocks</td></tr>';
+      return;
+    }
+  }
+  
+  // Check cache first (5-minute cache) - include assetClass in cache key
+  const cacheKey = `market_${assetClass}_${category}`;
   const cached = localStorage.getItem(cacheKey);
   const cacheTime = localStorage.getItem(`${cacheKey}_time`);
   
   if (cached && cacheTime && (Date.now() - parseInt(cacheTime)) < 5 * 60 * 1000) {
-    console.log('📦 Using cached data for', category);
+    console.log(`📦 Using cached data for ${assetClass}/${category}`);
     const data = JSON.parse(cached);
-    renderCMCTable(data);
+    if (assetClass === 'stocks') {
+      renderStocksTable(data);
+    } else {
+      renderCMCTable(data);
+    }
     return;
   }
   
@@ -3505,51 +3524,33 @@ async function loadSingleMarketView(category) {
   tableBody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 30px;"><div class="spinner"></div></td></tr>';
   
   try {
-    let url = '';
-    
-    // Build API URL based on category - REDUCED per_page for faster loading
-    if (category === 'top') {
-      url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&sparkline=true&price_change_percentage=1h,24h,7d';
-    } else if (category === 'trending') {
-      url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=volume_desc&per_page=50&sparkline=true&price_change_percentage=1h,24h,7d';
-    } else if (category === 'gainers') {
-      url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&sparkline=true&price_change_percentage=1h,24h,7d';
-    } else if (category === 'losers') {
-      url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&sparkline=true&price_change_percentage=1h,24h,7d';
-    } else if (category === 'new') {
-      url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=gecko_desc&per_page=50&sparkline=true&price_change_percentage=1h,24h,7d';
-    } else if (category === 'defi') {
-      const defiIds = 'uniswap,aave,maker,lido-dao,curve-dao-token,compound-governance-token,pancakeswap-token,synthetix-network-token,yearn-finance,sushi,thorchain,convex-finance,frax-share,rocket-pool,balancer,1inch,0x,raydium,gmx,ribbon-finance';
-      url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${defiIds}&order=market_cap_desc&per_page=50&sparkline=true&price_change_percentage=1h,24h,7d`;
-    } else if (category === 'nft') {
-      renderNFTTable();
-      return;
-    }
+    // Call unified backend API
+    const url = `${API_BASE}/api/market-overview?assetClass=${assetClass}&category=${category}`;
+    console.log(`🌐 Fetching ${assetClass} data from:`, url);
     
     const response = await fetch(url);
-    let data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(`API returned ${response.status}`);
+    }
+    
+    const data = await response.json();
     
     // Cache the data
     localStorage.setItem(cacheKey, JSON.stringify(data));
     localStorage.setItem(`${cacheKey}_time`, Date.now().toString());
     
-    // Filter/sort data based on category
-    if (category === 'gainers') {
-      data = data
-        .filter(coin => coin.price_change_percentage_24h > 0)
-        .sort((a, b) => (b.price_change_percentage_24h || 0) - (a.price_change_percentage_24h || 0))
-        .slice(0, 100);
-    } else if (category === 'losers') {
-      data = data
-        .filter(coin => coin.price_change_percentage_24h < 0)
-        .sort((a, b) => (a.price_change_percentage_24h || 0) - (b.price_change_percentage_24h || 0))
-        .slice(0, 100);
-    }
+    console.log(`✅ Loaded ${data.length} ${assetClass} items for ${category}`);
     
-    renderCMCTable(data);
+    // Render based on asset class
+    if (assetClass === 'stocks') {
+      renderStocksTable(data);
+    } else {
+      renderCMCTable(data);
+    }
   } catch (error) {
     console.error('Error loading market overview:', error);
-    tableBody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 20px; color: #999;">Failed to load data</td></tr>';
+    tableBody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 20px; color: #999;">Failed to load ${assetClass} data</td></tr>`;
   }
 }
 
@@ -3679,20 +3680,57 @@ function renderCryptoTable(data) {
   }).join('');
 }
 
-function renderStocksTable(stocks) {
+function renderStocksTable(data) {
   const tableBody = document.getElementById('marketTableBody');
   
-  tableBody.innerHTML = stocks.map((ticker, index) => {
+  if (!data || data.length === 0) {
+    tableBody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 20px; color: #999;">No stock data available</td></tr>';
+    return;
+  }
+  
+  tableBody.innerHTML = data.slice(0, 100).map((stock, index) => {
+    const priceChange1h = stock.change_1h || 0;
+    const priceChange24h = stock.change_24h || 0;
+    const priceChange7d = stock.change_7d || 0;
+    
+    const change1hClass = priceChange1h >= 0 ? 'positive' : 'negative';
+    const change24hClass = priceChange24h >= 0 ? 'positive' : 'negative';
+    const change7dClass = priceChange7d >= 0 ? 'positive' : 'negative';
+    
+    // Stocks don't have sparklines from Yahoo Finance quote endpoint
+    const sparklineSvg = '<div style="width: 120px; height: 40px; text-align: center; color: var(--text-secondary); font-size: 0.7rem; display: flex; align-items: center; justify-content: center;">N/A</div>';
+    
     return `
-      <tr onclick="analyzeAssetFromTable('${ticker}')">
-        <td style="color: var(--text-secondary);">${index + 1}</td>
+      <tr onclick="analyzeAssetFromTable('${stock.symbol}')" style="cursor: pointer;">
+        <td style="color: var(--text-secondary); font-size: 0.85rem;">${stock.rank || index + 1}</td>
         <td>
-          <div class="coin-name">
-            <span style="font-weight: 600;">${ticker}</span>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div>
+              <div style="font-weight: 600; color: var(--text-primary);">${stock.name}</div>
+              <div style="font-size: 0.75rem; color: var(--text-secondary);">${stock.symbol}</div>
+            </div>
           </div>
         </td>
-        <td colspan="4" style="text-align: center; color: var(--text-secondary); font-size: 0.8rem;">
-          Click to analyze
+        <td style="text-align: right; font-weight: 600; color: var(--text-primary);">
+          $${stock.price >= 1 ? stock.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : stock.price.toFixed(4)}
+        </td>
+        <td style="text-align: right; font-size: 0.85rem; color: var(--text-secondary);">
+          --
+        </td>
+        <td style="text-align: right; font-size: 0.85rem;" class="${change24hClass}">
+          ${priceChange24h >= 0 ? '+' : ''}${priceChange24h.toFixed(2)}%
+        </td>
+        <td style="text-align: right; font-size: 0.85rem; color: var(--text-secondary);">
+          --
+        </td>
+        <td style="text-align: right; color: var(--text-secondary); font-size: 0.85rem;">
+          $${formatLargeNumber(stock.market_cap)}
+        </td>
+        <td style="text-align: right; color: var(--text-secondary); font-size: 0.85rem;">
+          $${formatLargeNumber(stock.volume_24h)}
+        </td>
+        <td style="padding: 8px;">
+          ${sparklineSvg}
         </td>
       </tr>
     `;

@@ -183,6 +183,60 @@ export const mastra = new Mastra({
           });
         },
       }),
+      // Market Overview API - Unified endpoint for stocks and crypto
+      {
+        path: "/api/market-overview",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          logger?.info('🔧 [MarketOverviewAPI] Request received');
+          
+          const assetClass = c.req.query('assetClass') || 'crypto';
+          const category = c.req.query('category') || 'top';
+          
+          logger?.info('📝 [MarketOverviewAPI] Parameters', { assetClass, category });
+          
+          // Validate parameters
+          const validAssetClasses = ['crypto', 'stocks'];
+          const validCategories = ['top', 'trending', 'gainers', 'losers', 'new', 'defi', 'nft'];
+          
+          if (!validAssetClasses.includes(assetClass)) {
+            logger?.warn('⚠️ [MarketOverviewAPI] Invalid asset class', { assetClass });
+            return c.json({ error: 'Invalid asset class. Must be crypto or stocks' }, 400);
+          }
+          
+          if (!validCategories.includes(category)) {
+            logger?.warn('⚠️ [MarketOverviewAPI] Invalid category', { category });
+            return c.json({ error: 'Invalid category' }, 400);
+          }
+          
+          try {
+            const { fetchStocksOverview, fetchCryptoOverview } = await import('./tools/helpers/marketOverview.js');
+            
+            let data;
+            if (assetClass === 'stocks') {
+              data = await fetchStocksOverview(category, logger);
+            } else {
+              data = await fetchCryptoOverview(category, logger);
+            }
+            
+            logger?.info('✅ [MarketOverviewAPI] Data fetched successfully', { 
+              assetClass, 
+              category, 
+              count: data.length 
+            });
+            
+            return c.json(data);
+          } catch (error: any) {
+            logger?.error('❌ [MarketOverviewAPI] Error fetching data', { 
+              error: error.message,
+              assetClass,
+              category
+            });
+            return c.json({ error: 'Failed to fetch market data' }, 500);
+          }
+        }
+      },
       // Serve frontend HTML at root
       {
         path: "/",
