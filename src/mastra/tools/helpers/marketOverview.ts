@@ -35,7 +35,7 @@ export interface MarketOverviewItem {
 }
 
 /**
- * Fetch stock market overview data from Yahoo Finance
+ * Fetch stock market overview data from Alpha Vantage
  */
 export async function fetchStocksOverview(category: string, logger?: any): Promise<MarketOverviewItem[]> {
   logger?.info('📊 [MarketOverview] Fetching stocks', { category });
@@ -56,38 +56,62 @@ export async function fetchStocksOverview(category: string, logger?: any): Promi
     return [];
   }
   
+  const apiKey = process.env.ALPHA_VANTAGE_API_KEY;
+  
+  if (!apiKey) {
+    logger?.error('❌ [MarketOverview] Alpha Vantage API key not found');
+    return [];
+  }
+  
   try {
-    // Yahoo Finance quote API (batch request)
-    const symbols = tickers.join(',');
-    const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols}`;
+    // Alpha Vantage GLOBAL_QUOTE for top stocks (more reliable than batch)
+    // Due to rate limits, fetch only top 10 stocks
+    const normalized: MarketOverviewItem[] = [];
+    const topTickers = tickers.slice(0, 10);
     
-    logger?.info('🌐 [MarketOverview] Calling Yahoo Finance', { url: url.substring(0, 100) });
+    logger?.info('🌐 [MarketOverview] Fetching from Alpha Vantage', { count: topTickers.length });
     
-    const response = await axios.get(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-      },
-      timeout: 10000
-    });
-    
-    const quotes = response.data?.quoteResponse?.result || [];
-    logger?.info('✅ [MarketOverview] Yahoo Finance response', { count: quotes.length });
-    
-    // Normalize to CMC format
-    const normalized: MarketOverviewItem[] = quotes
-      .filter((q: any) => q.regularMarketPrice) // Only include valid quotes
-      .map((quote: any, index: number) => ({
-        rank: index + 1,
-        symbol: quote.symbol,
-        name: quote.shortName || quote.longName || quote.symbol,
-        price: quote.regularMarketPrice || 0,
-        change_1h: 0, // Yahoo doesn't provide 1h change
-        change_24h: quote.regularMarketChangePercent || 0,
-        change_7d: 0, // Yahoo doesn't provide 7d change in quote endpoint
-        market_cap: quote.marketCap || 0,
-        volume_24h: quote.regularMarketVolume || 0,
-        sparkline_7d: [] // Would need separate API call for historical data
-      }));
+    for (let i = 0; i < topTickers.length; i++) {
+      try {
+        const symbol = topTickers[i];
+        const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${apiKey}`;
+        
+        const response = await axios.get(url, { timeout: 10000 });
+        const quote = response.data?.['Global Quote'];
+        
+        if (quote && quote['05. price']) {
+          normalized.push({
+            rank: i + 1,
+            symbol: quote['01. symbol'] || symbol,
+            name: symbol, // Alpha Vantage doesn't return company name in GLOBAL_QUOTE
+            price: parseFloat(quote['05. price']) || 0,
+            change_1h: 0,
+            change_24h: parseFloat(quote['10. change percent']?.replace('%', '')) || 0,
+            change_7d: 0,
+            market_cap: 0, // Not available without OVERVIEW endpoint
+            volume_24h: parseInt(quote['06. volume']) || 0,
+            sparkline_7d: []
+          });
+          
+          logger?.info(`✅ [MarketOverview] Fetched ${symbol}`, { 
+            price: quote['05. price'],
+            change: quote['10. change percent']
+          });
+        }
+        
+        // Rate limiting: Alpha Vantage free tier = 5 calls/min, 500 calls/day
+        // Wait 13 seconds between calls to stay under limit
+        if (i < topTickers.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 13000));
+        }
+        
+      } catch (err: any) {
+        logger?.warn('⚠️ [MarketOverview] Failed to fetch stock', { 
+          symbol: topTickers[i],
+          error: err.message 
+        });
+      }
+    }
     
     // Sort by category
     if (category === 'gainers') {
@@ -115,12 +139,11 @@ export async function fetchStocksOverview(category: string, logger?: any): Promi
     return normalized;
     
   } catch (error: any) {
-    logger?.error('❌ [MarketOverview] Yahoo Finance error', { 
+    logger?.error('❌ [MarketOverview] Alpha Vantage error', { 
       error: error.message,
       category 
     });
     
-    // Return empty array on error
     return [];
   }
 }
