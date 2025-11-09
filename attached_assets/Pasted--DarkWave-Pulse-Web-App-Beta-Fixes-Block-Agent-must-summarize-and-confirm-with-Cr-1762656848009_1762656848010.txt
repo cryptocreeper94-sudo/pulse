@@ -1,0 +1,95 @@
+/**
+ * 🔧 DarkWave Pulse Web App – Beta Fixes Block
+ * 🧠 Agent must summarize and confirm with CryptoCreeper before applying any changes.
+ */
+
+export const betaFixes = {
+  status: "pending",
+  approved: false,
+  summary: "Grouped code fixes for beta readiness. Agent must verify with CryptoCreeper before applying.",
+  tasks: [
+    {
+      id: "session-recovery",
+      description: "Preserve wallet state across reloads using localStorage.",
+      code: `
+// scripts/session.js
+export function saveWalletSession(walletAddress) {
+  localStorage.setItem("walletAddress", walletAddress);
+}
+
+export function restoreWalletSession() {
+  return localStorage.getItem("walletAddress");
+}
+`,
+      integration: `
+// scripts/wallet.js
+import { saveWalletSession, restoreWalletSession } from "./session.js";
+
+// After wallet connects
+saveWalletSession(walletAddress);
+
+// On app load
+const restored = restoreWalletSession();
+if (restored) connectWallet(restored);
+`
+    },
+    {
+      id: "payment-fallback",
+      description: "Add fallback UI for failed payments.",
+      code: `
+// components/PaymentModal.html
+<div id="payment-error" style="display:none; color:red;">
+  Payment failed or wallet disconnected. Please try again.
+</div>
+`,
+      integration: `
+// scripts/payments.js
+function handlePaymentError() {
+  document.getElementById("payment-error").style.display = "block";
+}
+`
+    },
+    {
+      id: "beta-banner",
+      description: "Add a visible beta badge to the UI.",
+      code: `
+// public/index.html (inside <body>)
+<div style="position:fixed; top:0; right:0; background:#ff00aa; color:#fff; padding:4px 8px; font-weight:bold;">
+  BETA
+</div>
+`
+    },
+    {
+      id: "feedback-button",
+      description: "Add a feedback button linking to Telegram or Google Form.",
+      code: `
+// components/Footer.html
+<a href="https://t.me/YourTelegramHandle" target="_blank" style="color:#0ff;">
+  💬 Send Feedback
+</a>
+`
+    },
+    {
+      id: "onboarding-blurbs",
+      description: "Add intro text explaining app purpose and sentiment flow.",
+      code: `
+// components/Intro.html
+<h2>Welcome to DarkWave Pulse</h2>
+<p>This app lets you submit crypto tokens and analyze sentiment across chains. Crypto Cat watches for sass and clarity.</p>
+<p>Connect your wallet, choose a token, and submit it for emotional analysis.</p>
+`
+    },
+    {
+      id: "emotional-error-logging",
+      description: "Add emotionally tagged error logs.",
+      code: `
+// scripts/wallet.js
+console.error("Crypto Cat is confused: wallet failed to connect");
+
+// scripts/payments.js
+console.error("Crypto Cat is hissing: payment error detected");
+`
+    }
+  ],
+  instructions: "Agent must summarize this block and confirm with CryptoCreeper before applying. No changes until approved."
+};
