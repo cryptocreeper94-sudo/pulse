@@ -1,0 +1,80 @@
+/**
+ * 🧼 Polish Upgrade Block: Emotional feedback, spinner, and session reset
+ * 🧠 Agent must stage these upgrades and apply only after CryptoCreeper confirms.
+ */
+
+export const polishUpgrades = {
+  status: "pending",
+  approved: false,
+  summary: "Final-stage UI polish: spinner, success feedback, and wallet session reset. Awaiting CryptoCreeper’s confirmation.",
+  tasks: [
+    {
+      id: "success-feedback",
+      description: "Add visual and emotional feedback for successful token submission.",
+      files: ["components/Feedback.html", "scripts/ui.js"],
+      code: `
+// components/Feedback.html
+<div id="success-message" style="display:none; color:lime;">
+  ✅ Crypto Cat is purring: Token accepted.
+</div>
+
+// scripts/ui.js
+function showSuccess() {
+  document.getElementById("success-message").style.display = "block";
+}
+submitToken().then(showSuccess);
+`
+    },
+    {
+      id: "loading-spinner",
+      description: "Add a loading spinner during token submission.",
+      files: ["components/SubmitForm.html", "scripts/ui.js"],
+      code: `
+// components/SubmitForm.html
+<div id="loading-spinner" style="display:none;">
+  <img src="assets/spinner.gif" alt="Loading..." />
+</div>
+
+// scripts/ui.js
+function showSpinner() {
+  document.getElementById("loading-spinner").style.display = "block";
+}
+function hideSpinner() {
+  document.getElementById("loading-spinner").style.display = "none";
+}
+submitBtn.addEventListener("click", () => {
+  showSpinner();
+  submitToken().finally(hideSpinner);
+});
+`
+    },
+    {
+      id: "session-reset",
+      description: "Add manual wallet session reset button.",
+      files: ["components/Header.html", "scripts/session.js"],
+      code: `
+// components/Header.html
+<button id="reset-session">Reset Wallet</button>
+
+// scripts/session.js
+document.getElementById("reset-session").addEventListener("click", () => {
+  localStorage.removeItem("walletAddress");
+  location.reload();
+});
+`
+    },
+    {
+      id: "success-logging",
+      description: "Log successful actions with emotional clarity.",
+      files: ["scripts/ui.js", "scripts/payments.js"],
+      code: `
+// scripts/ui.js
+console.log("Crypto Cat is purring: token accepted");
+
+// scripts/payments.js
+console.log("Crypto Cat is dancing: payment confirmed");
+`
+    }
+  ],
+  instructions: "Agent must confirm with CryptoCreeper before applying. These upgrades finalize emotional clarity and restart resilience."
+};
