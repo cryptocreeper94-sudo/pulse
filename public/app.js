@@ -2485,6 +2485,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       if (confirmed) {
         console.log('🗑️ Resetting wallet session...');
+        console.log('😿 Crypto Cat is sad: Wallet session being wiped. Starting fresh!');
         
         // Clear wallet-related data from localStorage
         const keysToRemove = [];
@@ -2770,6 +2771,7 @@ document.getElementById('connectWalletBtn')?.addEventListener('click', async () 
       body: JSON.stringify({ address: input, userId: state.userId })
     });
     showToast('Wallet connected! ✅');
+    console.log('😸 Crypto Cat is curious: Wallet connected! Let\'s see what you\'re holding...');
     if (tg) tg.HapticFeedback?.notificationOccurred('success');
     document.getElementById('walletAddressInput').value = '';
     await loadWallet();
@@ -2786,6 +2788,7 @@ document.getElementById('disconnectWalletBtn')?.addEventListener('click', async 
       body: JSON.stringify({ userId: state.userId })
     });
     showToast('Wallet disconnected');
+    console.log('😿 Crypto Cat is bored: Wallet disconnected. No more peeking at your bags.');
     if (tg) tg.HapticFeedback?.notificationOccurred('warning');
     await loadWallet();
   } catch (error) {
@@ -3062,6 +3065,7 @@ async function initiateCheckout() {
       }
       
       showToast('Opening checkout... Complete payment to activate Premium!');
+      console.log('💃 Crypto Cat is dancing: Premium checkout initiated! Show me the money!');
       document.querySelector('.modal-backdrop')?.remove();
     } else {
       showToast('Error creating checkout session. Please try again.');
@@ -3098,6 +3102,7 @@ async function initiateCryptoPayment() {
       }
       
       showToast('Opening crypto payment... Complete payment to activate Premium!', 5000);
+      console.log('💃 Crypto Cat is dancing: Crypto payment started! This is what I live for!');
       
       // Show waiting modal
       showCryptoWaitingModal();
@@ -5685,6 +5690,7 @@ async function submitFeedback(event, type) {
         const successMsg = document.getElementById('tokenSuccessMessage');
         if (successMsg) {
           successMsg.style.display = 'block';
+          console.log('😸 Crypto Cat is purring: Token accepted and under review!');
           // Auto-hide after 8 seconds
           setTimeout(() => {
             successMsg.style.display = 'none';
