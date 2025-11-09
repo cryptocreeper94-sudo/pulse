@@ -5295,73 +5295,7 @@ function initializeChat() {
     }
   });
   
-  // Welcome message
-  addChatMessage('assistant', '👋 Hi! I\'m your AI trading assistant. Ask me about:\n\n• Technical indicators (RSI, MACD, etc.)\n• Trading strategies\n• Market analysis\n• Term explanations\n• Investment advice\n\nWhat would you like to know?');
-}
-
-function addChatMessage(role, content) {
-  const chatMessages = document.getElementById('chatMessages');
-  if (!chatMessages) return;
-  
-  const messageDiv = document.createElement('div');
-  messageDiv.className = `chat-message chat-message-${role}`;
-  
-  const avatar = document.createElement('div');
-  avatar.className = 'chat-avatar';
-  avatar.textContent = role === 'user' ? '👤' : '🤖';
-  
-  const bubble = document.createElement('div');
-  bubble.className = 'chat-bubble';
-  bubble.textContent = content;
-  
-  messageDiv.appendChild(avatar);
-  messageDiv.appendChild(bubble);
-  chatMessages.appendChild(messageDiv);
-  
-  // Scroll to bottom
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-}
-
-async function sendChatMessage() {
-  const chatInput = document.getElementById('chatInput');
-  const message = chatInput.value.trim();
-  
-  if (!message) return;
-  
-  // Add user message
-  addChatMessage('user', message);
-  chatInput.value = '';
-  
-  // Add to history
-  chatHistory.push({ role: 'user', content: message });
-  
-  try {
-    // Call backend AI endpoint
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'X-Session-Token': localStorage.getItem('sessionToken') || ''
-      },
-      body: JSON.stringify({
-        message,
-        history: chatHistory.slice(-10), // Last 10 messages
-        userId: state.userId || 'demo-user'
-      })
-    });
-    
-    const data = await response.json();
-    
-    if (data.reply) {
-      addChatMessage('assistant', data.reply);
-      chatHistory.push({ role: 'assistant', content: data.reply });
-    } else {
-      addChatMessage('assistant', 'Sorry, I encountered an error. Please try again.');
-    }
-  } catch (error) {
-    console.error('Chat error:', error);
-    addChatMessage('assistant', '❌ Connection error. Please try again.');
-  }
+  // Welcome message handled by initChat() function later
 }
 
 // ===== NEWS FEED FUNCTIONALITY =====
