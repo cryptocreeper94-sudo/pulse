@@ -1,4 +1,5 @@
 // DarkWave-V2 Mini App JavaScript - Complete Edition with ALL Features
+console.log('🚀 [DarkWave] app.js loading...');
 
 // Glossary Module Loader (loaded dynamically)
 let glossaryModuleLoaded = false;
@@ -8140,6 +8141,7 @@ async function bootstrapData() {
 
 function initApp() {
   console.log('🚀 [AppInit] Starting application initialization...');
+  console.log('📍 [AppInit] Document ready state:', document.readyState);
   
   try {
     initAppState();
@@ -8149,13 +8151,19 @@ function initApp() {
     console.log('✅ [AppInit] Application initialized successfully');
   } catch (error) {
     console.error('❌ [AppInit] Initialization failed:', error);
+    console.error('❌ [AppInit] Error stack:', error.stack);
   }
 }
 
 // Run initialization when DOM is ready
+console.log('📦 [AppInit] Setting up initialization...');
+console.log('📍 [AppInit] Current readyState:', document.readyState);
+
 if (document.readyState === 'loading') {
+  console.log('⏳ [AppInit] Waiting for DOMContentLoaded...');
   document.addEventListener('DOMContentLoaded', initApp);
 } else {
+  console.log('✅ [AppInit] DOM already loaded, initializing immediately...');
   initApp();
 }
 
