@@ -5171,25 +5171,15 @@ select {
     inset 0 -2px 4px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* Enhance icon buttons with white glow */
+/* Enhance icon buttons with white glow - SIMPLIFIED */
 .icon-btn {
-  border: 2px solid rgba(255, 255, 255, 0.3) !important;
-  box-shadow: 
-    var(--depth-contact-sm),
-    var(--depth-ambient-sm),
-    0 0 10px rgba(255, 255, 255, 0.2),
-    var(--depth-highlight),
-    var(--depth-inset) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
 }
 
 .icon-btn:hover {
-  border-color: rgba(255, 255, 255, 0.6) !important;
-  box-shadow: 
-    var(--depth-contact-md),
-    var(--depth-ambient-md),
-    var(--depth-shadow-sm),
-    0 0 16px rgba(255, 255, 255, 0.4),
-    var(--depth-highlight-strong) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 12px rgba(255, 255, 255, 0.3) !important;
 }
 
 
