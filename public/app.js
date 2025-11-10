@@ -7233,11 +7233,9 @@ setTimeout(populateAllNewspaperBoxes, 2000);
 setInterval(populateAllNewspaperBoxes, 5 * 60 * 1000);
 
 // ===== UNIVERSAL WEB3 SEARCH FUNCTIONALITY =====
-const universalSearchInput = document.getElementById('universalSearchInput');
-const universalSearchBtn = document.getElementById('universalSearchBtn');
-
 async function performUniversalSearch() {
-  const query = universalSearchInput.value.trim();
+  const universalSearchInput = document.getElementById('universalSearchInput');
+  const query = universalSearchInput?.value.trim();
   if (!query) {
     showNotification('Please enter a token, stock, NFT, or contract address', 'warning');
     return;
@@ -7294,17 +7292,12 @@ async function performUniversalSearch() {
     }
 
     showNotification(`Analysis complete for ${query}`, 'success');
-    universalSearchInput.value = '';
+    if (universalSearchInput) universalSearchInput.value = '';
   } catch (error) {
     console.error('Search error:', error);
     showNotification('Search failed. Please try again.', 'error');
   }
 }
-
-universalSearchBtn.addEventListener('click', performUniversalSearch);
-universalSearchInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') performUniversalSearch();
-});
 
 // Legacy crypto cat toggle code removed - now handled by toggleCryptoCatImage()
 
@@ -8083,6 +8076,22 @@ function bindUIHandlers() {
       state.currentTab = 'subscription';
       loadTabContent('subscription');
     }, 'Open subscription page');
+    
+    // Universal search (Analyze button)
+    safeBind('universalSearchBtn', 'click', performUniversalSearch, 'Universal search/analyze');
+    const universalSearchInput = document.getElementById('universalSearchInput');
+    if (universalSearchInput) {
+      universalSearchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') performUniversalSearch();
+      });
+      console.log('✅ [AppInit] Universal search Enter key bound');
+    }
+    
+    // Wallet button
+    safeBind('walletBtn', 'click', () => {
+      state.currentTab = 'wallet';
+      loadTabContent('wallet');
+    }, 'Open wallet');
     
     // Initialize trending carousel and category UI
     updateCategoryUI('bluechip');
