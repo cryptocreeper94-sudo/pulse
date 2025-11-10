@@ -1269,6 +1269,8 @@ export const mastra = new Mastra({
               // Moving averages
               sma50: analysis.sma50 || 0,
               sma200: analysis.sma200 || 0,
+              ema9: analysis.ema9 || 0,
+              ema21: analysis.ema21 || 0,
               ema50: analysis.ema50 || 0,
               ema200: analysis.ema200 || 0,
               

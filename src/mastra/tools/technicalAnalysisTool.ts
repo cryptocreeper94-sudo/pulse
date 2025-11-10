@@ -39,6 +39,8 @@ export const technicalAnalysisTool = createTool({
       signal: z.number(),
       histogram: z.number(),
     }),
+    ema9: z.number(),
+    ema21: z.number(),
     ema50: z.number(),
     ema200: z.number(),
     sma50: z.number(),
@@ -119,9 +121,13 @@ export const technicalAnalysisTool = createTool({
     });
     const currentMACD = macdValues[macdValues.length - 1] || { MACD: 0, signal: 0, histogram: 0 };
 
-    // Calculate EMAs
+    // Calculate EMAs (9, 21, 50, 200)
+    const ema9Values = EMA.calculate({ values: closePrices, period: 9 });
+    const ema21Values = EMA.calculate({ values: closePrices, period: 21 });
     const ema50Values = EMA.calculate({ values: closePrices, period: 50 });
     const ema200Values = EMA.calculate({ values: closePrices, period: 200 });
+    const currentEMA9 = ema9Values[ema9Values.length - 1] || context.currentPrice;
+    const currentEMA21 = ema21Values[ema21Values.length - 1] || context.currentPrice;
     const currentEMA50 = ema50Values[ema50Values.length - 1] || context.currentPrice;
     const currentEMA200 = ema200Values[ema200Values.length - 1] || context.currentPrice;
 
@@ -294,6 +300,8 @@ export const technicalAnalysisTool = createTool({
         signal: parseFloat((currentMACD.signal || 0).toFixed(2)),
         histogram: parseFloat((currentMACD.histogram || 0).toFixed(2)),
       },
+      ema9: parseFloat(currentEMA9.toFixed(2)),
+      ema21: parseFloat(currentEMA21.toFixed(2)),
       ema50: parseFloat(currentEMA50.toFixed(2)),
       ema200: parseFloat(currentEMA200.toFixed(2)),
       sma50: parseFloat(currentSMA50.toFixed(2)),
