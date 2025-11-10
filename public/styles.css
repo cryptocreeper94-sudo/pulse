@@ -602,6 +602,132 @@ a:hover {
 }
 
 /* ===========================================
+   MOBILE RESPONSIVENESS - FIX ALL SIZING
+   =========================================== */
+
+/* Mobile: Make everything fit properly */
+@media (max-width: 768px) {
+  .app-main {
+    padding: 8px !important;
+  }
+  
+  /* Fix banner on mobile */
+  .wave-banner-header {
+    padding: 12px 8px !important;
+  }
+  
+  .wave-banner-split {
+    gap: 8px !important;
+  }
+  
+  .wave-banner-left {
+    flex: 0 0 60px !important;
+  }
+  
+  .sound-wave-img {
+    width: 60px !important;
+    height: 60px !important;
+  }
+  
+  .wave-banner-right {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .digital-title {
+    font-size: 1.5rem !important; /* Smaller on mobile */
+    line-height: 1.1 !important;
+    white-space: nowrap;
+    overflow: visible;
+  }
+  
+  .digital-subtitle {
+    font-size: 0.875rem !important;
+  }
+  
+  /* Search section */
+  .search-section {
+    margin: 16px 0 !important;
+  }
+  
+  .universal-search-input-oval {
+    font-size: 14px !important;
+    padding: 10px 12px !important;
+  }
+  
+  .universal-search-btn-oval {
+    font-size: 14px !important;
+    padding: 10px 16px !important;
+  }
+  
+  /* Asset tabs */
+  .asset-tab {
+    font-size: 0.75rem !important;
+    padding: 8px 4px !important;
+  }
+  
+  /* Category buttons */
+  .category-btn {
+    font-size: 0.75rem !important;
+    padding: 6px 10px !important;
+  }
+  
+  /* Make table scroll horizontally */
+  #marketTableContainer {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .market-table {
+    min-width: 600px;
+  }
+  
+  .market-table th,
+  .market-table td {
+    padding: 8px 6px !important;
+    font-size: 0.75rem !important;
+  }
+  
+  /* Analysis results */
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+  
+  .metric-card {
+    padding: 12px !important;
+  }
+  
+  /* Chat widget */
+  .ai-agent-box {
+    width: calc(100vw - 32px) !important;
+    max-width: 350px !important;
+    right: -16px !important;
+  }
+  
+  /* Chart modal */
+  .modal-content {
+    width: 95% !important;
+    max-height: 95vh !important;
+  }
+  
+  .chart-controls button {
+    font-size: 0.75rem !important;
+    padding: 6px 10px !important;
+  }
+  
+  /* News section */
+  #newsLinks {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Footer */
+  footer {
+    padding: 24px 8px !important;
+  }
+}
+
+/* ===========================================
    CARD SYSTEM - SINGLE UNIFIED STYLE
    =========================================== */
 
