@@ -4753,3 +4753,116 @@ table {
     var(--depth-highlight);
 }
 
+
+/* ==========================================
+   APPLY 3D DEPTH TO ALL INTERACTIVE ELEMENTS
+   ========================================== */
+
+/* All input fields */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+select,
+textarea {
+  box-shadow: 
+    var(--depth-contact-sm),
+    inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all var(--transition-fast);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  box-shadow: 
+    var(--depth-contact-md),
+    var(--depth-glow-primary),
+    inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
+}
+
+/* All badges and pills */
+.badge,
+.pill,
+.tag,
+.status-badge,
+.trust-badge,
+span[class*="badge"],
+span[class*="pill"] {
+  box-shadow: 
+    var(--depth-contact-sm),
+    var(--depth-ambient-sm),
+    var(--depth-highlight);
+  transform: translateZ(0);
+}
+
+/* Icon buttons */
+.icon-btn,
+button[class*="icon"],
+.close-btn,
+.close-btn-sm {
+  box-shadow: 
+    var(--depth-contact-sm),
+    var(--depth-ambient-sm),
+    var(--depth-highlight),
+    var(--depth-inset);
+  transition: all var(--transition-fast);
+}
+
+.icon-btn:hover,
+button[class*="icon"]:hover,
+.close-btn:hover,
+.close-btn-sm:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 
+    var(--depth-contact-md),
+    var(--depth-ambient-md),
+    var(--depth-shadow-sm),
+    var(--depth-highlight-strong);
+}
+
+/* Dropdown menus */
+.dropdown-menu,
+.context-menu,
+select {
+  box-shadow: 
+    var(--depth-contact-lg),
+    var(--depth-ambient-md),
+    var(--depth-shadow-md),
+    var(--depth-highlight),
+    var(--depth-inset);
+}
+
+/* Progress bars */
+.progress-bar,
+.loading-bar {
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.2),
+    var(--depth-highlight);
+}
+
+/* Toast notifications */
+.toast,
+.notification,
+.alert {
+  box-shadow: 
+    var(--depth-contact-lg),
+    var(--depth-ambient-lg),
+    var(--depth-shadow-md),
+    var(--depth-far-sm),
+    var(--depth-highlight-strong);
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%) translateZ(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0) translateZ(0);
+    opacity: 1;
+  }
+}
+
