@@ -4604,7 +4604,7 @@ table {
 }
 
 .ai-agent-box {
-  background: linear-gradient(135deg, rgba(30, 58, 138, 0.4), rgba(37, 99, 235, 0.3));
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.98), rgba(37, 99, 235, 0.95));
   border: 2px solid rgba(59, 130, 246, 0.5);
   border-radius: 16px;
   /* Deep 3D Floating Card Effect */
