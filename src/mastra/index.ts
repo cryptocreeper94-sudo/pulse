@@ -237,6 +237,44 @@ export const mastra = new Mastra({
           }
         }
       },
+      // AI Chat endpoint - Compatible with AI SDK v4
+      {
+        path: "/api/chat",
+        method: "POST",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          
+          try {
+            const { prompt, userId } = await c.req.json();
+            logger?.info('💬 [AIChat] Request received', { userId, promptLength: prompt?.length });
+            
+            if (!prompt) {
+              return c.json({ error: 'Prompt is required' }, 400);
+            }
+            
+            const agent = mastra.getAgent('darkwaveAgent');
+            if (!agent) {
+              logger?.error('❌ [AIChat] Agent not found');
+              return c.json({ error: 'Agent not found' }, 404);
+            }
+            
+            // Use generateLegacy for AI SDK v4 compatibility
+            const response = await agent.generateLegacy(prompt, {
+              maxSteps: 3
+            });
+            
+            logger?.info('✅ [AIChat] Response generated', { responseLength: response.text?.length });
+            
+            return c.json({ 
+              text: response.text,
+              toolCalls: response.toolCalls || []
+            });
+          } catch (error: any) {
+            logger?.error('❌ [AIChat] Error', { error: error.message, stack: error.stack });
+            return c.json({ error: error.message || 'Failed to generate response' }, 500);
+          }
+        }
+      },
       // Serve frontend HTML at root
       {
         path: "/",

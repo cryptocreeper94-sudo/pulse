@@ -4048,27 +4048,40 @@ async function sendAIMessage() {
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
   
   try {
-    const response = await fetch('/api/agents/darkwaveAgent/generate', {
+    const response = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        messages: [{
-          role: 'user',
-          content: `[HELPFUL ASSISTANT MODE] ${message}`
-        }],
+        prompt: message,
         userId: state.userId
       })
     });
     
-    const data = await response.json();
-    
     // Remove typing indicator
     typingDiv.remove();
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log('AI response:', data);
+    
+    // Parse the response - check multiple possible formats
+    let responseText = data.text || data.output?.text || data.result?.text || data.content;
+    
+    if (!responseText && data.output) {
+      responseText = typeof data.output === 'string' ? data.output : JSON.stringify(data.output);
+    }
+    
+    if (!responseText) {
+      responseText = "I'm processing your request... (Response format: " + JSON.stringify(Object.keys(data)) + ")";
+    }
     
     // Add AI response
     const aiMsg = document.createElement('div');
     aiMsg.className = 'ai-message ai-response';
-    aiMsg.innerHTML = `<strong>🤖 DarkWave:</strong> ${data.text || 'Sorry, I encountered an error.'}`;
+    aiMsg.innerHTML = `<strong>🤖 DarkWave:</strong> ${responseText}`;
     messagesContainer.appendChild(aiMsg);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   } catch (error) {
@@ -4076,7 +4089,7 @@ async function sendAIMessage() {
     typingDiv.remove();
     const errorMsg = document.createElement('div');
     errorMsg.className = 'ai-message ai-response';
-    errorMsg.innerHTML = '<strong>🤖 DarkWave:</strong> Connection error. Please try again.';
+    errorMsg.innerHTML = `<strong>🤖 DarkWave:</strong> Connection error. Check console for details.`;
     messagesContainer.appendChild(errorMsg);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
