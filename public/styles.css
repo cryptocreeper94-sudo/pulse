@@ -1787,70 +1787,138 @@ a:hover {
   background: transparent;
 }
 
-.wave-banner-bg {
+/* Split Banner Layout */
+.wave-banner-split {
   width: 100%;
-  height: 220px;
+  height: 180px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  overflow: hidden;
   border-radius: var(--radius-lg);
-  /* 3D Banner Depth */
   box-shadow: 
     var(--depth-contact-lg),
     var(--depth-ambient-lg),
     var(--depth-shadow-lg),
-    var(--depth-far-md),
-    var(--depth-highlight),
-    var(--depth-inset);
-  transform: translateZ(0);
-  transition: all var(--transition-base);
+    var(--depth-far-md);
+}
+
+/* Left Side - Sound Wave */
+.wave-banner-left {
+  flex: 0 0 50%;
+  overflow: hidden;
   position: relative;
 }
 
-.wave-banner-content {
+.sound-wave-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: left center;
+}
+
+/* Right Side - Holographic Text */
+.wave-banner-right {
+  flex: 0 0 50%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
-  text-align: center;
-  z-index: 1;
-  width: 100%;
-  padding-bottom: 20px;
+  justify-content: center;
+  position: relative;
+  background: linear-gradient(135deg, 
+    #0a0e1a 0%,
+    #1a1f35 25%,
+    #0f1729 50%,
+    #1e2742 75%,
+    #0d1220 100%);
+  overflow: hidden;
 }
 
-.wave-banner-title {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #FFFFFF;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(59, 130, 246, 0.6);
+/* Holographic Background Effect */
+.wave-banner-right::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: 
+    radial-gradient(circle at 30% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 70% 50%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 50% 30%, rgba(16, 185, 129, 0.08) 0%, transparent 50%);
+  animation: holographicShift 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes holographicShift {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  33% { transform: translate(-5%, 5%) rotate(1deg); }
+  66% { transform: translate(5%, -5%) rotate(-1deg); }
+}
+
+/* Digital Title - Holographic Effect */
+.digital-title {
+  font-family: 'Courier New', monospace;
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
   margin: 0;
-  text-align: center;
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(
+    90deg,
+    #00f0ff 0%,
+    #5b6eff 20%,
+    #ff0080 40%,
+    #00f0ff 60%,
+    #5b6eff 80%,
+    #ff0080 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: holographicGlow 3s linear infinite;
+  text-shadow: 
+    0 0 20px rgba(91, 110, 255, 0.5),
+    0 0 40px rgba(0, 240, 255, 0.3),
+    0 0 60px rgba(255, 0, 128, 0.2);
+  filter: drop-shadow(0 0 10px rgba(91, 110, 255, 0.6));
 }
 
-.wave-banner-subtitle {
-  font-size: 1rem;
-  color: #E0E7FF;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+@keyframes holographicGlow {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+/* Digital Subtitle */
+.digital-subtitle {
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
   margin: 8px 0 0 0;
-  text-align: center;
+  color: #00f0ff;
+  position: relative;
+  z-index: 1;
+  text-shadow: 
+    0 0 10px rgba(0, 240, 255, 0.8),
+    0 0 20px rgba(91, 110, 255, 0.4);
+  opacity: 0.9;
 }
 
-/* Mobile optimization - tight and concise */
+/* Mobile optimization */
 @media (max-width: 600px) {
-  .wave-banner-bg {
-    height: 160px;
+  .wave-banner-split {
+    height: 140px;
   }
   
-  .wave-banner-title {
-    font-size: 1.8rem;
+  .digital-title {
+    font-size: 2rem;
+    letter-spacing: 0.1em;
   }
   
-  .wave-banner-subtitle {
-    font-size: 0.85rem;
+  .digital-subtitle {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
   }
   
   .header-actions-overlay {
