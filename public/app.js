@@ -995,41 +995,15 @@ async function loadTrendingCarousel(category) {
   });
 }
 
-// Blockchain Filter
-document.querySelectorAll('.filter-chip').forEach(chip => {
-  chip.addEventListener('click', () => {
-    const chain = chip.dataset.chain;
-    state.currentBlockchain = chain;
-    
-    document.querySelectorAll('.filter-chip').forEach(c => {
-      c.classList.toggle('active', c.dataset.chain === chain);
-    });
-    
-    if (tg) tg.HapticFeedback?.impactOccurred('light');
-  });
-});
+// Blockchain Filter - MOVED TO initApp() to prevent null reference errors
+// This will be initialized after DOM is ready
 
-// Initialize with Blue Chip category
-updateCategoryUI('bluechip');
-loadTrendingCarousel('bluechip');
+// Initialize with Blue Chip category - MOVED TO initApp()
+// updateCategoryUI('bluechip');
+// loadTrendingCarousel('bluechip');
 
-// Search Functionality
-searchBtn.addEventListener('click', () => performSearch());
-searchInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') performSearch();
-});
-
-// Reset Search Button
-document.getElementById('resetSearchBtn')?.addEventListener('click', () => {
-  searchInput.value = '';
-  document.getElementById('analysisResult').innerHTML = `
-    <div class="welcome-card">
-      <h2>Blue Chip Crypto</h2>
-      <p>Top market cap cryptocurrencies with proven track records</p>
-    </div>
-  `;
-  if (tg) tg.HapticFeedback?.impactOccurred('light');
-});
+// Search Functionality - MOVED TO initApp() to prevent null reference errors
+// These bindings will happen after DOM is ready
 
 async function performSearch() {
   const query = searchInput.value.trim();
@@ -8045,31 +8019,79 @@ function safeBind(elementId, eventType, handler, description = '') {
 function bindUIHandlers() {
   console.log('🔧 [AppInit] Binding UI handlers...');
   
-  // Settings button
-  safeBind('settingsBtn', 'click', () => {
-    state.currentTab = 'settings';
-    loadTabContent('settings');
-  }, 'Open settings');
-  
-  // Refresh button  
-  safeBind('refreshBtn', 'click', () => {
-    if (state.currentTab === 'analysis' && searchInput?.value) {
-      performSearch();
-    } else {
-      loadTabContent(state.currentTab);
+  try {
+    // Search functionality - CRITICAL
+    safeBind('searchBtn', 'click', () => performSearch(), 'Perform search');
+    
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+      searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') performSearch();
+      });
+      console.log('✅ [AppInit] Search input Enter key bound');
     }
-  }, 'Refresh current tab');
-  
-  // Search button
-  safeBind('searchBtn', 'click', () => performSearch(), 'Perform search');
-  
-  // Subscribe/upgrade button (if exists)
-  safeBind('upgradeBtn', 'click', () => {
-    state.currentTab = 'subscription';
-    loadTabContent('subscription');
-  }, 'Open subscription page');
-  
-  console.log('✅ [AppInit] UI handlers bound');
+    
+    // Reset search button
+    safeBind('resetSearchBtn', 'click', () => {
+      const input = document.getElementById('searchInput');
+      const result = document.getElementById('analysisResult');
+      if (input) input.value = '';
+      if (result) {
+        result.innerHTML = `
+          <div class="welcome-card">
+            <h2>Blue Chip Crypto</h2>
+            <p>Top market cap cryptocurrencies with proven track records</p>
+          </div>
+        `;
+      }
+      if (window.Telegram?.WebApp) window.Telegram.WebApp.HapticFeedback?.impactOccurred('light');
+    }, 'Reset search');
+    
+    // Blockchain filter chips
+    document.querySelectorAll('.filter-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const chain = chip.dataset.chain;
+        state.currentBlockchain = chain;
+        
+        document.querySelectorAll('.filter-chip').forEach(c => {
+          c.classList.toggle('active', c.dataset.chain === chain);
+        });
+        
+        if (window.Telegram?.WebApp) window.Telegram.WebApp.HapticFeedback?.impactOccurred('light');
+      });
+    });
+    console.log('✅ [AppInit] Blockchain filter chips bound');
+    
+    // Settings button
+    safeBind('settingsBtn', 'click', () => {
+      state.currentTab = 'settings';
+      loadTabContent('settings');
+    }, 'Open settings');
+    
+    // Refresh button  
+    safeBind('refreshBtn', 'click', () => {
+      if (state.currentTab === 'analysis' && searchInput?.value) {
+        performSearch();
+      } else {
+        loadTabContent(state.currentTab);
+      }
+    }, 'Refresh current tab');
+    
+    // Subscribe/upgrade button (if exists)
+    safeBind('upgradeBtn', 'click', () => {
+      state.currentTab = 'subscription';
+      loadTabContent('subscription');
+    }, 'Open subscription page');
+    
+    // Initialize trending carousel and category UI
+    updateCategoryUI('bluechip');
+    loadTrendingCarousel('bluechip');
+    console.log('✅ [AppInit] Trending carousel initialized');
+    
+    console.log('✅ [AppInit] All UI handlers bound successfully');
+  } catch (error) {
+    console.error('❌ [AppInit] Error binding UI handlers:', error);
+  }
 }
 
 function initAppState() {

@@ -21,6 +21,11 @@ async function getEmailFromSession(sessionToken?: string): Promise<string | null
 
 export async function checkSubscriptionLimit(userId: string, feature: 'search' | 'alert', sessionToken?: string): Promise<{ allowed: boolean; isPremium: boolean; isWhitelisted?: boolean; message?: string }> {
   try {
+    // TEMPORARY: Disable limits for owner testing
+    console.log(`🔓 [SubscriptionCheck] LIMITS DISABLED FOR TESTING - User ${userId} granted unlimited access`);
+    return { allowed: true, isPremium: true, isWhitelisted: true };
+    
+    /* ORIGINAL LOGIC - RE-ENABLE BEFORE PRODUCTION
     // Get email from session if token provided
     const userEmail = await getEmailFromSession(sessionToken);
     
@@ -55,6 +60,7 @@ export async function checkSubscriptionLimit(userId: string, feature: 'search' |
         return { allowed: true, isPremium: true, isWhitelisted: true };
       }
     }
+    */
     
     // Get user's subscription status
     const [subscription] = await db
