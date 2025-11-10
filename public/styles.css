@@ -672,6 +672,30 @@ a:hover {
     padding: 6px 10px !important;
   }
   
+  /* Analysis results mobile responsiveness */
+  #analysisResults .metric-card {
+    min-width: 110px !important;
+    padding: 12px !important;
+  }
+  
+  #analysisResults h2 {
+    font-size: 1.5rem !important;
+  }
+  
+  #analysisResults h3 {
+    font-size: 1rem !important;
+  }
+  
+  #analysisResults button {
+    font-size: 0.875rem !important;
+    padding: 10px 16px !important;
+  }
+  
+  /* Chart container mobile */
+  #chartContainer {
+    height: 300px !important;
+  }
+  
   /* Make table scroll horizontally */
   #marketTableContainer {
     overflow-x: auto !important;
