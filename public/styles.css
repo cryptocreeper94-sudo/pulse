@@ -5574,3 +5574,32 @@ select {
   margin: 0;
 }
 
+/* ==========================================
+   TWO-COLUMN ANALYSIS LAYOUT - RESPONSIVE
+   ========================================== */
+
+.analysis-two-column {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.analysis-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 16px 0;
+}
+
+/* Mobile - Stack single column */
+@media (max-width: 768px) {
+  .analysis-two-column {
+    grid-template-columns: 1fr;
+  }
+  
+  .analysis-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

@@ -98,7 +98,7 @@ function displayAnalysis(data, ticker) {
   
   const html = `
     <!-- Two Column Layout: Analysis + Chart -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0;">
+    <div class="analysis-two-column">
       
       <!-- LEFT: Analysis Panel -->
       <div style="background: var(--bg-secondary); border-radius: 12px; padding: 20px; border: 2px solid ${signalColor};">
@@ -126,7 +126,7 @@ function displayAnalysis(data, ticker) {
       </div>
       
       <!-- Key Indicators Grid - Compact -->
-      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 16px 0;">
+      <div class="analysis-metrics-grid">
         
         <!-- RSI -->
         <div class="metric-card" style="background: rgba(255,255,255,0.05); padding: 18px; border-radius: 10px; border: 2px solid var(--border-primary);">
