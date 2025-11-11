@@ -5583,6 +5583,7 @@ select {
   grid-template-columns: 1fr 1fr;
   gap: 8px;
   margin: 8px 0;
+  align-items: start;
 }
 
 .analysis-metrics-grid {
