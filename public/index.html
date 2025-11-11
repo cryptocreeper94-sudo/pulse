@@ -21,7 +21,7 @@
       </div>
     </div>
 
-    <main class="app-main" style="max-width: 1200px; margin: 0 auto; padding: 16px;">
+    <main class="app-main" style="max-width: 1200px; margin: 0 auto; padding: 8px;">
       
       <!-- Header Banner -->
       <header class="wave-banner-unified">
@@ -36,7 +36,7 @@
       </header>
 
       <!-- Compact Top Bar: Search + Pricing -->
-      <div style="display: grid; grid-template-columns: 1fr auto; gap: 12px; margin: 16px 0; align-items: center;">
+      <div style="display: grid; grid-template-columns: 1fr auto; gap: 8px; margin: 8px 0; align-items: center;">
         
         <!-- Search Web3 -->
         <div class="universal-search-container">
@@ -54,40 +54,40 @@
         </div>
 
         <!-- Compact Pricing Box -->
-        <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.15)); border-radius: 8px; padding: 12px 16px; border: 1px solid var(--primary); min-width: 220px;">
-          <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 6px; text-align: center;">🚀 Premium Access</div>
-          <div style="display: flex; gap: 8px;">
-            <button onclick="subscribePlan('basic')" style="flex: 1; padding: 6px 10px; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-primary); border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600;">Basic $2</button>
-            <button onclick="subscribePlan('premium')" style="flex: 1; padding: 6px 10px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600;">Premium $6</button>
+        <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.15)); border-radius: 6px; padding: 6px 10px; border: 1px solid var(--primary); min-width: 180px;">
+          <div style="font-size: 0.625rem; color: var(--text-secondary); margin-bottom: 4px; text-align: center;">🚀 Premium</div>
+          <div style="display: flex; gap: 6px;">
+            <button onclick="subscribePlan('basic')" style="flex: 1; padding: 4px 8px; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-primary); border-radius: 4px; cursor: pointer; font-size: 0.625rem; font-weight: 600;">$2</button>
+            <button onclick="subscribePlan('premium')" style="flex: 1; padding: 4px 8px; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.625rem; font-weight: 600;">$6</button>
           </div>
         </div>
         
       </div>
 
       <!-- Analysis Results Area - Two Column Layout -->
-      <div id="analysisResults" style="margin: 16px 0;">
-        <div class="welcome-message" style="text-align: center; padding: 40px; color: var(--text-secondary);">
-          <h2 style="color: var(--text-primary); margin-bottom: 8px;">Real-Time Market Intelligence</h2>
-          <p>Search any asset for instant technical analysis</p>
+      <div id="analysisResults" style="margin: 8px 0;">
+        <div class="welcome-message" style="text-align: center; padding: 20px; color: var(--text-secondary);">
+          <h2 style="color: var(--text-primary); margin-bottom: 4px; font-size: 1.125rem;">Real-Time Market Intelligence</h2>
+          <p style="font-size: 0.75rem;">Search any asset for instant technical analysis</p>
         </div>
       </div>
 
       <!-- Asset Class Tabs -->
-      <section class="asset-tabs" style="margin: 32px 0;">
-        <div style="display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 2px solid var(--border-primary); padding-bottom: 2px;">
-          <button class="asset-tab active" data-asset="crypto" onclick="switchAsset('crypto')" style="flex: 1; padding: 12px; background: transparent; border: none; border-bottom: 3px solid var(--primary); color: var(--text-primary); font-weight: 600; cursor: pointer; transition: all 0.3s;">
+      <section class="asset-tabs" style="margin: 16px 0;">
+        <div style="display: flex; gap: 6px; margin-bottom: 12px; border-bottom: 1px solid var(--border-primary); padding-bottom: 2px;">
+          <button class="asset-tab active" data-asset="crypto" onclick="switchAsset('crypto')" style="flex: 1; padding: 6px; background: transparent; border: none; border-bottom: 2px solid var(--primary); color: var(--text-primary); font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 0.75rem;">
             🪙 CRYPTO
           </button>
-          <button class="asset-tab" data-asset="stocks" onclick="switchAsset('stocks')" style="flex: 1; padding: 12px; background: transparent; border: none; border-bottom: 3px solid transparent; color: var(--text-secondary); font-weight: 600; cursor: pointer; transition: all 0.3s;">
+          <button class="asset-tab" data-asset="stocks" onclick="switchAsset('stocks')" style="flex: 1; padding: 6px; background: transparent; border: none; border-bottom: 2px solid transparent; color: var(--text-secondary); font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 0.75rem;">
             📈 STOCKS
           </button>
-          <button class="asset-tab" data-asset="nfts" onclick="switchAsset('nfts')" style="flex: 1; padding: 12px; background: transparent; border: none; border-bottom: 3px solid transparent; color: var(--text-secondary); font-weight: 600; cursor: pointer; transition: all 0.3s;">
+          <button class="asset-tab" data-asset="nfts" onclick="switchAsset('nfts')" style="flex: 1; padding: 6px; background: transparent; border: none; border-bottom: 2px solid transparent; color: var(--text-secondary); font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 0.75rem;">
             🎨 NFTs
           </button>
         </div>
 
         <!-- Category Filters (dynamic per asset) -->
-        <div class="category-buttons" style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
+        <div class="category-buttons" style="display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap;">
           <button class="category-btn active" data-category="top" onclick="loadCategory('top')">Top 50</button>
           <button class="category-btn" data-category="gainers" onclick="loadCategory('gainers')">🟢 Gainers</button>
           <button class="category-btn" data-category="losers" onclick="loadCategory('losers')">🔴 Losers</button>
@@ -95,23 +95,23 @@
         </div>
 
         <!-- Market Table -->
-        <div id="marketTableContainer" style="overflow-x: auto; border-radius: 8px; background: var(--bg-secondary); padding: 16px;">
+        <div id="marketTableContainer" style="overflow-x: auto; border-radius: 6px; background: var(--bg-secondary); padding: 8px;">
           <table class="market-table" id="marketTable" style="width: 100%; border-collapse: collapse;">
             <thead>
               <tr style="border-bottom: 1px solid var(--border-primary);">
-                <th style="text-align: left; padding: 12px; color: var(--text-secondary); font-size: 0.875rem;">#</th>
-                <th style="text-align: left; padding: 12px; color: var(--text-secondary); font-size: 0.875rem;">Name</th>
-                <th style="text-align: right; padding: 12px; color: var(--text-secondary); font-size: 0.875rem;">Price</th>
-                <th style="text-align: right; padding: 12px; color: var(--text-secondary); font-size: 0.875rem;">24h %</th>
-                <th style="text-align: right; padding: 12px; color: var(--text-secondary); font-size: 0.875rem;">Market Cap</th>
-                <th style="text-align: right; padding: 12px; color: var(--text-secondary); font-size: 0.875rem;">Volume</th>
-                <th style="text-align: center; padding: 12px; color: var(--text-secondary); font-size: 0.875rem;">RSI</th>
-                <th style="text-align: center; padding: 12px; color: var(--text-secondary); font-size: 0.875rem;">Action</th>
+                <th style="text-align: left; padding: 6px 8px; color: var(--text-secondary); font-size: 0.625rem;">#</th>
+                <th style="text-align: left; padding: 6px 8px; color: var(--text-secondary); font-size: 0.625rem;">Name</th>
+                <th style="text-align: right; padding: 6px 8px; color: var(--text-secondary); font-size: 0.625rem;">Price</th>
+                <th style="text-align: right; padding: 6px 8px; color: var(--text-secondary); font-size: 0.625rem;">24h %</th>
+                <th style="text-align: right; padding: 6px 8px; color: var(--text-secondary); font-size: 0.625rem;">Market Cap</th>
+                <th style="text-align: right; padding: 6px 8px; color: var(--text-secondary); font-size: 0.625rem;">Volume</th>
+                <th style="text-align: center; padding: 6px 8px; color: var(--text-secondary); font-size: 0.625rem;">RSI</th>
+                <th style="text-align: center; padding: 6px 8px; color: var(--text-secondary); font-size: 0.625rem;">Action</th>
               </tr>
             </thead>
             <tbody id="marketTableBody">
               <tr>
-                <td colspan="8" style="text-align: center; padding: 40px; color: var(--text-secondary);">Loading...</td>
+                <td colspan="8" style="text-align: center; padding: 20px; color: var(--text-secondary); font-size: 0.75rem;">Loading...</td>
               </tr>
             </tbody>
           </table>
@@ -119,21 +119,21 @@
       </section>
 
       <!-- News Links (Simple Hyperlinks) -->
-      <section class="news-section" style="margin: 32px 0;">
-        <h3 style="color: var(--text-primary); margin-bottom: 12px; font-size: 1.125rem;">📰 Market News</h3>
-        <div id="newsLinks" style="display: flex; flex-direction: column; gap: 6px;">
-          <a href="#" class="news-link" style="color: var(--primary); text-decoration: none; font-size: 0.875rem;">Loading news...</a>
+      <section class="news-section" style="margin: 16px 0;">
+        <h3 style="color: var(--text-primary); margin-bottom: 6px; font-size: 0.875rem;">📰 Market News</h3>
+        <div id="newsLinks" style="display: flex; flex-direction: column; gap: 4px;">
+          <a href="#" class="news-link" style="color: var(--primary); text-decoration: none; font-size: 0.625rem;">Loading news...</a>
         </div>
       </section>
 
       <!-- Footer with Crypto Cat House Link -->
-      <footer style="margin-top: 64px; padding: 32px; text-align: center; border-top: 1px solid var(--border-primary);">
+      <footer style="margin-top: 32px; padding: 16px; text-align: center; border-top: 1px solid var(--border-primary);">
         <a href="https://cryptocathouse.com" target="_blank" rel="noopener" style="display: inline-block; transition: transform 0.3s ease; text-decoration: none;">
-          <img src="/crypto-cat-mascot.png" alt="Crypto Cat House" style="width: 100px; height: 100px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" />
-          <div style="color: var(--primary); font-size: 1rem; font-weight: 600;">Visit Crypto Cat House</div>
-          <div style="color: var(--text-secondary); font-size: 0.875rem; margin-top: 4px;">cryptocathouse.com</div>
+          <img src="/crypto-cat-mascot.png" alt="Crypto Cat House" style="width: 60px; height: 60px; border-radius: 8px; margin-bottom: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.3);" />
+          <div style="color: var(--primary); font-size: 0.75rem; font-weight: 600;">Visit Crypto Cat House</div>
+          <div style="color: var(--text-secondary); font-size: 0.625rem; margin-top: 2px;">cryptocathouse.com</div>
         </a>
-        <div style="margin-top: 24px; color: var(--text-tertiary); font-size: 0.75rem;">
+        <div style="margin-top: 12px; color: var(--text-tertiary); font-size: 0.625rem;">
           &copy; 2025 DarkWave PULSE | Professional Market Analysis Tool
         </div>
       </footer>

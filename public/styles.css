@@ -5581,15 +5581,15 @@ select {
 .analysis-two-column {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin: 16px 0;
+  gap: 8px;
+  margin: 8px 0;
 }
 
 .analysis-metrics-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  margin: 16px 0;
+  gap: 6px;
+  margin: 8px 0;
 }
 
 /* Mobile - Stack single column */
