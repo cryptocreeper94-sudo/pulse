@@ -339,18 +339,23 @@ async function loadMarketTicker() {
     
     if (items && items.length > 0) {
       const tickerHTML = items.slice(0, 20).map(item => {
-        const color = item.change24h >= 0 ? 'var(--success)' : 'var(--danger)';
+        if (!item || !item.ticker || !item.price) return '';
+        const color = (item.change24h || 0) >= 0 ? 'var(--success)' : 'var(--danger)';
+        const price = typeof item.price === 'number' ? item.price : parseFloat(item.price);
+        const change = typeof item.change24h === 'number' ? item.change24h : parseFloat(item.change24h || 0);
         return `
           <span class="ticker-item" style="display: inline-flex; align-items: center; gap: 8px; margin-right: 32px;">
             <strong>${item.ticker}</strong>
-            <span style="color: var(--text-primary);">$${item.price?.toFixed(2)}</span>
-            <span style="color: ${color};">${item.change24h >= 0 ? '+' : ''}${item.change24h?.toFixed(2)}%</span>
+            <span style="color: var(--text-primary);">$${price.toFixed(2)}</span>
+            <span style="color: ${color};">${change >= 0 ? '+' : ''}${change.toFixed(2)}%</span>
           </span>
         `;
-      }).join('');
+      }).filter(html => html).join('');
       
-      document.getElementById('tickerContent').innerHTML = tickerHTML;
-      document.getElementById('tickerContentClone').innerHTML = tickerHTML;
+      if (tickerHTML) {
+        document.getElementById('tickerContent').innerHTML = tickerHTML;
+        document.getElementById('tickerContentClone').innerHTML = tickerHTML;
+      }
     }
   } catch (error) {
     console.error('Ticker error:', error);

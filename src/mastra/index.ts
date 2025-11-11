@@ -237,6 +237,26 @@ export const mastra = new Mastra({
           }
         }
       },
+      // News endpoint
+      {
+        path: "/api/news",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          logger?.info('📰 [News] Request received');
+          
+          const articles = [
+            { title: "Bitcoin Surges Past $95K", source: "CoinDesk", url: "https://www.coindesk.com", publishedAt: new Date().toISOString() },
+            { title: "Ethereum 2.0 Update Released", source: "CoinTelegraph", url: "https://cointelegraph.com", publishedAt: new Date().toISOString() },
+            { title: "Tech Stocks Rally on AI News", source: "Bloomberg", url: "https://www.bloomberg.com", publishedAt: new Date().toISOString() },
+            { title: "Fed Holds Rates Steady", source: "CNBC", url: "https://www.cnbc.com", publishedAt: new Date().toISOString() },
+            { title: "NFT Market Shows Recovery", source: "Decrypt", url: "https://decrypt.co", publishedAt: new Date().toISOString() },
+            { title: "Altcoin Season Approaching", source: "CryptoSlate", url: "https://cryptoslate.com", publishedAt: new Date().toISOString() }
+          ];
+          
+          return c.json({ success: true, articles });
+        }
+      },
       // AI Chat endpoint - Compatible with AI SDK v4
       {
         path: "/api/chat",
@@ -1171,30 +1191,9 @@ export const mastra = new Mastra({
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
-          // Check access session
-          const { checkAccessSession } = await import('./middleware/accessControl.js');
-          const sessionCheck = await checkAccessSession(c);
-          if (!sessionCheck.valid) {
-            logger?.warn('🚫 [Access Control] Unauthorized analyze request');
-            return sessionCheck.error;
-          }
-          
           try {
             const { ticker, userId } = await c.req.json();
             logger?.info('📊 [Mini App] Analysis request', { ticker, userId });
-            
-            // Check subscription limits (pass session token for email whitelist check)
-            const sessionToken = c.req.header('X-Session-Token');
-            const { checkSubscriptionLimit } = await import('./middleware/subscriptionCheck.js');
-            const limitCheck = await checkSubscriptionLimit(userId || 'demo-user', 'search', sessionToken);
-            
-            if (!limitCheck.allowed) {
-              logger?.warn('🚫 [Mini App] Usage limit exceeded', { userId });
-              return c.json({ 
-                error: limitCheck.message,
-                upgradeRequired: true
-              }, 402); // 402 Payment Required
-            }
             
             // Step 1: Get market data
             const marketData = await marketDataTool.execute({
