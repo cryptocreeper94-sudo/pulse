@@ -113,8 +113,8 @@ function displayAnalysis(data, ticker) {
           </div>
           ${data.sentiment ? `
             <div style="margin-top: 4px; padding: 3px 6px; background: rgba(59, 130, 246, 0.1); border: 1px solid var(--primary); border-radius: 4px; display: inline-block;">
-              <span style="font-size: 0.625rem; color: var(--text-secondary);">Sentiment:</span>
-              <span style="font-weight: 600; color: var(--primary); margin-left: 4px; font-size: 0.625rem;">${data.sentiment.sentimentScore || 'N/A'}/100</span>
+              <span style="font-size: 0.75rem; color: var(--text-secondary);">Sentiment:</span>
+              <span style="font-weight: 600; color: var(--primary); margin-left: 4px; font-size: 0.75rem;">${data.sentiment.sentimentScore || 'N/A'}/100</span>
             </div>
           ` : ''}
         </div>
@@ -130,86 +130,86 @@ function displayAnalysis(data, ticker) {
         
         <!-- RSI -->
         <div class="metric-card" style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; border: 1px solid var(--border-primary);">
-          <div style="color: var(--text-secondary); font-size: 0.625rem; text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">RSI (14)</div>
+          <div style="color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">RSI (14)</div>
           <div style="color: ${rsiColor}; font-size: 1.125rem; font-weight: 700; line-height: 1.2;">${rsiValue.toFixed(1)}</div>
-          <div style="color: var(--text-secondary); font-size: 0.625rem; margin-top: 3px;">${rsiStatus}</div>
+          <div style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 3px;">${rsiStatus}</div>
         </div>
         
         <!-- MACD -->
         <div class="metric-card" style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; border: 1px solid var(--border-primary);">
-          <div style="color: var(--text-secondary); font-size: 0.625rem; text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">MACD</div>
+          <div style="color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">MACD</div>
           <div style="color: ${macdColor}; font-size: 1.125rem; font-weight: 700; line-height: 1.2;">${(data.macd?.value || 0).toFixed(2)}</div>
-          <div style="color: var(--text-secondary); font-size: 0.625rem; margin-top: 3px;">${macdStatus}</div>
+          <div style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 3px;">${macdStatus}</div>
         </div>
         
         <!-- EMA 9 -->
         <div class="metric-card" style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; border: 1px solid var(--border-primary);">
-          <div style="color: var(--text-secondary); font-size: 0.625rem; text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">EMA 9</div>
+          <div style="color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">EMA 9</div>
           <div style="color: var(--text-primary); font-size: 1.125rem; font-weight: 700; line-height: 1.2;">$${(data.ema9 || 0).toFixed(2)}</div>
-          <div style="color: var(--text-secondary); font-size: 0.625rem; margin-top: 3px;">9-day</div>
+          <div style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 3px;">9-day</div>
         </div>
         
         <!-- EMA 21 -->
         <div class="metric-card" style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; border: 1px solid var(--border-primary);">
-          <div style="color: var(--text-secondary); font-size: 0.625rem; text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">EMA 21</div>
+          <div style="color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">EMA 21</div>
           <div style="color: var(--text-primary); font-size: 1.125rem; font-weight: 700; line-height: 1.2;">$${(data.ema21 || 0).toFixed(2)}</div>
-          <div style="color: var(--text-secondary); font-size: 0.625rem; margin-top: 3px;">21-day</div>
+          <div style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 3px;">21-day</div>
         </div>
         
         <!-- EMA 50 -->
         <div class="metric-card" style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; border: 1px solid var(--border-primary);">
-          <div style="color: var(--text-secondary); font-size: 0.625rem; text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">EMA 50</div>
+          <div style="color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">EMA 50</div>
           <div style="color: var(--text-primary); font-size: 1.125rem; font-weight: 700; line-height: 1.2;">$${(data.ema50 || 0).toFixed(2)}</div>
-          <div style="color: var(--text-secondary); font-size: 0.625rem; margin-top: 3px;">50-day</div>
+          <div style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 3px;">50-day</div>
         </div>
         
         <!-- EMA 200 -->
         <div class="metric-card" style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; border: 1px solid var(--border-primary);">
-          <div style="color: var(--text-secondary); font-size: 0.625rem; text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">EMA 200</div>
+          <div style="color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">EMA 200</div>
           <div style="color: var(--text-primary); font-size: 1.125rem; font-weight: 700; line-height: 1.2;">$${(data.ema200 || 0).toFixed(2)}</div>
-          <div style="color: var(--text-secondary); font-size: 0.625rem; margin-top: 3px;">200-day</div>
+          <div style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 3px;">200-day</div>
         </div>
         
         <!-- SMA 50 -->
         <div class="metric-card" style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; border: 1px solid var(--border-primary);">
-          <div style="color: var(--text-secondary); font-size: 0.625rem; text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">SMA 50</div>
+          <div style="color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">SMA 50</div>
           <div style="color: var(--text-primary); font-size: 1.125rem; font-weight: 700; line-height: 1.2;">$${(data.sma50 || 0).toFixed(2)}</div>
-          <div style="color: var(--text-secondary); font-size: 0.625rem; margin-top: 3px;">50-day</div>
+          <div style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 3px;">50-day</div>
         </div>
         
         <!-- SMA 200 -->
         <div class="metric-card" style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; border: 1px solid var(--border-primary);">
-          <div style="color: var(--text-secondary); font-size: 0.625rem; text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">SMA 200</div>
+          <div style="color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">SMA 200</div>
           <div style="color: var(--text-primary); font-size: 1.125rem; font-weight: 700; line-height: 1.2;">$${(data.sma200 || 0).toFixed(2)}</div>
-          <div style="color: var(--text-secondary); font-size: 0.625rem; margin-top: 3px;">200-day</div>
+          <div style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 3px;">200-day</div>
         </div>
         
         <!-- Bollinger Upper -->
         <div class="metric-card" style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; border: 1px solid var(--border-primary);">
-          <div style="color: var(--text-secondary); font-size: 0.625rem; text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">BB Upper</div>
+          <div style="color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">BB Upper</div>
           <div style="color: var(--danger); font-size: 1.125rem; font-weight: 700; line-height: 1.2;">$${(data.bollingerBands?.upper || 0).toFixed(2)}</div>
-          <div style="color: var(--text-secondary); font-size: 0.625rem; margin-top: 3px;">Resistance</div>
+          <div style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 3px;">Resistance</div>
         </div>
         
         <!-- Bollinger Lower -->
         <div class="metric-card" style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; border: 1px solid var(--border-primary);">
-          <div style="color: var(--text-secondary); font-size: 0.625rem; text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">BB Lower</div>
+          <div style="color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">BB Lower</div>
           <div style="color: var(--success); font-size: 1.125rem; font-weight: 700; line-height: 1.2;">$${(data.bollingerBands?.lower || 0).toFixed(2)}</div>
-          <div style="color: var(--text-secondary); font-size: 0.625rem; margin-top: 3px;">Support</div>
+          <div style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 3px;">Support</div>
         </div>
         
         <!-- Support -->
         <div class="metric-card" style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; border: 1px solid var(--border-primary);">
-          <div style="color: var(--text-secondary); font-size: 0.625rem; text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">Support</div>
+          <div style="color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">Support</div>
           <div style="color: var(--success); font-size: 1.125rem; font-weight: 700; line-height: 1.2;">$${(data.support || 0).toFixed(2)}</div>
-          <div style="color: var(--text-secondary); font-size: 0.625rem; margin-top: 3px;">Floor</div>
+          <div style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 3px;">Floor</div>
         </div>
         
         <!-- Resistance -->
         <div class="metric-card" style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; border: 1px solid var(--border-primary);">
-          <div style="color: var(--text-secondary); font-size: 0.625rem; text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">Resistance</div>
+          <div style="color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">Resistance</div>
           <div style="color: var(--danger); font-size: 1.125rem; font-weight: 700; line-height: 1.2;">$${(data.resistance || 0).toFixed(2)}</div>
-          <div style="color: var(--text-secondary); font-size: 0.625rem; margin-top: 3px;">Ceiling</div>
+          <div style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 3px;">Ceiling</div>
         </div>
         
       </div>
@@ -221,10 +221,10 @@ function displayAnalysis(data, ticker) {
           <div style="display: grid; gap: 4px;">
             ${data.signals.map(sig => {
               const isBullish = sig.toLowerCase().includes('bullish') || sig.toLowerCase().includes('oversold') || sig.toLowerCase().includes('golden');
-              return `<div style="padding: 4px 6px; background: ${isBullish ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)'}; border-left: 2px solid ${isBullish ? 'var(--success)' : 'var(--danger)'}; border-radius: 3px; color: var(--text-primary); font-size: 0.625rem;">${isBullish ? '🟢' : '🔴'} ${sig}</div>`;
+              return `<div style="padding: 4px 6px; background: ${isBullish ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)'}; border-left: 2px solid ${isBullish ? 'var(--success)' : 'var(--danger)'}; border-radius: 3px; color: var(--text-primary); font-size: 0.75rem;">${isBullish ? '🟢' : '🔴'} ${sig}</div>`;
             }).join('')}
           </div>
-          <div style="margin-top: 6px; display: flex; gap: 8px; justify-content: center; font-size: 0.625rem;">
+          <div style="margin-top: 6px; display: flex; gap: 8px; justify-content: center; font-size: 0.75rem;">
             <span style="color: var(--success); font-weight: 600;">🟢 Bullish: ${data.signalCount?.bullish || 0}</span>
             <span style="color: var(--danger); font-weight: 600;">🔴 Bearish: ${data.signalCount?.bearish || 0}</span>
           </div>
@@ -322,27 +322,27 @@ function renderMarketTable(items) {
     
     return `
       <tr style="border-bottom: 1px solid var(--border-primary); cursor: pointer; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'" onclick="quickAnalyze('${item.ticker}')">
-        <td style="padding: 12px; color: var(--text-secondary);">${index + 1}</td>
-        <td style="padding: 12px;">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <img src="${logoUrl}" alt="${item.ticker}" style="width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.1);" onerror="this.style.display='none'" />
+        <td style="padding: 6px 8px; color: var(--text-secondary); font-size: 0.75rem;">${index + 1}</td>
+        <td style="padding: 6px 8px;">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <img src="${logoUrl}" alt="${item.ticker}" style="width: 20px; height: 20px; border-radius: 50%; background: rgba(255,255,255,0.1);" onerror="this.style.display='none'" />
             <div>
-              <div style="font-weight: 600; color: var(--text-primary);">${item.name}</div>
-              <div style="font-size: 0.75rem; color: var(--text-secondary);">${item.ticker}</div>
+              <div style="font-weight: 600; color: var(--text-primary); font-size: 0.75rem;">${item.name}</div>
+              <div style="font-size: 0.625rem; color: var(--text-secondary);">${item.ticker}</div>
             </div>
           </div>
         </td>
-        <td style="padding: 12px; text-align: right; color: var(--text-primary);">$${item.price?.toLocaleString() || '0.00'}</td>
-        <td style="padding: 12px; text-align: right; color: ${changeColor}; font-weight: 600;">${changeIcon} ${Math.abs(item.change24h || 0).toFixed(2)}%</td>
-        <td style="padding: 12px; text-align: right; color: var(--text-secondary);">$${(item.marketCap || 0).toLocaleString(undefined, {notation: 'compact', maximumFractionDigits: 2})}</td>
-        <td style="padding: 12px; text-align: right; color: var(--text-secondary);">$${(item.volume || 0).toLocaleString(undefined, {notation: 'compact', maximumFractionDigits: 2})}</td>
-        <td style="padding: 12px; text-align: center;">
-          <span style="padding: 4px 8px; border-radius: 4px; font-size: 0.875rem; background: ${item.rsi > 70 ? 'var(--danger-bg)' : item.rsi < 30 ? 'var(--success-bg)' : 'var(--warning-bg)'}; color: ${item.rsi > 70 ? 'var(--danger)' : item.rsi < 30 ? 'var(--success)' : 'var(--warning)'};">
+        <td style="padding: 6px 8px; text-align: right; color: var(--text-primary); font-size: 0.75rem;">$${item.price?.toLocaleString() || '0.00'}</td>
+        <td style="padding: 6px 8px; text-align: right; color: ${changeColor}; font-weight: 600; font-size: 0.75rem;">${changeIcon} ${Math.abs(item.change24h || 0).toFixed(2)}%</td>
+        <td style="padding: 6px 8px; text-align: right; color: var(--text-secondary); font-size: 0.75rem;">$${(item.marketCap || 0).toLocaleString(undefined, {notation: 'compact', maximumFractionDigits: 2})}</td>
+        <td style="padding: 6px 8px; text-align: right; color: var(--text-secondary); font-size: 0.75rem;">$${(item.volume || 0).toLocaleString(undefined, {notation: 'compact', maximumFractionDigits: 2})}</td>
+        <td style="padding: 6px 8px; text-align: center;">
+          <span style="padding: 2px 4px; border-radius: 3px; font-size: 0.75rem; background: ${item.rsi > 70 ? 'var(--danger-bg)' : item.rsi < 30 ? 'var(--success-bg)' : 'var(--warning-bg)'}; color: ${item.rsi > 70 ? 'var(--danger)' : item.rsi < 30 ? 'var(--success)' : 'var(--warning)'};">
             ${item.rsi?.toFixed(0) || 'N/A'}
           </span>
         </td>
-        <td style="padding: 12px; text-align: center;">
-          <button onclick="event.stopPropagation(); openChart('${item.ticker}')" style="padding: 6px 12px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.875rem; font-weight: 600;">
+        <td style="padding: 6px 8px; text-align: center;">
+          <button onclick="event.stopPropagation(); openChart('${item.ticker}')" style="padding: 3px 6px; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: 600;">
             Chart
           </button>
         </td>
