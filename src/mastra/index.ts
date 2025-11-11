@@ -458,7 +458,7 @@ export const mastra = new Mastra({
           
           const premiumCount = allSubscribers.filter(s => s.plan === 'premium' && s.status === 'active').length;
           const basicCount = allSubscribers.filter(s => s.plan === 'basic' && s.status === 'active').length;
-          const monthlyRevenue = (premiumCount * 5) + (basicCount * 2);
+          const monthlyRevenue = (premiumCount * 6) + (basicCount * 2);
           
           const html = `
             <!DOCTYPE html>
@@ -502,7 +502,7 @@ export const mastra = new Mastra({
                     </div>
                     <div class="stat-card">
                       <div class="stat-value">${premiumCount}</div>
-                      <div class="stat-label">Premium ($5/mo)</div>
+                      <div class="stat-label">Premium ($6/mo)</div>
                     </div>
                     <div class="stat-card">
                       <div class="stat-value">$${monthlyRevenue}</div>
@@ -2505,7 +2505,7 @@ export const mastra = new Mastra({
                       <h2 style="color: #4ADE80;">🎉 New Premium Subscriber!</h2>
                       <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
                         <p><strong>👤 User ID:</strong> ${userId}</p>
-                        <p><strong>💳 Amount:</strong> $5.00/month</p>
+                        <p><strong>💳 Amount:</strong> $6.00/month</p>
                         <p><strong>📅 Subscribed:</strong> ${new Date().toLocaleString()}</p>
                         <p><strong>🔄 Auto-renewal:</strong> Yes</p>
                         <p><strong>⏰ Expires:</strong> ${expiryDate.toLocaleDateString()}</p>
@@ -2518,7 +2518,7 @@ export const mastra = new Mastra({
                     to: adminEmail,
                     subject: '🎉 New DarkWave Premium Subscriber!',
                     html: htmlContent,
-                    text: `New Premium Subscriber!\n\nUser ID: ${userId}\nAmount: $5.00/month\nSubscribed: ${new Date().toLocaleString()}\nExpires: ${expiryDate.toLocaleDateString()}\n\nMonthly Revenue +$5`
+                    text: `New Premium Subscriber!\n\nUser ID: ${userId}\nAmount: $6.00/month\nSubscribed: ${new Date().toLocaleString()}\nExpires: ${expiryDate.toLocaleDateString()}\n\nMonthly Revenue +$6`
                   });
                   
                   logger?.info('📧 [Email] Admin notification sent', { userId });
@@ -2539,11 +2539,11 @@ export const mastra = new Mastra({
                   const axios = await import('axios');
                   const message = `🎉 *New Premium Subscriber!*\n\n` +
                     `👤 User ID: \`${userId}\`\n` +
-                    `💳 Amount: $5.00/month\n` +
+                    `💳 Amount: $6.00/month\n` +
                     `📅 Subscribed: ${new Date().toLocaleString()}\n` +
                     `🔄 Auto-renewal: Yes\n` +
                     `⏰ Expires: ${expiryDate.toLocaleDateString()}\n\n` +
-                    `💰 Monthly Revenue +$5`;
+                    `💰 Monthly Revenue +$6`;
                   
                   await axios.default.post(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
                     chat_id: adminChatId,
@@ -2873,11 +2873,11 @@ export const mastra = new Mastra({
                   
                   const message = `💎 *New Crypto Payment!*\n\n` +
                     `👤 User ID: \`${userId}\`\n` +
-                    `💰 Amount: $5.00 (${cryptoAmount} ${cryptoCurrency})\n` +
+                    `💰 Amount: $6.00 (${cryptoAmount} ${cryptoCurrency})\n` +
                     `📅 Subscribed: ${new Date().toLocaleString()}\n` +
                     `🔄 Auto-renewal: No (Manual crypto payment)\n` +
                     `⏰ Expires: ${expiryDate.toLocaleDateString()}\n\n` +
-                    `💵 Monthly Revenue +$5`;
+                    `💵 Monthly Revenue +$6`;
                   
                   await axios.default.post(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
                     chat_id: adminChatId,
