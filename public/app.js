@@ -442,20 +442,56 @@ async function loadMarketTicker() {
   setTimeout(loadMarketTicker, 30000);
 }
 
-// ===== NEWS LINKS - Drudge Report Style =====
+// ===== NEWS LINKS - Newspaper Style with Project Ads =====
 async function loadNewsLinks() {
   const newsDiv = document.getElementById('newsLinks');
+  
+  // Project ads to mix into news
+  const projectAds = [
+    { name: 'Crypto Cat House', description: 'Your Gateway to Web3 Projects', url: 'https://www.cryptocathouse.com/projects' },
+    { name: 'DarkWave Token', description: 'Revolutionary Trading Analytics Platform', url: 'https://www.cryptocathouse.com/projects' },
+    { name: 'NFT Marketplace', description: 'Discover Exclusive Digital Collectibles', url: 'https://www.cryptocathouse.com/projects' },
+    { name: 'Web3 Launchpad', description: 'Early Access to Premium Projects', url: 'https://www.cryptocathouse.com/projects' }
+  ];
   
   try {
     const response = await fetch(`${API_BASE}/api/news`);
     const data = await response.json();
     
     if (data.success && data.articles) {
-      newsDiv.innerHTML = data.articles.slice(0, 30).map(article => `
-        <a href="${article.url}" target="_blank" rel="noopener" style="color: var(--text-primary); text-decoration: underline; font-size: 0.875rem; line-height: 1.6; transition: color 0.2s; display: block;" onmouseover="this.style.color='#FF00FF'" onmouseout="this.style.color='var(--text-primary)'">
-          ${article.title}
-        </a>
-      `).join('');
+      const articles = data.articles.slice(0, 25);
+      const newsItems = [];
+      
+      // Mix news and ads
+      articles.forEach((article, index) => {
+        // Add news item with newspaper format: "Source: Title"
+        const fontSize = index % 3 === 0 ? '1rem' : index % 5 === 0 ? '0.95rem' : '0.875rem';
+        const fontWeight = index % 4 === 0 ? '700' : '400';
+        
+        newsItems.push(`
+          <div style="line-height: 1.6;">
+            <span style="color: var(--text-secondary); font-size: ${fontSize};">${article.source}:</span>
+            <a href="${article.url}" target="_blank" rel="noopener" style="color: var(--text-primary); text-decoration: underline; font-size: ${fontSize}; font-weight: ${fontWeight}; transition: color 0.2s; margin-left: 4px;" onmouseover="this.style.color='#FF00FF'" onmouseout="this.style.color='var(--text-primary)'">
+              ${article.title}
+            </a>
+          </div>
+        `);
+        
+        // Insert project ad every 6 news items
+        if ((index + 1) % 6 === 0 && projectAds[Math.floor(index / 6)]) {
+          const ad = projectAds[Math.floor(index / 6)];
+          newsItems.push(`
+            <div style="padding: 12px; background: rgba(255, 0, 255, 0.08); border: 1px solid rgba(255, 0, 255, 0.3); border-radius: 6px; line-height: 1.4;">
+              <a href="${ad.url}" target="_blank" rel="noopener" style="text-decoration: none;">
+                <div style="color: #FF00FF; font-weight: 700; font-size: 0.95rem; margin-bottom: 4px;">🚀 ${ad.name}</div>
+                <div style="color: var(--text-secondary); font-size: 0.75rem;">${ad.description}</div>
+              </a>
+            </div>
+          `);
+        }
+      });
+      
+      newsDiv.innerHTML = newsItems.join('');
     }
   } catch (error) {
     console.error('News error:', error);
