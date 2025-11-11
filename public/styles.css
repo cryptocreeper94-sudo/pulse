@@ -2007,7 +2007,7 @@ a:hover {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
-  opacity: 0.85;
+  opacity: 1;
   z-index: 0;
 }
 
@@ -2028,8 +2028,8 @@ a:hover {
   align-items: flex-start;
   justify-content: center;
   height: 100%;
-  gap: 4px;
-  padding-left: 32px;
+  gap: 6px;
+  padding-left: 40px;
 }
 
 .digital-title-unified {
