@@ -25,6 +25,13 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('✅ DarkWave PULSE ready');
 });
 
+// Subscribe function
+function subscribePlan(plan) {
+  alert(`Opening ${plan.toUpperCase()} subscription checkout...`);
+  // TODO: Integrate with Stripe Checkout
+  window.open('https://buy.stripe.com/your-link-here', '_blank');
+}
+
 // ===== SEARCH / ANALYZE =====
 function bindSearchEvents() {
   const searchBtn = document.getElementById('universalSearchBtn');

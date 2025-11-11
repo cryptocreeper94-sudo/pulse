@@ -52,8 +52,27 @@
         </div>
       </div>
 
+      <!-- Pricing / Subscribe -->
+      <div class="pricing-banner" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1)); border-radius: 12px; padding: 20px; margin: 16px 0; border: 1px solid var(--primary); text-align: center;">
+        <h3 style="color: var(--text-primary); margin: 0 0 8px 0;">🚀 Upgrade to Premium</h3>
+        <p style="color: var(--text-secondary); margin: 0 0 12px 0; font-size: 0.875rem;">Unlimited searches • Advanced indicators • Priority support</p>
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+          <div style="background: var(--bg-secondary); padding: 16px; border-radius: 8px; min-width: 150px;">
+            <div style="color: var(--text-secondary); font-size: 0.75rem;">Basic</div>
+            <div style="color: var(--text-primary); font-size: 1.5rem; font-weight: 700;">$9<span style="font-size: 0.875rem;">/mo</span></div>
+            <button onclick="subscribePlan('basic')" style="margin-top: 8px; padding: 8px 16px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Get Basic</button>
+          </div>
+          <div style="background: linear-gradient(135deg, var(--primary), #8B5CF6); padding: 16px; border-radius: 8px; min-width: 150px; position: relative;">
+            <div style="position: absolute; top: -8px; right: 8px; background: #FFD700; color: #000; padding: 2px 8px; border-radius: 4px; font-size: 0.625rem; font-weight: 700;">BEST</div>
+            <div style="color: rgba(255,255,255,0.8); font-size: 0.75rem;">Premium</div>
+            <div style="color: white; font-size: 1.5rem; font-weight: 700;">$29<span style="font-size: 0.875rem;">/mo</span></div>
+            <button onclick="subscribePlan('premium')" style="margin-top: 8px; padding: 8px 16px; background: white; color: var(--primary); border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Get Premium</button>
+          </div>
+        </div>
+      </div>
+
       <!-- Analysis Results Area -->
-      <div id="analysisResults" style="margin: 24px 0; min-height: 200px;">
+      <div id="analysisResults" style="margin: 16px 0; min-height: 200px;">
         <div class="welcome-message" style="text-align: center; padding: 40px; color: var(--text-secondary);">
           <h2 style="color: var(--text-primary); margin-bottom: 8px;">Real-Time Market Intelligence</h2>
           <p>Search any asset for instant technical analysis</p>
