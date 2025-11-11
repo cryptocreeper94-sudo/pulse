@@ -518,7 +518,7 @@ body {
   font-weight: var(--font-normal);
   line-height: 1.5;
   color: var(--text-primary);
-  background: #000000;
+  background: #000000 !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
@@ -3858,11 +3858,11 @@ table {
 
 /* Default Jupiter (Electric Night - Blue) */
 .theme-jupiter {
-  --bg-primary: #0a0e27;
-  --bg-secondary: #16213e;
-  --primary: #2563EB;
-  --primary-dark: #1d4ed8;
-  --accent: #60A5FA;
+  --bg-primary: #000000;
+  --bg-secondary: #1A1A1A;
+  --primary: #FFFFFF;
+  --primary-dark: #E5E5E5;
+  --accent: #FFFFFF;
 }
 
 /* Robinhood (Clean Green) */

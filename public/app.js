@@ -359,14 +359,24 @@ function renderMarketTable(items) {
     return;
   }
   
-  tbody.innerHTML = items.map((item, index) => {
-    const changeColor = item.change24h >= 0 ? 'var(--success)' : 'var(--danger)';
-    const changeIcon = item.change24h >= 0 ? '▲' : '▼';
+  // Filter out invalid items
+  const validItems = items.filter(item => item && item.ticker && item.name && item.price);
+  
+  if (validItems.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: var(--text-secondary);">No valid data available</td></tr>';
+    return;
+  }
+  
+  tbody.innerHTML = validItems.map((item, index) => {
+    const changeColor = (item.change24h || 0) >= 0 ? 'var(--success)' : 'var(--danger)';
+    const changeIcon = (item.change24h || 0) >= 0 ? '▲' : '▼';
     
-    // Generate logo URL based on asset type
+    // Generate logo URL based on asset type (with safe toLowerCase)
+    const ticker = (item.ticker || '').toLowerCase();
+    const name = (item.name || '').toLowerCase().replace(/\s+/g, '-');
     const logoUrl = item.type === 'stock' 
-      ? `https://logo.clearbit.com/${item.ticker.toLowerCase()}.com`
-      : `https://cryptologos.cc/logos/${item.ticker.toLowerCase()}-${item.name.toLowerCase().replace(/\s+/g, '-')}-logo.png`;
+      ? `https://logo.clearbit.com/${ticker}.com`
+      : `https://cryptologos.cc/logos/${ticker}-${name}-logo.png`;
     
     return `
       <tr style="border-bottom: 1px solid var(--border-primary); cursor: pointer; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'" onclick="quickAnalyze('${item.ticker}')">
@@ -918,4 +928,33 @@ function showNotification(message) {
   }, 3000);
 }
 
-console.log('✅ DarkWave PULSE loaded');
+// ===== PAGE INITIALIZATION =====
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('✅ DarkWave PULSE - Initializing...');
+  
+  // Load initial market data
+  loadMarketData(currentAsset, currentCategory);
+  
+  // Load market ticker
+  loadMarketTicker();
+  
+  // Load news
+  loadNewsLinks();
+  
+  // Bind search functionality
+  const searchBtn = document.getElementById('universalSearchBtn');
+  const searchInput = document.getElementById('universalSearchInput');
+  if (searchBtn) searchBtn.addEventListener('click', performAnalysis);
+  if (searchInput) searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') performAnalysis();
+  });
+  
+  // Bind AI agent
+  bindAIAgent();
+  
+  // Bind admin
+  bindAdminButton();
+  
+  console.log('✅ DarkWave PULSE loaded');
+});
+
