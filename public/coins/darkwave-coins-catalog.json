@@ -183,6 +183,19 @@
       "dexscreenerUrl": "https://dexscreener.com/solana/75A2MwNbiXMBNoJuKFgEsaN42fHAqjHhEuW4fPpKMGF",
       "featured": true,
       "status": "uploaded"
+    },
+    {
+      "id": "insane",
+      "name": "Overstimulated",
+      "symbol": "$INSANE",
+      "description": "When crypto drives you insane",
+      "category": "meme",
+      "platform": "pumpfun",
+      "contractAddress": "TBD",
+      "image": "/coins/insane-overstimulated.jpg",
+      "dexscreenerUrl": "#",
+      "featured": true,
+      "status": "coming_soon"
     }
   ]
 }
