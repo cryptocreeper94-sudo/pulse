@@ -97,7 +97,11 @@ function displayAnalysis(data, ticker) {
   const macdColor = macdValue > 0 ? 'var(--success)' : 'var(--danger)';
   
   const html = `
-    <div style="background: var(--bg-secondary); border-radius: 12px; padding: 24px; margin: 16px 0; border: 2px solid ${signalColor};">
+    <!-- Two Column Layout: Analysis + Chart -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0;">
+      
+      <!-- LEFT: Analysis Panel -->
+      <div style="background: var(--bg-secondary); border-radius: 12px; padding: 20px; border: 2px solid ${signalColor};">
       
       <!-- Header with Price & Recommendation -->
       <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
@@ -115,17 +119,14 @@ function displayAnalysis(data, ticker) {
           ` : ''}
         </div>
         <div style="text-align: right;">
-          <div style="background: ${signalColor}; color: white; padding: 16px 32px; border-radius: 12px; font-weight: 700; font-size: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+          <div style="background: ${signalColor}; color: white; padding: 12px 20px; border-radius: 10px; font-weight: 700; font-size: 1.25rem; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
             ${signalIcon} ${signal}
           </div>
-          <button onclick="openChart('${ticker}')" style="margin-top: 12px; padding: 12px 24px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; font-size: 1rem;">
-            📊 View Chart
-          </button>
         </div>
       </div>
       
-      <!-- Key Indicators Grid -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin: 24px 0;">
+      <!-- Key Indicators Grid - Compact -->
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 16px 0;">
         
         <!-- RSI -->
         <div class="metric-card" style="background: rgba(255,255,255,0.05); padding: 18px; border-radius: 10px; border: 2px solid var(--border-primary);">
@@ -230,10 +231,21 @@ function displayAnalysis(data, ticker) {
         </div>
       ` : ''}
       
-    </div>
+      </div><!-- End LEFT Analysis Panel -->
+      
+      <!-- RIGHT: Live Chart Panel -->
+      <div style="background: var(--bg-secondary); border-radius: 12px; padding: 20px; border: 2px solid var(--border-primary);">
+        <h3 style="margin: 0 0 12px 0; color: var(--text-primary); font-size: 1.125rem;">📊 Live Chart</h3>
+        <div id="inlineChart" style="height: 500px; background: rgba(0,0,0,0.2); border-radius: 8px;"></div>
+      </div>
+      
+    </div><!-- End Two Column Grid -->
   `;
   
   document.getElementById('analysisResults').innerHTML = html;
+  
+  // Load chart inline after rendering
+  setTimeout(() => renderInlineChart(ticker, '1D', 'candlestick'), 100);
 }
 
 // ===== ASSET SWITCHING =====
@@ -400,6 +412,116 @@ async function loadNewsLinks() {
   } catch (error) {
     console.error('News error:', error);
     newsDiv.innerHTML = '<p style="color: var(--text-secondary); font-size: 0.875rem;">News unavailable</p>';
+  }
+}
+
+// ===== INLINE CHART (for two-column layout) =====
+async function renderInlineChart(ticker, timeframe, type) {
+  const container = document.getElementById('inlineChart');
+  if (!container) return;
+  
+  container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary);">Loading chart...</div>';
+  
+  try {
+    const response = await fetch(`${API_BASE}/api/chart`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ticker, timeframe, type })
+    });
+    
+    const data = await response.json();
+    
+    if (data.success && data.chartData) {
+      renderChartInto('inlineChart', data.chartData, type);
+    } else {
+      container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--danger);">Chart data unavailable</div>';
+    }
+  } catch (error) {
+    console.error('Inline chart error:', error);
+    container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--danger);">Failed to load chart</div>';
+  }
+}
+
+function renderChartInto(containerId, chartData, type) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  if (!window.LightweightCharts || !chartData) return;
+  
+  // Clean up previous chart if exists
+  if (currentChart) {
+    currentChart.remove();
+    currentChart = null;
+  }
+  
+  currentChart = LightweightCharts.createChart(container, {
+    width: container.clientWidth,
+    height: 500,
+    layout: {
+      background: { color: 'transparent' },
+      textColor: '#9CA3AF'
+    },
+    grid: {
+      vertLines: { color: 'rgba(255, 255, 255, 0.1)' },
+      horzLines: { color: 'rgba(255, 255, 255, 0.1)' }
+    },
+    rightPriceScale: {
+      borderColor: 'rgba(255, 255, 255, 0.1)'
+    },
+    timeScale: {
+      borderColor: 'rgba(255, 255, 255, 0.1)'
+    }
+  });
+  
+  // Main price series
+  let mainSeries;
+  if (type === 'candlestick') {
+    mainSeries = currentChart.addCandlestickSeries({
+      upColor: '#10B981',
+      downColor: '#EF4444',
+      borderUpColor: '#10B981',
+      borderDownColor: '#EF4444',
+      wickUpColor: '#10B981',
+      wickDownColor: '#EF4444'
+    });
+    mainSeries.setData(chartData.prices || chartData);
+  } else {
+    mainSeries = currentChart.addLineSeries({ 
+      color: '#3B82F6',
+      lineWidth: 2
+    });
+    const priceData = (chartData.prices || chartData).map(d => ({ 
+      time: d.time, 
+      value: d.close || d.value 
+    }));
+    mainSeries.setData(priceData);
+  }
+  
+  // Add EMA overlays
+  if (chartData.ema9) {
+    const ema9Series = currentChart.addLineSeries({
+      color: '#22C55E',
+      lineWidth: 1
+    });
+    ema9Series.setData(chartData.ema9);
+  }
+  
+  if (chartData.ema21) {
+    const ema21Series = currentChart.addLineSeries({
+      color: '#F59E0B',
+      lineWidth: 1
+    });
+    ema21Series.setData(chartData.ema21);
+  }
+  
+  if (chartData.ema50) {
+    const ema50Series = currentChart.addLineSeries({
+      color: '#3B82F6',
+      lineWidth: 2
+    });
+    ema50Series.setData(chartData.ema50);
   }
 }
 
