@@ -353,10 +353,10 @@ body.theme-space::before {
   height: 100%;
   overflow: hidden;
   background: url('/banner-scroll.jpg');
-  background-size: 50% 100%;
+  background-size: cover;
   background-position: 0 center;
   background-repeat: repeat-x;
-  animation: bannerScroll 240s linear infinite;
+  animation: bannerScroll 180s linear infinite;
 }
 
 @keyframes bannerScroll {
@@ -364,7 +364,7 @@ body.theme-space::before {
     background-position: 0 center;
   }
   100% {
-    background-position: -1106px center;
+    background-position: -100% center;
   }
 }
 
