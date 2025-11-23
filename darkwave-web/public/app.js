@@ -4388,10 +4388,10 @@ async function fetchProjectLikes(projectIds) {
   return results;
 }
 
-// Featured Coins Grid Loader
-async function loadFeaturedCoins() {
+// Project Coins Grid Loader (Separate Carousels by Category)
+async function loadProjectCoins() {
   try {
-    const response = await fetch('/coins/featured-coins.json');
+    const response = await fetch('/coins/project-coins.json');
     const coins = await response.json();
     
     // Group coins by category
@@ -4402,7 +4402,7 @@ async function loadFeaturedCoins() {
       meme: coins.filter(c => c.category === 'meme')
     };
     
-    // Render each category
+    // Render each category carousel
     const renderCategory = (gridId, categoryCoins) => {
       const grid = document.getElementById(gridId);
       if (!grid || categoryCoins.length === 0) return;
@@ -4420,7 +4420,7 @@ async function loadFeaturedCoins() {
     renderCategory('spiritualGrid', categories.spiritual);
     renderCategory('memeGrid', categories.meme);
     
-    window.featuredCoinsData = coins;
+    window.projectCoinsData = coins;
     
     // Fetch like counts for all coins + Coming Soon projects
     const coinIds = coins.map(c => c.id);
@@ -4431,20 +4431,20 @@ async function loadFeaturedCoins() {
     // Store like data globally (will be used in popups)
     window.projectLikesState = likesData;
     
-    console.log('✅ Featured coins loaded by category:', {
+    console.log('✅ Project coins loaded in category carousels:', {
       cryptocat: categories.cryptocat.length,
       conspiracy: categories.conspiracy.length,
       spiritual: categories.spiritual.length,
       meme: categories.meme.length
     });
   } catch (error) {
-    console.error('Error loading featured coins:', error);
+    console.error('Error loading project coins:', error);
   }
 }
 
 // Open Coin Detail Popup with Cat Integration (Full-Screen Two-Panel)
 function openCoinPopup(coinId) {
-  const coin = window.featuredCoinsData?.find(c => c.id === coinId);
+  const coin = window.projectCoinsData?.find(c => c.id === coinId);
   if (!coin) return;
   
   // NO CRYPTO CAT POPUPS on Projects page (accessible to everyone) - but coin details are allowed
@@ -4939,11 +4939,11 @@ function copyCoinCA(evt, address) {
   });
 }
 
-// Load featured coins when DOM is ready
+// Load project coins when DOM is ready
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', loadFeaturedCoins);
+  document.addEventListener('DOMContentLoaded', loadProjectCoins);
 } else {
-  loadFeaturedCoins();
+  loadProjectCoins();
 }
 
 // ========================================
