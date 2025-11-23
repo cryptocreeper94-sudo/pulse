@@ -233,34 +233,33 @@ function showHideSeekPopup(spotId) {
   recentImages.push(randomImage);
   if (recentImages.length > MAX_RECENT_HISTORY) recentImages.shift();
   
-  // Check if Commentary Mode is OFF
-  const showCatPanel = persona === 'business' || persona === 'casual';
-  
+  // Check if Commentary Mode is ON (business or casual)
+  const showCatImage = persona === 'business' || persona === 'casual';
+
   const popup = document.createElement('div');
   popup.id = 'catPopup';
   popup.className = 'cat-popup';
-  
+
   popup.innerHTML = `
-    <div class="cat-popup-content ${!showCatPanel ? 'cat-popup-simple' : ''}">
-      ${showCatPanel ? `
-      <!-- Cat Image -->
+    <div class="cat-popup-content ${!showCatImage ? 'cat-popup-simple' : ''}">
+      <button class="cat-popup-close" onclick="closeCatPopup()">×</button>
+      
+      ${showCatImage ? `
       <div class="cat-popup-cat">
         <img src="${randomImage}" alt="Crypto Cat" />
       </div>
       ` : ''}
       
-      <!-- Panel 2: Content (Full Screen) -->
       <div class="cat-popup-panel-content">
-        <button class="cat-popup-close" onclick="closeCatPopup()" style="position: absolute; top: 20px; right: 20px; z-index: 10;">×</button>
         <div class="cat-popup-panel-content-inner">
-          <div class="cat-popup-term">${showCatPanel ? 'You Found Me!' : 'Hidden Insight Discovered'}</div>
+          <div class="cat-popup-term">${showCatImage ? 'You Found Me!' : '💡 Trading Insight'}</div>
           <div class="cat-popup-text">${message}</div>
-          <div class="cat-found-count" style="margin-top: 15px; color: var(--accent-blue); font-weight: bold;">${foundCats.length} / ${hotspots.length} discovered</div>
+          <div class="cat-found-count">${foundCats.length} / ${hotspots.length} discovered</div>
         </div>
       </div>
     </div>
   `;
-  
+
   document.body.appendChild(popup);
   
   // Auto close after 10 seconds
@@ -277,30 +276,29 @@ function showHideSeekPopup(spotId) {
 function showAllCatsFoundPopup() {
   // Get current persona mode
   const persona = window.currentCatMode || 'casual';
-  const showCatPanel = persona === 'business' || persona === 'casual';
+  const showCatImage = persona === 'business' || persona === 'casual';
   
   const popup = document.createElement('div');
   popup.id = 'catPopup';
   popup.className = 'cat-popup';
   
   // Title and message based on Commentary Mode
-  const title = showCatPanel ? '🎉 You Found Them All!' : '🎉 All Insights Discovered!';
-  const completionMessage = showCatPanel 
+  const title = showCatImage ? '🎉 You Found Them All!' : '🎉 All Insights Discovered!';
+  const completionMessage = showCatImage 
     ? "Impressive! You've got the attention span of a true degen trader. Now use that focus to actually read the charts instead of hunting for cats! 😼"
     : "Excellent attention to detail! You've discovered all hidden trading insights. Apply this same level of focus when analyzing market data and charts.";
   
   popup.innerHTML = `
-    <div class="cat-popup-content ${!showCatPanel ? 'cat-popup-simple' : ''}">
-      ${showCatPanel ? `
-      <!-- Cat Image -->
+    <div class="cat-popup-content ${!showCatImage ? 'cat-popup-simple' : ''}">
+      <button class="cat-popup-close" onclick="closeCatPopup()">×</button>
+      
+      ${showCatImage ? `
       <div class="cat-popup-cat">
         <img src="/crypto-cat-images/sarcastic-cat-coins.jpg" alt="Crypto Cat" />
       </div>
       ` : ''}
       
-      <!-- Panel 2: Content (Full Screen) -->
       <div class="cat-popup-panel-content">
-        <button class="cat-popup-close" onclick="closeCatPopup()" style="position: absolute; top: 20px; right: 20px; z-index: 10;">×</button>
         <div class="cat-popup-panel-content-inner">
           <div class="cat-popup-term">${title}</div>
           <div class="cat-popup-text">${completionMessage}</div>
