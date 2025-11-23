@@ -1,5 +1,5 @@
-// DarkWave Banner - Large Candlestick Chart with Visible Wispy Smoke
-// Prominent candlesticks (1/5-1/6 of banner height), enhanced smoke trails
+// DarkWave Banner - Extra Large Candlestick Chart with Clear Separation
+// Much fewer candles = much larger, clearly visible bars with distinct separation
 window.bannerChartManager = {
   canvas: null,
   ctx: null,
@@ -11,7 +11,7 @@ window.bannerChartManager = {
   noiseValues: [],
 
   init: function() {
-    console.log('🎬 Large Candlestick Banner init');
+    console.log('🎬 Extra Large Candlestick Banner init');
     
     if (this.initialized) return;
 
@@ -39,12 +39,12 @@ window.bannerChartManager = {
       return;
     }
 
-    // Generate realistic 2-week to 1-month Bitcoin candlestick data (fewer, larger candles)
-    this.generateRealisticCandleData(45); // ~6 weeks, each candle will be much larger
+    // Generate realistic candlestick data
+    this.generateRealisticCandleData(60);
     this.initializeNoiseValues();
     this.initializeSmokeTrails();
     this.initialized = true;
-    console.log('✅ Large candlestick banner ready');
+    console.log('✅ Extra large candlestick banner ready');
     
     this.animate();
   },
@@ -138,21 +138,20 @@ window.bannerChartManager = {
     // Layer 1: Visible wispy smoke trails
     this.drawVisibleWispySmoke(w, h);
     
-    // Layer 2: Large candlestick chart
-    this.drawLargeCandlestickChart(w, h);
+    // Layer 2: Extra large candlestick chart with clear separation
+    this.drawExtraLargeCandlestickChart(w, h);
   },
 
   drawVisibleWispySmoke: function(w, h) {
     const centerY = h / 2;
     
-    // Darker holographic colors
     const smokeColors = [
-      { r: 200, g: 40, b: 80 },      // Maroon
-      { r: 220, g: 60, b: 120 },     // Red-pink
-      { r: 180, g: 80, b: 140 },     // Purple-pink
-      { r: 160, g: 100, b: 160 },    // Purple
-      { r: 140, g: 120, b: 180 },    // Lavender
-      { r: 200, g: 80, b: 120 }      // Orange-pink
+      { r: 200, g: 40, b: 80 },
+      { r: 220, g: 60, b: 120 },
+      { r: 180, g: 80, b: 140 },
+      { r: 160, g: 100, b: 160 },
+      { r: 140, g: 120, b: 180 },
+      { r: 200, g: 80, b: 120 }
     ];
 
     this.smokeTrails.forEach(trail => {
@@ -160,7 +159,6 @@ window.bannerChartManager = {
       if (age >= 200) return;
       
       const lifePercent = age / 200;
-      // Significantly increased opacity for visibility
       const opacity = (1 - lifePercent) * 0.55;
       
       const colorIdx = Math.floor(trail.seed) % smokeColors.length;
@@ -196,24 +194,23 @@ window.bannerChartManager = {
     });
   },
 
-  drawLargeCandlestickChart: function(w, h) {
+  drawExtraLargeCandlestickChart: function(w, h) {
     if (this.candleData.length === 0) return;
     
     const centerY = h / 2;
-    // Much larger chart: 70% of banner height
-    const chartHeight = h * 0.70;
+    const chartHeight = h * 0.75; // Even larger
     
     const maxPrice = Math.max(...this.candleData.map(c => c.high));
     const minPrice = Math.min(...this.candleData.map(c => c.low));
     const priceRange = maxPrice - minPrice || 1;
     
-    // Fewer candles = larger display
-    const totalCandlesVisible = Math.ceil(w / 4.5); // Larger candles
+    // Only 18 candles visible at once = much larger separation
+    const totalCandlesVisible = 18;
     const pixelsPerCandle = w / totalCandlesVisible;
     
     const startCandleIdx = Math.floor((this.scrollOffset / pixelsPerCandle)) % this.candleData.length;
     
-    // Draw candlesticks
+    // Draw candlesticks with clear separation
     for (let i = 0; i < totalCandlesVisible + 2; i++) {
       const candleIdx = (startCandleIdx + i) % this.candleData.length;
       const candle = this.candleData[candleIdx];
@@ -229,24 +226,25 @@ window.bannerChartManager = {
       
       const isGreen = candle.close >= candle.open;
       
-      // Draw wick
+      // Draw wick (thicker for visibility)
       this.ctx.strokeStyle = isGreen ? 'rgba(100, 220, 140, 0.85)' : 'rgba(255, 100, 100, 0.85)';
-      this.ctx.lineWidth = 1.5;
+      this.ctx.lineWidth = 2;
       this.ctx.beginPath();
       this.ctx.moveTo(x + pixelsPerCandle / 2, highY);
       this.ctx.lineTo(x + pixelsPerCandle / 2, lowY);
       this.ctx.stroke();
       
-      // Draw body (larger)
+      // Draw body (much larger with clear separation)
       const bodyTop = Math.min(openY, closeY);
-      const bodyHeight = Math.max(Math.abs(closeY - openY), 2);
+      const bodyHeight = Math.max(Math.abs(closeY - openY), 3);
       
-      this.ctx.fillStyle = isGreen ? 'rgba(100, 220, 140, 0.90)' : 'rgba(255, 100, 100, 0.90)';
-      this.ctx.strokeStyle = isGreen ? 'rgba(150, 255, 180, 1)' : 'rgba(255, 150, 150, 1)';
-      this.ctx.lineWidth = 1;
-      
-      const bodyWidth = Math.max(pixelsPerCandle * 0.65, 2.5);
+      // Add spacing between candles for clear separation
+      const bodyWidth = Math.max(pixelsPerCandle * 0.5, 8);
       const bodyX = x + (pixelsPerCandle - bodyWidth) / 2;
+      
+      this.ctx.fillStyle = isGreen ? 'rgba(100, 220, 140, 0.92)' : 'rgba(255, 100, 100, 0.92)';
+      this.ctx.strokeStyle = isGreen ? 'rgba(150, 255, 180, 1)' : 'rgba(255, 150, 150, 1)';
+      this.ctx.lineWidth = 1.2;
       
       this.ctx.fillRect(bodyX, bodyTop, bodyWidth, bodyHeight);
       this.ctx.strokeRect(bodyX, bodyTop, bodyWidth, bodyHeight);
