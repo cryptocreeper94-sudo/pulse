@@ -46,6 +46,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css?v=1119a">
   <link rel="stylesheet" href="/themes.css?v=1120">
+  <link rel="stylesheet" href="/trading-carousel.css?v=1120">
   <link rel="icon" type="image/png" href="/darkwave-coin.png">
   
   <!-- Auto Version Checker - Forces reload if old cached version -->
@@ -97,6 +98,11 @@
   <script src="/v2-feature-lock.js"></script>
   <script src="/agent-selector.js"></script>
   <script src="/agent-cards.js"></script>
+
+  <!-- NFT Trading Cards System -->
+  <script src="/trading-cards-config.js"></script>
+  <script src="/trading-carousel.js"></script>
+  <script src="/trading-card-profile.js"></script>
   
   <!-- Sentry Browser Error Tracking -->
   <script
@@ -762,6 +768,11 @@
             }
           }
         </script>
+
+        <!-- NFT Trading Cards Carousel - V2 Feature -->
+        <div class="section-box" id="nft-trading-cards-section">
+          <div id="trading-cards-carousel"></div>
+        </div>
 
         <!-- Crypto Cat Series -->
         <div class="section-box">

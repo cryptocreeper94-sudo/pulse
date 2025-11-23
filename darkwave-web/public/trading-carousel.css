@@ -1,0 +1,470 @@
+/* DarkWave NFT Trading Cards Carousel */
+
+.trading-carousel-locked {
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px dashed rgba(56, 97, 251, 0.5);
+  border-radius: 12px;
+  padding: 32px 24px;
+  text-align: center;
+  backdrop-filter: blur(4px);
+}
+
+.trading-carousel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 12px;
+}
+
+.trading-lock-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(251, 191, 36, 0.2);
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  color: #FBB F24;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.lock-icon {
+  font-size: 14px;
+}
+
+.trading-carousel-preview {
+  margin-top: 16px;
+}
+
+.trading-carousel-preview p {
+  color: var(--text-secondary);
+  margin: 12px 0;
+  font-size: 13px;
+}
+
+.trading-cards-grid-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.trading-card-preview-item {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 1;
+  background: rgba(56, 97, 251, 0.1);
+  border: 1px solid rgba(56, 97, 251, 0.3);
+}
+
+.trading-card-image-wrapper {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trading-card-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.6;
+}
+
+.trading-card-locked-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  font-size: 32px;
+}
+
+.trading-preview-text {
+  color: var(--accent-blue);
+  font-weight: 600;
+}
+
+/* Active Carousel */
+
+.trading-carousel-container {
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(56, 97, 251, 0.4);
+  border-radius: 16px;
+  padding: 24px;
+  backdrop-filter: blur(8px);
+}
+
+.trading-carousel-stats {
+  display: flex;
+  gap: 16px;
+}
+
+.stat {
+  background: rgba(56, 97, 251, 0.2);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-blue);
+}
+
+.trading-carousel-main {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin: 24px 0;
+  justify-content: center;
+}
+
+.trading-carousel-nav {
+  background: rgba(56, 97, 251, 0.3);
+  border: 1px solid rgba(56, 97, 251, 0.5);
+  color: var(--accent-blue);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.trading-carousel-nav:hover {
+  background: rgba(56, 97, 251, 0.6);
+  transform: scale(1.1);
+}
+
+.trading-card-display {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+
+.trading-card-frame {
+  background: var(--refractor-color);
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 20px;
+  width: 100%;
+  max-width: 300px;
+  aspect-ratio: 2.5/3.5;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(56, 97, 251, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  background-blend-mode: overlay;
+}
+
+.trading-card-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.03) 0px,
+    rgba(255, 255, 255, 0.03) 2px,
+    transparent 2px,
+    transparent 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.trading-card-hologram {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  z-index: 2;
+}
+
+.trading-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.trading-card-header {
+  text-align: center;
+  margin-bottom: 12px;
+  z-index: 2;
+}
+
+.trading-card-header h3 {
+  font-size: 16px;
+  font-weight: 900;
+  color: #ffffff;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  letter-spacing: 1px;
+}
+
+.trading-card-age {
+  display: block;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: 4px;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.trading-card-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.95);
+  overflow-y: auto;
+  z-index: 2;
+}
+
+.trading-card-detail-section {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 8px;
+  border-radius: 6px;
+  border-left: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.trading-card-detail-section strong {
+  display: block;
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 3px;
+  letter-spacing: 0.5px;
+}
+
+.trading-card-detail-section p {
+  margin: 0;
+  line-height: 1.3;
+}
+
+.trading-card-footer {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-top: auto;
+  z-index: 2;
+}
+
+.trading-card-serial {
+  flex: 1;
+  font-size: 8px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(0, 0, 0, 0.2);
+  padding: 4px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+}
+
+.trading-card-qr {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.trading-qr-code {
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trading-qr-code canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.trading-carousel-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.trading-info-box {
+  background: rgba(56, 97, 251, 0.1);
+  border: 1px solid rgba(56, 97, 251, 0.3);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.trading-info-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.trading-info-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-blue);
+}
+
+.trading-carousel-nav-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.trading-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(56, 97, 251, 0.3);
+  border: 1px solid rgba(56, 97, 251, 0.5);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.trading-dot.active {
+  background: var(--accent-blue);
+  box-shadow: 0 0 10px rgba(56, 97, 251, 0.8);
+  transform: scale(1.2);
+}
+
+.trading-dot:hover {
+  background: rgba(56, 97, 251, 0.6);
+}
+
+/* Responsive Design */
+
+@media (max-width: 768px) {
+  .trading-carousel-container {
+    padding: 16px;
+  }
+
+  .trading-carousel-main {
+    gap: 12px;
+  }
+
+  .trading-carousel-nav {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+
+  .trading-card-frame {
+    max-width: 260px;
+    padding: 16px;
+  }
+
+  .trading-card-header h3 {
+    font-size: 14px;
+  }
+
+  .trading-card-age {
+    font-size: 10px;
+  }
+
+  .trading-card-details {
+    font-size: 9px;
+  }
+
+  .trading-card-qr {
+    padding: 4px;
+  }
+
+  .trading-qr-code {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .trading-carousel-container {
+    padding: 12px;
+  }
+
+  .trading-carousel-main {
+    gap: 8px;
+    margin: 16px 0;
+  }
+
+  .trading-carousel-nav {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .trading-card-frame {
+    max-width: 220px;
+    padding: 12px;
+  }
+
+  .trading-card-header h3 {
+    font-size: 12px;
+  }
+
+  .trading-card-details {
+    font-size: 8px;
+    gap: 6px;
+  }
+
+  .trading-carousel-info {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .trading-info-box {
+    padding: 8px;
+  }
+
+  .trading-info-label {
+    font-size: 9px;
+  }
+
+  .trading-info-value {
+    font-size: 11px;
+  }
+}
+
+/* Animation */
+
+@keyframes tradingCardFlip {
+  0% {
+    opacity: 0;
+    transform: rotateY(90deg);
+  }
+  100% {
+    opacity: 1;
+    transform: rotateY(0deg);
+  }
+}
+
+.trading-card-frame {
+  animation: tradingCardFlip 0.5s ease;
+}
