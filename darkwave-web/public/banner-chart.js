@@ -158,9 +158,9 @@ window.bannerChartManager = {
     const centerY = h / 2;
     const numWaves = 7;
     const amplitude = h * 0.25;
-    const waveSpacing = h * 0.015; // MUCH tighter spacing
+    const waveSpacing = h * 0.035; // Spread out more - balanced spacing
     
-    // Draw 7 waves that all follow the SAME pattern but are tightly packed
+    // Draw 7 waves that all follow the SAME pattern but are spaced nicely
     for (let waveIdx = 0; waveIdx < numWaves; waveIdx++) {
       const yOffset = (waveIdx - numWaves / 2) * waveSpacing;
       const waveFreqOffset = waveIdx * 0.02; // Slight individual variation
