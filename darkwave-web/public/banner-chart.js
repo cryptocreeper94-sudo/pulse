@@ -128,7 +128,7 @@ window.bannerChartManager = {
       
       const isGreen = candle.close >= candle.open;
       
-      this.ctx.strokeStyle = isGreen ? 'rgba(80, 200, 100, 0.5)' : 'rgba(220, 60, 60, 0.5)';
+      this.ctx.strokeStyle = isGreen ? 'rgba(80, 200, 100, 0.9)' : 'rgba(220, 60, 60, 0.9)';
       this.ctx.lineWidth = 1.5;
       this.ctx.beginPath();
       this.ctx.moveTo(x + candleWidth / 2, highY);
@@ -138,7 +138,7 @@ window.bannerChartManager = {
       const bodyTop = Math.min(openY, closeY);
       const bodyHeight = Math.max(Math.abs(closeY - openY), 2);
       
-      this.ctx.fillStyle = isGreen ? 'rgba(80, 200, 100, 0.6)' : 'rgba(220, 60, 60, 0.6)';
+      this.ctx.fillStyle = isGreen ? 'rgba(80, 200, 100, 0.9)' : 'rgba(220, 60, 60, 0.9)';
       this.ctx.fillRect(x, bodyTop, candleWidth * 0.7, bodyHeight);
     });
   },
