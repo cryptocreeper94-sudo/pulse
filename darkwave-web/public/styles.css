@@ -345,41 +345,35 @@ body.theme-space::before {
   position: relative;
 }
 
-.banner-wave {
+.banner-scroll {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: var(--bg-primary);
+  background: url('/banner-scroll.jpg');
+  background-size: auto 100%;
+  background-position: 0 center;
+  background-repeat: repeat-x;
+  animation: bannerScroll 240s linear infinite;
+}
+
+@keyframes bannerScroll {
+  0% {
+    background-position: 0 center;
+  }
+  100% {
+    background-position: 100% center;
+  }
+}
+
+.banner-wave {
+  display: none;
 }
 
 .banner-img {
   display: none;
-}
-
-.banner-wave::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 200%;
-  height: 100%;
-  background: url('/banner.jpg');
-  background-size: 50% 100%;
-  background-position: 0% center;
-  background-repeat: repeat-x;
-  animation: waveSlide 180s linear infinite;
-}
-
-@keyframes waveSlide {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
 }
 
 .banner-text {
