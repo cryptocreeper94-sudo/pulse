@@ -4,7 +4,7 @@ console.log('✅ V2 Feature Lock system loaded');
 // Feature lock configuration
 const V2_FEATURES = {
   'avatar-king': {
-    name: 'Avatar King',
+    name: 'Agent Builder',
     launchDate: '2025-12-25',
     icon: '👤',
     description: 'Choose your AI agent'
