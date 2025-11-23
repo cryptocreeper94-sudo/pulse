@@ -26,7 +26,17 @@ DarkWave-V2 is an advanced technical analysis bot built with the Mastra framewor
   - Agent profiles include title, career highlight, and fun fact for each persona
   - Persistent agent selection via localStorage
   - System initialized on page load for seamless UX
-- **App Status**: Fully functional with all features restored (gauges, charts, Agent System, Avatar King, navigation tabs, themes)
+- **NFT Trading Cards System Implemented** (V2 Feature - Locked Until Dec 25):
+  - 🎴 **20 Collectible Agent Trading Cards** - 10 male + 10 female across 5 race categories (Asian, Caucasian, African American, Latino, Mixed)
+  - **2.5D Professional Renders** - Transparent backgrounds, DarkWave emblem on jacket breast pocket, studio lighting
+  - **Unique Refractor Colors** - 20 distinct holographic color gradients (Neon Cyan, Electric Gold, Crimson Flame, etc.)
+  - **Career Stats & Fun Facts** - Interesting, funny, and collectible with serialized IDs and hallmark system
+  - **Trading Card Carousel UI** - Full-featured carousel with navigation, info boxes, and dot indicators on Projects page
+  - **QR Code Profile Pages** - Each card generates scannable QR codes linking to individual agent profile pages
+  - **V2 Lock System** - Carousel shows "LOCKED" state with 32-day countdown until Dec 25; admin can unlock for testing
+  - **Hair Variations** - Caucasians with red, blonde, brown, black; males include bald options; all race-appropriate
+  - **Ages Mixed** - Some agents show "UNKNOWN" age, others with specific ages (27-50 range) for personality
+- **App Status**: Fully functional with all features restored (gauges, charts, Agent System, Avatar King, Trading Cards, navigation tabs, themes)
 - **Visual Theme**: Currently using Pro Blue (dark) theme with wave watermark; 9-theme system fully functional
 
 ## System Architecture
