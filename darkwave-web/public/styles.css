@@ -675,6 +675,7 @@ body.theme-light .banner-title {
   background: var(--bg-primary);
   border-bottom: 1px solid var(--border-color);
   overflow-x: auto;
+  overflow-y: hidden;
   box-shadow: var(--glow-white);
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
@@ -682,6 +683,7 @@ body.theme-light .banner-title {
   pointer-events: auto;
   flex-wrap: nowrap;
   width: 100%;
+  align-items: center;
 }
 
 .top-nav::-webkit-scrollbar {
@@ -691,12 +693,12 @@ body.theme-light .banner-title {
 .nav-btn, .disclaimer-icon-btn {
   flex: 0 0 auto;
   min-width: fit-content;
-  padding: 10px 14px;
+  padding: 8px 10px;
   background: transparent;
   border: none;
   border-bottom: 2px solid transparent;
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
@@ -707,8 +709,8 @@ body.theme-light .banner-title {
 
 @media (max-width: 768px) {
   .nav-btn, .disclaimer-icon-btn {
-    padding: 8px 10px;
-    font-size: 11px;
+    padding: 6px 8px;
+    font-size: 10px;
   }
 }
 
