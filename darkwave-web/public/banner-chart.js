@@ -1,26 +1,17 @@
-// DarkWave Banner - Smoldering Candlestick Chart with Holographic Smoke
-// Black background, holographic colored smoke trail, prominent candlestick zig-zag line
+// DarkWave Banner - Real Candlestick Chart with Wispy Smoke Trails
+// Uses Perlin-like noise for defined smoke wisps, real market data pattern
 window.bannerChartManager = {
   canvas: null,
   ctx: null,
   animationFrame: null,
-  scrollTime: 0,
+  scrollOffset: 0,
   initialized: false,
   candleData: [],
-  smokeParticles: [],
-  smokeColors: [
-    { r: 255, g: 30, b: 80 },      // Maroon/Red
-    { r: 255, g: 60, b: 120 },     // Red-Pink
-    { r: 240, g: 80, b: 140 },     // Pink-Purple
-    { r: 220, g: 100, b: 160 },    // Purple-Pink
-    { r: 200, g: 120, b: 180 },    // Purple
-    { r: 180, g: 140, b: 190 },    // Lavender-Purple
-    { r: 160, g: 160, b: 200 },    // Lavender
-    { r: 240, g: 100, b: 120 }     // Orange-Pink
-  ],
+  smokeTrails: [],
+  noiseValues: [],
 
   init: function() {
-    console.log('🎬 Smoldering Chart Banner init');
+    console.log('🎬 Wispy Smoke Banner init');
     
     if (this.initialized) return;
 
@@ -48,65 +39,94 @@ window.bannerChartManager = {
       return;
     }
 
-    // Generate year-like candlestick data (365 candles)
-    this.generateYearCandleData(365);
-    this.initializeSmokeParticles();
+    // Generate realistic 6-month Bitcoin candlestick data
+    this.generateRealisticCandleData(180); // 6 months
+    this.initializeNoiseValues();
+    this.initializeSmokeTrails();
     this.initialized = true;
-    console.log('✅ Smoldering banner ready');
+    console.log('✅ Wispy smoke banner ready');
     
     this.animate();
   },
 
-  generateYearCandleData: function(count) {
-    let price = 50000;
+  generateRealisticCandleData: function(count) {
+    // Start with realistic Bitcoin price pattern
+    let price = 42500;
     this.candleData = [];
     
     for (let i = 0; i < count; i++) {
-      const volatility = 0.3 + Math.random() * 0.5;
-      const change = (Math.random() - 0.48) * price * volatility * 0.01;
-      const open = price;
-      const close = price + change;
-      const high = Math.max(open, close) + Math.random() * price * 0.005;
-      const low = Math.min(open, close) - Math.random() * price * 0.005;
-      price = Math.max(low, Math.min(high, close));
+      // Create realistic volatility clusters
+      const trend = Math.sin(i / 30) * 0.3;
+      const volatility = 0.02 + Math.abs(Math.sin(i / 15)) * 0.025;
+      const randomWalk = (Math.random() - 0.5) * 2;
       
-      this.candleData.push({ open, high, low, close });
+      const dailyChange = (trend + randomWalk) * price * volatility;
+      const open = price;
+      const close = price + dailyChange;
+      
+      // Realistic high/low with occasional spikes
+      const hasSpike = Math.random() > 0.9;
+      const spikeSize = hasSpike ? Math.random() * 0.03 : 0;
+      
+      const high = Math.max(open, close) * (1 + spikeSize + Math.random() * 0.012);
+      const low = Math.min(open, close) * (1 - Math.random() * 0.012);
+      
+      price = close;
+      
+      this.candleData.push({
+        open: Math.round(open),
+        close: Math.round(close),
+        high: Math.round(high),
+        low: Math.round(low),
+        volume: Math.random() * 1000000
+      });
     }
   },
 
-  initializeSmokeParticles: function() {
-    this.smokeParticles = [];
-    for (let i = 0; i < 100; i++) {
-      this.smokeParticles.push({
-        x: Math.random() * this.canvas.width,
-        y: this.canvas.height / 2 + (Math.random() - 0.5) * 15,
-        vx: (Math.random() - 0.5) * 1.8,
-        vy: -Math.random() * 1,
-        life: Math.random() * 0.7,
-        colorIdx: Math.floor(Math.random() * this.smokeColors.length),
-        size: Math.random() * 25 + 12
+  initializeNoiseValues: function() {
+    // Pre-generate Perlin-like noise for smoke trails
+    this.noiseValues = [];
+    for (let i = 0; i < 500; i++) {
+      this.noiseValues.push(Math.random());
+    }
+  },
+
+  perlinNoise: function(x) {
+    const i = Math.floor(x) % this.noiseValues.length;
+    const f = x - Math.floor(x);
+    const u = f * f * (3.0 - 2.0 * f); // Smoothstep
+    
+    const next = (i + 1) % this.noiseValues.length;
+    return this.noiseValues[i] * (1 - u) + this.noiseValues[next] * u;
+  },
+
+  initializeSmokeTrails: function() {
+    this.smokeTrails = [];
+    for (let i = 0; i < 40; i++) {
+      this.smokeTrails.push({
+        startX: Math.random() * this.canvas.width,
+        startY: this.canvas.height / 2,
+        age: Math.random() * 100,
+        seed: Math.random() * 1000
       });
     }
   },
 
   animate: function() {
     this.draw();
-    this.scrollTime += 0.015; // Slow horizontal scroll
     
-    // Update smoke particles with subtle motion
-    this.smokeParticles.forEach((p, idx) => {
-      p.x += p.vx * 0.6;
-      p.y += p.vy * 0.4;
-      p.life -= 0.0035;
-      
-      if (p.life <= 0) {
-        // Reset particle at centerline
-        p.x = Math.random() * this.canvas.width;
-        p.y = this.canvas.height / 2 + (Math.random() - 0.5) * 8;
-        p.vy = -Math.random() * 1;
-        p.vx = (Math.random() - 0.5) * 1.8;
-        p.life = 0.7;
-        p.colorIdx = Math.floor(Math.random() * this.smokeColors.length);
+    // Very slow scroll: 1 screen width in 180 seconds = 0.333px/frame at 60fps
+    // For 3 minutes = 180 seconds, that's canvas.width pixels in 180*60 = 10800 frames
+    // So scrollOffset increases by canvas.width / 10800 per frame
+    this.scrollOffset += this.canvas.width / 10800;
+    
+    // Update smoke trails
+    this.smokeTrails.forEach(trail => {
+      trail.age += 0.5;
+      if (trail.age > 200) {
+        trail.age = 0;
+        trail.startX = Math.random() * this.canvas.width;
+        trail.seed = Math.random() * 1000;
       }
     });
     
@@ -119,160 +139,128 @@ window.bannerChartManager = {
     const w = this.canvas.width;
     const h = this.canvas.height;
 
-    // Pure black background
+    // Black background
     this.ctx.fillStyle = '#0F0F23';
     this.ctx.fillRect(0, 0, w, h);
 
-    // Layer 1: Holographic colored smoke (smoldering effect)
-    this.drawHolographicSmoke(w, h);
+    // Layer 1: Wispy smoke trails
+    this.drawWispySmoke(w, h);
     
-    // Layer 2: Prominent candlestick line
-    this.drawCandlestickLine(w, h);
+    // Layer 2: Candlestick chart
+    this.drawCandlestickChart(w, h);
   },
 
-  drawHolographicSmoke: function(w, h) {
-    // Draw smoke particles with holographic color gradient
-    this.smokeParticles.forEach(particle => {
-      if (particle.life > 0) {
-        const color = this.smokeColors[particle.colorIdx];
-        
-        // Subtle opacity that fades as particles die
-        const opacity = (particle.life * 0.8) * 0.18;
-        
-        // Holographic colored smoke
-        this.ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`;
-        this.ctx.beginPath();
-        this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        this.ctx.fill();
-      }
-    });
-
-    // Add soft holographic glow overlay following the candle path
-    this.ctx.strokeStyle = 'rgba(220, 100, 160, 0.08)';
-    this.ctx.lineWidth = 5;
-    this.ctx.lineCap = 'round';
-    this.ctx.lineJoin = 'round';
-
-    const pixelsPerCandle = w / this.candleData.length;
-    const startCandle = Math.floor((this.scrollTime * 100) % this.candleData.length);
-    
-    const maxPrice = Math.max(...this.candleData.map(c => c.high));
-    const minPrice = Math.min(...this.candleData.map(c => c.low));
-    const priceRange = maxPrice - minPrice || 1;
+  drawWispySmoke: function(w, h) {
     const centerY = h / 2;
-    const maxAmplitude = h * 0.20;
     
-    this.ctx.beginPath();
-    let pathStarted = false;
+    // Darker holographic colors for smoke
+    const smokeColors = [
+      { r: 180, g: 30, b: 60 },      // Darker maroon
+      { r: 200, g: 50, b: 100 },     // Dark red-pink
+      { r: 160, g: 60, b: 120 },     // Dark purple-pink
+      { r: 140, g: 70, b: 140 },     // Dark purple
+      { r: 120, g: 80, b: 160 },     // Dark lavender
+      { r: 180, g: 60, b: 100 }      // Dark orange-pink
+    ];
 
-    for (let i = 0; i < this.candleData.length; i++) {
-      const candleIdx = (startCandle + i) % this.candleData.length;
-      const candle = this.candleData[candleIdx];
+    this.smokeTrails.forEach(trail => {
+      const age = trail.age;
+      if (age >= 200) return;
       
-      const x = i * pixelsPerCandle;
-      const closeNorm = (candle.close - minPrice) / priceRange;
-      const y = centerY + (0.5 - closeNorm) * maxAmplitude * 2;
+      const lifePercent = age / 200;
+      const opacity = (1 - lifePercent) * 0.25; // Very subtle
       
-      if (!pathStarted) {
-        this.ctx.moveTo(x, y);
-        pathStarted = true;
-      } else {
-        this.ctx.lineTo(x, y);
-      }
-    }
-    this.ctx.stroke();
-  },
-
-  drawCandlestickLine: function(w, h) {
-    const centerY = h / 2;
-    const maxAmplitude = h * 0.20; // Stays within 20-30% range
-    
-    // Get price range
-    const maxPrice = Math.max(...this.candleData.map(c => c.high));
-    const minPrice = Math.min(...this.candleData.map(c => c.low));
-    const priceRange = maxPrice - minPrice || 1;
-    
-    const pixelsPerCandle = w / this.candleData.length;
-    const startCandle = Math.floor((this.scrollTime * 100) % this.candleData.length);
-    
-    // ===== MAIN CANDLESTICK LINE =====
-    this.ctx.strokeStyle = '#00FF88';
-    this.ctx.lineWidth = 2.8;
-    this.ctx.lineCap = 'round';
-    this.ctx.lineJoin = 'round';
-    this.ctx.globalAlpha = 0.98;
-    
-    this.ctx.beginPath();
-    let pathStarted = false;
-
-    for (let i = 0; i < this.candleData.length; i++) {
-      const candleIdx = (startCandle + i) % this.candleData.length;
-      const candle = this.candleData[candleIdx];
+      const colorIdx = Math.floor(trail.seed) % smokeColors.length;
+      const color = smokeColors[colorIdx];
       
-      const x = i * pixelsPerCandle;
-      const closeNorm = (candle.close - minPrice) / priceRange;
-      const y = centerY + (0.5 - closeNorm) * maxAmplitude * 2;
+      // Draw defined wispy trails using Perlin noise
+      const trailLength = 60 + lifePercent * 40;
       
-      if (!pathStarted) {
-        this.ctx.moveTo(x, y);
-        pathStarted = true;
-      } else {
-        this.ctx.lineTo(x, y);
-      }
-    }
-    this.ctx.stroke();
-
-    // ===== SUBTLE VERTICAL WICKS (every 5 candles) =====
-    this.ctx.strokeStyle = 'rgba(0, 255, 136, 0.35)';
-    this.ctx.lineWidth = 0.6;
-    this.ctx.globalAlpha = 0.7;
-
-    for (let i = 0; i < this.candleData.length; i += 5) {
-      const candleIdx = (startCandle + i) % this.candleData.length;
-      const candle = this.candleData[candleIdx];
-      
-      const x = i * pixelsPerCandle;
-      
-      const highNorm = (candle.high - minPrice) / priceRange;
-      const lowNorm = (candle.low - minPrice) / priceRange;
-      
-      const highY = centerY + (0.5 - highNorm) * maxAmplitude * 2;
-      const lowY = centerY + (0.5 - lowNorm) * maxAmplitude * 2;
+      this.ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`;
+      this.ctx.lineWidth = 1.2;
+      this.ctx.lineCap = 'round';
+      this.ctx.lineJoin = 'round';
       
       this.ctx.beginPath();
-      this.ctx.moveTo(x, highY);
-      this.ctx.lineTo(x, lowY);
+      let pathStarted = false;
+      
+      for (let dist = 0; dist < trailLength; dist += 2) {
+        const noiseVal = this.perlinNoise((dist + trail.seed + age * 0.3) / 15);
+        const sideWave = (noiseVal - 0.5) * 25 * (1 - dist / trailLength);
+        
+        const x = trail.startX + dist * 0.8;
+        const y = centerY + sideWave - lifePercent * 40;
+        
+        if (x < -10 || x > w + 10) continue;
+        
+        if (!pathStarted) {
+          this.ctx.moveTo(x, y);
+          pathStarted = true;
+        } else {
+          this.ctx.lineTo(x, y);
+        }
+      }
       this.ctx.stroke();
-    }
+    });
+  },
 
-    // ===== SUBTLE GREEN GLOW EFFECT =====
-    this.ctx.strokeStyle = 'rgba(0, 255, 136, 0.12)';
-    this.ctx.lineWidth = 6;
-    this.ctx.lineCap = 'round';
-    this.ctx.lineJoin = 'round';
-    this.ctx.globalAlpha = 0.5;
-
-    this.ctx.beginPath();
-    let glowStarted = false;
-
-    for (let i = 0; i < this.candleData.length; i++) {
-      const candleIdx = (startCandle + i) % this.candleData.length;
+  drawCandlestickChart: function(w, h) {
+    if (this.candleData.length === 0) return;
+    
+    const centerY = h / 2;
+    const chartHeight = h * 0.55;
+    
+    // Calculate price range
+    const maxPrice = Math.max(...this.candleData.map(c => c.high));
+    const minPrice = Math.min(...this.candleData.map(c => c.low));
+    const priceRange = maxPrice - minPrice || 1;
+    
+    // Calculate pixels per candle
+    const totalCandlesVisible = Math.ceil(w / 2.5);
+    const pixelsPerCandle = w / totalCandlesVisible;
+    
+    // Scrolling position
+    const startCandleIdx = Math.floor((this.scrollOffset / pixelsPerCandle)) % this.candleData.length;
+    
+    // Draw candlesticks
+    for (let i = 0; i < totalCandlesVisible + 2; i++) {
+      const candleIdx = (startCandleIdx + i) % this.candleData.length;
       const candle = this.candleData[candleIdx];
       
-      const x = i * pixelsPerCandle;
-      const closeNorm = (candle.close - minPrice) / priceRange;
-      const y = centerY + (0.5 - closeNorm) * maxAmplitude * 2;
+      const x = i * pixelsPerCandle - (this.scrollOffset % pixelsPerCandle);
       
-      if (!glowStarted) {
-        this.ctx.moveTo(x, y);
-        glowStarted = true;
-      } else {
-        this.ctx.lineTo(x, y);
-      }
+      if (x < -5 || x > w + 5) continue;
+      
+      // Calculate positions
+      const openY = centerY - ((candle.open - minPrice) / priceRange - 0.5) * chartHeight;
+      const closeY = centerY - ((candle.close - minPrice) / priceRange - 0.5) * chartHeight;
+      const highY = centerY - ((candle.high - minPrice) / priceRange - 0.5) * chartHeight;
+      const lowY = centerY - ((candle.low - minPrice) / priceRange - 0.5) * chartHeight;
+      
+      const isGreen = candle.close >= candle.open;
+      
+      // Draw wick
+      this.ctx.strokeStyle = isGreen ? 'rgba(80, 200, 120, 0.8)' : 'rgba(255, 80, 80, 0.8)';
+      this.ctx.lineWidth = 1;
+      this.ctx.beginPath();
+      this.ctx.moveTo(x + pixelsPerCandle / 2, highY);
+      this.ctx.lineTo(x + pixelsPerCandle / 2, lowY);
+      this.ctx.stroke();
+      
+      // Draw body
+      const bodyTop = Math.min(openY, closeY);
+      const bodyHeight = Math.max(Math.abs(closeY - openY), 1.5);
+      
+      this.ctx.fillStyle = isGreen ? 'rgba(80, 200, 120, 0.85)' : 'rgba(255, 80, 80, 0.85)';
+      this.ctx.strokeStyle = isGreen ? 'rgba(120, 255, 160, 1)' : 'rgba(255, 120, 120, 1)';
+      this.ctx.lineWidth = 0.8;
+      
+      const bodyWidth = Math.max(pixelsPerCandle * 0.6, 1.5);
+      const bodyX = x + (pixelsPerCandle - bodyWidth) / 2;
+      
+      this.ctx.fillRect(bodyX, bodyTop, bodyWidth, bodyHeight);
+      this.ctx.strokeRect(bodyX, bodyTop, bodyWidth, bodyHeight);
     }
-    this.ctx.stroke();
-
-    this.ctx.globalAlpha = 1.0;
   }
 };
 
