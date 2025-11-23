@@ -343,6 +343,7 @@ body.theme-space::before {
   border-bottom: 2px solid var(--border-color);
   overflow: hidden;
   position: relative;
+  z-index: 5;
 }
 
 .banner-scroll {
@@ -743,6 +744,9 @@ body.theme-light .banner-title {
   padding: 8px 6px;
   box-sizing: border-box;
   overflow-x: hidden;
+  z-index: 1;
+  position: relative;
+  margin-top: 0;
 }
 
 .metrics-stack {
@@ -780,8 +784,9 @@ body.theme-light .banner-title {
   cursor: pointer;
   position: relative;
   box-sizing: border-box;
-  overflow: visible;
+  overflow: hidden;
   min-height: 80px;
+  z-index: 1;
 }
 
 /* Mobile: Larger metric boxes */
