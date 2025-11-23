@@ -1,16 +1,14 @@
-// DarkWave Banner - Holographic Rope Wave + Dense Candlestick Stream
-// Background: 10 intertwined holographic lines creating unified horizontal wave
-// Foreground: Dense 200+ candlestick chart scrolling horizontally
+// DarkWave Banner - Full-Width Holographic Wave with Dynamic Stretching
 window.bannerChartManager = {
   canvas: null,
   ctx: null,
   animationFrame: null,
   time: 0,
   initialized: false,
-  candleData: [], // Pre-generated candlestick data
+  candleData: [],
 
   init: function() {
-    console.log('🎬 Rope Wave + Candle Stream Banner init');
+    console.log('🎬 Full-Width Wave Banner init');
     
     if (this.initialized) return;
 
@@ -38,11 +36,9 @@ window.bannerChartManager = {
       return;
     }
 
-    // Pre-generate 300 candlesticks with realistic OHLC data
     this.generateCandleData(300);
-    
     this.initialized = true;
-    console.log('✅ Rope Wave + Candle Stream banner ready');
+    console.log('✅ Full-Width Wave banner ready');
     
     this.animate();
   },
@@ -50,23 +46,20 @@ window.bannerChartManager = {
   generateCandleData: function(count) {
     let price = 50000;
     for (let i = 0; i < count; i++) {
-      const change = (Math.random() - 0.48) * 1500; // Slight upward bias
+      const change = (Math.random() - 0.48) * 1500;
       const open = price;
       const close = price + change;
       const high = Math.max(open, close) + Math.random() * 800;
       const low = Math.min(open, close) - Math.random() * 800;
       price = close;
       
-      this.candleData.push({
-        open, high, low, close,
-        volume: Math.random() * 1000000
-      });
+      this.candleData.push({ open, high, low, close, volume: Math.random() * 1000000 });
     }
   },
 
   animate: function() {
     this.draw();
-    this.time += 0.012; // Horizontal scroll speed
+    this.time += 0.008;
     this.animationFrame = requestAnimationFrame(() => this.animate());
   },
 
@@ -77,59 +70,69 @@ window.bannerChartManager = {
     const h = this.canvas.height;
     const time = this.time;
 
-    // Dark background
     this.ctx.fillStyle = 'rgba(15, 15, 35, 0.96)';
     this.ctx.fillRect(0, 0, w, h);
 
-    // Layer 1: Holographic rope wave (background)
-    this.drawRopeWave(w, h, time);
+    // Draw full-width rope wave (much larger)
+    this.drawFullWidthRopeWave(w, h, time);
     
-    // Layer 2: Dense candlestick stream (foreground)
+    // Draw candlestick stream
     this.drawCandleStream(w, h, time);
   },
 
-  drawRopeWave: function(w, h, time) {
+  drawFullWidthRopeWave: function(w, h, time) {
     const centerY = h / 2;
-    const ropeWidth = 60; // Height range for the rope
-    const numStrings = 10; // 10 intertwined lines
+    const numStrings = 12; // 10-12 intertwined lines
     
-    // Holographic gradient: maroon → purple → lavender → orange
     const colors = [
-      'rgba(100, 20, 50, 0.65)',
-      'rgba(130, 35, 80, 0.68)',
-      'rgba(160, 50, 110, 0.70)',
-      'rgba(190, 70, 140, 0.72)',
-      'rgba(210, 100, 160, 0.75)',
-      'rgba(230, 140, 180, 0.77)',
-      'rgba(245, 160, 170, 0.75)',
-      'rgba(255, 140, 100, 0.70)',
-      'rgba(240, 120, 80, 0.65)',
-      'rgba(220, 100, 60, 0.60)',
+      'rgba(255, 30, 80, 0.70)',
+      'rgba(255, 60, 120, 0.72)',
+      'rgba(240, 80, 140, 0.74)',
+      'rgba(220, 100, 160, 0.76)',
+      'rgba(200, 120, 180, 0.76)',
+      'rgba(180, 140, 190, 0.76)',
+      'rgba(160, 160, 200, 0.75)',
+      'rgba(150, 150, 210, 0.73)',
+      'rgba(180, 120, 200, 0.71)',
+      'rgba(220, 100, 160, 0.70)',
+      'rgba(240, 80, 140, 0.69)',
+      'rgba(255, 60, 100, 0.68)',
     ];
 
     for (let stringIdx = 0; stringIdx < numStrings; stringIdx++) {
-      const baseOffset = (stringIdx - numStrings / 2) * 5; // Offset between strings
+      // Vertical offset between strings (spread them across height)
+      const verticalSpacing = h / (numStrings + 1);
+      const baseY = verticalSpacing * (stringIdx + 1);
       const color = colors[stringIdx % colors.length];
 
       this.ctx.strokeStyle = color;
-      this.ctx.lineWidth = 2.2;
+      this.ctx.lineWidth = 2.5;
       this.ctx.lineCap = 'round';
       this.ctx.lineJoin = 'round';
 
       this.ctx.beginPath();
       
-      for (let x = 0; x < w; x += 3) {
-        // Main horizontal wave (sine wave moving left to right)
-        const wavePhase = (x * 0.006 - time * 1.2) * Math.PI / 50;
-        const verticalOffset = Math.sin(wavePhase) * ropeWidth;
+      for (let x = 0; x < w; x += 2) {
+        // STRETCHED WAVE PATTERN: Covers full width with 1-2 cycles
+        // Very long wavelength to stretch across entire banner
+        const wavePhase = (x / w) * Math.PI * 2; // One full sine cycle across width
         
-        // Add slight randomness per string for rope effect
-        const randomWave = Math.sin((x * 0.008 + stringIdx * 2 + time * 0.5) * Math.PI / 60) * 8;
+        // Primary wave: massive amplitude
+        const primaryWave = Math.sin(wavePhase - time * 0.8) * (h * 0.32);
         
-        // Harmonic variation (different frequencies create rope twist)
-        const twist = Math.cos((x * 0.004 - time * 0.8 + stringIdx) * Math.PI / 40) * 12;
+        // Secondary wave: adds complexity (different frequency = 2 cycles)
+        const secondaryWave = Math.sin((x / w) * Math.PI * 4 - time * 1.2) * (h * 0.15);
         
-        const y = centerY + baseOffset + verticalOffset + randomWave + twist;
+        // Tertiary wave: adds subtle variation
+        const tertiaryWave = Math.sin((x / w) * Math.PI * 6 - time * 0.5) * (h * 0.08);
+        
+        // Per-string variation: slight offset for rope effect
+        const stringVariation = Math.sin(stringIdx * 0.5 + time * 0.3) * 6;
+        
+        // Dynamic stretching effect: amplitude changes over time
+        const stretchFactor = 0.8 + Math.sin(time * 0.5) * 0.4;
+        
+        const y = baseY + (primaryWave + secondaryWave + tertiaryWave + stringVariation) * stretchFactor;
 
         if (x === 0) this.ctx.moveTo(x, y);
         else this.ctx.lineTo(x, y);
@@ -139,63 +142,59 @@ window.bannerChartManager = {
     }
 
     // Holographic glow
-    this.ctx.shadowColor = 'rgba(200, 80, 150, 0.25)';
-    this.ctx.shadowBlur = 22;
+    this.ctx.shadowColor = 'rgba(255, 80, 150, 0.3)';
+    this.ctx.shadowBlur = 30;
     this.ctx.shadowOffsetX = 0;
     this.ctx.shadowOffsetY = 0;
   },
 
   drawCandleStream: function(w, h, time) {
-    const centerY = h / 2;
     const maxPrice = Math.max(...this.candleData.map(c => c.high));
     const minPrice = Math.min(...this.candleData.map(c => c.low));
     const priceRange = maxPrice - minPrice || 1;
     
-    const candleWidth = 1.8; // Tight, compressed candles
-    const spacing = candleWidth + 0.5; // Tight spacing
+    const candleWidth = 1.6;
+    const spacing = candleWidth + 0.4;
     const totalWidth = this.candleData.length * spacing;
+    const scrollPos = (time * 100) % (totalWidth + w);
     
-    // Scroll position (moves left to right across screen)
-    const scrollPos = (time * 120) % (totalWidth + w);
-    
-    const chartHeight = h * 0.5;
-    const chartPadding = (h - chartHeight) / 2;
+    // Candlestick chart in lower portion
+    const chartTop = h * 0.55;
+    const chartHeight = h * 0.40;
 
     for (let i = 0; i < this.candleData.length; i++) {
       const candle = this.candleData[i];
       const x = scrollPos - (this.candleData.length - i) * spacing;
       
-      // Only draw candles visible on screen
       if (x < -10 || x > w + 10) continue;
 
-      // Normalize prices to chart height
-      const high = chartPadding + chartHeight - ((candle.high - minPrice) / priceRange) * chartHeight;
-      const low = chartPadding + chartHeight - ((candle.low - minPrice) / priceRange) * chartHeight;
-      const open = chartPadding + chartHeight - ((candle.open - minPrice) / priceRange) * chartHeight;
-      const close = chartPadding + chartHeight - ((candle.close - minPrice) / priceRange) * chartHeight;
+      const high = chartTop + chartHeight - ((candle.high - minPrice) / priceRange) * chartHeight;
+      const low = chartTop + chartHeight - ((candle.low - minPrice) / priceRange) * chartHeight;
+      const open = chartTop + chartHeight - ((candle.open - minPrice) / priceRange) * chartHeight;
+      const close = chartTop + chartHeight - ((candle.close - minPrice) / priceRange) * chartHeight;
 
-      const isGreen = close < open; // Green if price went up
+      const isGreen = close < open;
 
-      // Draw wick (thin vertical line)
-      this.ctx.strokeStyle = isGreen ? 'rgba(80, 220, 120, 0.8)' : 'rgba(255, 90, 90, 0.8)';
-      this.ctx.lineWidth = 0.8;
-      this.ctx.shadowColor = isGreen ? 'rgba(80, 220, 120, 0.4)' : 'rgba(255, 90, 90, 0.4)';
-      this.ctx.shadowBlur = 5;
+      // Wick
+      this.ctx.strokeStyle = isGreen ? 'rgba(100, 240, 120, 0.75)' : 'rgba(255, 100, 80, 0.75)';
+      this.ctx.lineWidth = 0.7;
+      this.ctx.shadowColor = isGreen ? 'rgba(100, 240, 120, 0.3)' : 'rgba(255, 100, 80, 0.3)';
+      this.ctx.shadowBlur = 4;
 
       this.ctx.beginPath();
       this.ctx.moveTo(x + candleWidth / 2, high);
       this.ctx.lineTo(x + candleWidth / 2, low);
       this.ctx.stroke();
 
-      // Draw body (rectangle)
-      const bodyColor = isGreen ? 'rgba(80, 220, 120, 0.85)' : 'rgba(255, 90, 90, 0.85)';
-      const bodyStroke = isGreen ? 'rgba(120, 255, 160, 1)' : 'rgba(255, 130, 130, 1)';
+      // Body
+      const bodyColor = isGreen ? 'rgba(100, 240, 120, 0.8)' : 'rgba(255, 100, 80, 0.8)';
+      const bodyStroke = isGreen ? 'rgba(150, 255, 160, 1)' : 'rgba(255, 140, 100, 1)';
       
       this.ctx.fillStyle = bodyColor;
       this.ctx.strokeStyle = bodyStroke;
-      this.ctx.lineWidth = 0.6;
-      this.ctx.shadowColor = isGreen ? 'rgba(80, 220, 120, 0.35)' : 'rgba(255, 90, 90, 0.35)';
-      this.ctx.shadowBlur = 4;
+      this.ctx.lineWidth = 0.5;
+      this.ctx.shadowColor = isGreen ? 'rgba(100, 240, 120, 0.3)' : 'rgba(255, 100, 80, 0.3)';
+      this.ctx.shadowBlur = 3;
 
       const bodyTop = Math.min(open, close);
       const bodyHeight = Math.max(Math.abs(close - open), 1);
@@ -206,19 +205,15 @@ window.bannerChartManager = {
       }
     }
 
-    // Reset shadow
     this.ctx.shadowColor = 'transparent';
     this.ctx.shadowBlur = 0;
   }
 };
 
-// Auto-init when DOM ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOMContentLoaded - initializing rope wave banner');
     setTimeout(() => window.bannerChartManager.init(), 100);
   });
 } else {
-  console.log('DOM ready - initializing rope wave banner');
   setTimeout(() => window.bannerChartManager.init(), 100);
 }
