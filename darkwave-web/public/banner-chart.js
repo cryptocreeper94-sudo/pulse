@@ -1,5 +1,6 @@
-// DarkWave Banner - Waveform Visualization (like the reference image)
-// Horizontal wave moving left-to-right with vertical geometric pattern inside
+// DarkWave Banner - Organic Smoke Background + Candlestick Charts
+// Background: Pure hazy smoke with random flowing motion, no structure
+// Foreground: Candlesticks anchored on smoke, scrolling horizontally
 window.bannerChartManager = {
   canvas: null,
   ctx: null,
@@ -7,9 +8,10 @@ window.bannerChartManager = {
   time: 0,
   initialized: false,
   candleData: [],
+  smokeNoise: [],
 
   init: function() {
-    console.log('🎬 Waveform Banner init');
+    console.log('🎬 Organic Smoke Banner init');
     
     if (this.initialized) return;
 
@@ -38,8 +40,9 @@ window.bannerChartManager = {
     }
 
     this.generateCandleData(300);
+    this.initializeSmokeNoise();
     this.initialized = true;
-    console.log('✅ Waveform banner ready');
+    console.log('✅ Organic smoke banner ready');
     
     this.animate();
   },
@@ -58,9 +61,26 @@ window.bannerChartManager = {
     }
   },
 
+  initializeSmokeNoise: function() {
+    // Pre-generate random noise for organic smoke movement
+    for (let i = 0; i < 100; i++) {
+      this.smokeNoise.push(Math.random());
+    }
+  },
+
+  // Simple Perlin-like noise
+  noise: function(index) {
+    const i = Math.floor(index) % this.smokeNoise.length;
+    const nextI = (i + 1) % this.smokeNoise.length;
+    const t = index - Math.floor(index);
+    const smoothT = t * t * (3 - 2 * t); // Smoothstep interpolation
+    
+    return this.smokeNoise[i] * (1 - smoothT) + this.smokeNoise[nextI] * smoothT;
+  },
+
   animate: function() {
     this.draw();
-    this.time += 0.003; // Very slow horizontal movement
+    this.time += 0.005; // Very slow movement for organic feel
     this.animationFrame = requestAnimationFrame(() => this.animate());
   },
 
@@ -71,114 +91,76 @@ window.bannerChartManager = {
     const h = this.canvas.height;
     const time = this.time;
 
-    this.ctx.fillStyle = 'rgba(15, 15, 35, 0.96)';
+    this.ctx.fillStyle = 'rgba(15, 15, 35, 1)';
     this.ctx.fillRect(0, 0, w, h);
 
-    // Draw waveform with geometric pattern
-    this.drawWaveform(w, h, time);
+    // Layer 1: Hazy organic smoke background (NO STRUCTURE)
+    this.drawSmokeHaze(w, h, time);
     
-    // Draw candlesticks underneath
+    // Layer 2: Candlestick chart on top (anchored, scrolling horizontally)
     this.drawCandleStream(w, h, time);
   },
 
-  drawWaveform: function(w, h, time) {
+  drawSmokeHaze: function(w, h, time) {
     const centerY = h / 2;
-    const maxAmplitude = h * 0.3; // 50-60% range as requested
     
-    // Wave properties
-    const waveLength = w * 0.6; // Wavelength (how wide each wave cycle is)
-    const frequency = (2 * Math.PI) / waveLength;
+    // Create multiple layers of hazy smoke
+    const smokeLayers = 8;
     
-    // Holographic colors for the wave fill
-    const colors = [
-      'rgba(255, 30, 80, 0.35)',
-      'rgba(255, 60, 120, 0.40)',
-      'rgba(240, 80, 140, 0.42)',
-      'rgba(220, 100, 160, 0.40)',
-      'rgba(200, 120, 180, 0.38)',
-      'rgba(180, 140, 190, 0.36)',
-      'rgba(160, 160, 200, 0.34)',
-    ];
-
-    // Draw the wave envelope with fill
-    this.ctx.fillStyle = 'rgba(150, 80, 180, 0.15)';
-    this.ctx.strokeStyle = 'rgba(255, 100, 150, 0.8)';
-    this.ctx.lineWidth = 2;
-    this.ctx.lineCap = 'round';
-    this.ctx.lineJoin = 'round';
-
-    this.ctx.beginPath();
-    let startX = null;
-
-    // Top boundary of wave
-    for (let x = 0; x < w; x += 1) {
-      const phase = (x - time * 60) * frequency;
-      const amplitude = Math.sin(phase) * maxAmplitude;
-      const y = centerY - Math.abs(amplitude); // Top half of wave
+    for (let layer = 0; layer < smokeLayers; layer++) {
+      const layerHeight = h / smokeLayers;
+      const baseY = layer * layerHeight;
       
-      if (x === 0) {
-        this.ctx.moveTo(x, y);
-        startX = x;
-      } else {
-        this.ctx.lineTo(x, y);
-      }
-    }
-
-    // Bottom boundary of wave (return path)
-    for (let x = w - 1; x >= 0; x -= 1) {
-      const phase = (x - time * 60) * frequency;
-      const amplitude = Math.sin(phase) * maxAmplitude;
-      const y = centerY + Math.abs(amplitude); // Bottom half of wave
-      this.ctx.lineTo(x, y);
-    }
-
-    this.ctx.closePath();
-    this.ctx.fill();
-    this.ctx.stroke();
-
-    // Draw vertical ribbed lines inside the wave (geometric pattern)
-    this.drawWaveGeometry(w, h, centerY, time, frequency, maxAmplitude);
-
-    // Draw horizontal baseline
-    this.ctx.strokeStyle = 'rgba(255, 100, 150, 0.4)';
-    this.ctx.lineWidth = 1;
-    this.ctx.setLineDash([5, 5]);
-    this.ctx.beginPath();
-    this.ctx.moveTo(0, centerY);
-    this.ctx.lineTo(w, centerY);
-    this.ctx.stroke();
-    this.ctx.setLineDash([]);
-  },
-
-  drawWaveGeometry: function(w, h, centerY, time, frequency, maxAmplitude) {
-    const verticalSpacing = 8; // Lines every 8 pixels
-    const colors = [
-      'rgba(255, 80, 150, 0.6)',
-      'rgba(220, 100, 180, 0.6)',
-      'rgba(180, 140, 200, 0.6)',
-      'rgba(150, 160, 220, 0.6)',
-    ];
-
-    // Draw vertical lines at regular intervals
-    for (let x = 0; x < w; x += verticalSpacing) {
-      const phase = (x - time * 60) * frequency;
-      const amplitude = Math.sin(phase) * maxAmplitude;
-      
-      // Only draw line if inside the wave
-      if (Math.abs(amplitude) > 2) {
-        const colorIdx = Math.floor(x / verticalSpacing) % colors.length;
-        this.ctx.strokeStyle = colors[colorIdx];
-        this.ctx.lineWidth = 1;
-        this.ctx.globalAlpha = 0.7;
-
-        this.ctx.beginPath();
-        this.ctx.moveTo(x, centerY - amplitude);
-        this.ctx.lineTo(x, centerY + amplitude);
-        this.ctx.stroke();
+      // Draw smooth, flowing haze across width
+      for (let x = 0; x <= w; x += 3) {
+        // Generate organic Y offset using noise
+        const noiseVal1 = this.noise(x * 0.01 + time * 0.5 + layer * 2);
+        const noiseVal2 = this.noise(x * 0.005 + time * 0.3 + layer);
+        const noiseVal3 = this.noise(x * 0.002 + time * 0.8 + layer * 3);
         
-        this.ctx.globalAlpha = 1.0;
+        // Combine noises for organic motion
+        const yOffset = (noiseVal1 - 0.5) * 20 + 
+                       (noiseVal2 - 0.5) * 15 + 
+                       (noiseVal3 - 0.5) * 10;
+        
+        const y = baseY + yOffset;
+        
+        // Determine color based on position and time
+        const hue = (x / w) * 360 + time * 10;
+        const colorPhase = (hue % 360) / 360;
+        
+        let color;
+        if (colorPhase < 0.3) {
+          // Red to pink
+          const t = colorPhase / 0.3;
+          color = `rgba(${255}, ${30 + t * 50}, ${80}, ${0.3})`;
+        } else if (colorPhase < 0.6) {
+          // Pink to purple
+          const t = (colorPhase - 0.3) / 0.3;
+          color = `rgba(${255 - t * 55}, ${80 + t * 60}, ${140}, ${0.3})`;
+        } else {
+          // Purple to maroon
+          const t = (colorPhase - 0.6) / 0.4;
+          color = `rgba(${200 - t * 100}, ${140 - t * 40}, ${180}, ${0.3})`;
+        }
+        
+        this.ctx.fillStyle = color;
+        // Draw soft circles for haze effect
+        this.ctx.beginPath();
+        this.ctx.arc(x, y, 15 + Math.sin(time + x * 0.01) * 8, 0, Math.PI * 2);
+        this.ctx.fill();
       }
     }
+
+    // Add overall haze blur effect with gradient overlay
+    const hazeGradient = this.ctx.createLinearGradient(0, 0, w, 0);
+    hazeGradient.addColorStop(0, 'rgba(255, 30, 80, 0.15)');
+    hazeGradient.addColorStop(0.3, 'rgba(220, 100, 160, 0.15)');
+    hazeGradient.addColorStop(0.6, 'rgba(180, 140, 190, 0.15)');
+    hazeGradient.addColorStop(1, 'rgba(255, 80, 120, 0.15)');
+    
+    this.ctx.fillStyle = hazeGradient;
+    this.ctx.fillRect(0, 0, w, h);
   },
 
   drawCandleStream: function(w, h, time) {
@@ -186,14 +168,14 @@ window.bannerChartManager = {
     const minPrice = Math.min(...this.candleData.map(c => c.low));
     const priceRange = maxPrice - minPrice || 1;
     
-    const candleWidth = 1.2;
-    const spacing = candleWidth + 0.3;
+    const candleWidth = 2.5;
+    const spacing = candleWidth + 0.8;
     const totalWidth = this.candleData.length * spacing;
-    const scrollPos = (time * 20) % (totalWidth + w);
+    const scrollPos = (time * 40) % (totalWidth + w); // Slow horizontal scroll
     
-    // Candlesticks in bottom portion
-    const chartTop = h * 0.65;
-    const chartHeight = h * 0.30;
+    // Candlesticks positioned in middle section of banner
+    const chartTop = h * 0.15;
+    const chartHeight = h * 0.7;
 
     for (let i = 0; i < this.candleData.length; i++) {
       const candle = this.candleData[i];
@@ -208,26 +190,36 @@ window.bannerChartManager = {
 
       const isGreen = close < open;
 
-      // Wick
-      this.ctx.strokeStyle = isGreen ? 'rgba(100, 240, 120, 0.6)' : 'rgba(255, 100, 80, 0.6)';
-      this.ctx.lineWidth = 0.6;
-      this.ctx.globalAlpha = 0.5;
+      // Draw wick with glow
+      this.ctx.strokeStyle = isGreen ? 'rgba(100, 255, 140, 0.9)' : 'rgba(255, 90, 90, 0.9)';
+      this.ctx.lineWidth = 1.2;
+      this.ctx.lineCap = 'round';
+      this.ctx.shadowColor = isGreen ? 'rgba(100, 255, 140, 0.5)' : 'rgba(255, 90, 90, 0.5)';
+      this.ctx.shadowBlur = 6;
 
       this.ctx.beginPath();
       this.ctx.moveTo(x + candleWidth / 2, high);
       this.ctx.lineTo(x + candleWidth / 2, low);
       this.ctx.stroke();
 
-      // Body
-      const bodyColor = isGreen ? 'rgba(100, 240, 120, 0.7)' : 'rgba(255, 100, 80, 0.7)';
+      // Draw body with glow
+      const bodyColor = isGreen ? 'rgba(100, 255, 140, 0.95)' : 'rgba(255, 90, 90, 0.95)';
+      const bodyStroke = isGreen ? 'rgba(150, 255, 180, 1)' : 'rgba(255, 130, 130, 1)';
+      
       this.ctx.fillStyle = bodyColor;
-      this.ctx.globalAlpha = 0.6;
+      this.ctx.strokeStyle = bodyStroke;
+      this.ctx.lineWidth = 1;
+      this.ctx.shadowColor = isGreen ? 'rgba(100, 255, 140, 0.6)' : 'rgba(255, 90, 90, 0.6)';
+      this.ctx.shadowBlur = 5;
 
       const bodyTop = Math.min(open, close);
-      const bodyHeight = Math.max(Math.abs(close - open), 0.5);
+      const bodyHeight = Math.max(Math.abs(close - open), 2);
+      
       this.ctx.fillRect(x, bodyTop, candleWidth, bodyHeight);
+      this.ctx.strokeRect(x, bodyTop, candleWidth, bodyHeight);
 
-      this.ctx.globalAlpha = 1.0;
+      this.ctx.shadowColor = 'transparent';
+      this.ctx.shadowBlur = 0;
     }
   }
 };
