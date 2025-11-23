@@ -1,5 +1,5 @@
-// DarkWave Banner - Extra Large Candlestick Chart with Clear Separation
-// Much fewer candles = much larger, clearly visible bars with distinct separation
+// DarkWave Banner - Aggressive Dynamic Candlestick Wave
+// Many narrow candles with extreme volatility, dramatic ups/downs, chaotic but clear
 window.bannerChartManager = {
   canvas: null,
   ctx: null,
@@ -11,7 +11,7 @@ window.bannerChartManager = {
   noiseValues: [],
 
   init: function() {
-    console.log('🎬 Extra Large Candlestick Banner init');
+    console.log('🎬 Aggressive Candlestick Wave Banner init');
     
     if (this.initialized) return;
 
@@ -39,34 +39,36 @@ window.bannerChartManager = {
       return;
     }
 
-    // Generate realistic candlestick data
-    this.generateRealisticCandleData(60);
+    // Generate AGGRESSIVE volatile data with extreme price swings
+    this.generateAggressiveVolatileCandleData(150);
     this.initializeNoiseValues();
     this.initializeSmokeTrails();
     this.initialized = true;
-    console.log('✅ Extra large candlestick banner ready');
+    console.log('✅ Aggressive wave banner ready');
     
     this.animate();
   },
 
-  generateRealisticCandleData: function(count) {
+  generateAggressiveVolatileCandleData: function(count) {
     let price = 42500;
     this.candleData = [];
     
     for (let i = 0; i < count; i++) {
-      const trend = Math.sin(i / 10) * 0.3;
-      const volatility = 0.02 + Math.abs(Math.sin(i / 5)) * 0.035;
-      const randomWalk = (Math.random() - 0.5) * 2;
+      // Create aggressive, chaotic movement
+      const trend = Math.sin(i / 8) * 0.5; // Stronger trend cycles
+      const volatility = 0.03 + Math.abs(Math.sin(i / 4)) * 0.08; // Much higher volatility
+      const randomWalk = (Math.random() - 0.5) * 3.5; // Stronger random walk
       
       const dailyChange = (trend + randomWalk) * price * volatility;
       const open = price;
       const close = price + dailyChange;
       
-      const hasSpike = Math.random() > 0.85;
-      const spikeSize = hasSpike ? Math.random() * 0.04 : 0;
+      // Occasional HUGE spikes and drops (crypto nature!)
+      const hasExtremeMove = Math.random() > 0.85;
+      const extremeSize = hasExtremeMove ? (Math.random() - 0.5) * 0.08 : 0; // ±8% extreme moves
       
-      const high = Math.max(open, close) * (1 + spikeSize + Math.random() * 0.015);
-      const low = Math.min(open, close) * (1 - Math.random() * 0.015);
+      const high = Math.max(open, close) * (1 + extremeSize + Math.random() * 0.02);
+      const low = Math.min(open, close) * (1 - Math.abs(extremeSize) - Math.random() * 0.02);
       
       price = close;
       
@@ -138,8 +140,8 @@ window.bannerChartManager = {
     // Layer 1: Visible wispy smoke trails
     this.drawVisibleWispySmoke(w, h);
     
-    // Layer 2: Extra large candlestick chart with clear separation
-    this.drawExtraLargeCandlestickChart(w, h);
+    // Layer 2: Aggressive dynamic candlestick wave
+    this.drawAggressiveCandlestickWave(w, h);
   },
 
   drawVisibleWispySmoke: function(w, h) {
@@ -194,30 +196,30 @@ window.bannerChartManager = {
     });
   },
 
-  drawExtraLargeCandlestickChart: function(w, h) {
+  drawAggressiveCandlestickWave: function(w, h) {
     if (this.candleData.length === 0) return;
     
     const centerY = h / 2;
-    const chartHeight = h * 0.75; // Even larger
+    const chartHeight = h * 0.80; // Use most of banner height
     
     const maxPrice = Math.max(...this.candleData.map(c => c.high));
     const minPrice = Math.min(...this.candleData.map(c => c.low));
     const priceRange = maxPrice - minPrice || 1;
     
-    // Only 18 candles visible at once = much larger separation
-    const totalCandlesVisible = 18;
+    // Many narrow candles = dynamic wave
+    const totalCandlesVisible = 40; // ~3x more candles than before
     const pixelsPerCandle = w / totalCandlesVisible;
     
     const startCandleIdx = Math.floor((this.scrollOffset / pixelsPerCandle)) % this.candleData.length;
     
-    // Draw candlesticks with clear separation
+    // Draw candlesticks with aggressive volatility
     for (let i = 0; i < totalCandlesVisible + 2; i++) {
       const candleIdx = (startCandleIdx + i) % this.candleData.length;
       const candle = this.candleData[candleIdx];
       
       const x = i * pixelsPerCandle - (this.scrollOffset % pixelsPerCandle);
       
-      if (x < -10 || x > w + 10) continue;
+      if (x < -5 || x > w + 5) continue;
       
       const openY = centerY - ((candle.open - minPrice) / priceRange - 0.5) * chartHeight;
       const closeY = centerY - ((candle.close - minPrice) / priceRange - 0.5) * chartHeight;
@@ -226,25 +228,25 @@ window.bannerChartManager = {
       
       const isGreen = candle.close >= candle.open;
       
-      // Draw wick (thicker for visibility)
-      this.ctx.strokeStyle = isGreen ? 'rgba(100, 220, 140, 0.85)' : 'rgba(255, 100, 100, 0.85)';
-      this.ctx.lineWidth = 2;
+      // Draw wick (always visible, shows full range)
+      this.ctx.strokeStyle = isGreen ? 'rgba(100, 220, 140, 0.9)' : 'rgba(255, 100, 100, 0.9)';
+      this.ctx.lineWidth = 1.3;
       this.ctx.beginPath();
       this.ctx.moveTo(x + pixelsPerCandle / 2, highY);
       this.ctx.lineTo(x + pixelsPerCandle / 2, lowY);
       this.ctx.stroke();
       
-      // Draw body (much larger with clear separation)
+      // Draw NARROW body with tight spacing
       const bodyTop = Math.min(openY, closeY);
-      const bodyHeight = Math.max(Math.abs(closeY - openY), 3);
+      const bodyHeight = Math.max(Math.abs(closeY - openY), 2);
       
-      // Add spacing between candles for clear separation
-      const bodyWidth = Math.max(pixelsPerCandle * 0.5, 8);
+      // Narrow body = 30% of candle width
+      const bodyWidth = Math.max(pixelsPerCandle * 0.30, 1.5);
       const bodyX = x + (pixelsPerCandle - bodyWidth) / 2;
       
-      this.ctx.fillStyle = isGreen ? 'rgba(100, 220, 140, 0.92)' : 'rgba(255, 100, 100, 0.92)';
+      this.ctx.fillStyle = isGreen ? 'rgba(100, 220, 140, 0.95)' : 'rgba(255, 100, 100, 0.95)';
       this.ctx.strokeStyle = isGreen ? 'rgba(150, 255, 180, 1)' : 'rgba(255, 150, 150, 1)';
-      this.ctx.lineWidth = 1.2;
+      this.ctx.lineWidth = 0.8;
       
       this.ctx.fillRect(bodyX, bodyTop, bodyWidth, bodyHeight);
       this.ctx.strokeRect(bodyX, bodyTop, bodyWidth, bodyHeight);
