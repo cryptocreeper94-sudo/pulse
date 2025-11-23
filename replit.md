@@ -18,9 +18,11 @@ DarkWave-V2 is an advanced technical analysis bot built with the Mastra framewor
   - **Fixed z-index layering** - removed Market Cap/Volume blob overlap
   - **Title Section Integrated**: "DARKWAVE PULSE" on right half with frosted overlay
     - Large modern technical font (monospace, 2.2rem, uppercase)
-    - Right-aligned on right 50% of banner
+    - Right-aligned on right 50% of banner (stationary)
     - Heavy blur + dark overlay (backdrop-filter: blur(8px)) for clean presentation
-    - Left 50% displays neon candlesticks clearly
+  - **Infinite Scrolling Animation**: 60-second smooth cycle
+    - Left 50% shows scrolling neon candlesticks in continuous loop
+    - Seamless tiling with background-repeat: repeat-x
   - Subtext placeholder ready for addition
 
 ## System Architecture

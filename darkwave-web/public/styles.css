@@ -375,6 +375,16 @@ body.theme-space::before {
   background-position: 0 center;
   background-repeat: repeat-x;
   background-attachment: scroll;
+  animation: bannerScroll 60s linear infinite;
+}
+
+@keyframes bannerScroll {
+  0% {
+    background-position: 0 center;
+  }
+  100% {
+    background-position: 25% center;
+  }
 }
 
 body.theme-light .banner-scroll {
@@ -382,6 +392,7 @@ body.theme-light .banner-scroll {
   background-size: 25% 100%;
   background-position: 0 center;
   background-repeat: repeat-x;
+  animation: bannerScroll 60s linear infinite;
 }
 
 .banner-scroll::before {
