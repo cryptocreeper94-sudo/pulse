@@ -8205,6 +8205,33 @@ body.theme-light .banner-title {
   box-shadow: none;
 }
 
+/* Side-by-side staking layout */
+.v2-lock-content.staking-side-by-side {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+  padding: 40px 30px;
+}
+
+.staking-left-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.staking-right-col {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 1024px) {
+  .v2-lock-content.staking-side-by-side {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+}
+
 .v2-lock-close-btn {
   position: fixed;
   top: 75px;

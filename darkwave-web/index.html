@@ -1581,21 +1581,30 @@
         <!-- V2 Lock Overlay (shows for everyone until V2 launch) -->
         <div class="v2-lock-overlay" id="stakingV2Lock">
           <button class="v2-lock-close-btn" onclick="closeStakingV2Lock()">&times;</button>
-          <div class="v2-lock-content">
+          <div class="v2-lock-content staking-side-by-side">
             
-            <!-- Hallmark Seal Preview -->
-            <div style="text-align: center; margin-bottom: 20px;">
-              <img src="/brand-assets/mascots/crypto-cat-variations/crypto-cat-business-1.jpg" alt="DarkWave Pulse professional business mascot orange cat representing trustworthy crypto trading platform and market analysis" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #FFD700; box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); margin-bottom: 10px;">
-              <div style="font-size: 11px; color: #FFD700; font-weight: 700; letter-spacing: 2px;">AUTHENTICATED BY DARKWAVE</div>
+            <!-- Left Column: Title & CTA -->
+            <div class="staking-left-col">
+              <div class="v2-lock-icon">🔒</div>
+              <h2 style="font-family: 'Orbitron', sans-serif; font-size: 36px; margin: 20px 0 10px 0; color: #00FF41;">PULSE STAKING ECOSYSTEM</h2>
+              <p class="v2-lock-date" style="font-size: 14px; color: #3861FB; font-weight: 700; margin-bottom: 30px;">LAUNCHES DECEMBER 25TH, 2025</p>
+              
+              <p style="font-size: 14px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 25px;">
+                Revolutionary hourly compounding rewards. Stake PULSE, wake up richer. Solana-speed execution with near-zero fees.
+              </p>
+              
+              <button class="v2-upgrade-btn" onclick="switchTab('settings')" style="width: 100%; margin-bottom: 12px; font-size: 14px; font-weight: 900; padding: 14px; background: linear-gradient(135deg, #3861FB, #8338EC); box-shadow: 0 4px 20px rgba(56, 97, 251, 0.4); cursor: pointer;">
+                🚀 UPGRADE FOR V2 ACCESS
+              </button>
+              
+              <button class="v2-dev-preview-btn" onclick="unlockStakingPreview()" style="width: 100%; font-size: 13px; font-weight: 700; padding: 12px; background: linear-gradient(135deg, #00D9FF, #0099CC); cursor: pointer;">
+                👁️ PREVIEW DASHBOARD
+              </button>
             </div>
 
-            <div class="v2-lock-icon">🔒</div>
-            <h2 style="font-family: 'Orbitron', sans-serif; font-size: 28px; margin: 15px 0 10px 0;">PULSE STAKING ECOSYSTEM</h2>
-            <p class="v2-lock-date" style="font-size: 16px; color: #3861FB; font-weight: 700; margin-bottom: 20px;">LAUNCHES DECEMBER 25TH, 2025</p>
-            
-            <!-- Earthshaking Features -->
-            <div style="background: rgba(56, 97, 251, 0.1); border-left: 4px solid #3861FB; padding: 20px; border-radius: 8px; margin-bottom: 25px; text-align: left;">
-              <h3 style="font-size: 14px; color: #3861FB; margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 1px;">Revolutionary Staking Features</h3>
+            <!-- Right Column: Features Grid -->
+            <div class="staking-right-col">
+              <h3 style="font-size: 13px; color: #3861FB; margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">Revolutionary Features</h3>
               
               <div style="display: grid; gap: 12px;">
                 <div class="preview-item" onclick="openStakingFeaturePopup('hourly')" style="cursor: pointer; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 6px; transition: all 0.3s;" onmouseover="this.style.background='rgba(56, 97, 251, 0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
@@ -1630,22 +1639,8 @@
               </div>
             </div>
 
-            <!-- Main CTA Buttons -->
-            <button class="v2-upgrade-btn" onclick="switchTab('settings')" style="width: 100%; margin-bottom: 12px; font-size: 16px; font-weight: 900; padding: 16px; background: linear-gradient(135deg, #3861FB, #8338EC); box-shadow: 0 4px 20px rgba(56, 97, 251, 0.4);">
-              🚀 UPGRADE FOR V2 ACCESS →
-            </button>
-
-            <button class="v2-dev-preview-btn" onclick="unlockStakingPreview()" style="width: 100%; margin-bottom: 12px; font-size: 14px; font-weight: 700; padding: 14px; background: linear-gradient(135deg, #00D9FF, #0099CC);">
-              👁️ PREVIEW STAKING DASHBOARD →
-            </button>
-
-            <button class="v2-dev-preview-btn" onclick="window.open('/hallmark-seal.html', '_blank')" style="width: 100%; font-size: 14px; font-weight: 700; padding: 14px; background: linear-gradient(135deg, #FFD700, #FFA500);">
-              🏅 VIEW HALLMARK SEAL →
-            </button>
-
-            <p style="font-size: 11px; color: #888; margin-top: 15px; line-height: 1.5;">
-              Click any feature above to learn why DarkWave Pulse staking is the most advanced platform in crypto
-            </p>
+            </div>
+            </div>
           </div>
         </div>
 
