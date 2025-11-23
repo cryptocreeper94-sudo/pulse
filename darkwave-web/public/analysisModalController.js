@@ -100,6 +100,11 @@ const analysisModalController = {
       // Populate modal with data
       this.populateModal(assetData, indicators, signal);
       
+      // Render avatar display
+      if (typeof avatarDisplaySystem !== 'undefined') {
+        avatarDisplaySystem.renderAvatarInModal();
+      }
+      
       // Initialize interactive chart
       this.initializeInteractiveChart(assetData.historical);
       
