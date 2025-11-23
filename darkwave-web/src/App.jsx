@@ -101,27 +101,10 @@ function App() {
   }, [])
 
   return (
-    <div id="app">
-      {/* Banner Section - KEEP EXACT SAME */}
-      <div className="app-banner">
-        <div className="banner-wave"></div>
-        <div className="banner-text">
-          <h1 className="banner-title">DarkWave Pulse <span style={{fontSize: '12px', opacity: 0.7, fontWeight: 400, letterSpacing: '1px'}}>BETA V1</span></h1>
-          <p className="banner-subtitle">Systematic Signal Detection in Dynamic Market Waves</p>
-        </div>
-      </div>
-
-      {/* Banners */}
-      <div id="softLaunchBanner" style={{background: 'rgba(245, 158, 11, 0.15)', padding: '6px 35px 6px 12px', textAlign: 'center', borderBottom: '1px solid rgba(245,158,11,0.2)', position: 'relative'}}>
-        <div style={{fontSize: '11px', color: 'rgba(255,255,255,0.85)', fontWeight: 500}}>
-          🧪 <strong style={{fontWeight: 700}}>BETA V1</strong> - V2 launches Dec 25
-          <button onClick={(e) => e.target.parentElement.parentElement.style.display='none'} style={{position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.6)', fontSize: '16px', cursor: 'pointer', width: '20px', height: '20px', borderRadius: '50%', lineHeight: 1, padding: 0}}>×</button>
-        </div>
-      </div>
-
-      {/* This is a minimal container - the rest of the HTML will be loaded by the JS utilities */}
+    <>
+      {/* Banner and banners are rendered directly in index.html - React only renders app-main */}
       <div id="app-main" />
-    </div>
+    </>
   )
 }
 
