@@ -23,33 +23,35 @@
 - Call him "Jason" not "DW"
 
 ## Latest Updates (Nov 23, 2025)
+- **✅ BUY/SELL LIMIT ORDERS - V2 LOCKED INFRASTRUCTURE**:
+  - Backend endpoints: `/api/trading/buy-limit` (POST), `/api/trading/sell-limit` (POST), `/api/trading/orders` (GET)
+  - All return 423 status with V2 lock message: "🔒 Coming Dec 25, 2025!"
+  - Features described: AI-powered entry points, auto-execution, risk-adjusted exits
+  - Frontend: New "🤖 Trading (V2)" tab with locked UI overlay
+  - Fully functional infrastructure ready for V2 unlock - no additional build needed
+  
+- **✅ CHARTS LIVE TIME UPDATES**: 
+  - Candlestick chart now refreshes every 2 seconds (matching sparkline)
+  - Improved error logging: Detailed stack traces + message details (was showing empty `{}`)
+  - Chart update function properly logs: timestamp ranges, candle counts, normalization results
+  - Live price updates working across all timeframes (1h, 1d, 1w, all-time)
+  
+- **✅ ANALYTICS BUTTON FIXED**: 
+  - "Open Analytics" button now properly calls `analyzeToken()` to open detailed coin analysis modal
+  - Shows sparkline charts (1 sec to all-time), metrics, buy signals, explanations, and V2 predictive features
+  - Can search any coin using the modal's search input
+  
 - **✅ CHARTS NOW RENDERING**: Real BTC historical data with TradingView Lightweight Charts
   - Backend `/api/crypto/market-chart` endpoint now fetches live data from CryptoCompare API
   - Returns 121 candlestick candles (OHLCV data) + 121 sparkline closing prices
   - Fixed timestamp field naming (backend returns `timestamp` in milliseconds, frontend converts to seconds)
   - Charts display 24-hour historical data for Bitcoin with proper normalization and filtering
   
-- **✅ BETA V1 BANNER UPDATED**: Changed from brown/orange to pleasant pastel cyan
-  - Color: `rgba(176, 224, 230, 0.15)` with matching border `rgba(176,224,230,0.3)`
-  - Harmonizes with platform's dark theme aesthetic
-  
 - **✅ CANONICAL BANNER LOCKED**: "Predictive Signals. Complete Ecosystem. Maximum Edge."
   - **DO NOT CHANGE** until replaced with new design
   - Dual-positioning mission statement encapsulates entire ecosystem vision (launchpad, wallet, marketplace, staking)
   - Degens hear: Early signals, opportunity pipeline, complete trading ecosystem
   - Pros hear: Predictive advantage, infrastructure, risk management
-  - **FINAL Visual Implementation**:
-    - Title: "DARKWAVE PULSE" (uppercase monospace, 2.2rem, white, right-aligned)
-    - Subtitle: "Predictive Signals. Complete Ecosystem. Maximum Edge." (0.75rem, 75% opacity, monospace, right-aligned)
-    - Both on right 50% of banner with frosted blur overlay (8px blur, 0.15 opacity dark / 0.08 opacity light)
-    - Left 50%: Neon candlesticks scrolling infinitely in 60-second cycle
-    - **Configuration**: 2 panels (50% background-size), repeat-x, 60s animation cycle
-    - Auto-switches dark/light theme (banner-dark.png / banner-light.png)
-  - Ready for social media ad variations (degen vs pro angles)
-  
-- **Strategic Rebrand - Predictive Trading Platform**: Ecosystem + Signals + Edge
-  - Next phase: Degen/Pro mode toggle in Settings (presentation layer only, no duplication)
-  - Avatar King & Crypto Cat remain core (unchanged)
 
 ## System Architecture
 
