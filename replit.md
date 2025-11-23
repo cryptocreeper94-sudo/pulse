@@ -22,7 +22,42 @@
 - Preferred communication style: Simple, everyday language
 - Call him "Jason" not "DW"
 
-## Latest Updates (Nov 23, 2025) - PROJECTS PAGE REVAMP + MOBILE-FIRST DESIGN
+## Latest Updates (Nov 23, 2025) - AGENT CAROUSEL + EXPO MOBILE SETUP
+
+- **✅ COMPACT AGENT SELECTOR CAROUSEL - SUBSCRIPTION GATED**:
+  - **Age Filtering**: All 18 agents now have age properties with 3 categories:
+    - Young (20-30): 5 agents (Alex, Sofia, Aria, Mei, Zara, Luis, Nova)
+    - Middle (35-55): 7 agents (Marcus, Raj, Devon, Vikram, Jade, Marco, Kai)
+    - Senior (55+): 4 agents (Blake, Layla, Claire, Kaia)
+  - **Compact Carousel UI**: Scrollable agent cards with hover effects
+    - Left/right nav buttons for easy browsing
+    - Only 3-4 agents visible at once (mobile-first design)
+    - Smooth scroll animation between agents
+    - Dot indicators show carousel position
+  - **Subscription Gating**: 
+    - Checks `isPaid` from user access level
+    - Locked state shows: "🔒 Premium Feature - Choose from 18 AI agents"
+    - Paid users see full carousel with age filters (All/Young/Middle/Senior)
+  - **Mobile & Web Ready**: 
+    - Vanilla JS version for current web app
+    - React component version (`AgentSelector.jsx`) for full React integration
+    - Both versions share same logic and styling
+  
+- **✅ EXPO CONFIGURATION FOR GOOGLE PLAY STORE**:
+  - Created `app.json` - Expo app manifest with:
+    - App name: "DarkWave Pulse"
+    - Bundle ID: com.darkwave.pulse
+    - Android package: com.darkwave.pulse
+    - Permissions: INTERNET, CAMERA
+    - Min SDK: 24
+    - EAS Build integration ready
+  - Created `eas.json` - Build configuration for:
+    - Preview builds (APK for testing)
+    - Production builds (AAB for Play Store)
+    - Submission configuration for Google Play
+  - App ready to build with: `eas build --platform android --local`
+
+## Previous Latest Updates (Nov 23, 2025) - PROJECTS PAGE REVAMP + MOBILE-FIRST DESIGN
 
 - **✅ PROJECTS PAGE FULLY COMPRESSED + MOBILE FRIENDLY**:
   - **Layout Compression**: All spacing reduced dramatically for dense, efficient layout
