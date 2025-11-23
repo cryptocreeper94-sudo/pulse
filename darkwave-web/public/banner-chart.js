@@ -1,5 +1,5 @@
-// DarkWave Banner - Chaotic Twisting Waves Over Candlesticks
-// Uses multiple competing noise patterns for wild, unpredictable motion
+// DarkWave Banner - Perpetual Line Over Massive Candlesticks
+// Single continuous wavy line that never breaks, with candles as the main visual
 window.bannerChartManager = {
   canvas: null,
   ctx: null,
@@ -39,7 +39,7 @@ window.bannerChartManager = {
       return;
     }
 
-    this.generateCandleData(40);
+    this.generateCandleData(50);
     this.generateNoise();
     this.initialized = true;
     console.log('✅ Chaotic twisting waves banner ready');
@@ -104,7 +104,7 @@ window.bannerChartManager = {
     this.ctx.fillRect(0, 0, w, h);
 
     this.drawLargeCandleSticks(w, h);
-    this.drawChaosWaves(w, h);
+    this.drawPerpetualLine(w, h);
   },
 
   drawLargeCandleSticks: function(w, h) {
@@ -114,8 +114,9 @@ window.bannerChartManager = {
     const minPrice = Math.min(...this.candleData.map(c => c.low));
     const priceRange = maxPrice - minPrice || 1;
     
-    const candleWidth = w / (this.candleData.length * 1.5);
-    const chartHeight = h * 0.85;
+    const candleWidth = w / (this.candleData.length * 1.2);
+    const bodyWidth = candleWidth * 0.65; // WIDER BODIES - 65% of candle width
+    const chartHeight = h * 0.80;
     const centerY = h / 2;
     
     this.candleData.forEach((candle, idx) => {
@@ -128,89 +129,83 @@ window.bannerChartManager = {
       
       const isGreen = candle.close >= candle.open;
       
-      this.ctx.strokeStyle = isGreen ? 'rgba(80, 200, 100, 0.9)' : 'rgba(220, 60, 60, 0.9)';
-      this.ctx.lineWidth = 1.5;
+      // Draw the THIN wick (line from high to low) - LESS PROMINENT
+      this.ctx.strokeStyle = isGreen ? 'rgba(80, 200, 100, 0.6)' : 'rgba(220, 60, 60, 0.6)';
+      this.ctx.lineWidth = 1;
       this.ctx.beginPath();
-      this.ctx.moveTo(x + candleWidth / 2, highY);
-      this.ctx.lineTo(x + candleWidth / 2, lowY);
+      this.ctx.moveTo(x + bodyWidth / 2, highY);
+      this.ctx.lineTo(x + bodyWidth / 2, lowY);
       this.ctx.stroke();
       
+      // Draw the THICK body (rectangle) - DOMINANT
       const bodyTop = Math.min(openY, closeY);
-      const bodyHeight = Math.max(Math.abs(closeY - openY), 2);
+      const bodyHeight = Math.max(Math.abs(closeY - openY), 3);
       
-      this.ctx.fillStyle = isGreen ? 'rgba(80, 200, 100, 0.9)' : 'rgba(220, 60, 60, 0.9)';
-      this.ctx.fillRect(x, bodyTop, candleWidth * 0.35, bodyHeight);
+      this.ctx.fillStyle = isGreen ? 'rgba(80, 200, 100, 0.95)' : 'rgba(220, 60, 60, 0.95)';
+      this.ctx.fillRect(x + (candleWidth - bodyWidth) / 2, bodyTop, bodyWidth, bodyHeight);
     });
   },
 
-  drawChaosWaves: function(w, h) {
-    // Color gradient: red → magenta → purple → blue
+  drawPerpetualLine: function(w, h) {
+    // ONE continuous line that never breaks - traces across candle tops
+    if (this.candleData.length === 0) return;
+    
+    const maxPrice = Math.max(...this.candleData.map(c => c.high));
+    const minPrice = Math.min(...this.candleData.map(c => c.low));
+    const priceRange = maxPrice - minPrice || 1;
+    
+    const chartHeight = h * 0.80;
+    const centerY = h / 2;
+    
+    // Gradient colors for the line
     const colors = [
-      { r: 255, g: 30, b: 80 },
-      { r: 255, g: 50, b: 120 },
-      { r: 240, g: 80, b: 150 },
-      { r: 200, g: 120, b: 180 },
-      { r: 160, g: 150, b: 210 },
-      { r: 120, g: 180, b: 240 },
-      { r: 80, g: 200, b: 255 }
+      '#ff1e50',  // red
+      '#ff3278',  // red-magenta
+      '#f05096',  // magenta
+      '#c878b4',  // magenta-purple
+      '#a096d2',  // purple
+      '#78b4f0',  // blue-purple
+      '#50c8ff'   // bright blue
     ];
     
-    const centerY = h / 2;
-    const numWaves = 7;
+    // Draw the line with color gradient
+    this.ctx.lineCap = 'round';
+    this.ctx.lineJoin = 'round';
+    this.ctx.lineWidth = 1.5; // THIN LINE - doesn't dominate
     
-    // Draw 7 waves with WILD, CHAOTIC motion
-    for (let waveIdx = 0; waveIdx < numWaves; waveIdx++) {
-      const yBaseOffset = (waveIdx - numWaves / 2) * (h * 0.035);
-      const waveFreq = 0.5 + waveIdx * 0.15; // Different frequencies per wave
-      const wavePhase = waveIdx * Math.PI / 3; // Different starting phases
+    this.ctx.beginPath();
+    let firstPoint = true;
+    
+    for (let x = -20; x <= w + 20; x += 2) {
+      // Get candle data smoothly across screen
+      const candle_idx = Math.floor((x / w) * this.candleData.length);
+      if (candle_idx < 0 || candle_idx >= this.candleData.length) continue;
       
-      const color = colors[waveIdx];
-      const opacity = 0.8 - (waveIdx / numWaves) * 0.3;
+      const candle = this.candleData[candle_idx];
       
-      this.ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`;
-      this.ctx.lineWidth = 1.8;
-      this.ctx.lineCap = 'round';
-      this.ctx.lineJoin = 'round';
+      // Get close price for line position (traces candle bodies)
+      const closeY = centerY - ((candle.close - minPrice) / priceRange - 0.5) * chartHeight;
       
-      this.ctx.beginPath();
-      let pathStarted = false;
+      // Add SLIGHT wavy motion to the line
+      const waveAmplitude = h * 0.12; // Small waves
+      const waveX = (x - this.scrollOffset) * 0.008;
+      const noiseVal = this.perlinNoise(waveX, this.timeOffset);
+      const wave = (noiseVal - 0.5) * waveAmplitude * 2;
       
-      for (let x = 0; x <= w; x += 2) {
-        // Multiple competing noise patterns for chaos
-        const noiseX = (x - this.scrollOffset) * 0.02;
-        const noiseY = this.timeOffset;
-        
-        // Pattern 1: Base Perlin noise
-        const noise1 = this.perlinNoise(noiseX * waveFreq, noiseY + wavePhase);
-        
-        // Pattern 2: Rotational/circular effect
-        const angle = (x / w) * Math.PI * 4 + this.timeOffset * 0.5;
-        const noise2 = Math.sin(angle * waveFreq) * 0.5 + 0.5;
-        
-        // Pattern 3: Chaotic turbulence
-        const noise3 = this.perlinNoise(noiseX * 3, noiseY * 2);
-        
-        // Blend all patterns for WILD effect
-        const combined = (noise1 * 0.4) + (noise2 * 0.35) + (noise3 * 0.25);
-        
-        // Large amplitude with aggressive swings
-        const amplitude = (h * 0.4) / (waveIdx + 1);
-        const chaosWave = (combined - 0.5) * amplitude * 2;
-        
-        // Add twisting effect - waves twist around each other
-        const twist = Math.sin(x * 0.01 + this.timeOffset) * 15;
-        
-        const y = centerY + yBaseOffset + chaosWave + twist;
-        
-        if (!pathStarted) {
-          this.ctx.moveTo(x, y);
-          pathStarted = true;
-        } else {
-          this.ctx.lineTo(x, y);
-        }
+      const y = closeY + wave;
+      
+      const colorIdx = Math.floor((x / w) * colors.length) % colors.length;
+      this.ctx.strokeStyle = colors[colorIdx];
+      
+      if (firstPoint) {
+        this.ctx.moveTo(x, y);
+        firstPoint = false;
+      } else {
+        this.ctx.lineTo(x, y);
       }
-      this.ctx.stroke();
     }
+    
+    this.ctx.stroke();
   }
 };
 
