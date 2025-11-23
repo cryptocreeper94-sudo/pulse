@@ -3080,6 +3080,33 @@ async function analyzeToken() {
   input.value = '';
 }
 
+// Open analytics search dialog
+function openAnalyticsSearch() {
+  const symbol = prompt('Enter coin symbol (BTC, ETH, SOL, etc) or Solana address:');
+  if (!symbol || !symbol.trim()) return;
+  
+  const searchSymbol = symbol.trim().toUpperCase();
+  
+  // Try to open modal - with retries if not ready
+  function tryOpenModal(attempts = 0) {
+    if (window.analysisModalController && window.analysisModalController.openAnalysisModal) {
+      analysisModalController.openAnalysisModal({
+        symbol: searchSymbol,
+        name: searchSymbol,
+        assetType: 'crypto'
+      });
+    } else if (attempts < 5) {
+      // Retry after 100ms if modal controller not ready
+      setTimeout(() => tryOpenModal(attempts + 1), 100);
+    } else {
+      console.error('Analytics modal not available');
+      alert('Analytics modal is loading. Please try again in a moment.');
+    }
+  }
+  
+  tryOpenModal();
+}
+
 // Crypto Cat AI Chat
 async function sendCatMessage() {
   const input = document.getElementById('catInput');

@@ -208,7 +208,7 @@
       <!-- Coin Analytics Quick Access -->
       <div style="display: flex; flex-direction: column; gap: 0; padding: 0;">
         <div style="font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.7); margin-bottom: 8px; letter-spacing: 0.5px;">COIN ANALYTICS</div>
-        <button onclick="if(window.analysisModalController) { const symbol = prompt('Enter coin symbol (BTC, ETH, SOL, etc) or Solana address:'); if(symbol) { analysisModalController.openAnalysisModal({symbol: symbol.toUpperCase(), name: symbol.toUpperCase(), assetType: 'crypto'}); } } else { alert('Analytics modal not ready'); }" style="flex: 1; background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(59,130,246,0.08)); border: 1px solid rgba(59,130,246,0.3); border-radius: 6px; padding: 12px; cursor: pointer; color: rgba(255,255,255,0.9); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.4px; transition: all 0.2s; white-space: nowrap;">
+        <button onclick="openAnalyticsSearch()" style="flex: 1; background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(59,130,246,0.08)); border: 1px solid rgba(59,130,246,0.3); border-radius: 6px; padding: 12px; cursor: pointer; color: rgba(255,255,255,0.9); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.4px; transition: all 0.2s; white-space: nowrap;">
           → Open Analytics
         </button>
       </div>
