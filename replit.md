@@ -8,7 +8,7 @@ DarkWave-V2 is an advanced technical analysis bot built with the Mastra framewor
 - Preferred communication style: Simple, everyday language
 - Call him "Jason" not "DW"
 
-## Recent Changes (November 23, 2025 - Final Session)
+## Recent Changes (November 23, 2025 - Build Session)
 - **React/Vite Migration Completed**: Frontend migrated from vanilla JavaScript to React + Vite framework
 - **Full App Restoration**: All 40+ public JavaScript files, CSS, and assets recovered from git history
 - **Hybrid Architecture**: Mastra backend (port 3001) + React frontend (port 5000) running concurrently
@@ -19,7 +19,14 @@ DarkWave-V2 is an advanced technical analysis bot built with the Mastra framewor
   - Metric values: Repositioned above gauges for F&G/ALT, centered for Market Cap/Volume
   - Font sizes: Larger on mobile (13-16px) for readability
   - Proper alignment: Values now positioned at `top: 18-22px` depending on box type
-- **App Status**: Fully functional with all features restored (gauges, charts, Agent System, navigation tabs, themes)
+- **Banner Restored**: Simple CSS scrolling background image (banner-scroll.jpg) with candlesticks/waveforms and centered title overlay—clean and working perfectly
+- **Avatar King Launch**: 16-agent selector system fully implemented for Twitter marketing
+  - 👤 Button added to top navigation
+  - Agent modal displays all 16 diverse AI agents (Sofia, Luis, Marco, Jade, Layla, Blake, Devon, Aria, Mei, Claire, Vikram, Zara, Marco, Jade, Luis, Kaia)
+  - Agent profiles include title, career highlight, and fun fact for each persona
+  - Persistent agent selection via localStorage
+  - System initialized on page load for seamless UX
+- **App Status**: Fully functional with all features restored (gauges, charts, Agent System, Avatar King, navigation tabs, themes)
 - **Visual Theme**: Currently using Pro Blue (dark) theme with wave watermark; 9-theme system fully functional
 
 ## System Architecture
