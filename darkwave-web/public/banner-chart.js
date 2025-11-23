@@ -1,5 +1,5 @@
 // DarkWave Banner - Fluid Organic Waves Over Candlesticks
-// Tight rope-like pattern with cohesive motion - all waves follow same pattern
+// Uses Perlin noise for smooth, random, flowing motion
 window.bannerChartManager = {
   canvas: null,
   ctx: null,
@@ -158,12 +158,12 @@ window.bannerChartManager = {
     const centerY = h / 2;
     const numWaves = 7;
     const amplitude = h * 0.25;
-    const waveSpacing = h * 0.035; // Spread out more - balanced spacing
+    const waveSpacing = h * 0.035;
     
     // Draw 7 waves that all follow the SAME pattern but are spaced nicely
     for (let waveIdx = 0; waveIdx < numWaves; waveIdx++) {
       const yOffset = (waveIdx - numWaves / 2) * waveSpacing;
-      const waveFreqOffset = waveIdx * 0.02; // Slight individual variation
+      const waveFreqOffset = waveIdx * 0.02;
       
       const color = colors[waveIdx];
       const opacity = 0.8 - (waveIdx / numWaves) * 0.3;
@@ -172,9 +172,6 @@ window.bannerChartManager = {
       this.ctx.lineWidth = 1.8;
       this.ctx.lineCap = 'round';
       this.ctx.lineJoin = 'round';
-      
-      this.ctx.shadowColor = `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity * 0.5})`;
-      this.ctx.shadowBlur = 6;
       
       this.ctx.beginPath();
       let pathStarted = false;
@@ -204,9 +201,6 @@ window.bannerChartManager = {
       }
       this.ctx.stroke();
     }
-    
-    this.ctx.shadowColor = 'transparent';
-    this.ctx.shadowBlur = 0;
   }
 };
 
