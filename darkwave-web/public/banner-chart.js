@@ -1,5 +1,5 @@
-// DarkWave Banner - Fluid Organic Waves Over Candlesticks
-// Uses Perlin noise for smooth, random, flowing motion
+// DarkWave Banner - Chaotic Twisting Waves Over Candlesticks
+// Uses multiple competing noise patterns for wild, unpredictable motion
 window.bannerChartManager = {
   canvas: null,
   ctx: null,
@@ -11,7 +11,7 @@ window.bannerChartManager = {
   noise: [],
 
   init: function() {
-    console.log('🎬 Fluid Waves Banner init');
+    console.log('🎬 Chaotic Twisting Waves Banner init');
     
     if (this.initialized) return;
 
@@ -42,7 +42,7 @@ window.bannerChartManager = {
     this.generateCandleData(80);
     this.generateNoise();
     this.initialized = true;
-    console.log('✅ Fluid waves banner ready');
+    console.log('✅ Chaotic twisting waves banner ready');
     
     this.animate();
   },
@@ -104,7 +104,7 @@ window.bannerChartManager = {
     this.ctx.fillRect(0, 0, w, h);
 
     this.drawLargeCandleSticks(w, h);
-    this.drawTightRopeWaves(w, h);
+    this.drawChaosWaves(w, h);
   },
 
   drawLargeCandleSticks: function(w, h) {
@@ -143,7 +143,7 @@ window.bannerChartManager = {
     });
   },
 
-  drawTightRopeWaves: function(w, h) {
+  drawChaosWaves: function(w, h) {
     // Color gradient: red → magenta → purple → blue
     const colors = [
       { r: 255, g: 30, b: 80 },
@@ -157,13 +157,12 @@ window.bannerChartManager = {
     
     const centerY = h / 2;
     const numWaves = 7;
-    const amplitude = h * 0.25;
-    const waveSpacing = h * 0.035;
     
-    // Draw 7 waves that all follow the SAME pattern but are spaced nicely
+    // Draw 7 waves with WILD, CHAOTIC motion
     for (let waveIdx = 0; waveIdx < numWaves; waveIdx++) {
-      const yOffset = (waveIdx - numWaves / 2) * waveSpacing;
-      const waveFreqOffset = waveIdx * 0.02;
+      const yBaseOffset = (waveIdx - numWaves / 2) * (h * 0.035);
+      const waveFreq = 0.5 + waveIdx * 0.15; // Different frequencies per wave
+      const wavePhase = waveIdx * Math.PI / 3; // Different starting phases
       
       const color = colors[waveIdx];
       const opacity = 0.8 - (waveIdx / numWaves) * 0.3;
@@ -177,20 +176,31 @@ window.bannerChartManager = {
       let pathStarted = false;
       
       for (let x = 0; x <= w; x += 2) {
-        // All waves use the SAME base noise pattern
+        // Multiple competing noise patterns for chaos
         const noiseX = (x - this.scrollOffset) * 0.02;
         const noiseY = this.timeOffset;
         
-        const baseNoise = this.perlinNoise(noiseX, noiseY);
+        // Pattern 1: Base Perlin noise
+        const noise1 = this.perlinNoise(noiseX * waveFreq, noiseY + wavePhase);
         
-        // Add small individual variation per wave
-        const waveNoise = this.perlinNoise(noiseX + waveFreqOffset, noiseY + waveFreqOffset);
+        // Pattern 2: Rotational/circular effect
+        const angle = (x / w) * Math.PI * 4 + this.timeOffset * 0.5;
+        const noise2 = Math.sin(angle * waveFreq) * 0.5 + 0.5;
         
-        // Blend: mostly base pattern, tiny bit of individual randomness
-        const combined = baseNoise * 0.9 + waveNoise * 0.1;
-        const fluidWave = (combined - 0.5) * amplitude * 2;
+        // Pattern 3: Chaotic turbulence
+        const noise3 = this.perlinNoise(noiseX * 3, noiseY * 2);
         
-        const y = centerY + yOffset + fluidWave;
+        // Blend all patterns for WILD effect
+        const combined = (noise1 * 0.4) + (noise2 * 0.35) + (noise3 * 0.25);
+        
+        // Large amplitude with aggressive swings
+        const amplitude = (h * 0.4) / (waveIdx + 1);
+        const chaosWave = (combined - 0.5) * amplitude * 2;
+        
+        // Add twisting effect - waves twist around each other
+        const twist = Math.sin(x * 0.01 + this.timeOffset) * 15;
+        
+        const y = centerY + yBaseOffset + chaosWave + twist;
         
         if (!pathStarted) {
           this.ctx.moveTo(x, y);
