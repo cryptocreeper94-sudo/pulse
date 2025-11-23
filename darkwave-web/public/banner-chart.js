@@ -1,5 +1,5 @@
 // DarkWave Banner - Fluid Organic Waves Over Candlesticks
-// Uses Perlin noise for smooth, random, flowing motion
+// Tight rope-like pattern with cohesive motion - all waves follow same pattern
 window.bannerChartManager = {
   canvas: null,
   ctx: null,
@@ -103,11 +103,8 @@ window.bannerChartManager = {
     this.ctx.fillStyle = '#0a0a14';
     this.ctx.fillRect(0, 0, w, h);
 
-    // Layer 1: Large candlestick bars
     this.drawLargeCandleSticks(w, h);
-    
-    // Layer 2: Fluid flowing waves
-    this.drawFluidWaves(w, h);
+    this.drawTightRopeWaves(w, h);
   },
 
   drawLargeCandleSticks: function(w, h) {
@@ -131,7 +128,6 @@ window.bannerChartManager = {
       
       const isGreen = candle.close >= candle.open;
       
-      // Draw wick
       this.ctx.strokeStyle = isGreen ? 'rgba(80, 200, 100, 0.5)' : 'rgba(220, 60, 60, 0.5)';
       this.ctx.lineWidth = 1.5;
       this.ctx.beginPath();
@@ -139,7 +135,6 @@ window.bannerChartManager = {
       this.ctx.lineTo(x + candleWidth / 2, lowY);
       this.ctx.stroke();
       
-      // Draw body
       const bodyTop = Math.min(openY, closeY);
       const bodyHeight = Math.max(Math.abs(closeY - openY), 2);
       
@@ -148,7 +143,7 @@ window.bannerChartManager = {
     });
   },
 
-  drawFluidWaves: function(w, h) {
+  drawTightRopeWaves: function(w, h) {
     // Color gradient: red → magenta → purple → blue
     const colors = [
       { r: 255, g: 30, b: 80 },
@@ -162,22 +157,22 @@ window.bannerChartManager = {
     
     const centerY = h / 2;
     const numWaves = 7;
+    const amplitude = h * 0.25;
+    const waveSpacing = h * 0.015; // MUCH tighter spacing
     
-    // Draw 7 organic fluid waves using Perlin noise
+    // Draw 7 waves that all follow the SAME pattern but are tightly packed
     for (let waveIdx = 0; waveIdx < numWaves; waveIdx++) {
-      const amplitude = (h * 0.3) / (waveIdx + 1);
-      const yOffset = (waveIdx - numWaves / 2) * (h * 0.06);
-      const scale = 0.02 + waveIdx * 0.01;
+      const yOffset = (waveIdx - numWaves / 2) * waveSpacing;
+      const waveFreqOffset = waveIdx * 0.02; // Slight individual variation
       
       const color = colors[waveIdx];
       const opacity = 0.8 - (waveIdx / numWaves) * 0.3;
       
       this.ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`;
-      this.ctx.lineWidth = 2;
+      this.ctx.lineWidth = 1.8;
       this.ctx.lineCap = 'round';
       this.ctx.lineJoin = 'round';
       
-      // Glow effect
       this.ctx.shadowColor = `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity * 0.5})`;
       this.ctx.shadowBlur = 6;
       
@@ -185,12 +180,18 @@ window.bannerChartManager = {
       let pathStarted = false;
       
       for (let x = 0; x <= w; x += 2) {
-        // Use Perlin noise for organic, flowing motion
-        const noiseX = (x - this.scrollOffset) * scale;
-        const noiseY = this.timeOffset + waveIdx * 0.3;
+        // All waves use the SAME base noise pattern
+        const noiseX = (x - this.scrollOffset) * 0.02;
+        const noiseY = this.timeOffset;
         
-        const noiseVal = this.perlinNoise(noiseX, noiseY);
-        const fluidWave = (noiseVal - 0.5) * amplitude * 2;
+        const baseNoise = this.perlinNoise(noiseX, noiseY);
+        
+        // Add small individual variation per wave
+        const waveNoise = this.perlinNoise(noiseX + waveFreqOffset, noiseY + waveFreqOffset);
+        
+        // Blend: mostly base pattern, tiny bit of individual randomness
+        const combined = baseNoise * 0.9 + waveNoise * 0.1;
+        const fluidWave = (combined - 0.5) * amplitude * 2;
         
         const y = centerY + yOffset + fluidWave;
         
