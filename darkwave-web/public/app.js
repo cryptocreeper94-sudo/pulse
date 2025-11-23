@@ -221,15 +221,15 @@ function closeDisclaimerModal() {
 function closeStakingV2Lock() {
   const overlay = document.getElementById('stakingV2Lock');
   if (overlay) {
-    overlay.classList.add('hidden');
-    console.log('🔓 Staking preview unlocked');
+    overlay.style.display = 'none';
+    console.log('🔓 Staking preview closed');
   }
 }
 
 function unlockStakingPreview() {
   const overlay = document.getElementById('stakingV2Lock');
   if (overlay) {
-    overlay.classList.add('hidden');
+    overlay.style.display = 'none';
     console.log('🔓 Staking preview unlocked for dev/admin');
   }
   
