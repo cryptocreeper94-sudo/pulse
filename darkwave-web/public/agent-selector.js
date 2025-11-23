@@ -77,6 +77,7 @@ function showAgentSelectorLocked(modal) {
   
   container.innerHTML = `
     <div class="agent-selector-locked">
+      <button class="agent-carousel-close" onclick="closeAgentSelector()" style="position: absolute; top: 12px; right: 12px;">×</button>
       <div class="agent-lock-icon">🔒</div>
       <h3>Premium Feature</h3>
       <p>Choose from 18 AI agents</p>
