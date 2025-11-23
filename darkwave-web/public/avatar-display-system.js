@@ -100,6 +100,7 @@ const avatarDisplaySystem = {
           <div class="avatar-display agent-avatar" style="
             display: flex; align-items: center; gap: 12px; padding: 12px; 
             background: rgba(0,0,0,0.3); border: 1px solid rgba(59,130,246,0.2); border-radius: 8px;
+            margin-bottom: 12px;
           ">
             <div class="avatar-circle" style="
               width: 50px; height: 50px; border-radius: 50%; background: ${bgColor}; 
@@ -122,6 +123,7 @@ const avatarDisplaySystem = {
         <div class="avatar-display crypto-cat" style="
           display: flex; align-items: center; gap: 12px; padding: 12px;
           background: rgba(0,0,0,0.3); border: 1px solid rgba(139,92,246,0.2); border-radius: 8px;
+          margin-bottom: 12px;
         ">
           <div class="crypto-cat-emoji" style="
             font-size: 40px; flex-shrink: 0;
@@ -136,23 +138,11 @@ const avatarDisplaySystem = {
           ">🔄 Change</button>
         </div>
       `;
-    } else {
-      html = `
-        <div class="avatar-display off-mode" style="
-          padding: 8px 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(107,114,128,0.2);
-          border-radius: 6px; color: rgba(255,255,255,0.6); text-align: center; font-size: 12px;
-          display: flex; align-items: center; justify-content: space-between;
-        ">
-          <span>Avatar Display: Off</span>
-          <button class="avatar-selector-btn" onclick="avatarDisplaySystem.openModeSelector()" title="Change Mode" style="
-            background: rgba(107,114,128,0.2); border: 1px solid rgba(107,114,128,0.3); border-radius: 6px;
-            padding: 4px 8px; color: rgba(255,255,255,0.6); cursor: pointer; font-size: 11px;
-          ">🔄</button>
-        </div>
-      `;
     }
+    // Off mode: don't show anything
     
     container.innerHTML = html;
+    container.style.display = html ? 'block' : 'none';
   },
   
   // Open mode selector with floating agent buttons
