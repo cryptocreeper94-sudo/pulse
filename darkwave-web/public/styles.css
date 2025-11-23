@@ -107,9 +107,9 @@ body.theme-light .banner-title-overlay {
 }
 
 body.theme-light .banner-subtitle {
-  color: #FFFFFF;
+  color: rgba(255, 255, 255, 0.85);
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6), 0 0 8px rgba(0, 0, 0, 0.4);
-  font-weight: 600;
+  font-weight: 400;
 }
 
 /* ===== PREMIUM THEME SKINS (Premium Users Only) ===== */
@@ -418,6 +418,15 @@ body.theme-light .banner-scroll {
   box-sizing: border-box;
 }
 
+/* Banner Title Wrapper - Centers title and subtitle vertically */
+.banner-title-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  text-align: right;
+}
+
 /* Banner Title - Modern Technical Font */
 .banner-title {
   color: white;
@@ -435,11 +444,17 @@ body.theme-light .banner-scroll {
 }
 
 .banner-subtitle {
-  font-size: 1rem;
-  margin: 8px 0 0 0;
-  color: #ddd;
-  font-weight: 300;
+  font-size: 0.75rem;
+  margin: 6px 0 0 0;
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 400;
   text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+  letter-spacing: 0.5px;
+  font-family: 'Courier New', 'IBM Plex Mono', monospace;
+  position: relative;
+  z-index: 11;
+  line-height: 1.4;
+  max-width: 280px;
 }
 
 /* V2 Feature Lock Modal */
@@ -622,13 +637,12 @@ body.theme-light .banner-title {
 }
 
 .banner-subtitle {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 9px;
+  font-family: 'Courier New', 'IBM Plex Mono', monospace;
+  font-size: 12px;
   font-weight: 400;
-  color: var(--text-secondary);
-  margin: 0;
-  line-height: 1.3;
-  letter-spacing: 0.3px;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.4;
+  letter-spacing: 0.5px;
   word-wrap: break-word;
 }
 
@@ -641,7 +655,8 @@ body.theme-light .banner-title {
     letter-spacing: 0.5px;
   }
   .banner-subtitle {
-    font-size: 8px;
+    font-size: 9px;
+    max-width: 220px;
   }
   .banner-text {
     padding: 0 10px;

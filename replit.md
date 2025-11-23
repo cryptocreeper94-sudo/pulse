@@ -23,21 +23,21 @@
 - Call him "Jason" not "DW"
 
 ## Latest Updates (Nov 23, 2025)
-- **Strategic Rebrand - Predictive Trading Platform**: Dual positioning for degens + professionals
-  - Messaging: "Your Trading Advantage" - signals for explosive gains + institutional metrics
-  - Planned: Degen/Pro mode toggle in Settings (UI for different audiences)
-  - Next: Update homepage copy, feature highlights, CTAs based on user intent
+- **Banner + Subtitle System COMPLETE**: "Predictive Signals. Complete Ecosystem. Maximum Edge."
+  - Dual-positioning mission statement encapsulates entire ecosystem vision (launchpad, wallet, marketplace, staking)
+  - Degens hear: Early signals, opportunity pipeline, complete trading ecosystem
+  - Pros hear: Predictive advantage, infrastructure, risk management
+  - **Visual Implementation**:
+    - Title: "DARKWAVE PULSE" (uppercase monospace, 2.2rem, white, right-aligned)
+    - Subtitle: "Predictive Signals. Complete Ecosystem. Maximum Edge." (0.75rem, 75% opacity, monospace, right-aligned)
+    - Both on right 50% of banner with frosted blur overlay
+    - Left 50%: Neon candlesticks scrolling infinitely in 60-second cycle
+    - Auto-switches dark/light theme (banner-dark.png / banner-light.png)
+  - Ready for social media ad variations (degen vs pro angles)
   
-- **Banner System Complete**: Professional seamless-looping with increased visibility
-  - Dark banner: `banner-dark.png` | Light banner: `banner-light.png`
-  - **Infinite Scrolling**: Neon candlesticks continuously loop in 60-second cycle
-  - **Title Section**: "DARKWAVE PULSE" on right 50% with frosted overlay
-    - Modern monospace font (2.2rem, uppercase)
-    - Stationary title, transparent background (0.15 opacity) - waves visible behind
-    - Blur effect (8px) for clean but visible animation
-  - **Left 50%**: Clear, highly visible neon patterns scrolling continuously
-  - Auto-switches dark/light theme banners
-  - Subtext placeholder ready when ready
+- **Strategic Rebrand - Predictive Trading Platform**: Ecosystem + Signals + Edge
+  - Next phase: Degen/Pro mode toggle in Settings (presentation layer only, no duplication)
+  - Avatar King & Crypto Cat remain core (unchanged)
 
 ## System Architecture
 
