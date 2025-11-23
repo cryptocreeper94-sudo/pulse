@@ -8,11 +8,17 @@ DarkWave-V2 is an advanced technical analysis bot built with the Mastra framewor
 - Preferred communication style: Simple, everyday language
 - Call him "Jason" not "DW"
 
-## Recent Changes (November 23, 2025)
+## Recent Changes (November 23, 2025 - Final Session)
 - **React/Vite Migration Completed**: Frontend migrated from vanilla JavaScript to React + Vite framework
+- **Full App Restoration**: All 40+ public JavaScript files, CSS, and assets recovered from git history
 - **Hybrid Architecture**: Mastra backend (port 3001) + React frontend (port 5000) running concurrently
 - **Vite Proxy Setup**: Frontend proxies `/api` requests to Mastra backend on port 3001
 - **Dev Server**: Single `run-dev.sh` script starts both services with proper port configuration
+- **Mobile Responsive Fixes**:
+  - Metric boxes: Increased height and spacing for better mobile display
+  - Metric values: Repositioned above gauges for F&G/ALT, centered for Market Cap/Volume
+  - Font sizes: Larger on mobile (13-16px) for readability
+  - Proper alignment: Values now positioned at `top: 18-22px` depending on box type
 - **App Status**: Fully functional with all features restored (gauges, charts, Agent System, navigation tabs, themes)
 - **Visual Theme**: Currently using Pro Blue (dark) theme with wave watermark; 9-theme system fully functional
 

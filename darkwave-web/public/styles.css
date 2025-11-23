@@ -752,20 +752,48 @@ body.theme-light .banner-title {
   font-weight: 700;
   color: var(--text-primary);
   position: absolute;
-  bottom: 6px;
+  top: 24px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 2;
   line-height: 1.2;
   width: calc(100% - 4px);
   padding: 0 2px;
+  text-align: center;
+}
+
+/* For gauge boxes (1st and 2nd): position value above gauge */
+.metric-box-wide:nth-child(1) .metric-value,
+.metric-box-wide:nth-child(2) .metric-value {
+  top: 18px;
+  font-size: 11px;
+}
+
+/* For number boxes (3rd and 4th): position value centered at top */
+.metric-box-wide:nth-child(3) .metric-value,
+.metric-box-wide:nth-child(4) .metric-value {
+  top: 20px;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 /* Mobile: Larger metric values */
 @media (max-width: 768px) {
   .metric-value {
-    font-size: 15px;
-    bottom: 8px;
+    font-size: 14px;
+    top: 26px;
+  }
+  
+  .metric-box-wide:nth-child(1) .metric-value,
+  .metric-box-wide:nth-child(2) .metric-value {
+    top: 20px;
+    font-size: 12px;
+  }
+  
+  .metric-box-wide:nth-child(3) .metric-value,
+  .metric-box-wide:nth-child(4) .metric-value {
+    top: 22px;
+    font-size: 16px;
   }
 }
 
