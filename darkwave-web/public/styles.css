@@ -96,13 +96,13 @@ body.theme-light .banner-wave::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(8px);
   z-index: 1;
 }
 
 body.theme-light .banner-title-overlay {
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(8px);
 }
 
