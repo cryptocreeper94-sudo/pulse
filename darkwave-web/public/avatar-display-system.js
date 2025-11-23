@@ -340,32 +340,71 @@ const avatarDisplaySystem = {
     
     const isPaid = window.userData?.isPaid || false;
     
-    // Avatar skin themes
+    // Avatar skin themes with visual previews
     const skinThemes = [
-      { name: '🌌 Deep Space', color: '#0B0C10', desc: 'Cosmic depths' },
-      { name: '🌊 Ocean', color: '#0d1b2a', desc: 'Deep blue waters' },
-      { name: '🌲 Forest', color: '#0f1419', desc: 'Green canopy' },
-      { name: '🌄 Outdoors', color: '#2A2416', desc: 'Countryside sunrise' },
-      { name: '🏈 Sports Pro', color: '#1a1a1a', desc: 'Professional sports' },
-      { name: '🎓 College', color: '#0a0e27', desc: 'College colors' },
-      { name: '🌀 Paisley', color: '#1a0f1f', desc: 'Ornate patterns' },
-      { name: '🌸 Flowers', color: '#2d1b2e', desc: 'Floral designs' },
-      { name: '⚫ Solid Black', color: '#000000', desc: 'Sleek black' },
-      { name: '⚪ Solid White', color: '#E8E8E8', desc: 'Clean white' }
+      { 
+        name: '🌌 Deep Space', 
+        preview: 'radial-gradient(circle at 20% 30%, #FFE81F 2px, transparent 2px), radial-gradient(circle at 60% 70%, #FFFFFF 1px, transparent 1px), radial-gradient(circle at 80% 20%, #FFFFFF 1.5px, transparent 1.5px), linear-gradient(135deg, #0B0C10 0%, #1a1a3a 100%)',
+        desc: 'Cosmic depths with stars' 
+      },
+      { 
+        name: '🌊 Ocean', 
+        preview: 'linear-gradient(180deg, #0d1b2a 0%, #1e3a4a 50%, #0a3d5c 100%)',
+        desc: 'Deep blue waters' 
+      },
+      { 
+        name: '🌲 Forest', 
+        preview: 'linear-gradient(135deg, #0f1419 0%, #1a4d2e 50%, #0f2419 100%)',
+        desc: 'Green canopy' 
+      },
+      { 
+        name: '🌄 Outdoors', 
+        preview: 'linear-gradient(180deg, #6BA3FF 0%, #FFD700 40%, #2A2416 100%)',
+        desc: 'Countryside sunrise' 
+      },
+      { 
+        name: '🏈 Sports Pro', 
+        preview: 'repeating-linear-gradient(45deg, #1a1a1a 0px, #1a1a1a 10px, #333333 10px, #333333 20px)',
+        desc: 'Professional sports' 
+      },
+      { 
+        name: '🎓 College', 
+        preview: 'linear-gradient(135deg, #0a0e27 0%, #8B0000 50%, #0a0e27 100%)',
+        desc: 'College colors' 
+      },
+      { 
+        name: '🌀 Paisley', 
+        preview: 'repeating-radial-gradient(circle at 0 0, #1a0f1f 0px, #1a0f1f 15px, #4a2f5a 15px, #4a2f5a 30px)',
+        desc: 'Ornate patterns' 
+      },
+      { 
+        name: '🌸 Flowers', 
+        preview: 'radial-gradient(circle at 30% 40%, #FFB6C1 15%, transparent 15%), radial-gradient(circle at 70% 60%, #FF69B4 12%, transparent 12%), linear-gradient(135deg, #2d1b2e 0%, #4a2f5a 100%)',
+        desc: 'Floral designs' 
+      },
+      { 
+        name: '⚫ Solid Black', 
+        preview: 'linear-gradient(135deg, #000000 0%, #1a1a1a 100%)',
+        desc: 'Sleek black' 
+      },
+      { 
+        name: '⚪ Solid White', 
+        preview: 'linear-gradient(135deg, #FFFFFF 0%, #E8E8E8 100%)',
+        desc: 'Clean white' 
+      }
     ];
     
     const availableSkins = isPaid ? skinThemes : skinThemes.slice(7); // Nonsubscribers see paisleys, flowers, solid colors only
     
     const skinsHTML = availableSkins.map(skin => `
       <div style="
-        padding: 12px; background: linear-gradient(135deg, ${skin.color}, rgba(255,255,255,0.05));
-        border: 2px solid rgba(168,85,247,0.3); border-radius: 8px; cursor: pointer; 
-        transition: all 0.2s; text-align: center;
+        padding: 12px; border: 2px solid rgba(168,85,247,0.3); border-radius: 8px; cursor: pointer; 
+        transition: all 0.2s; text-align: center; overflow: hidden;
       " onmouseover="this.style.borderColor='#a78bfa'; this.style.boxShadow='0 0 15px rgba(168,85,247,0.4)'" 
         onmouseout="this.style.borderColor='rgba(168,85,247,0.3)'; this.style.boxShadow=''">
-        <div style="font-weight: 700; color: #fff; margin-bottom: 4px;">${skin.name}</div>
-        <div style="font-size: 11px; color: rgba(255,255,255,0.6);">${skin.desc}</div>
-        <div style="margin-top: 8px; height: 30px; background: ${skin.color}; border-radius: 4px; opacity: 0.7;"></div>
+        <div style="font-weight: 700; color: #fff; margin-bottom: 6px; font-size: 12px;">${skin.name}</div>
+        <div style="margin-bottom: 8px; height: 60px; border-radius: 4px; background: ${skin.preview}; box-shadow: inset 0 0 8px rgba(0,0,0,0.5);"></div>
+        <div style="font-size: 10px; color: rgba(255,255,255,0.6);">${skin.desc}</div>
       </div>
     `).join('');
     
