@@ -58,12 +58,16 @@ function openAgentSelector() {
     return;
   }
   
+  console.log('✅ Opening agent selector');
+  
   // Check subscription
   if (!isUserSubscribed()) {
+    console.log('🔒 User not subscribed - showing locked state');
     showAgentSelectorLocked(modal);
     return;
   }
   
+  console.log('✅ User subscribed - showing carousel');
   showAgentCarousel(modal);
 }
 
@@ -118,11 +122,23 @@ function showAgentCarousel(modal) {
 
 function renderAgentCarousel(filter = 'all') {
   const track = document.getElementById('agentCarouselTrack');
-  if (!track) return;
+  if (!track) {
+    console.warn('Carousel track not found');
+    return;
+  }
+  
+  // Check if AGENTS is available
+  if (typeof window.AGENTS === 'undefined' || !window.AGENTS) {
+    console.warn('AGENTS not loaded yet');
+    track.innerHTML = '<p style="padding: 20px; color: var(--text-secondary);">Loading agents...</p>';
+    return;
+  }
   
   const filtered = filter === 'all' 
-    ? AGENTS 
-    : AGENTS.filter(a => a.ageGroup === filter);
+    ? window.AGENTS
+    : window.AGENTS.filter(a => a.ageGroup === filter);
+  
+  console.log(`✅ Rendering ${filtered.length} agents (filter: ${filter})`);
   
   track.innerHTML = filtered.map(agent => `
     <div class="agent-carousel-card" onclick="selectAgentFromCarousel(${agent.id})">
@@ -155,11 +171,15 @@ function attachAgentCarouselListeners() {
 }
 
 function selectAgentFromCarousel(agentId) {
+  console.log(`✅ Selected agent ID: ${agentId}`);
   const agent = getAgentById(agentId);
   if (agent) {
     setUserSelectedAgent(agentId);
+    console.log(`✅ Agent ${agent.name} selected`);
     showAgentPopup(agent);
     closeAgentSelector();
+  } else {
+    console.warn(`Agent with ID ${agentId} not found`);
   }
 }
 
