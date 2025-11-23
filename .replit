@@ -3,6 +3,7 @@ modules = ["nodejs-22", "postgresql-16"]
 [agent]
 stack = "AGENT_STACK"
 integrations = ["javascript_openai_ai_integrations:1.0.0", "agentstack-trigger-telegram:1.0.0", "replitmail:1.0.0"]
+expertMode = true
 
 [nix]
 channel = "stable-24_11"
@@ -39,6 +40,10 @@ externalPort = 4200
 [[ports]]
 localPort = 40275
 externalPort = 8081
+
+[[ports]]
+localPort = 40907
+externalPort = 9000
 
 [[ports]]
 localPort = 41057
