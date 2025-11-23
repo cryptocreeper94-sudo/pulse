@@ -332,8 +332,14 @@ const avatarDisplaySystem = {
     
     const modal = document.createElement('div');
     modal.id = 'avatarBuilderModal';
+    
+    // Check if light theme is active
+    const isLightTheme = document.body.style.backgroundColor === '#D4D4D4' || 
+                         document.documentElement.classList.contains('light-theme');
+    const bgColor = isLightTheme ? '#CCCCCC' : '#2A2A2A'; // Solid light gray or dark gray
+    
     modal.style.cssText = `
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95);
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: ${bgColor};
       display: flex; align-items: center; justify-content: center; z-index: 10001; overflow-y: auto;
     `;
     
