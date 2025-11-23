@@ -371,7 +371,7 @@ body.theme-space::before {
   height: 100%;
   overflow: hidden;
   background: url('/banner-dark.png');
-  background-size: 33.33% 100%;
+  background-size: 50% 100%;
   background-position: 0 center;
   background-repeat: repeat-x;
   background-attachment: scroll;
@@ -383,13 +383,13 @@ body.theme-space::before {
     background-position: 0 center;
   }
   100% {
-    background-position: 33.33% center;
+    background-position: 50% center;
   }
 }
 
 body.theme-light .banner-scroll {
   background: url('/banner-light.png');
-  background-size: 33.33% 100%;
+  background-size: 50% 100%;
   background-position: 0 center;
   background-repeat: repeat-x;
   animation: bannerScroll 60s linear infinite;
