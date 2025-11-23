@@ -44,13 +44,22 @@ function App() {
       agentCards.src = '/agent-cards.js'
       document.head.appendChild(agentCards)
 
+      // Load banner system synchronously (must load in order)
+      const bannerChart = document.createElement('script')
+      bannerChart.src = '/banner-chart.js'
+      bannerChart.async = false
+      document.head.appendChild(bannerChart)
+
+      const bannerInit = document.createElement('script')
+      bannerInit.src = '/banner.js'
+      bannerInit.async = false
+      document.head.appendChild(bannerInit)
+
       // Load all other utility scripts
       const scripts = [
         '/analysisDataService.js',
         '/analysisIndicators.js',
         '/analysisModalController.js',
-        '/banner-chart.js',
-        '/banner.js',
         '/chatIndicatorManager.js',
         '/chartManager.js',
         '/checkCookie.js',

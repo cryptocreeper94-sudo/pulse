@@ -1,169 +1,136 @@
-// Dynamic Banner Market Chart
-// Displays live candlestick pattern in the banner
-
-const bannerChartManager = {
+// DarkWave Banner - Neon Wave Animation
+window.bannerChartManager = {
   canvas: null,
   ctx: null,
   animationFrame: null,
-  marketData: [],
-  
-  init() {
-    // Create canvas element for banner
-    const bannerWave = document.querySelector('.banner-wave');
-    if (!bannerWave) return;
+  time: 0,
+  initialized: false,
+
+  init: function() {
+    console.log('🎬 Banner init called');
     
-    // Create canvas
-    this.canvas = document.createElement('canvas');
-    this.canvas.id = 'bannerMarketChart';
-    this.canvas.style.position = 'absolute';
-    this.canvas.style.top = '0';
-    this.canvas.style.left = '0';
-    this.canvas.style.width = '100%';
-    this.canvas.style.height = '100%';
-    this.canvas.style.opacity = '0.8';
-    
-    bannerWave.appendChild(this.canvas);
-    this.ctx = this.canvas.getContext('2d');
-    
-    // Set canvas size
-    this.resize();
-    window.addEventListener('resize', () => this.resize());
-    
-    // Load market data and start animation
-    this.loadMarketData();
-  },
-  
-  resize() {
-    if (!this.canvas) return;
-    
-    const rect = this.canvas.parentElement.getBoundingClientRect();
-    this.canvas.width = rect.width;
-    this.canvas.height = rect.height;
-    
-    // Redraw after resize
-    if (this.marketData.length > 0) {
-      this.drawChart();
+    if (this.initialized) {
+      console.log('Already initialized');
+      return;
     }
-  },
-  
-  async loadMarketData() {
-    try {
-      // Fetch BTC daily data for background chart
-      const response = await fetch('/api/coincap/history/bitcoin?interval=1d&limit=100');
-      if (!response.ok) {
-        console.error('Failed to load banner market data');
+
+    // Find or create canvas
+    let canvas = document.getElementById('banner-chart-canvas');
+    if (!canvas) {
+      console.log('Creating new canvas');
+      const bannerWave = document.querySelector('.banner-wave');
+      if (!bannerWave) {
+        console.error('banner-wave not found!');
         return;
       }
       
-      const data = await response.json();
-      this.marketData = data.map(candle => ({
-        open: candle.open,
-        high: candle.high,
-        low: candle.low,
-        close: candle.close,
-        timestamp: candle.timestamp
-      }));
-      
-      this.startAnimation();
-      
-    } catch (error) {
-      console.error('Banner chart error:', error);
+      canvas = document.createElement('canvas');
+      canvas.id = 'banner-chart-canvas';
+      canvas.width = window.innerWidth;
+      canvas.height = 150;
+      canvas.style.cssText = 'display:block;position:absolute;top:0;left:0;width:100%;height:100%;';
+      bannerWave.appendChild(canvas);
+      console.log('Canvas created:', canvas.width, 'x', canvas.height);
     }
-  },
-  
-  startAnimation() {
-    const animate = () => {
-      this.drawChart();
-      this.animationFrame = requestAnimationFrame(animate);
-    };
-    animate();
-  },
-  
-  stopAnimation() {
-    if (this.animationFrame) {
-      cancelAnimationFrame(this.animationFrame);
-      this.animationFrame = null;
+
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d');
+    
+    if (!this.ctx) {
+      console.error('Failed to get 2D context');
+      return;
     }
+
+    this.initialized = true;
+    console.log('✅ Banner animated wave initialized');
+    
+    this.animate();
   },
-  
-  drawChart() {
-    if (!this.ctx || !this.marketData.length) return;
+
+  animate: function() {
+    this.draw();
+    this.time += 0.016;
+    this.animationFrame = requestAnimationFrame(() => this.animate());
+  },
+
+  draw: function() {
+    if (!this.canvas || !this.ctx) return;
+
+    const w = this.canvas.width;
+    const h = this.canvas.height;
+    const time = this.time;
+
+    // Clear
+    this.ctx.fillStyle = 'rgba(15, 15, 35, 0.95)';
+    this.ctx.fillRect(0, 0, w, h);
+
+    // Draw waves
+    const centerY = h / 2;
     
-    const width = this.canvas.width;
-    const height = this.canvas.height;
+    // Wave 1
+    this.ctx.strokeStyle = 'rgba(157, 78, 221, 0.7)';
+    this.ctx.lineWidth = 3;
+    this.ctx.beginPath();
+    for (let x = 0; x < w; x += 3) {
+      const y = centerY + Math.sin((x + time * 50) * 0.02) * 40;
+      if (x === 0) this.ctx.moveTo(x, y);
+      else this.ctx.lineTo(x, y);
+    }
+    this.ctx.stroke();
+
+    // Wave 2 (secondary)
+    this.ctx.strokeStyle = 'rgba(224, 170, 255, 0.5)';
+    this.ctx.lineWidth = 2;
+    this.ctx.beginPath();
+    for (let x = 0; x < w; x += 4) {
+      const y = centerY + Math.sin((x - time * 30) * 0.015) * 30;
+      if (x === 0) this.ctx.moveTo(x, y);
+      else this.ctx.lineTo(x, y);
+    }
+    this.ctx.stroke();
+
+    // Draw candles
+    this.drawCandles(w, h, time);
+  },
+
+  drawCandles: function(w, h, time) {
+    const centerY = h / 2;
+    const spacing = 40;
     
-    // Clear canvas
-    this.ctx.clearRect(0, 0, width, height);
-    
-    // Calculate chart dimensions
-    const padding = 0;
-    const chartWidth = width - (padding * 2);
-    const chartHeight = height;
-    
-    // Get min/max prices
-    const prices = this.marketData.flatMap(d => [d.high, d.low]);
-    const minPrice = Math.min(...prices);
-    const maxPrice = Math.max(...prices);
-    const priceRange = maxPrice - minPrice;
-    
-    // Calculate candle width
-    const candleCount = Math.min(this.marketData.length, 60);
-    const candleWidth = Math.max(2, chartWidth / candleCount);
-    const candleSpacing = candleWidth * 0.3;
-    const actualCandleWidth = candleWidth - candleSpacing;
-    
-    // Draw only the most recent candles that fit
-    const visibleData = this.marketData.slice(-candleCount);
-    
-    visibleData.forEach((candle, i) => {
-      const x = padding + (i * candleWidth);
+    for (let i = 0; i < w / spacing; i++) {
+      const x = (time * 60) + i * spacing;
+      if (x < -30 || x > w) continue;
+
+      const isGreen = i % 2 === 0;
+      const waveOffset = Math.sin((x + time * 50) * 0.02) * 25;
       
-      // Calculate Y positions
-      const yHigh = chartHeight - ((candle.high - minPrice) / priceRange * chartHeight);
-      const yLow = chartHeight - ((candle.low - minPrice) / priceRange * chartHeight);
-      const yOpen = chartHeight - ((candle.open - minPrice) / priceRange * chartHeight);
-      const yClose = chartHeight - ((candle.close - minPrice) / priceRange * chartHeight);
-      
-      // Determine candle color
-      const isGreen = candle.close >= candle.open;
-      const color = isGreen ? 'rgba(16, 185, 129, 0.8)' : 'rgba(239, 68, 68, 0.8)';
-      const wickColor = isGreen ? 'rgba(16, 185, 129, 0.6)' : 'rgba(239, 68, 68, 0.6)';
-      
-      // Draw wick (high-low line)
-      this.ctx.strokeStyle = wickColor;
-      this.ctx.lineWidth = 1;
+      // Wick
+      this.ctx.strokeStyle = isGreen ? 'rgba(100, 255, 150, 0.8)' : 'rgba(255, 100, 100, 0.8)';
+      this.ctx.lineWidth = 2;
       this.ctx.beginPath();
-      this.ctx.moveTo(x + actualCandleWidth / 2, yHigh);
-      this.ctx.lineTo(x + actualCandleWidth / 2, yLow);
+      this.ctx.moveTo(x + 6, centerY - 35 + waveOffset);
+      this.ctx.lineTo(x + 6, centerY + 35 + waveOffset);
       this.ctx.stroke();
+
+      // Body
+      this.ctx.fillStyle = isGreen ? 'rgba(100, 255, 150, 0.7)' : 'rgba(255, 100, 100, 0.7)';
+      this.ctx.strokeStyle = isGreen ? 'rgba(150, 255, 180, 0.9)' : 'rgba(255, 150, 150, 0.9)';
+      this.ctx.lineWidth = 1.5;
       
-      // Draw body (open-close rectangle)
-      this.ctx.fillStyle = color;
-      const bodyTop = Math.min(yOpen, yClose);
-      const bodyHeight = Math.max(Math.abs(yClose - yOpen), 1);
-      this.ctx.fillRect(x, bodyTop, actualCandleWidth, bodyHeight);
-    });
-    
-    // Draw gradient overlay for fade effect
-    const gradient = this.ctx.createLinearGradient(0, 0, width, 0);
-    gradient.addColorStop(0, 'rgba(0, 0, 0, 0.4)');
-    gradient.addColorStop(0.5, 'rgba(0, 0, 0, 0)');
-    gradient.addColorStop(1, 'rgba(0, 0, 0, 0.6)');
-    
-    this.ctx.fillStyle = gradient;
-    this.ctx.fillRect(0, 0, width, height);
+      const bodyTop = centerY - 15 + waveOffset;
+      this.ctx.fillRect(x, bodyTop, 12, 20);
+      this.ctx.strokeRect(x, bodyTop, 12, 20);
+    }
   }
 };
 
-// Auto-initialize when DOM is ready
-if (typeof window !== 'undefined') {
-  window.bannerChartManager = bannerChartManager;
-  
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      setTimeout(() => bannerChartManager.init(), 500);
-    });
-  } else {
-    setTimeout(() => bannerChartManager.init(), 500);
-  }
+// Auto-init when DOM ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOMContentLoaded - initializing banner');
+    setTimeout(() => window.bannerChartManager.init(), 100);
+  });
+} else {
+  console.log('DOM ready - initializing banner immediately');
+  setTimeout(() => window.bannerChartManager.init(), 100);
 }
