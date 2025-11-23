@@ -1,17 +1,16 @@
-// DarkWave Banner - Organic Smoke Background + Candlestick Charts
-// Background: Pure hazy smoke with random flowing motion, no structure
-// Foreground: Candlesticks anchored on smoke, scrolling horizontally
+// DarkWave Banner - Smoldering Candlestick Chart
+// Black background, subtle wispy smoke trail, prominent candlestick zig-zag line
 window.bannerChartManager = {
   canvas: null,
   ctx: null,
   animationFrame: null,
-  time: 0,
+  scrollTime: 0,
   initialized: false,
   candleData: [],
-  smokeNoise: [],
+  smokeParticles: [],
 
   init: function() {
-    console.log('🎬 Organic Smoke Banner init');
+    console.log('🎬 Smoldering Chart Banner init');
     
     if (this.initialized) return;
 
@@ -39,48 +38,66 @@ window.bannerChartManager = {
       return;
     }
 
-    this.generateCandleData(300);
-    this.initializeSmokeNoise();
+    // Generate year-like candlestick data (365 candles)
+    this.generateYearCandleData(365);
+    this.initializeSmokeParticles();
     this.initialized = true;
-    console.log('✅ Organic smoke banner ready');
+    console.log('✅ Smoldering banner ready');
     
     this.animate();
   },
 
-  generateCandleData: function(count) {
+  generateYearCandleData: function(count) {
     let price = 50000;
+    this.candleData = [];
+    
     for (let i = 0; i < count; i++) {
-      const change = (Math.random() - 0.48) * 1500;
+      const volatility = 0.3 + Math.random() * 0.5;
+      const change = (Math.random() - 0.48) * price * volatility * 0.01;
       const open = price;
       const close = price + change;
-      const high = Math.max(open, close) + Math.random() * 800;
-      const low = Math.min(open, close) - Math.random() * 800;
-      price = close;
+      const high = Math.max(open, close) + Math.random() * price * 0.005;
+      const low = Math.min(open, close) - Math.random() * price * 0.005;
+      price = Math.max(low, Math.min(high, close));
       
-      this.candleData.push({ open, high, low, close, volume: Math.random() * 1000000 });
+      this.candleData.push({ open, high, low, close });
     }
   },
 
-  initializeSmokeNoise: function() {
-    // Pre-generate random noise for organic smoke movement
-    for (let i = 0; i < 100; i++) {
-      this.smokeNoise.push(Math.random());
+  initializeSmokeParticles: function() {
+    this.smokeParticles = [];
+    for (let i = 0; i < 80; i++) {
+      this.smokeParticles.push({
+        x: Math.random() * this.canvas.width,
+        y: this.canvas.height / 2 + (Math.random() - 0.5) * 10,
+        vx: (Math.random() - 0.5) * 1.5,
+        vy: -Math.random() * 0.8,
+        life: Math.random() * 0.6,
+        size: Math.random() * 20 + 8
+      });
     }
-  },
-
-  // Simple Perlin-like noise
-  noise: function(index) {
-    const i = Math.floor(index) % this.smokeNoise.length;
-    const nextI = (i + 1) % this.smokeNoise.length;
-    const t = index - Math.floor(index);
-    const smoothT = t * t * (3 - 2 * t); // Smoothstep interpolation
-    
-    return this.smokeNoise[i] * (1 - smoothT) + this.smokeNoise[nextI] * smoothT;
   },
 
   animate: function() {
     this.draw();
-    this.time += 0.005; // Very slow movement for organic feel
+    this.scrollTime += 0.015; // Slow horizontal scroll
+    
+    // Update smoke particles with very subtle motion
+    this.smokeParticles.forEach((p, idx) => {
+      p.x += p.vx * 0.5;
+      p.y += p.vy * 0.3;
+      p.life -= 0.003;
+      
+      if (p.life <= 0) {
+        // Reset particle at centerline
+        p.x = Math.random() * this.canvas.width;
+        p.y = this.canvas.height / 2 + (Math.random() - 0.5) * 5;
+        p.vy = -Math.random() * 0.8;
+        p.vx = (Math.random() - 0.5) * 1.5;
+        p.life = 0.6;
+      }
+    });
+    
     this.animationFrame = requestAnimationFrame(() => this.animate());
   },
 
@@ -89,138 +106,123 @@ window.bannerChartManager = {
 
     const w = this.canvas.width;
     const h = this.canvas.height;
-    const time = this.time;
 
-    this.ctx.fillStyle = 'rgba(15, 15, 35, 1)';
+    // Pure black background
+    this.ctx.fillStyle = '#0F0F23';
     this.ctx.fillRect(0, 0, w, h);
 
-    // Layer 1: Hazy organic smoke background (NO STRUCTURE)
-    this.drawSmokeHaze(w, h, time);
+    // Layer 1: Extremely subtle wispy smoke (barely visible)
+    this.drawWispySmoke(w, h);
     
-    // Layer 2: Candlestick chart on top (anchored, scrolling horizontally)
-    this.drawCandleStream(w, h, time);
+    // Layer 2: Prominent candlestick line
+    this.drawCandlestickLine(w, h);
   },
 
-  drawSmokeHaze: function(w, h, time) {
-    const centerY = h / 2;
-    
-    // Create multiple layers of hazy smoke
-    const smokeLayers = 8;
-    
-    for (let layer = 0; layer < smokeLayers; layer++) {
-      const layerHeight = h / smokeLayers;
-      const baseY = layer * layerHeight;
-      
-      // Draw smooth, flowing haze across width
-      for (let x = 0; x <= w; x += 3) {
-        // Generate organic Y offset using noise
-        const noiseVal1 = this.noise(x * 0.01 + time * 0.5 + layer * 2);
-        const noiseVal2 = this.noise(x * 0.005 + time * 0.3 + layer);
-        const noiseVal3 = this.noise(x * 0.002 + time * 0.8 + layer * 3);
+  drawWispySmoke: function(w, h) {
+    // Draw smoke particles with VERY low opacity
+    this.smokeParticles.forEach(particle => {
+      if (particle.life > 0) {
+        // Very subtle white smoke
+        const opacity = (particle.life * 0.7) * 0.12; // Extremely low opacity
         
-        // Combine noises for organic motion
-        const yOffset = (noiseVal1 - 0.5) * 20 + 
-                       (noiseVal2 - 0.5) * 15 + 
-                       (noiseVal3 - 0.5) * 10;
-        
-        const y = baseY + yOffset;
-        
-        // Determine color based on position and time
-        const hue = (x / w) * 360 + time * 10;
-        const colorPhase = (hue % 360) / 360;
-        
-        let color;
-        if (colorPhase < 0.3) {
-          // Red to pink
-          const t = colorPhase / 0.3;
-          color = `rgba(${255}, ${30 + t * 50}, ${80}, ${0.3})`;
-        } else if (colorPhase < 0.6) {
-          // Pink to purple
-          const t = (colorPhase - 0.3) / 0.3;
-          color = `rgba(${255 - t * 55}, ${80 + t * 60}, ${140}, ${0.3})`;
-        } else {
-          // Purple to maroon
-          const t = (colorPhase - 0.6) / 0.4;
-          color = `rgba(${200 - t * 100}, ${140 - t * 40}, ${180}, ${0.3})`;
-        }
-        
-        this.ctx.fillStyle = color;
-        // Draw soft circles for haze effect
+        this.ctx.fillStyle = `rgba(200, 200, 200, ${opacity})`;
         this.ctx.beginPath();
-        this.ctx.arc(x, y, 15 + Math.sin(time + x * 0.01) * 8, 0, Math.PI * 2);
+        this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
         this.ctx.fill();
       }
-    }
-
-    // Add overall haze blur effect with gradient overlay
-    const hazeGradient = this.ctx.createLinearGradient(0, 0, w, 0);
-    hazeGradient.addColorStop(0, 'rgba(255, 30, 80, 0.15)');
-    hazeGradient.addColorStop(0.3, 'rgba(220, 100, 160, 0.15)');
-    hazeGradient.addColorStop(0.6, 'rgba(180, 140, 190, 0.15)');
-    hazeGradient.addColorStop(1, 'rgba(255, 80, 120, 0.15)');
-    
-    this.ctx.fillStyle = hazeGradient;
-    this.ctx.fillRect(0, 0, w, h);
+    });
   },
 
-  drawCandleStream: function(w, h, time) {
+  drawCandlestickLine: function(w, h) {
+    const centerY = h / 2;
+    const maxAmplitude = h * 0.20; // Stays within 20-30% range
+    
+    // Get price range
     const maxPrice = Math.max(...this.candleData.map(c => c.high));
     const minPrice = Math.min(...this.candleData.map(c => c.low));
     const priceRange = maxPrice - minPrice || 1;
     
-    const candleWidth = 2.5;
-    const spacing = candleWidth + 0.8;
-    const totalWidth = this.candleData.length * spacing;
-    const scrollPos = (time * 40) % (totalWidth + w); // Slow horizontal scroll
+    const pixelsPerCandle = w / this.candleData.length;
+    const startCandle = Math.floor((this.scrollTime * 100) % this.candleData.length);
     
-    // Candlesticks positioned in middle section of banner
-    const chartTop = h * 0.15;
-    const chartHeight = h * 0.7;
+    // ===== MAIN CANDLESTICK LINE =====
+    this.ctx.strokeStyle = '#00FF88';
+    this.ctx.lineWidth = 2.8;
+    this.ctx.lineCap = 'round';
+    this.ctx.lineJoin = 'round';
+    this.ctx.globalAlpha = 0.98;
+    
+    this.ctx.beginPath();
+    let pathStarted = false;
 
     for (let i = 0; i < this.candleData.length; i++) {
-      const candle = this.candleData[i];
-      const x = scrollPos - (this.candleData.length - i) * spacing;
+      const candleIdx = (startCandle + i) % this.candleData.length;
+      const candle = this.candleData[candleIdx];
       
-      if (x < -10 || x > w + 10) continue;
-
-      const high = chartTop + chartHeight - ((candle.high - minPrice) / priceRange) * chartHeight;
-      const low = chartTop + chartHeight - ((candle.low - minPrice) / priceRange) * chartHeight;
-      const open = chartTop + chartHeight - ((candle.open - minPrice) / priceRange) * chartHeight;
-      const close = chartTop + chartHeight - ((candle.close - minPrice) / priceRange) * chartHeight;
-
-      const isGreen = close < open;
-
-      // Draw wick with glow
-      this.ctx.strokeStyle = isGreen ? 'rgba(100, 255, 140, 0.9)' : 'rgba(255, 90, 90, 0.9)';
-      this.ctx.lineWidth = 1.2;
-      this.ctx.lineCap = 'round';
-      this.ctx.shadowColor = isGreen ? 'rgba(100, 255, 140, 0.5)' : 'rgba(255, 90, 90, 0.5)';
-      this.ctx.shadowBlur = 6;
-
-      this.ctx.beginPath();
-      this.ctx.moveTo(x + candleWidth / 2, high);
-      this.ctx.lineTo(x + candleWidth / 2, low);
-      this.ctx.stroke();
-
-      // Draw body with glow
-      const bodyColor = isGreen ? 'rgba(100, 255, 140, 0.95)' : 'rgba(255, 90, 90, 0.95)';
-      const bodyStroke = isGreen ? 'rgba(150, 255, 180, 1)' : 'rgba(255, 130, 130, 1)';
+      const x = i * pixelsPerCandle;
+      const closeNorm = (candle.close - minPrice) / priceRange;
+      const y = centerY + (0.5 - closeNorm) * maxAmplitude * 2;
       
-      this.ctx.fillStyle = bodyColor;
-      this.ctx.strokeStyle = bodyStroke;
-      this.ctx.lineWidth = 1;
-      this.ctx.shadowColor = isGreen ? 'rgba(100, 255, 140, 0.6)' : 'rgba(255, 90, 90, 0.6)';
-      this.ctx.shadowBlur = 5;
-
-      const bodyTop = Math.min(open, close);
-      const bodyHeight = Math.max(Math.abs(close - open), 2);
-      
-      this.ctx.fillRect(x, bodyTop, candleWidth, bodyHeight);
-      this.ctx.strokeRect(x, bodyTop, candleWidth, bodyHeight);
-
-      this.ctx.shadowColor = 'transparent';
-      this.ctx.shadowBlur = 0;
+      if (!pathStarted) {
+        this.ctx.moveTo(x, y);
+        pathStarted = true;
+      } else {
+        this.ctx.lineTo(x, y);
+      }
     }
+    this.ctx.stroke();
+
+    // ===== SUBTLE VERTICAL WICKS (every 5 candles) =====
+    this.ctx.strokeStyle = 'rgba(0, 255, 136, 0.35)';
+    this.ctx.lineWidth = 0.6;
+    this.ctx.globalAlpha = 0.7;
+
+    for (let i = 0; i < this.candleData.length; i += 5) {
+      const candleIdx = (startCandle + i) % this.candleData.length;
+      const candle = this.candleData[candleIdx];
+      
+      const x = i * pixelsPerCandle;
+      
+      const highNorm = (candle.high - minPrice) / priceRange;
+      const lowNorm = (candle.low - minPrice) / priceRange;
+      
+      const highY = centerY + (0.5 - highNorm) * maxAmplitude * 2;
+      const lowY = centerY + (0.5 - lowNorm) * maxAmplitude * 2;
+      
+      this.ctx.beginPath();
+      this.ctx.moveTo(x, highY);
+      this.ctx.lineTo(x, lowY);
+      this.ctx.stroke();
+    }
+
+    // ===== SUBTLE GLOW EFFECT (smoldering effect) =====
+    this.ctx.strokeStyle = 'rgba(0, 255, 136, 0.15)';
+    this.ctx.lineWidth = 6;
+    this.ctx.lineCap = 'round';
+    this.ctx.lineJoin = 'round';
+    this.ctx.globalAlpha = 0.6;
+
+    this.ctx.beginPath();
+    let glowStarted = false;
+
+    for (let i = 0; i < this.candleData.length; i++) {
+      const candleIdx = (startCandle + i) % this.candleData.length;
+      const candle = this.candleData[candleIdx];
+      
+      const x = i * pixelsPerCandle;
+      const closeNorm = (candle.close - minPrice) / priceRange;
+      const y = centerY + (0.5 - closeNorm) * maxAmplitude * 2;
+      
+      if (!glowStarted) {
+        this.ctx.moveTo(x, y);
+        glowStarted = true;
+      } else {
+        this.ctx.lineTo(x, y);
+      }
+    }
+    this.ctx.stroke();
+
+    this.ctx.globalAlpha = 1.0;
   }
 };
 
