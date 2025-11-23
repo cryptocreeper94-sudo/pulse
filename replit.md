@@ -36,8 +36,30 @@ DarkWave-V2 is an advanced technical analysis bot built with the Mastra framewor
   - **V2 Lock System** - Carousel shows "LOCKED" state with 32-day countdown until Dec 25; admin can unlock for testing
   - **Hair Variations** - Caucasians with red, blonde, brown, black; males include bald options; all race-appropriate
   - **Ages Mixed** - Some agents show "UNKNOWN" age, others with specific ages (27-50 range) for personality
+- **Hide & Seek Popups - Ultra Compact, Mode-Aware**: Low-profile popups with dynamic behavior
+  - OFF Mode: Simple one-pane popup (no images, no scroll, text-only)
+  - Character Mode: Side-by-side layout (140px compact image + content)
+  - Responsive: Stacks vertically on mobile, no wasted space
+  - Reduced all padding/margins/borders throughout
+- **NFT Trading Cards Carousel - Hyper-Compact**: Reduced from bloated initial design
+  - Card width: 180px (40% reduction), padding: 12px (62% reduction)
+  - Preview thumbnails: Compact 4-item grid on locked state
+  - QR codes: 45px (55% smaller), all spacing optimized
+- **Staking Page Sandbox Banner**: Clear visual warning that page is demonstration-only
+  - Orange gradient banner at top of Staking tab
+  - "SANDBOX PLAYGROUND" label with emphasis on non-functional until Dec 25
+  - Launch date prominently displayed
+- **Site-Wide Unified Box System** (NEW DIRECTIVE):
+  - All boxes use consistent sizing: margin 4px-3px, padding 4px-3px, border 1px (not 2px)
+  - Timeframe dropdown now matches other boxes: padding 6px 10px, min-height 32px
+  - All buttons evenly-sized within groups: flex distribution, min-height 32px
+  - Double-column layout available (use `.section-box-grid` class on containers)
+  - Font sizes standardized: 13px → 12px, 12px → 11px for compactness
+  - **Design Principle**: Low-profile, no wasted space, everything fits, half-screen boxes paired with other features
+  - **For Future**: Apply this system to any new boxes/controls added to maintain consistency
 - **App Status**: Fully functional with all features restored (gauges, charts, Agent System, Avatar King, Trading Cards, navigation tabs, themes)
 - **Visual Theme**: Currently using Pro Blue (dark) theme with wave watermark; 9-theme system fully functional
+- **Design Directive**: No full-screen single boxes unless necessary; double-column layouts default; all groups sized evenly
 
 ## System Architecture
 

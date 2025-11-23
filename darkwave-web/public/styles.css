@@ -1484,9 +1484,9 @@ body.theme-light .banner-title {
   }
 }
 
-/* Section Boxes - CMC Style */
+/* UNIFIED BOX SYSTEM - Low Profile, Compact, Evenly Sized */
 .section-box {
-  margin: 6px 4px;
+  margin: 4px 2px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: 8px;
@@ -1495,13 +1495,27 @@ body.theme-light .banner-title {
   box-shadow: var(--shadow-card);
   max-width: calc(100vw - 8px);
   box-sizing: border-box;
-  padding: 6px;
+  padding: 4px;
+}
+
+/* Double Column Layout for Section Boxes */
+.section-box-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .section-box-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (min-width: 768px) {
   .section-box {
-    margin: 4px 2px;
-    padding: 4px;
+    margin: 3px 1px;
+    padding: 3px;
     border-radius: 6px;
   }
 }
@@ -1769,39 +1783,42 @@ body.theme-light .banner-title {
   }
 }
 
-/* Timeframe Toggle (Gainers/Losers) */
+/* Timeframe Toggle (Gainers/Losers) - Compact */
 .timeframe-toggle {
   display: flex;
-  gap: 8px;
-  padding: 0 12px 12px 12px;
+  gap: 4px;
+  padding: 4px 8px 8px 8px;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 .timeframe-btn {
   background: var(--bg-tertiary);
-  border: 2px solid var(--border-color);
+  border: 1px solid var(--border-color);
   color: var(--text-secondary);
-  padding: 8px 20px;
-  border-radius: 6px;
-  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-size: 11px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
-  letter-spacing: 0.5px;
-  min-width: 60px;
+  transition: all 0.15s ease;
+  letter-spacing: 0.4px;
+  min-width: 48px;
+  height: 32px;
+  flex: 1;
+  min-width: auto;
 }
 
 .timeframe-btn:hover {
   border-color: var(--accent-blue);
   color: var(--text-primary);
-  transform: translateY(-1px);
 }
 
 .timeframe-btn.active {
   background: var(--accent-blue);
   border-color: var(--accent-blue);
   color: #fff;
-  box-shadow: 0 3px 10px rgba(56, 97, 251, 0.4);
+  box-shadow: 0 2px 6px rgba(56, 97, 251, 0.3);
 }
 
 /* Coin Table - Professional CMC Style */
@@ -3198,20 +3215,19 @@ body.theme-light .banner-title {
   pointer-events: all;
 }
 
-/* Market Timeframes */
-/* Macro Market Metrics */
+/* Macro Market Metrics - Compact Grid */
 .macro-metrics-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-  margin: 6px 0;
-  margin-bottom: 8px;
+  gap: 4px;
+  margin: 3px 0 4px 0;
+  padding: 0 4px;
 }
 
 @media (min-width: 768px) {
   .macro-metrics-grid {
-    gap: 4px;
-    margin: 4px 0;
+    gap: 3px;
+    margin: 2px 0 3px 0;
   }
 }
 
@@ -3342,45 +3358,49 @@ body.theme-light .banner-title {
 }
 
 /* Macro Chart Control Groups - Professional Horizontal Layout */
+/* Macro Chart Controls - Compact, Low Profile */
 .macro-chart-controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  padding: 12px 12px 12px 12px;
-  margin-top: 8px;
+  gap: 4px;
+  padding: 4px 8px 8px 8px;
+  margin-top: 4px;
   justify-content: center;
   align-items: center;
 }
 
-/* Control Group Container - Each group takes equal space */
+/* Control Group Container - Evenly Sized */
 .control-group {
   display: flex;
   gap: 0;
-  border-radius: 8px;
+  border-radius: 6px;
   overflow: hidden;
   background: var(--bg-secondary);
-  border: 2px solid var(--border-color);
+  border: 1px solid var(--border-color);
   flex: 1;
-  min-width: 160px;
-  max-width: 220px;
+  min-width: 140px;
+  max-width: 200px;
 }
 
-/* Control Buttons - Equal size within group */
+/* Control Buttons - Compact, Evenly Sized */
 .control-btn {
   flex: 1;
-  padding: 8px 12px;
+  padding: 6px 10px;
   background: var(--bg-secondary);
   border: none;
-  border-right: 2px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  min-height: 36px;
+  letter-spacing: 0.4px;
+  min-height: 32px;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .control-btn:last-child {
@@ -3398,22 +3418,24 @@ body.theme-light .banner-title {
   border-color: var(--accent-blue);
 }
 
-/* Timeframe Dropdown - Professional styling */
+/* Timeframe Dropdown - Compact, Matches Box System */
 .timeframe-dropdown {
   flex: 1;
-  min-width: 160px;
-  max-width: 220px;
-  padding: 8px 12px;
+  min-width: 140px;
+  max-width: 200px;
+  padding: 6px 10px;
   background: var(--bg-secondary);
-  border: 2px solid var(--border-color);
-  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
   color: var(--text-primary);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
+  height: auto;
+  min-height: 32px;
 }
 
 .timeframe-dropdown:hover {
@@ -3424,12 +3446,13 @@ body.theme-light .banner-title {
 .timeframe-dropdown:focus {
   outline: none;
   border-color: var(--accent-blue);
-  box-shadow: 0 0 0 3px rgba(56, 97, 251, 0.2);
+  box-shadow: 0 0 0 2px rgba(56, 97, 251, 0.15);
 }
 
 .timeframe-dropdown option {
   background: var(--bg-secondary);
   color: var(--text-primary);
+  padding: 4px 8px;
 }
 
 /* Mobile responsive - stack on small screens */
