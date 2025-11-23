@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#8B1538">
+  <meta name="description" content="AI-powered financial intelligence platform for crypto and stock analysis. Professional-grade signals, dual AI personas, and real-time market data.">
+  
+  <!-- Open Graph Meta Tags for Telegram/Social -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://darkwavepulse.com">
+  <meta property="og:title" content="DarkWave Pulse">
+  <meta property="og:description" content="AI-Powered Financial Intelligence Platform">
+  <meta property="og:image" content="https://darkwavepulse.com/darkwave-coin.png">
+  <meta property="og:image:width" content="512">
+  <meta property="og:image:height" content="512">
+  <meta property="og:site_name" content="DarkWave Pulse">
+  
+  <!-- Telegram-specific meta tags -->
+  <meta name="telegram:card" content="summary_large_image">
+  <meta name="telegram:title" content="DarkWave Pulse">
+  <meta name="telegram:description" content="AI-Powered Financial Intelligence">
+  <meta name="telegram:image" content="https://darkwavepulse.com/darkwave-coin.png">
+  
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="DarkWave">
+  <link rel="apple-touch-icon" href="/darkwave-coin.png">
+  
+  <title>DarkWave Pulse - Access Required</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="/darkwave-coin.png">
+  
+  <!-- QR Code Generator Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  
+  <!-- Telegram Web App SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  
+  <!-- Telegram Integration -->
+  <script src="/telegram-integration.js"></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+      background: #000000;
+      color: #FFFFFF;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px 40px 20px;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    .lockscreen-container {
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+      margin: auto;
+    }
+
+    .crypto-cat-container {
+      width: 100%;
+      max-width: 400px;
+      aspect-ratio: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .crypto-cat-img {
+      width: 90%;
+      height: 90%;
+      object-fit: contain;
+      filter: drop-shadow(0 0 20px rgba(139, 21, 56, 0.6));
+      animation: catPulse 3s ease-in-out infinite;
+      margin: auto;
+    }
+
+    @keyframes catPulse {
+      0%, 100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 20px rgba(139, 21, 56, 0.6));
+      }
+      50% {
+        transform: scale(1.05);
+        filter: drop-shadow(0 0 30px rgba(139, 21, 56, 0.9));
+      }
+    }
+
+    .lockscreen-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 32px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      text-align: center;
+      background: linear-gradient(135deg, #8B1538 0%, #B01E47 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+    }
+
+    .lockscreen-subtitle {
+      font-size: 14px;
+      color: #888;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .auth-form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .input-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #888;
+    }
+
+    .auth-input {
+      width: 100%;
+      padding: 16px 20px;
+      background: #1A1A1A;
+      border: 2px solid #333;
+      border-radius: 8px;
+      color: #FFF;
+      font-size: 16px;
+      font-family: inherit;
+      transition: all 0.3s ease;
+    }
+
+    .auth-input:focus {
+      outline: none;
+      border-color: #8B1538;
+      box-shadow: 0 0 0 3px rgba(139, 21, 56, 0.1);
+    }
+
+    .auth-input::placeholder {
+      color: #666;
+    }
+
+    .auth-btn {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(135deg, #8B1538 0%, #6B0F1A 100%);
+      border: none;
+      border-radius: 8px;
+      color: #FFF;
+      font-size: 16px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .auth-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(139, 21, 56, 0.4);
+    }
+
+    .auth-btn:active {
+      transform: translateY(0);
+    }
+
+    .error-message {
+      padding: 12px 16px;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 6px;
+      color: #EF4444;
+      font-size: 14px;
+      text-align: center;
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: #333;
+      margin: 10px 0;
+      position: relative;
+    }
+
+    .divider-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #000;
+      padding: 0 10px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .crypto-cat-message {
+      background: rgba(139, 21, 56, 0.1);
+      border: 1px solid rgba(139, 21, 56, 0.3);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .cat-text {
+      font-size: 13px;
+      color: #AAA;
+      line-height: 1.6;
+      margin-bottom: 12px;
+      font-style: italic;
+    }
+
+    .access-code-reveal {
+      display: inline-block;
+      background: linear-gradient(135deg, #8B1538 0%, #B01E47 100%);
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      color: #FFF;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 12px rgba(139, 21, 56, 0.3);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .access-code-reveal:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(139, 21, 56, 0.5);
+    }
+
+    .access-code-reveal:active {
+      transform: translateY(0);
+    }
+
+    .copy-tooltip {
+      position: absolute;
+      top: -35px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1A1A1A;
+      color: #0F0;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      border: 1px solid #0F0;
+    }
+
+    .copy-tooltip.show {
+      opacity: 1;
+    }
+
+    .trial-details {
+      font-size: 11px;
+      color: #666;
+      margin-top: 10px;
+    }
+
+    /* Unique Code Modal */
+    .unique-code-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      padding: 20px;
+    }
+
+    .unique-code-modal.show {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .unique-code-content {
+      background: linear-gradient(135deg, #1A1A1A 0%, #0A0A0A 100%);
+      border: 3px solid #8B1538;
+      border-radius: 20px;
+      padding: 25px 20px 20px 20px;
+      max-width: 360px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 
+        0 0 40px rgba(139, 21, 56, 0.8),
+        0 0 80px rgba(139, 21, 56, 0.4),
+        inset 0 0 60px rgba(139, 21, 56, 0.1);
+      position: relative;
+      animation: hallmarkGlow 3s ease-in-out infinite;
+    }
+    
+    @keyframes hallmarkGlow {
+      0%, 100% {
+        box-shadow: 
+          0 0 40px rgba(139, 21, 56, 0.8),
+          0 0 80px rgba(139, 21, 56, 0.4),
+          inset 0 0 60px rgba(139, 21, 56, 0.1);
+      }
+      50% {
+        box-shadow: 
+          0 0 60px rgba(139, 21, 56, 1),
+          0 0 100px rgba(139, 21, 56, 0.6),
+          inset 0 0 80px rgba(139, 21, 56, 0.2);
+      }
+    }
+    
+    .hallmark-emblem {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 15px auto;
+      filter: drop-shadow(0 0 15px rgba(139, 21, 56, 0.8));
+      animation: emblemFloat 3s ease-in-out infinite;
+    }
+    
+    @keyframes emblemFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-5px); }
+    }
+
+    .unique-code-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 16px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      background: linear-gradient(135deg, #8B1538 0%, #B01E47 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+    }
+
+    .unique-code-message {
+      font-size: 11px;
+      color: #888;
+      margin-bottom: 15px;
+      line-height: 1.4;
+    }
+
+    .hallmark-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin: 15px 0;
+    }
+    
+    .qr-code-container {
+      background: #FFF;
+      padding: 12px;
+      border-radius: 12px;
+      box-shadow: 
+        0 0 20px rgba(139, 21, 56, 0.5),
+        0 4px 12px rgba(0, 0, 0, 0.4);
+      display: inline-block;
+      position: relative;
+    }
+    
+    .qr-code-container::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, #8B1538, #B01E47, #8B1538);
+      border-radius: 14px;
+      z-index: -1;
+      animation: borderRotate 3s linear infinite;
+    }
+    
+    @keyframes borderRotate {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(360deg); }
+    }
+    
+    #qrCodeCanvas {
+      display: block;
+    }
+
+    .unique-code-display {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(139, 21, 56, 0.5);
+      border-radius: 8px;
+      padding: 12px;
+      width: 100%;
+    }
+
+    .unique-code-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #666;
+      margin-bottom: 6px;
+    }
+
+    .unique-code-value {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #FFF;
+      text-shadow: 0 0 10px rgba(139, 21, 56, 0.8);
+      cursor: pointer;
+      user-select: all;
+      margin-bottom: 8px;
+    }
+
+    .hallmark-actions {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .copy-code-btn, .download-qr-btn {
+      background: linear-gradient(135deg, #8B1538 0%, #6B0F1A 100%);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      color: #FFF;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .copy-code-btn:hover, .download-qr-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(139, 21, 56, 0.6);
+    }
+    
+    .download-qr-btn {
+      background: linear-gradient(135deg, #333 0%, #1A1A1A 100%);
+      border: 1px solid #8B1538;
+    }
+
+    .continue-btn {
+      width: 100%;
+      background: #1A1A1A;
+      border: 2px solid #8B1538;
+      padding: 12px;
+      border-radius: 8px;
+      color: #FFF;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      cursor: pointer;
+      margin-top: 12px;
+      transition: all 0.3s ease;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .continue-btn:hover {
+      background: linear-gradient(135deg, #8B1538 0%, #6B0F1A 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(139, 21, 56, 0.6);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .footer-text {
+      font-size: 11px;
+      color: #555;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 40px 20px 30px 20px;
+        justify-content: flex-start;
+      }
+
+      .lockscreen-container {
+        margin-top: 0;
+      }
+
+      .crypto-cat-container {
+        max-width: 280px;
+        margin-bottom: 15px;
+      }
+
+      .lockscreen-title {
+        font-size: 22px;
+        letter-spacing: 2px;
+      }
+
+      .auth-input, .auth-btn {
+        font-size: 14px;
+        padding: 14px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="lockscreen-container">
+    <div id="welcomeScreen">
+      <div class="crypto-cat-container">
+        <img src="/crypto-cat-images/business-cat-pointing.jpg" alt="Crypto Cat" class="crypto-cat-img">
+      </div>
+
+      <h1 class="lockscreen-title">Welcome to DarkWave Pulse</h1>
+      <p class="lockscreen-subtitle">Your Professional Crypto & Stock Analysis Platform</p>
+
+      <button class="auth-btn" onclick="showLoginForm()" style="margin-top: 30px;">
+        Enter Now
+      </button>
+
+      <div class="footer-text">
+        DarkWave Pulse &copy; 2025 | Launching Dec 25, 2025
+      </div>
+
+      <!-- Payment Methods Badge -->
+      <div style="margin-top: 20px; padding: 8px 16px; background: linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px; display: inline-flex; align-items: center; gap: 8px;">
+        <span style="font-size: 10px; color: rgba(56, 189, 248, 0.9); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Secure Payments</span>
+        <div style="width: 1px; height: 12px; background: rgba(56, 189, 248, 0.3);"></div>
+        <span style="font-size: 9px; color: rgba(255, 255, 255, 0.7);">💳 Stripe</span>
+        <span style="font-size: 9px; color: rgba(255, 255, 255, 0.5);">•</span>
+        <span style="font-size: 9px; color: rgba(255, 255, 255, 0.7);">₿ Coinbase</span>
+      </div>
+    </div>
+
+    <div id="loginScreen" style="display: none; width: 100%;">
+      <div class="crypto-cat-container" style="max-width: 250px;">
+        <img src="/crypto-cat-images/business-cat-pointing.jpg" alt="Crypto Cat" class="crypto-cat-img">
+      </div>
+
+      <h1 class="lockscreen-title">Access Required</h1>
+      <p class="lockscreen-subtitle">Enter your credentials to access DarkWave Pulse</p>
+
+      <div class="crypto-cat-message">
+        <p class="cat-text">
+          <strong style="color: #3861FB;">VIP Beta Testers:</strong> Enter your email address below (the one you were invited with). Your account will be created automatically!
+        </p>
+        <p class="cat-text" style="margin-top: 12px; font-size: 13px; opacity: 0.8;">
+          <strong>Everyone else:</strong> Use this public access code for a 7-day free trial:
+        </p>
+        <div class="access-code-reveal" id="accessCodeBtn" onclick="copyAccessCode()">
+          <span class="copy-tooltip" id="copyTooltip">✓ Copied!</span>
+          777
+        </div>
+        <p class="trial-details">
+          👆 Click to Copy • 7-Day Free Trial • 10 Searches/Day
+        </p>
+      </div>
+
+      <div class="error-message" id="errorMessage"></div>
+
+      <form class="auth-form" id="authForm">
+        <div class="input-group">
+          <label class="input-label" for="emailOrAccess">Email or Access Code</label>
+          <input 
+            type="text" 
+            id="emailOrAccess" 
+            class="auth-input" 
+            placeholder="your.email@example.com or 777"
+            autocomplete="email"
+            required
+          >
+        </div>
+
+        <div class="remember-me-container" style="display: flex; align-items: center; gap: 10px; margin-top: 15px; padding: 12px; background: rgba(30, 144, 255, 0.1); border-radius: 8px; border: 1px solid rgba(30, 144, 255, 0.3);">
+          <input type="checkbox" id="rememberMe" checked style="width: 18px; height: 18px; cursor: pointer; accent-color: #1e90ff;">
+          <label for="rememberMe" style="font-size: 13px; color: #FFF; cursor: pointer; user-select: none;">
+            <strong>Keep me logged in for 30 days</strong> on this browser
+          </label>
+        </div>
+        <p style="font-size: 11px; color: #888; margin-top: 8px; line-height: 1.5; text-align: center;">
+          ℹ️ You can log out anytime from Settings. Uncheck if using a shared device.
+        </p>
+
+        <button type="submit" class="auth-btn">Enter DarkWave Pulse</button>
+      </form>
+
+      <div class="footer-text">
+        DarkWave Pulse &copy; 2025 | Launching Dec 25, 2025
+      </div>
+
+      <!-- Payment Methods Badge -->
+      <div style="margin-top: 20px; padding: 8px 16px; background: linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px; display: inline-flex; align-items: center; gap: 8px;">
+        <span style="font-size: 10px; color: rgba(56, 189, 248, 0.9); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Secure Payments</span>
+        <div style="width: 1px; height: 12px; background: rgba(56, 189, 248, 0.3);"></div>
+        <span style="font-size: 9px; color: rgba(255, 255, 255, 0.7);">💳 Stripe</span>
+        <span style="font-size: 9px; color: rgba(255, 255, 255, 0.5);">•</span>
+        <span style="font-size: 9px; color: rgba(255, 255, 255, 0.7);">₿ Coinbase</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('authForm');
+    const errorMessage = document.getElementById('errorMessage');
+    const emailOrAccessInput = document.getElementById('emailOrAccess');
+
+    // Initialize Telegram integration on page load
+    (async () => {
+      try {
+        // Initialize Telegram Web App
+        if (window.TelegramApp) {
+          TelegramApp.init();
+          
+          // Check if we're in Telegram environment
+          if (TelegramApp.isTelegram()) {
+            console.log('🤖 [Lockscreen] Telegram Mini App detected, attempting auto-login');
+            
+            // Show loading message
+            const loadingDiv = document.createElement('div');
+            loadingDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(30, 144, 255, 0.9); color: white; padding: 20px 30px; border-radius: 12px; font-weight: 600; z-index: 10000; text-align: center;';
+            loadingDiv.innerHTML = '🤖 Authenticating with Telegram...<br><small style="font-size: 12px; opacity: 0.9;">Please wait</small>';
+            document.body.appendChild(loadingDiv);
+            
+            // Try Telegram authentication
+            const authResult = await TelegramApp.authenticateWithTelegram();
+            
+            if (authResult.success) {
+              console.log('✅ [Lockscreen] Telegram auth successful');
+              
+              // Store user data
+              localStorage.setItem('dwp_user', JSON.stringify(authResult.user));
+              
+              // Update loading message
+              loadingDiv.innerHTML = '✅ Welcome to DarkWave!<br><small style="font-size: 12px;">Redirecting...</small>';
+              
+              // Redirect to app
+              setTimeout(() => {
+                if (authResult.user.accessLevel === 'admin') {
+                  window.location.href = '/admin';
+                } else {
+                  window.location.href = '/app';
+                }
+              }, 1000);
+            } else {
+              console.error('❌ [Lockscreen] Telegram auth failed:', authResult.error);
+              document.body.removeChild(loadingDiv);
+              showError('Telegram authentication failed. Please try manual login below.');
+            }
+          } else {
+            console.log('ℹ️ [Lockscreen] Not in Telegram, showing normal login');
+          }
+        }
+      } catch (error) {
+        console.error('❌ [Lockscreen] Telegram init error:', error);
+      }
+    })();
+
+    // Show login form (hide welcome screen)
+    function showLoginForm() {
+      document.getElementById('welcomeScreen').style.display = 'none';
+      document.getElementById('loginScreen').style.display = 'flex';
+      document.getElementById('loginScreen').style.flexDirection = 'column';
+      document.getElementById('loginScreen').style.alignItems = 'center';
+      document.getElementById('loginScreen').style.gap = '30px';
+    }
+
+    // Copy access code to clipboard and paste into input
+    function copyAccessCode() {
+      const code = '777';
+      const tooltip = document.getElementById('copyTooltip');
+      
+      // Copy to clipboard
+      navigator.clipboard.writeText(code).then(() => {
+        // Paste into input field
+        emailOrAccessInput.value = code;
+        emailOrAccessInput.focus();
+        
+        // Show tooltip
+        tooltip.classList.add('show');
+        setTimeout(() => {
+          tooltip.classList.remove('show');
+        }, 2000);
+      }).catch(err => {
+        // Fallback: just paste into input
+        emailOrAccessInput.value = code;
+        emailOrAccessInput.focus();
+        tooltip.textContent = '✓ Code Entered!';
+        tooltip.classList.add('show');
+        setTimeout(() => {
+          tooltip.classList.remove('show');
+          tooltip.textContent = '✓ Copied!';
+        }, 2000);
+      });
+    }
+
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.classList.add('show');
+      setTimeout(() => {
+        errorMessage.classList.remove('show');
+      }, 5000);
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const credential = emailOrAccessInput.value.trim();
+      
+      console.log('🔐 Login attempt with credential:', credential);
+      console.log('📏 Credential length:', credential.length);
+      console.log('🔤 Credential (escaped):', JSON.stringify(credential));
+      
+      if (!credential) {
+        showError('Please enter your email or access code');
+        return;
+      }
+
+      try {
+        const rememberMe = document.getElementById('rememberMe').checked;
+        
+        // Use absolute URL to avoid DNS issues with www subdomain
+        const loginUrl = `${window.location.origin}/api/auth/login`;
+        console.log('🌐 Using login URL:', loginUrl);
+        
+        const response = await fetch(loginUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({ credential, rememberMe }),
+        });
+
+        const data = await response.json();
+        console.log('📥 Login response:', data);
+
+        if (response.ok && data.success) {
+          // Store user data for quick access
+          localStorage.setItem('dwp_user', JSON.stringify(data.user));
+          
+          console.log('✅ Login successful!');
+          
+          // Show unique code modal if user has one
+          if (data.user.uniqueCode) {
+            showUniqueCodeModal(data.user.uniqueCode, data.user.accessLevel);
+          } else {
+            // Redirect immediately if no unique code
+            if (data.user.accessLevel === 'admin') {
+              window.location.href = '/admin';
+            } else {
+              window.location.href = '/app';
+            }
+          }
+        } else {
+          console.error('❌ Login failed:', data.error);
+          showError(data.error || 'Invalid credentials. Please try again.');
+        }
+      } catch (error) {
+        console.error('💥 Login error:', error);
+        console.error('💥 Error details:', error.message, error.stack);
+        
+        // Try fallback to explicit domain if relative path failed
+        try {
+          console.log('🔄 Retrying with fallback URL...');
+          const fallbackUrl = 'https://darkwavepulse.com/api/auth/login';
+          
+          const retryResponse = await fetch(fallbackUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ credential: emailOrAccessInput.value.trim(), rememberMe: document.getElementById('rememberMe').checked }),
+          });
+
+          const retryData = await retryResponse.json();
+          
+          if (retryResponse.ok && retryData.success) {
+            localStorage.setItem('dwp_user', JSON.stringify(retryData.user));
+            
+            // Show unique code modal if user has one
+            if (retryData.user.uniqueCode) {
+              showUniqueCodeModal(retryData.user.uniqueCode, retryData.user.accessLevel);
+            } else {
+              window.location.href = retryData.user.accessLevel === 'admin' ? '/admin' : '/app';
+            }
+            return;
+          } else {
+            showError(retryData.error || 'Invalid credentials. Please try again.');
+            return;
+          }
+        } catch (retryError) {
+          console.error('💥 Retry also failed:', retryError);
+          showError('Connection error. Please check your internet and try again.');
+        }
+      }
+    });
+
+    // AUTO-LOGIN: Check for existing valid session on page load
+    async function checkExistingSession() {
+      try {
+        console.log('🔍 Checking for existing session...');
+        
+        const response = await fetch('/api/auth/validate', {
+          method: 'GET',
+          credentials: 'include', // Include session cookie
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          
+          if (data.valid && data.user) {
+            console.log('✅ Valid session found! Auto-logging in...');
+            localStorage.setItem('dwp_user', JSON.stringify(data.user));
+            
+            // Redirect based on access level
+            const redirectUrl = data.user.accessLevel === 'admin' ? '/admin' : '/app';
+            window.location.href = redirectUrl;
+            return true; // Session valid, redirecting
+          }
+        }
+        
+        console.log('ℹ️ No valid session found, showing login screen');
+        return false; // No valid session
+      } catch (error) {
+        console.error('⚠️ Session check error:', error);
+        return false; // Error checking session
+      }
+    }
+
+    // DEV MODE: Auto-login bypass - DISABLED by default
+    // To enable: Add ?dev=true to URL (e.g., https://yourapp.replit.dev/?dev=true)
+    // This prevents auto-login from blocking VIP Beta users
+    const urlParams = new URLSearchParams(window.location.search);
+    const devModeEnabled = urlParams.get('dev') === 'true';
+    
+    if (devModeEnabled && (window.location.hostname === 'localhost' || 
+        window.location.hostname === '127.0.0.1' ||
+        window.location.hostname.includes('.replit.dev'))) {
+      console.log('🔧 Dev mode detected - Auto-login enabled via ?dev=true parameter');
+      
+      // Auto-login after 500ms
+      setTimeout(async () => {
+        console.log('🚀 Auto-logging in with dev_bypass...');
+        emailOrAccessInput.value = 'dev_bypass';
+        
+        try {
+          const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ credential: 'dev_bypass', rememberMe: true }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok && data.success) {
+            localStorage.setItem('dwp_user', JSON.stringify(data.user));
+            console.log('✅ Dev bypass successful! Redirecting...');
+            window.location.href = data.user.accessLevel === 'admin' ? '/admin' : '/app';
+          } else {
+            console.warn('⚠️ Dev bypass failed, showing login screen');
+            showLoginForm();
+          }
+        } catch (error) {
+          console.error('❌ Dev bypass error:', error);
+          showLoginForm();
+        }
+      }, 500);
+    } else {
+      // Normal flow - Check for existing session first
+      window.addEventListener('load', async () => {
+        const hasValidSession = await checkExistingSession();
+        
+        // Only show login form if no valid session
+        if (!hasValidSession) {
+          emailOrAccessInput.focus();
+          showLoginForm();
+        }
+      });
+    }
+    // Show unique code modal with QR code
+    function showUniqueCodeModal(uniqueCode, accessLevel) {
+      const modal = document.getElementById('uniqueCodeModal');
+      const codeValue = document.getElementById('uniqueCodeValue');
+      const continueBtn = document.getElementById('continueToApp');
+      const copyCodeBtn = document.getElementById('copyCodeBtn');
+      const downloadQrBtn = document.getElementById('downloadQrBtn');
+      const qrContainer = document.getElementById('qrCodeCanvas');
+      
+      // Clear previous QR code
+      qrContainer.innerHTML = '';
+      
+      // Set code text
+      codeValue.textContent = uniqueCode;
+      
+      // Generate QR code (smaller for compact modal)
+      const qrCode = new QRCode(qrContainer, {
+        text: uniqueCode,
+        width: 160,
+        height: 160,
+        colorDark: '#000000',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+      });
+      
+      modal.classList.add('show');
+      
+      // Copy code functionality
+      copyCodeBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(uniqueCode).then(() => {
+          copyCodeBtn.textContent = '✓';
+          setTimeout(() => {
+            copyCodeBtn.textContent = 'COPY';
+          }, 2000);
+        });
+      });
+      
+      // Click code to copy
+      codeValue.addEventListener('click', () => {
+        navigator.clipboard.writeText(uniqueCode).then(() => {
+          copyCodeBtn.textContent = '✓';
+          setTimeout(() => {
+            copyCodeBtn.textContent = 'COPY';
+          }, 2000);
+        });
+      });
+      
+      // Download QR code as image
+      downloadQrBtn.addEventListener('click', () => {
+        const canvas = qrContainer.querySelector('canvas');
+        if (canvas) {
+          const link = document.createElement('a');
+          link.download = `DarkWave-Hallmark-${uniqueCode}.png`;
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+          
+          downloadQrBtn.textContent = '✓';
+          setTimeout(() => {
+            downloadQrBtn.textContent = 'DOWNLOAD';
+          }, 2000);
+        }
+      });
+      
+      // Continue button
+      continueBtn.addEventListener('click', () => {
+        if (accessLevel === 'admin') {
+          window.location.href = '/admin';
+        } else {
+          window.location.href = '/app';
+        }
+      });
+    }
+  </script>
+
+  <!-- Unique Code Modal -->
+  <div id="uniqueCodeModal" class="unique-code-modal">
+    <div class="unique-code-content">
+      <!-- DarkWave Emblem -->
+      <img src="/darkwave-coin.png" alt="DarkWave" class="hallmark-emblem">
+      
+      <h2 class="unique-code-title">Digital Hallmark</h2>
+      <p class="unique-code-message">
+        Save this code & QR - use either to login!
+      </p>
+      
+      <div class="hallmark-container">
+        <!-- QR Code -->
+        <div class="qr-code-container">
+          <div id="qrCodeCanvas"></div>
+        </div>
+        
+        <!-- Unique Code Display -->
+        <div class="unique-code-display">
+          <div class="unique-code-label">Your Access Code</div>
+          <div id="uniqueCodeValue" class="unique-code-value">PULSE-XXXX-2025</div>
+          
+          <div class="hallmark-actions">
+            <button id="copyCodeBtn" class="copy-code-btn">COPY</button>
+            <button id="downloadQrBtn" class="download-qr-btn">DOWNLOAD</button>
+          </div>
+        </div>
+      </div>
+      
+      <button id="continueToApp" class="continue-btn">Continue</button>
+    </div>
+  </div>
+</body>
+</html>

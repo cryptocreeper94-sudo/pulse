@@ -1,0 +1,95 @@
+/* Premium Theme Skins System - DarkWave Pulse V1 */
+
+/* Default Dark Theme (always active, base CSS variables) */
+:root, body.theme-dark {
+  --bg-primary: #000000;
+  --bg-secondary: #1a1a1a;
+  --bg-card: #0a0a0a;
+  --bg-hover: #2a2a2a;
+  --border-color: #333333;
+  --text-primary: #ffffff;
+  --text-secondary: #b0b0b0;
+  --text-dim: #808080;
+  --accent-blue: #3861fb;
+  --accent-glow: rgba(56, 97, 251, 0.3);
+  --positive-green: #10b981;
+  --negative-red: #ef4444;
+  --warning-yellow: #fbbf24;
+}
+
+/* Jupiter Theme - Orange/Red Space Nebula */
+body.theme-jupiter {
+  --bg-primary: #0a0505;
+  --bg-secondary: #1a0f0a;
+  --bg-card: #120a05;
+  --bg-hover: #2a1510;
+  --border-color: #4a2010;
+  --text-primary: #fff5f0;
+  --text-secondary: #ffccaa;
+  --text-dim: #aa7755;
+  --accent-blue: #ff6b35;
+  --accent-glow: rgba(255, 107, 53, 0.3);
+  --positive-green: #ff8c42;
+  --negative-red: #c1121f;
+  --warning-yellow: #ffa500;
+}
+
+/* Pink Blossom Theme - Sakura/Flower Aesthetics */
+body.theme-pink-blossom {
+  --bg-primary: #0f0810;
+  --bg-secondary: #1a0f18;
+  --bg-card: #120a10;
+  --bg-hover: #2a1825;
+  --border-color: #4a2840;
+  --text-primary: #fff0f8;
+  --text-secondary: #ffb3d9;
+  --text-dim: #cc88aa;
+  --accent-blue: #ff69b4;
+  --accent-glow: rgba(255, 105, 180, 0.3);
+  --positive-green: #ff1493;
+  --negative-red: #c71585;
+  --warning-yellow: #ffb6c1;
+}
+
+/* Sunny Field Theme - Warm Yellow/Gold */
+body.theme-sunny-field {
+  --bg-primary: #0f0a05;
+  --bg-secondary: #1a1505;
+  --bg-card: #120f05;
+  --bg-hover: #2a2010;
+  --border-color: #4a3810;
+  --text-primary: #fffbf0;
+  --text-secondary: #ffd999;
+  --text-dim: #ccaa66;
+  --accent-blue: #ffb800;
+  --accent-glow: rgba(255, 184, 0, 0.3);
+  --positive-green: #ffd700;
+  --negative-red: #ff6f00;
+  --warning-yellow: #ffa500;
+}
+
+/* Space Theme - Cosmic Blue/Purple */
+body.theme-space {
+  --bg-primary: #05050f;
+  --bg-secondary: #0a0a1a;
+  --bg-card: #05050a;
+  --bg-hover: #10102a;
+  --border-color: #20204a;
+  --text-primary: #f0f0ff;
+  --text-secondary: #b3b3ff;
+  --text-dim: #8888cc;
+  --accent-blue: #8b5cf6;
+  --accent-glow: rgba(139, 92, 246, 0.3);
+  --positive-green: #a78bfa;
+  --negative-red: #6366f1;
+  --warning-yellow: #c084fc;
+}
+
+/* Theme transition effects */
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+* {
+  transition: border-color 0.2s ease;
+}
