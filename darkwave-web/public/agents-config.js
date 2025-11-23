@@ -161,6 +161,26 @@ const AGENTS = [
     funFact: 'Convinced her grandmother to buy Bitcoin. Now her gram hodls better than anyone.',
     race: 'Pacific Islander',
     gender: 'Female'
+  },
+  {
+    id: 17,
+    name: 'Agent Nova',
+    image: '/agent-avatars/afro_caribbean_female_agent_-_gold_blazer.png',
+    title: 'AI Integration Specialist',
+    careerHighlight: 'Built the first AI trading system to beat 10,000+ human traders simultaneously',
+    funFact: 'Codes with AI assistance and jokes that she\'s "collaborating with her future self."',
+    race: 'Afro-Caribbean',
+    gender: 'Female'
+  },
+  {
+    id: 18,
+    name: 'Agent Kai',
+    image: '/agent-avatars/mixed_race_male_agent_-_silver_suit.png',
+    title: 'Future Tech Architect',
+    careerHighlight: 'Designed the decentralized network powering the next generation of Web4 platforms',
+    funFact: 'Believes the future is already here. You just have to look at the blockchain.',
+    race: 'Mixed Race',
+    gender: 'Male'
   }
 ];
 
