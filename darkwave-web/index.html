@@ -52,7 +52,7 @@
   <!-- Auto Version Checker - Forces reload if old cached version -->
   <script>
     (function() {
-      const CURRENT_VERSION = '1133d';
+      const CURRENT_VERSION = '1133e';
       const VERSION_KEY = 'dwp_version';
       const RELOAD_KEY = 'dwp_reloading';
       
@@ -228,15 +228,17 @@
         <div class="metric-box-wide fear-greed-box" onclick="showMetricExplanation('feargreed')" style="cursor: pointer;">
           <div class="metric-label metric-label-mobile">F&G</div>
           <div class="metric-label metric-label-desktop">FEAR & GREED</div>
+          <div class="gauge-value-display" id="fearGreedValue">—</div>
           <div class="gauge-container">
-            <canvas id="fearGreedGauge" width="420" height="280"></canvas>
+            <canvas id="fearGreedGauge" width="600" height="300"></canvas>
           </div>
         </div>
         <div class="metric-box-wide" onclick="showMetricExplanation('altseason')" style="cursor: pointer;">
           <div class="metric-label metric-label-mobile">ALT</div>
           <div class="metric-label metric-label-desktop">ALTCOIN SEASON</div>
+          <div class="gauge-value-display" id="altSeasonValue">—</div>
           <div class="gauge-container">
-            <canvas id="altSeasonGauge" width="420" height="280"></canvas>
+            <canvas id="altSeasonGauge" width="600" height="300"></canvas>
           </div>
         </div>
         <div class="metric-box-wide" onclick="showMetricExplanation('marketcap')" style="cursor: pointer;">

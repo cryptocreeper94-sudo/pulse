@@ -4941,7 +4941,24 @@ body.theme-light .banner-title {
   gap: 0px;
   width: 100%;
   flex: 1;
-  margin-top: 4px;
+  margin-top: 0px;
+}
+
+.gauge-container canvas {
+  max-width: 100%;
+  height: auto;
+  width: 100%;
+}
+
+/* Large value display above gauge */
+.gauge-value-display {
+  font-size: 63px;
+  font-weight: 900;
+  color: var(--text-primary);
+  text-align: center;
+  margin: 12px 0 6px 0;
+  line-height: 1;
+  padding: 0 8px;
 }
 
 /* For CAP and VOL boxes - center values vertically */
@@ -4954,7 +4971,7 @@ body.theme-light .banner-title {
 }
 
 .gauge-value {
-  font-size: 21px; /* Reduced by half from 42px */
+  font-size: 42px;
   font-weight: 900;
   color: var(--text-primary);
   margin: 0;

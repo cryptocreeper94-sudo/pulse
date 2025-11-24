@@ -3768,6 +3768,12 @@ async function initGauges() {
   const altSeasonCanvas = document.getElementById('altSeasonGauge');
   if (altSeasonCanvas) {
     drawAltSeasonGauge(altSeasonCanvas, window.gaugeState.altSeason, { mode: 'dashboard' });
+    
+    // Set altSeason value display
+    const altSeasonValueElement = document.getElementById('altSeasonValue');
+    if (altSeasonValueElement) {
+      altSeasonValueElement.textContent = window.gaugeState.altSeason;
+    }
   }
   
   await loadFearGreedIndex();
@@ -3787,6 +3793,12 @@ function refreshAllGauges() {
   const altSeasonCanvas = document.getElementById('altSeasonGauge');
   if (altSeasonCanvas && typeof drawAltSeasonGauge === 'function') {
     drawAltSeasonGauge(altSeasonCanvas, window.gaugeState.altSeason, { mode: 'dashboard' });
+    
+    // Update altSeason value display
+    const altSeasonValueElement = document.getElementById('altSeasonValue');
+    if (altSeasonValueElement) {
+      altSeasonValueElement.textContent = window.gaugeState.altSeason;
+    }
   }
   
   // Refresh popup gauge if open
