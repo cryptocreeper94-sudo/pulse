@@ -818,17 +818,17 @@ body.theme-light .banner-title {
 .metrics-stack {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  gap: 4px;
   margin-bottom: 8px;
   width: 100%;
   box-sizing: border-box;
 }
 
-/* Mobile: Make metric boxes taller and properly proportioned */
+/* Mobile: Compact layout filling full width */
 @media (max-width: 768px) {
   .metrics-stack {
-    gap: 8px;
-    margin-bottom: 10px;
+    gap: 4px;
+    margin-bottom: 8px;
   }
 }
 
@@ -839,7 +839,7 @@ body.theme-light .banner-title {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: 6px;
-  padding: 8px 4px 4px 4px;
+  padding: 4px 2px 2px 2px;
   text-align: center;
   box-shadow: var(--shadow-card);
   transition: all 0.2s ease;
@@ -851,18 +851,18 @@ body.theme-light .banner-title {
   cursor: pointer;
   position: relative;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: visible;
   min-height: 80px;
   z-index: 1;
 }
 
-/* Mobile: Larger metric boxes */
+/* Mobile: Tight compact boxes */
 @media (max-width: 768px) {
   .metric-box-wide {
-    aspect-ratio: 0.85 / 1;
-    padding: 8px 4px 6px 4px;
-    min-height: 100px;
-    border-radius: 8px;
+    aspect-ratio: 0.9 / 1;
+    padding: 4px 2px 2px 2px;
+    min-height: 80px;
+    border-radius: 6px;
   }
 }
 
@@ -878,19 +878,7 @@ body.theme-light .banner-title {
   transform: translateY(-2px);
 }
 
-.metric-box-wide canvas {
-  display: block;
-  margin: 0 auto;
-  flex-shrink: 0;
-  width: 100% !important;
-  height: auto !important;
-  max-width: 50px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -60%);
-  z-index: 1;
-}
+/* Removed old canvas positioning - now uses flexbox layout */
 
 .fear-greed-box {
   /* Inherit from metric-box-wide */
@@ -907,14 +895,14 @@ body.theme-light .banner-title {
 }
 
 .metric-label {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-dim);
-  margin: 0 0 6px 0;
-  padding: 0 4px;
+  margin: 0 0 3px 0;
+  padding: 0 2px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  line-height: 1.1;
+  letter-spacing: 0.4px;
+  line-height: 1;
   display: block;
   white-space: nowrap;
   text-align: center;
@@ -4910,14 +4898,14 @@ body.theme-light .banner-title {
 
 /* Value display above gauge */
 .gauge-value-display {
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 700;
   color: var(--text-primary);
   text-align: center;
-  margin: 0 0 6px 0;
-  line-height: 1.1;
-  padding: 0 4px;
-  min-height: 14px;
+  margin: 0 0 3px 0;
+  line-height: 1;
+  padding: 0 2px;
+  min-height: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
