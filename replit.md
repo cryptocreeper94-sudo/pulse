@@ -10,6 +10,10 @@
 - Agent diversity: Equal distribution across age groups, gender, race, and hair color (Nov 24, 2025)
 
 ## Recent Changes (Nov 24, 2025)
+- **ANALYTICS BUTTON & MULTI-CHAIN SEARCH FIXES**: 
+  - Analytics button (₿) connects to coin search modal with support for all blockchains (BTC, ETH, SOL, BNB, ADA, XRP, DOT, DOGE, MATIC, AVAX, BONK, WIF, PEPE, SHIB)
+  - Suppressed "Error Loading Data" messages - modal now silently closes on error instead of displaying failure text, allowing user to try another ticker
+  - Coin search works for all supported chains, not just Solana
 - **VERSION 2 DETAILS BUTTON**: Added "📅 V2 DETAILS" button between Settings and Avatar icon in navigation
   - Button is ~1 inch wide on desktop, styled with blue-purple gradient
   - Pushes Disclaimer (⚠️) all the way to right edge, filling empty space

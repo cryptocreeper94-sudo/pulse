@@ -976,20 +976,11 @@ const analysisModalController = {
     document.getElementById('aiAnalysis').textContent = 'Analyzing market conditions...';
   },
   
-  // Show error state - only call if REAL error occurs
+  // Show error state - silently close modal instead of showing error
   showErrorState(message) {
-    // Hide avatar on error
-    const avatarContainer = document.getElementById('avatarDisplayContainer');
-    if (avatarContainer) avatarContainer.style.display = 'none';
-    
-    // Hide signal badge on error
-    const signalBadge = document.getElementById('analysisSignal');
-    if (signalBadge) signalBadge.style.display = 'none';
-    
-    document.getElementById('analysisAssetName').textContent = 'Error Loading Data';
-    document.getElementById('analysisPrice').textContent = '$0.00';
-    document.getElementById('analysisChange').textContent = '+0%';
-    document.getElementById('aiAnalysis').textContent = `Failed to load analysis: ${message}. Please try again.`;
+    // Silently close the modal and let user try another ticker
+    console.warn(`Analysis failed: ${message}`);
+    this.closeAnalysisModal();
   },
   
   // Close modal
