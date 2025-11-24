@@ -171,17 +171,17 @@ function drawFearGreedGauge(canvasId, value, options = {}) {
     ctx.stroke();
   }
   
-  // Draw value number
-  ctx.font = 'bold 28px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-  ctx.fillStyle = '#FFFFFF';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-  ctx.shadowBlur = 4;
-  ctx.shadowOffsetX = 0;
-  ctx.shadowOffsetY = 0;
-  ctx.fillText(Math.round(value), centerX, centerY - 35);
-  ctx.shadowBlur = 0;
+  // Draw value number - COMMENTED OUT: values now displayed in gauge-value-display div above canvas
+  // ctx.font = 'bold 28px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  // ctx.fillStyle = '#FFFFFF';
+  // ctx.textAlign = 'center';
+  // ctx.textBaseline = 'middle';
+  // ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+  // ctx.shadowBlur = 4;
+  // ctx.shadowOffsetX = 0;
+  // ctx.shadowOffsetY = 0;
+  // ctx.fillText(Math.round(value), centerX, centerY - 35);
+  // ctx.shadowBlur = 0;
 }
 
 // Initialize on load
