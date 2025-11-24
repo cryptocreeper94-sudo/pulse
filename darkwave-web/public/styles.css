@@ -839,7 +839,7 @@ body.theme-light .banner-title {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: 6px;
-  padding: 4px 2px 2px 2px;
+  padding: 2px 2px 2px 2px;
   text-align: center;
   box-shadow: var(--shadow-card);
   transition: all 0.2s ease;
@@ -3289,22 +3289,24 @@ body.theme-light .banner-title {
 }
 
 .volume-flow-indicator {
-  font-size: 11px;
-  margin-top: 2px;
+  font-size: 9px;
+  margin: 0;
   cursor: pointer;
   display: block;
   font-weight: 700;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
+  line-height: 1;
   transition: opacity 0.2s ease;
 }
 
 .metric-change {
-  font-size: 11px;
-  margin-top: 2px;
+  font-size: 9px;
+  margin: 0;
   cursor: default;
   display: block;
   font-weight: 700;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
+  line-height: 1;
 }
 
 .volume-flow-indicator:hover {
@@ -4878,12 +4880,12 @@ body.theme-light .banner-title {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   gap: 0;
   width: 100%;
   flex: 1;
   margin: 0;
-  padding: 0 2px 2px 2px;
+  padding: 0 2px 0px 2px;
   min-width: 0;
   min-height: 0;
   overflow: visible;
@@ -4916,23 +4918,15 @@ body.theme-light .banner-title {
 /* For CAP and VOL boxes - center values vertically */
 .metric-box-wide:nth-child(3) .gauge-container,
 .metric-box-wide:nth-child(4) .gauge-container {
-  justify-content: flex-start; /* Align to top instead of center */
+  justify-content: center;
   padding-bottom: 0px;
   margin-top: 0px;
   flex: 1;
 }
 
+/* OLD gauge-value - REPLACED with gauge-value-display */
 .gauge-value {
-  font-size: 42px;
-  font-weight: 900;
-  color: var(--text-primary);
-  margin: 0;
-  line-height: 1;
-  position: relative;
-  z-index: 2;
-  max-width: 100%;
-  word-break: break-word;
-  padding: 0 2px;
+  display: none !important;
 }
 
 .gauge-subtitle {

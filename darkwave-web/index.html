@@ -244,20 +244,16 @@
         <div class="metric-box-wide" onclick="showMetricExplanation('marketcap')" style="cursor: pointer;">
           <div class="metric-label metric-label-mobile">CAP</div>
           <div class="metric-label metric-label-desktop">MARKET CAP</div>
-          <div class="gauge-container">
-            <div class="gauge-value" id="marketCapDisplay">3.5T</div>
-            <div class="metric-change" id="marketCapChange">+2.4%</div>
-          </div>
+          <div class="gauge-value-display" id="marketCapDisplay">$3.07T</div>
+          <div class="metric-change" id="marketCapChange">+1.5%</div>
         </div>
         <div class="metric-box-wide" onclick="showMetricExplanation('volume24h')" style="cursor: pointer;">
           <div class="metric-label metric-label-mobile">VOL</div>
           <div class="metric-label metric-label-desktop">VOLUME</div>
-          <div class="gauge-container">
-            <div class="gauge-value" id="volumeDisplay">$98.5B</div>
-            <div class="volume-inflow-outflow">
-              <div class="metric-change" id="volumeChange">+2.4%</div>
-              <div class="volume-flow-indicator" id="volumeFlowIndicator">↑ Inflow</div>
-            </div>
+          <div class="gauge-value-display" id="volumeDisplay">$136.5B</div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 2px; width: 100%; padding: 0 2px;">
+            <div class="metric-change" id="volumeChange">+1.5%</div>
+            <div class="volume-flow-indicator" id="volumeFlowIndicator">↑ Inflow</div>
           </div>
         </div>
       </div>
