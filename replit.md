@@ -7,11 +7,17 @@
 - User name: Jason
 - Preferred communication style: Simple, everyday language
 - Call him "Jason" not "DW"
+- Agent diversity: Equal distribution across age groups, gender, race, and hair color (Nov 24, 2025)
+
+## Recent Changes (Nov 24, 2025)
+- Fixed coin table row click handlers: Replaced inline onclick handlers with proper event listeners using data attributes (fixes button responsiveness)
+- Balanced 18 AI agents: 6 per age group (young/middle/old), 9 male/9 female, diverse racial representation, varied hair colors
+- All agents now have distinct visual appearances with no demographic dominance
 
 ## System Architecture
 
 ### Frontend
-The frontend uses React 19 and Vite 7, featuring a CoinMarketCap-style market overview with a 9-column data table and 7 category tabs. The design is inspired by Crypto.com, utilizing dark navy backgrounds, a three-column responsive grid, elevated cards, angular dividers, and electric blue accents with gold and purple highlights. It includes a personalized 9-theme system with organic CSS gradient patterns and a toggleable Crypto Cat mascot. UI elements are designed for low-profile, compact presentation with consistent sizing and double-column layouts where appropriate. An Agent Builder feature allows users to select from 18 AI agents, with subscription gating and responsive carousel UI.
+The frontend uses React 19 and Vite 7, featuring a CoinMarketCap-style market overview with a 9-column data table and 7 category tabs. The design is inspired by Crypto.com, utilizing dark navy backgrounds, a three-column responsive grid, elevated cards, angular dividers, and electric blue accents with gold and purple highlights. It includes a personalized 9-theme system with organic CSS gradient patterns and a toggleable Crypto Cat mascot. UI elements are designed for low-profile, compact presentation with consistent sizing and double-column layouts where appropriate. An Agent Builder feature allows users to select from 18 AI agents (perfectly balanced: 6 young/middle/old, 9 male/9 female, diverse races and hair colors), with subscription gating and responsive carousel UI. Coin table interactions use event listeners for robust click handling (Nov 24, 2025).
 
 ### Backend and AI Agent
 The core AI agent, DarkWave-V2, is powered by the Mastra framework, enabling tool calling, memory management, and natural language processing. Workflow orchestration is handled by `createWorkflow` and `createStep`. A modular tool system (`createTool`) with Zod schemas encapsulates functionalities such as Market Data, Technical Analysis, Holdings, Scanner, Chart Generation, Dexscreener, DEX Analysis (including rug-risk detection), and NFT Tool.
