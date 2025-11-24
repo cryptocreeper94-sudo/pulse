@@ -12064,4 +12064,39 @@ body {
     color: #FFD700;
     font-weight: 700;
   }
+  
+  /* Mobile Info Banner - Show Only Emojis */
+  .info-btn-text {
+    display: inline;
+  }
+  
+  .info-btn-text::before {
+    display: none;
+  }
+}
+
+/* Mobile Info Banner Buttons - Hide Text, Show Emoji Only */
+@media (max-width: 600px) {
+  #infoBannerBar {
+    gap: 2px !important;
+    padding: 4px 6px !important;
+  }
+  
+  .info-btn {
+    padding: 4px 6px !important;
+    min-height: 28px !important;
+    font-size: 9px !important;
+  }
+  
+  .info-btn-text {
+    font-size: 0;
+    letter-spacing: 0;
+  }
+  
+  .info-btn-text::before {
+    content: attr(data-emoji);
+    font-size: 14px;
+    display: inline;
+    letter-spacing: normal;
+  }
 }
