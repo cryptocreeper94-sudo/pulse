@@ -10,12 +10,19 @@
 - Agent diversity: Equal distribution across age groups, gender, race, and hair color (Nov 24, 2025)
 
 ## Recent Changes (Nov 24, 2025)
-- Fixed coin table row click handlers: Replaced inline onclick handlers with proper event listeners using data attributes (fixes button responsiveness)
+- **NAVIGATION CONSOLIDATION**: Simplified from 11 tabs to 6 tabs to fit mobile without horizontal scrolling
+  - 📊 Markets (combines Crypto + Stocks)
+  - 🚀 Projects
+  - 💡 Learn (combines Truth + Knowledge Base)
+  - 📈 Portfolio
+  - 💬 Community
+  - ⚙️ Settings
+  - All icon buttons (👤 Avatar, 🎨 Theme, 🐛 Bug, 🚪 Logout, ⚠️ Disclaimer) now visible on mobile
+- Changed "Investors" button in footer to "📊 Staking" (direct to sandbox with placeholder numbers)
+- Moved holographic refractor NFT to Projects page as Serial #1 (the first and rarest collectible)
+- Removed redundant staking landing page - users go straight to sandbox setup
+- Fixed coin table row click handlers: Replaced inline onclick handlers with proper event listeners using data attributes
 - Balanced 18 AI agents: 6 per age group (young/middle/old), 9 male/9 female, diverse racial representation, varied hair colors
-- All agents now have distinct visual appearances with no demographic dominance
-- Reorganized header: Removed Investors from nav menu, moved to footer with DarkWave logo
-- Compacted header icon buttons (👤 Avatar, 🎨 Palette, 🐛 Bug, 🚪 Logout, ⚠️ Disclaimer) - reduced padding/font for better fit
-- Added footer with DarkWave logo image + Investors button + social links (Telegram, X)
 
 ## System Architecture
 
