@@ -730,8 +730,8 @@ body.theme-light .banner-title {
 .disclaimer-icon-btn {
   flex: 0 0 auto;
   min-width: auto;
-  padding: 12px 16px;
-  font-size: 18px;
+  padding: 8px 10px;
+  font-size: 16px;
   color: #FFD700;
   border: none;
   background: transparent;
@@ -752,8 +752,8 @@ body.theme-light .banner-title {
 .logout-icon-btn {
   flex: 0 0 auto;
   min-width: auto;
-  padding: 12px 16px;
-  font-size: 18px;
+  padding: 8px 10px;
+  font-size: 16px;
   border: none;
   background: transparent;
   border-bottom: 2px solid transparent;

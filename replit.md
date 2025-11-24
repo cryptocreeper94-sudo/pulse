@@ -13,6 +13,9 @@
 - Fixed coin table row click handlers: Replaced inline onclick handlers with proper event listeners using data attributes (fixes button responsiveness)
 - Balanced 18 AI agents: 6 per age group (young/middle/old), 9 male/9 female, diverse racial representation, varied hair colors
 - All agents now have distinct visual appearances with no demographic dominance
+- Reorganized header: Removed Investors from nav menu, moved to footer with DarkWave logo
+- Compacted header icon buttons (👤 Avatar, 🎨 Palette, 🐛 Bug, 🚪 Logout, ⚠️ Disclaimer) - reduced padding/font for better fit
+- Added footer with DarkWave logo image + Investors button + social links (Telegram, X)
 
 ## System Architecture
 
