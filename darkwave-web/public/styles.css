@@ -839,7 +839,7 @@ body.theme-light .banner-title {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: 6px;
-  padding: 6px 3px 4px 3px;
+  padding: 8px 4px 4px 4px;
   text-align: center;
   box-shadow: var(--shadow-card);
   transition: all 0.2s ease;
@@ -847,6 +847,7 @@ body.theme-light .banner-title {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+  gap: 0;
   cursor: pointer;
   position: relative;
   box-sizing: border-box;
@@ -908,30 +909,27 @@ body.theme-light .banner-title {
 .metric-label {
   font-size: 11px;
   color: var(--text-dim);
-  margin: 1px 0 2px 0;
-  padding: 0 2px;
+  margin: 0 0 6px 0;
+  padding: 0 4px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.2px;
-  line-height: 1.2;
+  letter-spacing: 0.5px;
+  line-height: 1.1;
   display: block;
   white-space: nowrap;
   text-align: center;
-  overflow: visible;
+  overflow: hidden;
+  text-overflow: ellipsis;
   flex-shrink: 0;
-  position: absolute;
-  top: 4px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 4px);
+  position: static;
+  width: 100%;
   z-index: 2;
 }
 
 /* Mobile: Larger metric labels */
 @media (max-width: 768px) {
   .metric-label {
-    font-size: 13px;
-    top: 6px;
+    font-size: 11px;
     font-weight: 700;
   }
 }
@@ -950,54 +948,9 @@ body.theme-light .banner-title {
   }
 }
 
+/* OLD .metric-value CSS - DISABLED - using .gauge-value-display instead */
 .metric-value {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-primary);
-  position: absolute;
-  top: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
-  line-height: 1.2;
-  width: calc(100% - 4px);
-  padding: 0 2px;
-  text-align: center;
-}
-
-/* For gauge boxes (1st and 2nd): position value above gauge */
-.metric-box-wide:nth-child(1) .metric-value,
-.metric-box-wide:nth-child(2) .metric-value {
-  top: 18px;
-  font-size: 11px;
-}
-
-/* For number boxes (3rd and 4th): position value centered at top */
-.metric-box-wide:nth-child(3) .metric-value,
-.metric-box-wide:nth-child(4) .metric-value {
-  top: 20px;
-  font-size: 14px;
-  font-weight: 700;
-}
-
-/* Mobile: Larger metric values */
-@media (max-width: 768px) {
-  .metric-value {
-    font-size: 14px;
-    top: 26px;
-  }
-  
-  .metric-box-wide:nth-child(1) .metric-value,
-  .metric-box-wide:nth-child(2) .metric-value {
-    top: 20px;
-    font-size: 12px;
-  }
-  
-  .metric-box-wide:nth-child(3) .metric-value,
-  .metric-box-wide:nth-child(4) .metric-value {
-    top: 22px;
-    font-size: 16px;
-  }
+  display: none !important;
 }
 
 /* Action Button Group - Full Width Mobile */
@@ -4937,12 +4890,13 @@ body.theme-light .banner-title {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
-  gap: 0px;
+  justify-content: center;
+  gap: 0;
   width: 100%;
   flex: 1;
-  margin-top: 6px;
-  padding: 0 3px 3px 3px;
+  margin: 0;
+  padding: 0 2px 2px 2px;
+  min-width: 0;
 }
 
 .gauge-container canvas {
@@ -4950,22 +4904,25 @@ body.theme-light .banner-title {
   height: auto;
   width: 100%;
   display: block;
+  transform: scale(1.08);
+  transform-origin: center bottom;
 }
 
 /* Value display above gauge */
 .gauge-value-display {
-  font-size: 18px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--text-primary);
   text-align: center;
-  margin: 8px 0 4px 0;
-  line-height: 1.2;
+  margin: 0 0 6px 0;
+  line-height: 1.1;
   padding: 0 4px;
-  min-height: 22px;
+  min-height: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
+  flex-shrink: 0;
 }
 
 /* For CAP and VOL boxes - center values vertically */
