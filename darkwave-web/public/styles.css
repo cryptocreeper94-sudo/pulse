@@ -4942,7 +4942,7 @@ body.theme-light .banner-title {
   width: 100%;
   flex: 1;
   margin-top: 6px;
-  padding: 0 8px 8px 8px;
+  padding: 0 3px 3px 3px;
 }
 
 .gauge-container canvas {
@@ -4954,7 +4954,7 @@ body.theme-light .banner-title {
 
 /* Value display above gauge */
 .gauge-value-display {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--text-primary);
   text-align: center;
