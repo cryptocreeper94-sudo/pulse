@@ -52,7 +52,7 @@
   <!-- Auto Version Checker - Forces reload if old cached version -->
   <script>
     (function() {
-      const CURRENT_VERSION = '1124a';
+      const CURRENT_VERSION = '1125a';
       const VERSION_KEY = 'dwp_version';
       const RELOAD_KEY = 'dwp_reloading';
       
@@ -170,6 +170,9 @@
       
       <!-- Search Counter (Base/Trial users only) -->
       <div id="searchCounter" style="display: none; align-items: center; padding: 6px 12px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 6px; font-size: 12px; font-weight: 600; margin-left: auto; margin-right: 12px;"></div>
+      
+      <!-- VERSION 2 DETAILS Button -->
+      <button onclick="switchTab('v2-details')" style="padding: 6px 12px; background: linear-gradient(135deg, rgba(56, 97, 251, 0.15), rgba(131, 56, 236, 0.08)); border: 1px solid rgba(56, 97, 251, 0.3); border-radius: 6px; color: rgba(255,255,255,0.9); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s; white-space: nowrap; margin-right: auto;" title="Version 2 Details">📅 V2 Details</button>
       
       <button class="logout-icon-btn" onclick="openAgentSelector()" title="Agent Builder - Choose Your Agent">👤</button>
       <button class="logout-icon-btn" id="themeSelectorBtn" onclick="themeManager.openThemeSelector()" title="Change Theme">🎨</button>
@@ -3718,6 +3721,70 @@ Thanks for being here — let's build something powerful together!</textarea>
               </button>
             </div>
           </details>
+        </div>
+      </div>
+
+      <!-- VERSION 2 DETAILS Tab -->
+      <div id="v2-details" class="tab-pane">
+        
+        <button class="close-btn-circle" onclick="switchTab('crypto')">×</button>
+        
+        <div class="widget">
+          <h3>VERSION 2 DETAILS</h3>
+          
+          <!-- V2 Launch Date & Countdown -->
+          <div style="background: linear-gradient(135deg, rgba(56, 97, 251, 0.15), rgba(131, 56, 236, 0.08)); border: 1px solid rgba(56, 97, 251, 0.3); border-radius: 8px; padding: 15px; margin-bottom: 20px; text-align: center;">
+            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 8px;">Official Launch</div>
+            <div style="font-size: 24px; font-weight: 900; color: #3861FB; margin-bottom: 4px;">DECEMBER 25, 2025</div>
+            <div id="v2Countdown" style="font-size: 12px; color: rgba(255,255,255,0.8); font-weight: 600;"></div>
+          </div>
+
+          <!-- Core V2 Features (2 Column) -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+            <!-- Column 1 -->
+            <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 12px;">
+              <div style="font-size: 11px; font-weight: 700; color: #10b981; margin-bottom: 8px;">✅ LIVE NOW</div>
+              <ul style="font-size: 11px; color: #e0e0e0; margin: 0; padding-left: 16px; line-height: 1.6;">
+                <li>18 AI Agents</li>
+                <li>20 NFT Cards</li>
+                <li>Crypto Analysis</li>
+                <li>Stock Charts</li>
+                <li>DEX Pairs</li>
+              </ul>
+            </div>
+            
+            <!-- Column 2 -->
+            <div style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 8px; padding: 12px;">
+              <div style="font-size: 11px; font-weight: 700; color: #8b5cf6; margin-bottom: 8px;">🚀 V2 EXCLUSIVE</div>
+              <ul style="font-size: 11px; color: #e0e0e0; margin: 0; padding-left: 16px; line-height: 1.6;">
+                <li>Trading Orders</li>
+                <li>Wallet Sync</li>
+                <li>Sniper Mode</li>
+                <li>Portfolio Track</li>
+                <li>Staking Rewards</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Roadmap Phases (Compact) -->
+          <div style="background: rgba(255, 165, 0, 0.1); border: 1px solid rgba(255, 165, 0, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 20px;">
+            <div style="font-size: 11px; font-weight: 700; color: #ffa500; text-transform: uppercase; margin-bottom: 10px;">📅 2025-2028 ROADMAP</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 10px; color: #e0e0e0; line-height: 1.5;">
+              <div><strong style="color: #10b981;">Q4 2025:</strong> Wallet</div>
+              <div><strong style="color: #3861fb;">H1 2026:</strong> Marketplace</div>
+              <div><strong style="color: #8b5cf6;">Q2 2026:</strong> Launchpad</div>
+              <div><strong style="color: #ffa500;">2027:</strong> Debit Card</div>
+            </div>
+          </div>
+
+          <!-- Legacy Founder Info -->
+          <div style="background: rgba(220, 38, 38, 0.1); border: 1px solid rgba(220, 38, 38, 0.3); border-radius: 8px; padding: 12px;">
+            <div style="font-size: 11px; font-weight: 700; color: #dc2626; text-transform: uppercase; margin-bottom: 8px;">💎 LEGACY FOUNDER ENDS</div>
+            <div style="font-size: 12px; color: rgba(255,255,255,0.8); margin-bottom: 8px;"><span id="legacyDaysLeft">37 days</span> remaining</div>
+            <button onclick="switchTab('settings')" style="width: 100%; padding: 10px; background: linear-gradient(135deg, #dc2626, #b91c1c); border: none; border-radius: 6px; color: white; font-weight: 700; font-size: 11px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s;">
+              → Upgrade Now
+            </button>
+          </div>
         </div>
       </div>
 

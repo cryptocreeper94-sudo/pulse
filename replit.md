@@ -10,6 +10,11 @@
 - Agent diversity: Equal distribution across age groups, gender, race, and hair color (Nov 24, 2025)
 
 ## Recent Changes (Nov 24, 2025)
+- **VERSION 2 DETAILS BUTTON**: Added "📅 V2 DETAILS" button between Settings and Avatar icon in navigation
+  - Button is ~1 inch wide, styled with blue-purple gradient
+  - Pushes Disclaimer (⚠️) all the way to right edge, filling empty space
+  - Links to compact V2 Details page showing launch date, countdown, features, and roadmap
+  - Page features: Dec 25, 2025 countdown timer, 2-column feature list (Live Now vs V2 Exclusive), roadmap phases, Legacy Founder deadline
 - **NAVIGATION CONSOLIDATION**: Simplified from 11 tabs to 6 tabs to fit mobile without horizontal scrolling
   - 📊 Markets (combines Crypto + Stocks)
   - 🚀 Projects

@@ -6845,3 +6845,37 @@ window.loadChatMessages = loadChatMessages;
 window.sendChatMessage = sendChatMessage;
 window.saveUsername = saveUsername;
 window.loadUsername = loadUsername;
+
+// V2 Details Countdown Timer
+function initV2Countdown() {
+  const updateCountdown = () => {
+    const now = new Date();
+    const v2Launch = new Date('2025-12-25T00:00:00Z');
+    const diff = v2Launch - now;
+    
+    if (diff <= 0) {
+      document.getElementById('v2Countdown').textContent = '🎉 LIVE NOW!';
+      return;
+    }
+    
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const secs = Math.floor((diff % (1000 * 60)) / 1000);
+    
+    document.getElementById('v2Countdown').textContent = `${days}d ${hours}h ${mins}m ${secs}s`;
+    
+    // Also update legacy founder countdown if visible
+    if (document.getElementById('legacyDaysLeft')) {
+      document.getElementById('legacyDaysLeft').textContent = `${days} days`;
+    }
+  };
+  
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+}
+
+// Start countdown when tab is opened
+window.addEventListener('load', () => {
+  initV2Countdown();
+});
