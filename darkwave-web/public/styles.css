@@ -8369,12 +8369,11 @@ body.theme-light .banner-title {
   background: linear-gradient(135deg, #0088FF, #00FFFF);
 }
 
-/* Staking Content (blurred behind lock) */
+/* Staking Content (fully visible, locked by V2 overlay gate) */
 .staking-content {
-  filter: blur(5px);
-  
-  opacity: 0.3;
-  pointer-events: none;
+  filter: blur(0px);
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* When unlocked (for V2 launch) */
