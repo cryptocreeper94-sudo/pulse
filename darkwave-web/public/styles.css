@@ -869,7 +869,32 @@ body.theme-light .banner-title {
 /* Center only Market Cap and Volume boxes (3rd and 4th) */
 .metric-box-wide:nth-child(3),
 .metric-box-wide:nth-child(4) {
-  justify-content: center;
+  justify-content: flex-start;
+  position: relative;
+}
+
+/* Position title at horizontal centerline for boxes 3 & 4 */
+.metric-box-wide:nth-child(3) .metric-label,
+.metric-box-wide:nth-child(4) .metric-label {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-100%);
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 10;
+  margin: 0;
+}
+
+/* Push content below title down */
+.metric-box-wide:nth-child(3) .gauge-value-display,
+.metric-box-wide:nth-child(4) .gauge-value-display {
+  margin-top: calc(50% + 2px);
+}
+
+.metric-box-wide:nth-child(3) .metric-change,
+.metric-box-wide:nth-child(4) .metric-change {
+  margin-top: 2px;
 }
 
 .metric-box-wide:hover {
