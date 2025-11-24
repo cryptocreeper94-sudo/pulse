@@ -11997,6 +11997,7 @@ body {
 
 
 
+
 /* MOBILE SEARCH LAYOUT - Separate Desktop and Mobile */
 @media (max-width: 640px) {
   #searchAnalyticsBar {
@@ -12005,10 +12006,11 @@ body {
     grid-template-columns: none !important;
     gap: 6px !important;
     margin: 8px 8px !important;
+    align-items: flex-end !important;
   }
   
   .web3-search-section {
-    flex: 3 !important;
+    flex: 1 !important;
   }
   
   #analyticsButtonContainer {
@@ -12018,7 +12020,7 @@ body {
     justify-content: flex-end !important;
     gap: 0 !important;
     padding: 0 !important;
-    flex: 1 !important;
+    flex: 0 0 auto;
   }
   
   #analyticsButtonContainer > div:first-child {
@@ -12026,25 +12028,30 @@ body {
   }
   
   #analyzeBtn {
-    padding: 8px !important;
+    width: 44px !important;
+    height: 44px !important;
+    padding: 0 !important;
     font-size: 0 !important;
-    height: auto !important;
-    width: 100% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    font-weight: 700 !important;
-    background: linear-gradient(135deg, #3861FB, #8338EC) !important;
-    border: none !important;
-    border-radius: 6px !important;
-    color: white !important;
+    background: transparent !important;
+    border: 3px solid #FFD700 !important;
+    border-radius: 50% !important;
+    color: #FFD700 !important;
     cursor: pointer !important;
-    white-space: nowrap;
-    min-height: 44px;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  
+  #analyzeBtn:hover {
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
   }
   
   #analyzeBtn::after {
     content: "₿";
     font-size: 24px;
+    color: #FFD700;
+    font-weight: 700;
   }
 }
