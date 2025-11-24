@@ -11964,106 +11964,20 @@ body {
   100% { background-position: 0% 50%; }
 }
 
-/* ====== MOBILE OPTIMIZATION ====== */
-
-/* Mobile: Stack info banner vertically */
+/* MINIMAL MOBILE FIX: Prevent horizontal overflow only */
 @media (max-width: 640px) {
-  #infoBannerBar {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 6px !important;
-    padding: 6px 8px !important;
-  }
-  
-  #infoBannerBar button {
-    padding: 8px 8px !important;
-    font-size: 10px !important;
-    min-height: 32px;
-  }
-  
-  /* Top nav: wrap buttons */
-  .top-nav {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    gap: 4px !important;
-    padding: 6px 8px !important;
-    align-items: center;
-  }
-  
-  .nav-btn {
-    font-size: 11px !important;
-    padding: 6px 8px !important;
-    flex: 0 1 auto !important;
-    white-space: nowrap;
-  }
-  
-  .logout-icon-btn, .disclaimer-icon-btn {
-    width: 32px !important;
-    height: 32px !important;
-    padding: 4px !important;
-    font-size: 14px !important;
-    flex-shrink: 0;
-  }
-  
-  /* Search + Analytics: stack vertically */
-  div[style*="grid-template-columns: 2fr 1fr"] {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 8px !important;
-    margin: 8px 8px !important;
-  }
-  
-  .web3-search-section {
-    margin: 0 !important;
-  }
-  
-  .search-header h3 {
-    font-size: 11px !important;
-  }
-  
-  .search-box {
-    flex-direction: column !important;
-    gap: 4px !important;
-  }
-  
-  .search-box input {
-    font-size: 12px !important;
-    padding: 8px 8px !important;
-  }
-  
-  .search-btn {
-    font-size: 10px !important;
-    padding: 6px 8px !important;
+  body, html {
     width: 100%;
+    overflow-x: hidden;
   }
   
-  /* Section boxes padding */
-  .section-box {
-    padding: 10px !important;
-    margin: 8px 8px !important;
+  #app {
+    width: 100%;
+    overflow-x: hidden;
   }
   
-  /* Coin analytics label */
-  div[style*="font-size: 12px"][style*="font-weight: 600"][style*="COIN ANALYTICS"] {
-    font-size: 11px !important;
-    padding: 4px 0 !important;
+  /* Ensure no element breaks the viewport */
+  * {
+    max-width: 100%;
   }
 }
-
-/* Tablets: slight optimization */
-@media (max-width: 1024px) and (min-width: 641px) {
-  #infoBannerBar {
-    padding: 8px 10px !important;
-  }
-  
-  #infoBannerBar button {
-    font-size: 10px !important;
-    padding: 8px 10px !important;
-  }
-  
-  div[style*="grid-template-columns: 2fr 1fr"] {
-    grid-template-columns: 1fr !important;
-    gap: 10px !important;
-  }
-}
-
