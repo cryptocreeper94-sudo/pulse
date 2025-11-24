@@ -839,7 +839,7 @@ body.theme-light .banner-title {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: 6px;
-  padding: 2px 2px 2px 2px;
+  padding: 2px 1px 1px 1px;
   text-align: center;
   box-shadow: var(--shadow-card);
   transition: all 0.2s ease;
@@ -897,8 +897,8 @@ body.theme-light .banner-title {
 .metric-label {
   font-size: 10px;
   color: var(--text-dim);
-  margin: 0 0 3px 0;
-  padding: 0 2px;
+  margin: 0 0 2px 0;
+  padding: 0 1px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.4px;
@@ -3307,6 +3307,11 @@ body.theme-light .banner-title {
   font-weight: 700;
   letter-spacing: 0.2px;
   line-height: 1;
+  color: var(--green);
+}
+
+.metric-change.negative {
+  color: var(--red);
 }
 
 .volume-flow-indicator:hover {
@@ -4885,7 +4890,7 @@ body.theme-light .banner-title {
   width: 100%;
   flex: 1;
   margin: 0;
-  padding: 0 2px 0px 2px;
+  padding: 0 1px 0px 1px;
   min-width: 0;
   min-height: 0;
   overflow: visible;
@@ -4904,10 +4909,10 @@ body.theme-light .banner-title {
   font-weight: 700;
   color: var(--text-primary);
   text-align: center;
-  margin: 0 0 3px 0;
+  margin: 0 0 1px 0;
   line-height: 1;
   padding: 0 2px;
-  min-height: 12px;
+  min-height: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
