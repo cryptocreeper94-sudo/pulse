@@ -4941,22 +4941,24 @@ body.theme-light .banner-title {
   gap: 0px;
   width: 100%;
   flex: 1;
-  margin-top: 0px;
+  margin-top: 6px;
+  padding: 0 8px 8px 8px;
 }
 
 .gauge-container canvas {
   max-width: 100%;
   height: auto;
   width: 100%;
+  display: block;
 }
 
-/* Large value display above gauge */
+/* Value display above gauge */
 .gauge-value-display {
-  font-size: 38px;
-  font-weight: 900;
+  font-size: 18px;
+  font-weight: 700;
   color: var(--text-primary);
   text-align: center;
-  margin: 8px 0 4px 0;
+  margin: 6px 0 6px 0;
   line-height: 1;
   padding: 0 4px;
 }
