@@ -52,7 +52,7 @@
   <!-- Auto Version Checker - Forces reload if old cached version -->
   <script>
     (function() {
-      const CURRENT_VERSION = '1125a';
+      const CURRENT_VERSION = '1127a';
       const VERSION_KEY = 'dwp_version';
       const RELOAD_KEY = 'dwp_reloading';
       
@@ -172,7 +172,7 @@
       <div id="searchCounter" style="display: none; align-items: center; padding: 6px 12px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 6px; font-size: 12px; font-weight: 600; margin-left: auto; margin-right: 12px;"></div>
       
       <!-- VERSION 2 DETAILS Button -->
-      <button onclick="switchTab('v2-details')" style="padding: 6px 12px; background: linear-gradient(135deg, rgba(56, 97, 251, 0.15), rgba(131, 56, 236, 0.08)); border: 1px solid rgba(56, 97, 251, 0.3); border-radius: 6px; color: rgba(255,255,255,0.9); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s; white-space: nowrap; margin-right: auto;" title="Version 2 Details">📅 V2 Details</button>
+      <button id="v2DetailsMobileBtn" onclick="switchTab('v2-details')" style="padding: 6px 12px; background: linear-gradient(135deg, rgba(56, 97, 251, 0.15), rgba(131, 56, 236, 0.08)); border: 1px solid rgba(56, 97, 251, 0.3); border-radius: 6px; color: rgba(255,255,255,0.9); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s; white-space: nowrap; margin-right: auto;" title="Version 2 Details"><span class="v2-text">📅 V2 Details</span></button>
       
       <button class="logout-icon-btn" onclick="openAgentSelector()" title="Agent Builder - Choose Your Agent">👤</button>
       <button class="logout-icon-btn" id="themeSelectorBtn" onclick="themeManager.openThemeSelector()" title="Change Theme">🎨</button>

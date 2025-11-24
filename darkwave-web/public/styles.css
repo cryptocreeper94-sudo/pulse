@@ -11981,3 +11981,16 @@ body {
     max-width: 100%;
   }
 }
+
+
+/* Mobile: Show only emoji for V2 Details button */
+@media (max-width: 640px) {
+  #v2DetailsMobileBtn .v2-text {
+    font-size: 0;
+  }
+  
+  #v2DetailsMobileBtn .v2-text::after {
+    content: "📅";
+    font-size: 14px;
+  }
+}
