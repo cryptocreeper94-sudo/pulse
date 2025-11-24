@@ -11996,18 +11996,19 @@ body {
 }
 
 
+
 /* MOBILE SEARCH LAYOUT - Separate Desktop and Mobile */
 @media (max-width: 640px) {
   #searchAnalyticsBar {
     display: flex !important;
     flex-direction: row !important;
     grid-template-columns: none !important;
-    gap: 8px !important;
+    gap: 6px !important;
     margin: 8px 8px !important;
   }
   
   .web3-search-section {
-    flex: 1 !important;
+    flex: 3 !important;
   }
   
   #analyticsButtonContainer {
@@ -12017,7 +12018,7 @@ body {
     justify-content: flex-end !important;
     gap: 0 !important;
     padding: 0 !important;
-    flex: 0 0 auto;
+    flex: 1 !important;
   }
   
   #analyticsButtonContainer > div:first-child {
@@ -12025,11 +12026,10 @@ body {
   }
   
   #analyzeBtn {
-    padding: 8px 12px !important;
-    font-size: 14px !important;
-    flex: 1 !important;
+    padding: 8px !important;
+    font-size: 0 !important;
     height: auto !important;
-    width: auto !important;
+    width: 100% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -12040,6 +12040,11 @@ body {
     color: white !important;
     cursor: pointer !important;
     white-space: nowrap;
-    min-width: 80px;
+    min-height: 44px;
+  }
+  
+  #analyzeBtn::after {
+    content: "₿";
+    font-size: 24px;
   }
 }
