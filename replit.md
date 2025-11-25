@@ -9,6 +9,14 @@
 - Call him "Jason" not "DW"
 - Agent diversity: Equal distribution across age groups, gender, race, and hair color (Nov 24, 2025)
 
+## Recent Changes (Nov 25, 2025)
+- **CRITICAL HTML STRUCTURE FIX**: Fixed tab navigation issues caused by unbalanced div tags
+  - Removed 2 extra closing `</div>` tags in staking tab that caused staking content to appear on main crypto page
+  - Removed 1 orphan closing `</div>` after footer that broke overall page structure
+  - HTML now properly balanced: 1119 opening divs = 1119 closing divs
+  - Settings tab now works correctly instead of redirecting to staking
+  - All tab content now properly contained within their respective tab-pane containers
+
 ## Recent Changes (Nov 24, 2025)
 - **ANALYTICS BUTTON & MULTI-CHAIN SEARCH FIXES**: 
   - Analytics button (₿) connects to coin search modal with support for all blockchains (BTC, ETH, SOL, BNB, ADA, XRP, DOT, DOGE, MATIC, AVAX, BONK, WIF, PEPE, SHIB)
