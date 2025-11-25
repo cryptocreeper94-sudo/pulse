@@ -222,7 +222,7 @@
         <div class="metric-box-wide fear-greed-box" onclick="showMetricExplanation('feargreed')" style="cursor: pointer;">
           <div class="metric-label metric-label-mobile">F&G</div>
           <div class="metric-label metric-label-desktop">FEAR & GREED</div>
-          <div class="gauge-value-display" id="fearGreedValue">—</div>
+          <div class="gauge-value-display" id="fearGreedValue">Loading...</div>
           <div class="gauge-container">
             <canvas id="fearGreedGauge" width="600" height="300"></canvas>
           </div>
@@ -230,7 +230,7 @@
         <div class="metric-box-wide" onclick="showMetricExplanation('altseason')" style="cursor: pointer;">
           <div class="metric-label metric-label-mobile">ALT</div>
           <div class="metric-label metric-label-desktop">ALTCOIN SEASON</div>
-          <div class="gauge-value-display" id="altSeasonValue">—</div>
+          <div class="gauge-value-display" id="altSeasonValue">Loading...</div>
           <div class="gauge-container">
             <canvas id="altSeasonGauge" width="600" height="300"></canvas>
           </div>
@@ -238,16 +238,16 @@
         <div class="metric-box-wide" onclick="showMetricExplanation('marketcap')" style="cursor: pointer;">
           <div class="metric-label metric-label-mobile">CAP</div>
           <div class="metric-label metric-label-desktop">MARKET CAP</div>
-          <div class="gauge-value-display" id="marketCapDisplay">$3.07T</div>
-          <div class="metric-change" id="marketCapChange">+1.5%</div>
+          <div class="gauge-value-display" id="marketCapDisplay">Loading...</div>
+          <div class="metric-change" id="marketCapChange">—</div>
         </div>
         <div class="metric-box-wide" onclick="showMetricExplanation('volume24h')" style="cursor: pointer;">
           <div class="metric-label metric-label-mobile">VOL</div>
           <div class="metric-label metric-label-desktop">VOLUME</div>
-          <div class="gauge-value-display" id="volumeDisplay">$136.5B</div>
+          <div class="gauge-value-display" id="volumeDisplay">Loading...</div>
           <div style="display: flex; flex-direction: column; align-items: center; gap: 2px; width: 100%; padding: 0 2px;">
-            <div class="metric-change" id="volumeChange">+1.5%</div>
-            <div class="volume-flow-indicator" id="volumeFlowIndicator">↑ Inflow</div>
+            <div class="metric-change" id="volumeChange">—</div>
+            <div class="volume-flow-indicator" id="volumeFlowIndicator">—</div>
           </div>
         </div>
       </div>
@@ -378,17 +378,17 @@
       <div class="macro-metrics-grid">
         <div class="macro-metric" onclick="showMetricExplanation('marketcap')" style="cursor: pointer;">
           <span class="metric-label">MARKET CAP</span>
-          <span class="metric-value" id="totalMarketCap">$2.45T</span>
+          <span class="metric-value" id="totalMarketCap">Loading...</span>
           <span id="marketCapChange" class="metric-change">—</span>
         </div>
         <div class="macro-metric" onclick="showMetricExplanation('volume')" style="cursor: pointer;">
           <span class="metric-label">24H VOLUME</span>
-          <span class="metric-value" id="totalVolume">$98.5B</span>
+          <span class="metric-value" id="totalVolume">Loading...</span>
           <span id="volumeFlow" class="volume-flow-indicator" onclick="event.stopPropagation(); showVolumeFlowExplanation();">—</span>
         </div>
         <div class="macro-metric" onclick="showMetricExplanation('btcdom')" style="cursor: pointer;">
           <span class="metric-label">BTC DOMINANCE</span>
-          <span class="metric-value" id="btcDominance">52.3%</span>
+          <span class="metric-value" id="btcDominance">Loading...</span>
         </div>
       </div>
       

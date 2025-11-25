@@ -64,6 +64,21 @@ if (typeof window !== 'undefined') {
   preloadAltSeasonCatImages();
 }
 
+// Retry fetch with exponential backoff for backend startup delays
+async function retryWithBackoff(fetchFn, maxRetries = 3, baseDelay = 1000) {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const result = await fetchFn();
+      return result;
+    } catch (error) {
+      if (i === maxRetries - 1) throw error;
+      const delay = baseDelay * Math.pow(2, i);
+      console.log(`⏳ Retry ${i + 1}/${maxRetries} in ${delay}ms...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+}
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
   console.log('🚀 DarkWave Pulse initializing...');
@@ -2975,13 +2990,17 @@ async function fetchBTCDataForTimeframe(timeframe) {
   console.log(`📊 Fetching BTC data: ${config.label} (${interval}min candles)`);
   
   const url = `/api/crypto/market-chart?interval=${interval}`;
-  const response = await fetch(url);
   
-  if (!response.ok) {
-    throw new Error(`Failed to fetch market data: ${response.statusText}`);
-  }
-  
-  const data = await response.json();
+  // Use retry with backoff for backend startup delays
+  const data = await retryWithBackoff(async () => {
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch market data: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  }, 5, 1000); // 5 retries, starting at 1s delay (1s, 2s, 4s, 8s, 16s)
   
   if (!data || (!data.sparklineData && !data.candleData)) {
     console.warn('⚠️ API returned empty data');
@@ -4082,12 +4101,15 @@ function refreshAllGauges() {
 
 async function loadFearGreedIndex() {
   try {
-    const response = await fetch('/api/sentiment/fear-greed?limit=1');
-    if (!response.ok) {
-      throw new Error('Failed to fetch Fear & Greed Index');
-    }
+    // Use retry with backoff for backend startup delays
+    const data = await retryWithBackoff(async () => {
+      const response = await fetch('/api/sentiment/fear-greed?limit=1');
+      if (!response.ok) {
+        throw new Error('Failed to fetch Fear & Greed Index');
+      }
+      return await response.json();
+    }, 5, 1000); // 5 retries, starting at 1s delay (1s, 2s, 4s, 8s, 16s)
     
-    const data = await response.json();
     console.log('📊 Fear & Greed API response:', JSON.stringify(data));
     
     if (data && data.data && data.data[0]) {
@@ -4130,7 +4152,7 @@ async function loadFearGreedIndex() {
       }
     }
   } catch (error) {
-    console.error('Failed to load Fear & Greed Index:', error);
+    console.error('Failed to load Fear & Greed Index after retries:', error);
     window.gaugeState.updateFearGreed(50);
     
     // Update the text value on dashboard with fallback
