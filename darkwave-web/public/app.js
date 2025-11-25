@@ -6122,6 +6122,8 @@ window.submitV2Waitlist = submitV2Waitlist;
 // Chart Controls
 window.toggleChart = toggleChart;
 window.toggleChartDataType = toggleChartDataType;
+window.toggleChartMode = toggleChartMode;
+window.updateMainChart = updateMainChart;
 
 // Category Filter Functions
 window.filterCoinCategory = filterCoinCategory;
