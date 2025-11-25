@@ -998,67 +998,70 @@ body.theme-light .banner-title {
 @media (min-width: 769px) {
   /* Taller boxes on desktop */
   .metric-box-wide {
-    aspect-ratio: 1 / 1.1;
-    min-height: 160px;
-    padding: 8px 4px;
+    aspect-ratio: 1 / 1.2;
+    min-height: 180px;
+    padding: 10px 6px;
   }
   
-  /* Larger titles for all boxes */
+  /* Larger titles for ALL boxes - matching sizes */
   .metric-label {
-    font-size: 13px;
-    letter-spacing: 0.6px;
-    margin-bottom: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
   }
   
-  /* Larger titles for Market Cap & Volume (boxes 3 & 4) */
+  /* Ensure MC & Volume titles match F&G and Altcoin */
   .metric-box-wide:nth-child(3) .metric-label,
   .metric-box-wide:nth-child(4) .metric-label {
     font-size: 14px;
-    top: 12px;
+    font-weight: 700;
+    top: 14px;
   }
   
   /* Larger values for Fear & Greed and Altcoin Season (boxes 1 & 2) */
   .metric-box-wide:nth-child(1) .gauge-value-display,
   .metric-box-wide:nth-child(2) .gauge-value-display {
-    font-size: 22px;
+    font-size: 26px;
     font-weight: 800;
-    margin: 8px 0 4px 0;
+    margin: 10px 0 6px 0;
   }
   
-  /* Larger gauge canvas on desktop */
+  /* Much larger gauge canvas on desktop */
   .gauge-container {
-    min-height: 120px;
+    min-height: 140px;
   }
   
   .gauge-container canvas {
-    height: 100px;
-    transform: scale(1.6);
-    margin-top: -5px;
+    height: 120px;
+    transform: scale(2.0);
+    margin-top: 0;
   }
   
   /* Larger values for Market Cap & Volume (boxes 3 & 4) */
   .metric-box-wide:nth-child(3) .gauge-value-display,
   .metric-box-wide:nth-child(4) .gauge-value-display {
-    font-size: 28px;
+    font-size: 34px;
     font-weight: 800;
   }
   
-  /* Move percentage change closer to value (right under it) */
+  /* Larger percentage change right under value */
   .metric-box-wide:nth-child(3) .metric-change,
   .metric-box-wide:nth-child(4) .metric-change {
     position: absolute;
-    top: calc(50% + 22px);
+    top: calc(50% + 26px);
+    bottom: auto;
+    font-size: 18px;
+    font-weight: 700;
+  }
+  
+  /* Volume flow indicator - larger and positioned below % change */
+  .metric-box-wide:nth-child(4) .volume-flow-indicator {
+    position: absolute;
+    top: calc(50% + 52px);
     bottom: auto;
     font-size: 14px;
     font-weight: 600;
-  }
-  
-  /* Volume flow indicator positioned just below % change */
-  .metric-box-wide:nth-child(4) .volume-flow-indicator {
-    position: absolute;
-    top: calc(50% + 44px);
-    bottom: auto;
-    font-size: 12px;
   }
 }
 
