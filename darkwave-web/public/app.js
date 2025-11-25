@@ -1068,12 +1068,16 @@ function initPersona() {
   
   if (savedCatMode === 'off') {
     // Initialize in OFF mode
+    if (window.personaManager) {
+      personaManager.setPersona('off');
+    }
     updatePersonaUI('off');
     updateFloatingButtons('off');
+    updateAllCatImages('off');
     if (window.hideSeekEnabled !== undefined) {
       window.hideSeekEnabled = false;
     }
-    console.log('🎙️ Commentary Mode: OFF');
+    console.log('🔇 Commentary Mode: OFF');
     
     // Refresh gauges to show regular needles
     if (typeof refreshAllGauges === 'function') {
@@ -1125,6 +1129,11 @@ function setPersonaMode(mode) {
       window.setCryptoCatMode('off');
     }
     
+    // Set persona to off (triggers personaChanged event)
+    if (window.personaManager) {
+      personaManager.setPersona('off');
+    }
+    
     // Disable hide and seek
     if (typeof window.hideSeekEnabled !== 'undefined') {
       window.hideSeekEnabled = false;
@@ -1137,8 +1146,9 @@ function setPersonaMode(mode) {
     // Update UI buttons
     updatePersonaUI('off');
     updateFloatingButtons('off');
+    updateAllCatImages('off');
     
-    console.log('🎙️ Commentary Mode set to: off');
+    console.log('🔇 Commentary Mode set to: OFF');
     
     // Refresh gauges to show regular needles
     if (typeof refreshAllGauges === 'function') {

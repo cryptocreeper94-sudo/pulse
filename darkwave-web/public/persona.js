@@ -64,7 +64,7 @@ class PersonaManager {
 
   loadFromStorage() {
     const stored = localStorage.getItem(this.STORAGE_KEY);
-    if (stored === 'casual' || stored === 'business' || stored === 'agent') {
+    if (stored === 'casual' || stored === 'business' || stored === 'agent' || stored === 'off') {
       return stored;
     }
     return 'agent';
@@ -75,7 +75,8 @@ class PersonaManager {
   }
 
   setPersona(mode) {
-    if (mode !== 'business' && mode !== 'casual' && mode !== 'agent') {
+    const validModes = ['business', 'casual', 'agent', 'off'];
+    if (!validModes.includes(mode)) {
       console.error('Invalid persona mode:', mode);
       return;
     }
@@ -89,7 +90,7 @@ class PersonaManager {
   }
 
   togglePersona() {
-    const modes = ['agent', 'business', 'casual'];
+    const modes = ['agent', 'business', 'casual', 'off'];
     const currentIndex = modes.indexOf(this.currentPersona);
     const newMode = modes[(currentIndex + 1) % modes.length];
     this.setPersona(newMode);
