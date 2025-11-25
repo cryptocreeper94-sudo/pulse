@@ -1534,6 +1534,8 @@ function toggleChart(chartType) {
   const mainSparklineBtn = document.getElementById('mainSparklineBtn');
   const mainCandleBtn = document.getElementById('mainCandleBtn');
   
+  console.log('📊 Toggling chart to:', chartType);
+  
   // Remove active from all canvases
   sparkline.classList.remove('active');
   candle.classList.remove('active');
@@ -1546,9 +1548,27 @@ function toggleChart(chartType) {
   if (chartType === 'sparkline') {
     sparkline.classList.add('active');
     if (mainSparklineBtn) mainSparklineBtn.classList.add('active');
+    // Force resize and redraw after becoming visible
+    setTimeout(() => {
+      if (dashboardSparklineChart) {
+        const width = sparkline.clientWidth || 600;
+        dashboardSparklineChart.applyOptions({ width });
+        dashboardSparklineChart.timeScale().fitContent();
+        console.log('✅ Sparkline chart resized to width:', width);
+      }
+    }, 50);
   } else {
     candle.classList.add('active');
     if (mainCandleBtn) mainCandleBtn.classList.add('active');
+    // Force resize and redraw after becoming visible
+    setTimeout(() => {
+      if (dashboardCandleChart) {
+        const width = candle.clientWidth || 600;
+        dashboardCandleChart.applyOptions({ width });
+        dashboardCandleChart.timeScale().fitContent();
+        console.log('✅ Candlestick chart resized to width:', width);
+      }
+    }, 50);
   }
 }
 

@@ -737,8 +737,8 @@ export const mastra = new Mastra({
         path: "/api/crypto/market-chart",
         method: "GET",
         createHandler: async ({ mastra }) => {
-          // In-memory cache for market chart data (60 second TTL)
-          let chartCache: { data: any; timestamp: number; interval: string } | null = null;
+          // In-memory cache for market chart data (60 second TTL) - keyed by interval
+          const chartCacheMap: Map<string, { data: any; timestamp: number }> = new Map();
           const CACHE_TTL_MS = 60000; // 60 seconds
           
           return async (c: any) => {
@@ -747,76 +747,116 @@ export const mastra = new Mastra({
               const logger = mastra.getLogger();
               const currentInterval = interval || '60';
               
-              // Return cached data if still valid
-              if (chartCache && 
-                  chartCache.interval === currentInterval && 
-                  (Date.now() - chartCache.timestamp) < CACHE_TTL_MS) {
-                logger?.info('📦 [MarketChart] Returning cached data');
-                return c.json(chartCache.data);
+              // Return cached data if still valid for this specific interval
+              const cachedEntry = chartCacheMap.get(currentInterval);
+              if (cachedEntry && (Date.now() - cachedEntry.timestamp) < CACHE_TTL_MS) {
+                logger?.info('📦 [MarketChart] Returning cached data for interval', { interval: currentInterval });
+                return c.json(cachedEntry.data);
               }
               
               logger?.info('📊 [MarketChart] Fetching fresh data from CoinGecko', { interval: currentInterval });
               
-              // Use CoinGecko API for BTC market chart data (more reliable, free tier friendly)
-              // CoinGecko OHLC API only accepts specific days values: 1, 7, 14, 30, 90, 180, 365, max
               const intervalMinutes = parseInt(currentInterval) || 60;
-              let days: number | string = 1; // Default to 1 day
-              if (intervalMinutes <= 60) days = 1;
-              else if (intervalMinutes <= 240) days = 7;
+              let days: number | string = 1;
+              if (intervalMinutes <= 1) days = 1;        // 1hr view: 1 day of minute data
+              else if (intervalMinutes <= 60) days = 1;  // 24hr view: 1 day of hourly data
+              else if (intervalMinutes <= 240) days = 7; // 7d view
               else if (intervalMinutes <= 720) days = 14;
               else if (intervalMinutes <= 1440) days = 30;
               else days = 90;
               
-              // CoinGecko market_chart endpoint - auto-selects granularity
-              const coinGeckoUrl = `https://api.coingecko.com/api/v3/coins/bitcoin/ohlc?vs_currency=usd&days=${days}`;
               const axios = (await import('axios')).default;
               
-              const response = await axios.get(coinGeckoUrl, {
+              // Fetch OHLC data for candlesticks
+              const ohlcUrl = `https://api.coingecko.com/api/v3/coins/bitcoin/ohlc?vs_currency=usd&days=${days}`;
+              const ohlcResponse = await axios.get(ohlcUrl, {
                 headers: { 'Accept': 'application/json' },
                 timeout: 10000
               });
               
-              const ohlcData = response.data;
+              // Fetch market_chart for volume data
+              const marketChartUrl = `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=${days}`;
+              const marketResponse = await axios.get(marketChartUrl, {
+                headers: { 'Accept': 'application/json' },
+                timeout: 10000
+              });
+              
+              const ohlcData = ohlcResponse.data;
+              const marketData = marketResponse.data;
               
               if (!ohlcData || !Array.isArray(ohlcData) || ohlcData.length === 0) {
                 logger?.warn('⚠️ [MarketChart] No OHLC data from CoinGecko');
-                if (chartCache && chartCache.data) {
-                  return c.json(chartCache.data);
+                if (cachedEntry && cachedEntry.data) {
+                  return c.json(cachedEntry.data);
                 }
                 return c.json({ candleData: [], sparklineData: [] });
               }
               
+              // Build volume lookup map from market_chart data
+              const volumeMap: Map<number, number> = new Map();
+              if (marketData?.total_volumes && Array.isArray(marketData.total_volumes)) {
+                marketData.total_volumes.forEach((v: number[]) => {
+                  // Round timestamp to nearest hour for matching
+                  const roundedTs = Math.floor(v[0] / 3600000) * 3600000;
+                  volumeMap.set(roundedTs, v[1]);
+                });
+              }
+              
               // CoinGecko OHLC format: [timestamp, open, high, low, close]
-              const candleData = ohlcData.map((candle: number[]) => ({
-                timestamp: candle[0],
-                open: candle[1],
-                high: candle[2],
-                low: candle[3],
-                close: candle[4],
-                volume: 0 // CoinGecko OHLC doesn't include volume
-              }));
+              const candleData = ohlcData.map((candle: number[]) => {
+                const ts = candle[0];
+                const roundedTs = Math.floor(ts / 3600000) * 3600000;
+                // Find closest volume data point
+                let volume = volumeMap.get(roundedTs) || 0;
+                if (volume === 0) {
+                  // Try finding nearby volume
+                  for (let offset = 3600000; offset <= 7200000; offset += 3600000) {
+                    volume = volumeMap.get(roundedTs - offset) || volumeMap.get(roundedTs + offset) || 0;
+                    if (volume > 0) break;
+                  }
+                }
+                return {
+                  timestamp: ts,
+                  open: candle[1],
+                  high: candle[2],
+                  low: candle[3],
+                  close: candle[4],
+                  volume: volume
+                };
+              });
               
               // Extract sparkline (just closing prices)
               const sparklineData = candleData.map((c: any) => c.close);
               
-              const responseData = { candleData, sparklineData };
+              const responseData = { candleData, sparklineData, interval: currentInterval };
               
-              // Update cache
-              chartCache = {
+              // Update cache for this interval
+              chartCacheMap.set(currentInterval, {
                 data: responseData,
-                timestamp: Date.now(),
-                interval: currentInterval
-              };
+                timestamp: Date.now()
+              });
               
-              logger?.info('✅ [MarketChart] Data cached from CoinGecko', { candleCount: candleData.length, sparklineCount: sparklineData.length });
+              // Clean old cache entries (keep last 5 intervals)
+              if (chartCacheMap.size > 5) {
+                const oldestKey = chartCacheMap.keys().next().value;
+                if (oldestKey) chartCacheMap.delete(oldestKey);
+              }
+              
+              logger?.info('✅ [MarketChart] Data cached from CoinGecko', { 
+                interval: currentInterval,
+                candleCount: candleData.length, 
+                sparklineCount: sparklineData.length,
+                hasVolume: candleData.some((c: any) => c.volume > 0)
+              });
               
               return c.json(responseData);
             } catch (error: any) {
               const logger = mastra.getLogger();
               logger?.error('❌ [MarketChart] Error fetching data', { error: error.message });
-              // Return cached data if available
-              if (chartCache && chartCache.data) {
-                return c.json(chartCache.data);
+              // Return any cached data if available
+              const cachedEntry = chartCacheMap.values().next().value;
+              if (cachedEntry && cachedEntry.data) {
+                return c.json(cachedEntry.data);
               }
               return c.json({ candleData: [], sparklineData: [] });
             }
