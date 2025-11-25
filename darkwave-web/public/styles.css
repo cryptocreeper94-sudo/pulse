@@ -866,35 +866,65 @@ body.theme-light .banner-title {
   }
 }
 
-/* Center content vertically for Market Cap and Volume boxes (3rd and 4th) */
+/* ============================================
+   MARKET CAP & VOLUME BOXES (3rd and 4th)
+   Dollar values centered on horizontal midline
+   ============================================ */
 .metric-box-wide:nth-child(3),
 .metric-box-wide:nth-child(4) {
   justify-content: center;
+  align-items: center;
   position: relative;
-  padding: 8px 4px;
+  padding: 0;
 }
 
-/* Normal flow for boxes 3 & 4 - no absolute positioning */
+/* Title at top of box */
 .metric-box-wide:nth-child(3) .metric-label,
 .metric-box-wide:nth-child(4) .metric-label {
-  position: static;
-  margin: 0 0 4px 0;
-  font-size: 11px;
+  position: absolute;
+  top: 8px;
+  left: 0;
+  right: 0;
+  margin: 0;
+  font-size: 10px;
   font-weight: 700;
+  text-align: center;
 }
 
-/* Tighten spacing for value display */
+/* Dollar value centered exactly at vertical midpoint */
 .metric-box-wide:nth-child(3) .gauge-value-display,
 .metric-box-wide:nth-child(4) .gauge-value-display {
-  margin: 0 0 2px 0;
-  font-size: 16px;
-  font-weight: 700;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  text-align: center;
+  color: #00FF41;
 }
 
+/* Percentage below the value */
 .metric-box-wide:nth-child(3) .metric-change,
 .metric-box-wide:nth-child(4) .metric-change {
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  right: 0;
   margin: 0;
   font-size: 12px;
+  text-align: center;
+}
+
+/* Volume flow indicator at bottom */
+.metric-box-wide:nth-child(4) .volume-flow-indicator {
+  position: absolute;
+  bottom: 6px;
+  left: 0;
+  right: 0;
+  text-align: center;
 }
 
 .metric-box-wide:hover {
@@ -4915,9 +4945,9 @@ body.theme-light .banner-title {
   width: 100%;
   flex: 1;
   margin: 0;
-  padding: 0 1px 0px 1px;
+  padding: 0;
   min-width: 0;
-  min-height: 0;
+  min-height: 60px;
   overflow: visible;
 }
 
@@ -4925,19 +4955,20 @@ body.theme-light .banner-title {
   max-width: 100%;
   height: auto;
   width: 100%;
+  min-height: 50px;
   display: block;
 }
 
-/* Value display above gauge */
+/* Value display above gauge - for Fear & Greed and Altcoin Season boxes */
 .gauge-value-display {
-  font-size: 10px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 800;
   color: var(--text-primary);
   text-align: center;
-  margin: 0 0 1px 0;
+  margin: 0 0 2px 0;
   line-height: 1;
   padding: 0 2px;
-  min-height: 10px;
+  min-height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -5688,13 +5719,19 @@ body.theme-light .banner-title {
     font-size: 28px !important;
   }
   
-  /* Market Cap and Volume use gauge-value-display, not gauge-value */
+  /* Market Cap and Volume - dollar values centered at midpoint */
   .metric-box-wide:nth-child(3) .gauge-value-display,
   .metric-box-wide:nth-child(4) .gauge-value-display {
+    position: absolute !important;
+    top: 50% !important;
+    left: 0 !important;
+    right: 0 !important;
+    transform: translateY(-50%) !important;
     font-size: 18px !important;
-    font-weight: 700 !important;
-    margin: 0 0 4px 0 !important;
+    font-weight: 800 !important;
+    margin: 0 !important;
     text-align: center !important;
+    color: #00FF41 !important;
   }
   
   /* Market Cap & Volume Change % display */
@@ -5874,13 +5911,19 @@ body.theme-light .banner-title {
     line-height: 1.1;
   }
   
-  /* Market Cap and Volume use gauge-value-display on mobile */
+  /* Market Cap and Volume - dollar values centered at midpoint on mobile */
   .metric-box-wide:nth-child(3) .gauge-value-display,
   .metric-box-wide:nth-child(4) .gauge-value-display {
+    position: absolute !important;
+    top: 50% !important;
+    left: 0 !important;
+    right: 0 !important;
+    transform: translateY(-50%) !important;
     font-size: 14px !important;
-    font-weight: 700 !important;
-    margin: 0 0 2px 0 !important;
+    font-weight: 800 !important;
+    margin: 0 !important;
     line-height: 1 !important;
+    color: #00FF41 !important;
   }
   
   /* Market Cap & Volume change indicators on mobile - much smaller */

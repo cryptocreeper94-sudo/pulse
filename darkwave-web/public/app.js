@@ -3829,45 +3829,60 @@ async function loadFearGreedIndex() {
     }
     
     const data = await response.json();
+    console.log('📊 Fear & Greed API response:', JSON.stringify(data));
+    
     if (data && data.data && data.data[0]) {
       const fgiData = data.data[0];
-      const value = parseInt(fgiData.value);
-      const classification = fgiData.value_classification;
+      // Handle both camelCase and snake_case field names from API
+      const rawValue = fgiData.value ?? fgiData.score ?? 50;
+      const value = parseInt(rawValue) || 50;
+      const classification = fgiData.valueClassification || fgiData.value_classification || 'Neutral';
       
-      window.gaugeState.updateFearGreed(value);
+      console.log(`📊 Fear & Greed parsed: value=${value}, classification=${classification}`);
       
-      // Update dashboard gauge with LIVE value
-      if (typeof drawFearGreedGaugeClean === 'function') {
-        drawFearGreedGaugeClean('fearGreedGauge', value);
+      if (!isNaN(value) && value >= 0 && value <= 100) {
+        window.gaugeState.updateFearGreed(value);
+        
+        // Update dashboard gauge with LIVE value
+        if (typeof drawFearGreedGaugeClean === 'function') {
+          drawFearGreedGaugeClean('fearGreedGauge', value);
+        }
+        
+        // Update the text value on dashboard
+        const fearGreedValueElement = document.getElementById('fearGreedValue');
+        if (fearGreedValueElement) {
+          fearGreedValueElement.textContent = value;
+          console.log('✅ Fear & Greed value element updated to:', value);
+        }
+        
+        // Update subtitle text
+        const fearGreedSubtitleElement = document.getElementById('fearGreedSubtitle');
+        if (fearGreedSubtitleElement) {
+          fearGreedSubtitleElement.textContent = classification;
+        }
+        
+        window.currentFearGreedData = {
+          value,
+          classification,
+          timestamp: fgiData.timestamp
+        };
+        
+        console.log(`✅ Fear & Greed Index updated: ${value} (${classification})`);
       }
-      
-      // Update the text value on dashboard
-      const fearGreedValueElement = document.getElementById('fearGreedValue');
-      if (fearGreedValueElement) {
-        fearGreedValueElement.textContent = value;
-      }
-      
-      // Update subtitle text
-      const fearGreedSubtitleElement = document.getElementById('fearGreedSubtitle');
-      if (fearGreedSubtitleElement) {
-        fearGreedSubtitleElement.textContent = classification;
-      }
-      
-      window.currentFearGreedData = {
-        value,
-        classification,
-        timestamp: fgiData.timestamp
-      };
-      
-      console.log(`✅ Fear & Greed Index updated: ${value} (${classification})`);
     }
   } catch (error) {
     console.error('Failed to load Fear & Greed Index:', error);
-    window.gaugeState.updateFearGreed(25);
+    window.gaugeState.updateFearGreed(50);
+    
+    // Update the text value on dashboard with fallback
+    const fearGreedValueElement = document.getElementById('fearGreedValue');
+    if (fearGreedValueElement) {
+      fearGreedValueElement.textContent = '50';
+    }
     
     // Update dashboard gauge with fallback value
     if (typeof drawFearGreedGaugeClean === 'function') {
-      drawFearGreedGaugeClean('fearGreedGauge', 25);
+      drawFearGreedGaugeClean('fearGreedGauge', 50);
     }
   }
 }
