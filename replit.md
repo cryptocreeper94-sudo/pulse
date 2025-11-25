@@ -10,6 +10,18 @@
 - Agent diversity: Equal distribution across age groups, gender, race, and hair color (Nov 24, 2025)
 
 ## Recent Changes (Nov 25, 2025)
+- **V2 LAUNCH CHECKLIST**: Converted V2 Details page to interactive checklist with 27 trackable tasks
+  - 6 categories: Core Platform, AI & Agents, Trading Features, Staking & Ecosystem, Mobile & Polish, Roadmap
+  - Progress bar shows completion percentage with localStorage persistence
+  - Checkboxes auto-save state and update progress in real-time
+  - Pre-checked items for features already live
+  - Countdown timer shows days/hours until Dec 25, 2025 launch
+- **STAKING TIER COLORS FIXED**: Changed bronze and silver from browns to pastels
+  - Bronze: Now purple gradient (#A78BFA → #8B5CF6)
+  - Silver: Now slate gradient (#94A3B8 → #64748B)
+- **V2 BUTTONS UPDATED**: Staking page buttons now link to v2-details tab instead of settings
+  - "🚀 UPGRADE FOR V2 ACCESS" → "🚀 V2 UPDATES & FEATURES"
+  - Hero CTA button text updated to "VIEW V2 FEATURES →"
 - **NAVIGATION UPDATED**: 7 tabs - Crypto, Stocks, Projects, Learn, Portfolio, Staking, Settings
   - Removed Community tab
   - Added Stocks tab back to main navigation

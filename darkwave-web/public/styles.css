@@ -9377,21 +9377,56 @@ body.theme-light .banner-title {
 }
 
 .active-pool-tier.bronze {
-  background: linear-gradient(135deg, #CD7F32 0%, #8B4513 100%);
-  border: 2px solid #CD7F32;
-  box-shadow: 0 4px 12px rgba(205, 127, 50, 0.3);
+  background: linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%);
+  border: 2px solid #A78BFA;
+  box-shadow: 0 4px 12px rgba(167, 139, 250, 0.3);
 }
 
 .active-pool-tier.silver {
-  background: linear-gradient(135deg, #C0C0C0 0%, #808080 100%);
-  border: 2px solid #C0C0C0;
-  box-shadow: 0 4px 12px rgba(192, 192, 192, 0.3);
+  background: linear-gradient(135deg, #94A3B8 0%, #64748B 100%);
+  border: 2px solid #94A3B8;
+  box-shadow: 0 4px 12px rgba(148, 163, 184, 0.3);
 }
 
 .active-pool-tier.gold {
   background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
   border: 2px solid #FFD700;
   box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+}
+
+/* V2 Checklist Styles */
+.v2-checklist label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px 0;
+  color: #e0e0e0;
+  transition: color 0.2s;
+}
+
+.v2-checklist label:hover {
+  color: #fff;
+}
+
+.v2-check {
+  width: 16px;
+  height: 16px;
+  accent-color: #10b981;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.v2-check:checked + span,
+.v2-checklist label:has(.v2-check:checked) {
+  color: #888;
+  text-decoration: line-through;
+}
+
+.v2-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 .active-pool-tier.platinum {

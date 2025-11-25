@@ -168,6 +168,10 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAndShowSocialsPopup();
   }, 3000);
   
+  // Initialize V2 checklist progress tracking
+  initV2Checklist();
+  updateV2Countdown();
+  
   console.log('✅ DarkWave Pulse ready');
 });
 
@@ -6805,7 +6809,65 @@ function updateV2Countdown() {
         display.textContent = `${hours}h remaining`;
       }
     }
+    
+    const countdown = document.getElementById('v2Countdown');
+    if (countdown) {
+      countdown.textContent = `${days} days, ${hours} hours remaining`;
+    }
   }
+  
+  updateV2ChecklistProgress();
+}
+
+function updateV2ChecklistProgress() {
+  const allChecks = document.querySelectorAll('.v2-check');
+  const checkedCount = document.querySelectorAll('.v2-check:checked').length;
+  const totalCount = allChecks.length;
+  const percentage = totalCount > 0 ? Math.round((checkedCount / totalCount) * 100) : 0;
+  
+  const progressFill = document.getElementById('v2ProgressFill');
+  const progressText = document.getElementById('v2ProgressText');
+  
+  if (progressFill) {
+    progressFill.style.width = `${percentage}%`;
+  }
+  if (progressText) {
+    progressText.textContent = `${checkedCount} of ${totalCount} tasks complete (${percentage}%)`;
+  }
+  
+  const state = Array.from(allChecks)
+    .filter(cb => cb.dataset.task)
+    .map(cb => ({ task: cb.dataset.task, checked: cb.checked }));
+  
+  if (state.length > 0) {
+    localStorage.setItem('v2ChecklistState', JSON.stringify(state));
+  }
+}
+
+function loadV2ChecklistState() {
+  const saved = localStorage.getItem('v2ChecklistState');
+  if (saved) {
+    try {
+      const state = JSON.parse(saved);
+      state.forEach(item => {
+        const checkbox = document.querySelector(`.v2-check[data-task="${item.task}"]`);
+        if (checkbox) {
+          checkbox.checked = item.checked;
+        }
+      });
+    } catch (e) {
+      console.warn('Failed to load V2 checklist state');
+    }
+  }
+  updateV2ChecklistProgress();
+}
+
+function initV2Checklist() {
+  const checkboxes = document.querySelectorAll('.v2-check');
+  checkboxes.forEach(cb => {
+    cb.addEventListener('change', updateV2ChecklistProgress);
+  });
+  loadV2ChecklistState();
 }
 
 function closeSocialsPopup() {
@@ -7245,6 +7307,9 @@ window.subscribeNewsletter = subscribeNewsletter;
 window.loadUserReferralCode = loadUserReferralCode;
 window.copyReferralCode = copyReferralCode;
 window.updateV2Countdown = updateV2Countdown;
+window.updateV2ChecklistProgress = updateV2ChecklistProgress;
+window.initV2Checklist = initV2Checklist;
+window.loadV2ChecklistState = loadV2ChecklistState;
 window.openFloatingAI = openFloatingAI;
 window.closeFloatingAI = closeFloatingAI;
 window.loadChatMessages = loadChatMessages;

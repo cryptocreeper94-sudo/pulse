@@ -1598,8 +1598,8 @@
                 Revolutionary hourly compounding rewards. Stake PULSE, wake up richer. Solana-speed execution with near-zero fees.
               </p>
               
-              <button class="v2-upgrade-btn" onclick="switchTab('settings')" style="width: 100%; margin-bottom: 12px; font-size: 14px; font-weight: 900; padding: 14px; background: linear-gradient(135deg, #3861FB, #8338EC); box-shadow: 0 4px 20px rgba(56, 97, 251, 0.4); cursor: pointer;">
-                🚀 UPGRADE FOR V2 ACCESS
+              <button class="v2-upgrade-btn" onclick="switchTab('v2-details')" style="width: 100%; margin-bottom: 12px; font-size: 14px; font-weight: 900; padding: 14px; background: linear-gradient(135deg, #3861FB, #8338EC); box-shadow: 0 4px 20px rgba(56, 97, 251, 0.4); cursor: pointer;">
+                🚀 V2 UPDATES & FEATURES
               </button>
               
               <button class="v2-dev-preview-btn" onclick="unlockStakingPreview()" style="width: 100%; font-size: 13px; font-weight: 700; padding: 12px; background: linear-gradient(135deg, #00D9FF, #0099CC); cursor: pointer;">
@@ -1672,7 +1672,7 @@
 
             <div class="hero-cta-box">
               <p class="hero-cta-text">✨ <strong>EARLY ACCESS:</strong> Subscribe now to reserve your V2 founding spot</p>
-              <button class="hero-reserve-btn" onclick="switchTab('settings')">RESERVE MY V2 PASS →</button>
+              <button class="hero-reserve-btn" onclick="switchTab('v2-details')">VIEW V2 FEATURES →</button>
             </div>
           </div>
 
@@ -3704,54 +3704,94 @@ Thanks for being here — let's build something powerful together!</textarea>
         <button class="close-btn-circle" onclick="switchTab('crypto')">×</button>
         
         <div class="widget">
-          <h3>VERSION 2 DETAILS</h3>
+          <h3>V2 LAUNCH CHECKLIST</h3>
           
           <!-- V2 Launch Date & Countdown -->
           <div style="background: linear-gradient(135deg, rgba(56, 97, 251, 0.15), rgba(131, 56, 236, 0.08)); border: 1px solid rgba(56, 97, 251, 0.3); border-radius: 8px; padding: 15px; margin-bottom: 20px; text-align: center;">
             <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 8px;">Official Launch</div>
             <div style="font-size: 24px; font-weight: 900; color: #3861FB; margin-bottom: 4px;">DECEMBER 25, 2025</div>
             <div id="v2Countdown" style="font-size: 12px; color: rgba(255,255,255,0.8); font-weight: 600;"></div>
+            <div id="v2ProgressBar" style="margin-top: 12px; background: rgba(0,0,0,0.3); border-radius: 4px; height: 8px; overflow: hidden;">
+              <div id="v2ProgressFill" style="background: linear-gradient(90deg, #10b981, #3861FB); height: 100%; width: 0%; transition: width 0.5s;"></div>
+            </div>
+            <div id="v2ProgressText" style="font-size: 10px; color: #888; margin-top: 4px;">0 of 0 tasks complete</div>
           </div>
 
-          <!-- Core V2 Features (2 Column) -->
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
-            <!-- Column 1 -->
-            <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 12px;">
-              <div style="font-size: 11px; font-weight: 700; color: #10b981; margin-bottom: 8px;">✅ LIVE NOW</div>
-              <ul style="font-size: 11px; color: #e0e0e0; margin: 0; padding-left: 16px; line-height: 1.6;">
-                <li>18 AI Agents</li>
-                <li>20 NFT Cards</li>
-                <li>Crypto Analysis</li>
-                <li>Stock Charts</li>
-                <li>DEX Pairs</li>
-              </ul>
-            </div>
-            
-            <!-- Column 2 -->
-            <div style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 8px; padding: 12px;">
-              <div style="font-size: 11px; font-weight: 700; color: #8b5cf6; margin-bottom: 8px;">🚀 V2 EXCLUSIVE</div>
-              <ul style="font-size: 11px; color: #e0e0e0; margin: 0; padding-left: 16px; line-height: 1.6;">
-                <li>Trading Orders</li>
-                <li>Wallet Sync</li>
-                <li>Sniper Mode</li>
-                <li>Portfolio Track</li>
-                <li>Staking Rewards</li>
-              </ul>
+          <!-- Core Platform (Must Have) -->
+          <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+            <div style="font-size: 12px; font-weight: 700; color: #10b981; margin-bottom: 10px;">🏗️ CORE PLATFORM</div>
+            <div class="v2-checklist" style="font-size: 11px; line-height: 2;">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="macro-charts" checked> Macro BTC/Market Charts</label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="candlestick"> Candlestick Chart Toggle</label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="timeframes"> All Timeframes Working</label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="volume-chart"> Volume Chart Mode</label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="fear-greed" checked> Fear & Greed Index</label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="altcoin-season" checked> Altcoin Season Gauge</label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="coin-table" checked> Coin Table & Filters</label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="dex-pairs" checked> DEX Pair Analysis</label>
             </div>
           </div>
 
-          <!-- Roadmap Phases (Compact) -->
-          <div style="background: rgba(255, 165, 0, 0.1); border: 1px solid rgba(255, 165, 0, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 20px;">
-            <div style="font-size: 11px; font-weight: 700; color: #ffa500; text-transform: uppercase; margin-bottom: 10px;">📅 2025-2028 ROADMAP</div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 10px; color: #e0e0e0; line-height: 1.5;">
-              <div><strong style="color: #10b981;">Q4 2025:</strong> Wallet</div>
-              <div><strong style="color: #3861fb;">H1 2026:</strong> Marketplace</div>
-              <div><strong style="color: #8b5cf6;">Q2 2026:</strong> Launchpad</div>
-              <div><strong style="color: #ffa500;">2027:</strong> Debit Card</div>
+          <!-- AI & Agents -->
+          <div style="background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+            <div style="font-size: 12px; font-weight: 700; color: #8b5cf6; margin-bottom: 10px;">🤖 AI & AGENTS</div>
+            <div class="v2-checklist" style="font-size: 11px; line-height: 2;">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="18-agents" checked> 18 AI Agent Personas</label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="agent-chat"> Agent Chat Interface</label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="agent-analysis"> Agent-Powered Analysis</label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="20-nfts" checked> 20 NFT Trading Cards</label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="card-carousel" checked> Trading Card Carousel</label>
             </div>
           </div>
 
-          <!-- Legacy Founder Info -->
+          <!-- Trading Features (V2 Exclusive) -->
+          <div style="background: rgba(56, 97, 251, 0.08); border: 1px solid rgba(56, 97, 251, 0.25); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+            <div style="font-size: 12px; font-weight: 700; color: #3861FB; margin-bottom: 10px;">📈 TRADING FEATURES (V2)</div>
+            <div class="v2-checklist" style="font-size: 11px; line-height: 2;">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="buy-sniper"> Buy Sniper Orders</label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="sell-sniper"> Sell Sniper Orders</label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="wallet-connect"> Wallet Connect</label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="portfolio-track"> Portfolio Tracking</label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="price-alerts"> Price Alerts</label>
+            </div>
+          </div>
+
+          <!-- Staking & Ecosystem -->
+          <div style="background: rgba(255, 165, 0, 0.08); border: 1px solid rgba(255, 165, 0, 0.25); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+            <div style="font-size: 12px; font-weight: 700; color: #ffa500; margin-bottom: 10px;">💰 STAKING & ECOSYSTEM</div>
+            <div class="v2-checklist" style="font-size: 11px; line-height: 2;">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="staking-ui"> Staking Dashboard UI</label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="staking-contract"> Staking Smart Contract</label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="pulse-token"> PULSE Token Launch</label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="rewards-calc"> Rewards Calculator</label>
+            </div>
+          </div>
+
+          <!-- Mobile & Polish -->
+          <div style="background: rgba(236, 72, 153, 0.08); border: 1px solid rgba(236, 72, 153, 0.25); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+            <div style="font-size: 12px; font-weight: 700; color: #ec4899; margin-bottom: 10px;">📱 MOBILE & POLISH</div>
+            <div class="v2-checklist" style="font-size: 11px; line-height: 2;">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="mobile-responsive" checked> Mobile Responsive Layout</label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="touch-gestures"> Touch Gesture Support</label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="expo-app"> Expo Mobile App Build</label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="play-store"> Google Play Store</label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="app-store"> Apple App Store</label>
+            </div>
+          </div>
+
+          <!-- Roadmap Timeline -->
+          <div style="background: rgba(100, 100, 100, 0.1); border: 1px solid rgba(100, 100, 100, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+            <div style="font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 10px;">📅 ROADMAP</div>
+            <div style="font-size: 10px; line-height: 1.8; color: #ccc;">
+              <div style="display: flex; justify-content: space-between;"><span><strong style="color: #10b981;">Dec 25, 2025:</strong> V2 Launch</span><span style="color: #10b981;">●</span></div>
+              <div style="display: flex; justify-content: space-between;"><span><strong style="color: #3861fb;">Q1 2026:</strong> Wallet & Portfolio</span><span style="color: #888;">○</span></div>
+              <div style="display: flex; justify-content: space-between;"><span><strong style="color: #8b5cf6;">Q2 2026:</strong> NFT Marketplace</span><span style="color: #888;">○</span></div>
+              <div style="display: flex; justify-content: space-between;"><span><strong style="color: #ffa500;">H2 2026:</strong> Token Launchpad</span><span style="color: #888;">○</span></div>
+              <div style="display: flex; justify-content: space-between;"><span><strong style="color: #ec4899;">2027:</strong> DarkWave Debit Card</span><span style="color: #888;">○</span></div>
+            </div>
+          </div>
+
+          <!-- Legacy Founder -->
           <div style="background: rgba(220, 38, 38, 0.1); border: 1px solid rgba(220, 38, 38, 0.3); border-radius: 8px; padding: 12px;">
             <div style="font-size: 11px; font-weight: 700; color: #dc2626; text-transform: uppercase; margin-bottom: 8px;">💎 LEGACY FOUNDER ENDS</div>
             <div style="font-size: 12px; color: rgba(255,255,255,0.8); margin-bottom: 8px;"><span id="legacyDaysLeft">37 days</span> remaining</div>
