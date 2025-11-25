@@ -6,17 +6,17 @@ class PersonaManager {
     
     this.imageMap = {
       business: {
-        explaining: '/crypto-cat-images/business-cat-explaining.jpg',
-        facepalm: '/crypto-cat-images/business-cat-facepalm.jpg',
-        pointing: '/crypto-cat-images/business-cat-pointing.jpg',
-        sitting: '/crypto-cat-images/business-cat-sitting.jpg'
+        explaining: '/trading-cards/Grumpy_cat_neutral_pose_ba4a1b4d.png',
+        facepalm: '/trading-cards/Grumpy_cat_facepalm_pose_2fdc5a6a.png',
+        pointing: '/trading-cards/Grumpy_cat_neutral_pose_ba4a1b4d.png',
+        sitting: '/trading-cards/Grumpy_cat_arms_crossed_f8e46099.png'
       },
       casual: {
-        explaining: '/crypto-cat-images/sarcastic-cat.png',
-        facepalm: '/crypto-cat-images/sarcastic-cat-facepalm.jpg',
-        pointing: '/crypto-cat-images/sarcastic-cat-pointing.jpg',
-        sitting: '/crypto-cat-images/sarcastic-cat-coins.jpg',
-        sunglasses: '/crypto-cat-images/sarcastic-cat-sunglasses.jpg'
+        explaining: '/trading-cards/Grumpy_cat_sideeye_pose_5e52df88.png',
+        facepalm: '/trading-cards/Grumpy_cat_facepalm_pose_2fdc5a6a.png',
+        pointing: '/trading-cards/Grumpy_cat_sideeye_pose_5e52df88.png',
+        sitting: '/trading-cards/Grumpy_cat_arms_crossed_f8e46099.png',
+        sunglasses: '/trading-cards/Grumpy_cat_fist_pump_e028a55a.png'
       }
     };
     

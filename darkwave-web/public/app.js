@@ -171,9 +171,9 @@ function openV2FeaturesModal() {
     const persona = window.personaManager ? personaManager.getPersona() : 'business';
     if (catImage) {
       if (persona === 'casual') {
-        catImage.src = '/crypto-cat-images/casual-cat-explaining.jpg';
+        catImage.src = '/trading-cards/Grumpy_cat_arms_crossed_f8e46099.png';
       } else {
-        catImage.src = '/crypto-cat-images/business-cat-explaining.jpg';
+        catImage.src = '/trading-cards/Grumpy_cat_neutral_pose_ba4a1b4d.png';
       }
     }
     
@@ -213,10 +213,10 @@ function openDisclaimerModal() {
     
     if (catImage && catQuote) {
       if (persona === 'casual') {
-        catImage.src = '/crypto-cat-images/casual-cat-pointing.jpg';
+        catImage.src = '/trading-cards/Grumpy_cat_sideeye_pose_5e52df88.png';
         catQuote.textContent = `"${casualQuotes[Math.floor(Math.random() * casualQuotes.length)]}"`;
       } else {
-        catImage.src = '/crypto-cat-images/business-cat-pointing.jpg';
+        catImage.src = '/trading-cards/Grumpy_cat_neutral_pose_ba4a1b4d.png';
         catQuote.textContent = `"${businessQuotes[Math.floor(Math.random() * businessQuotes.length)]}"`;
       }
     }
@@ -1502,7 +1502,7 @@ function updateAllCatImages(persona) {
     if (persona === 'agent') {
       floatingCatImage.src = agentImage;
     } else if (persona === 'off') {
-      floatingCatImage.src = '/crypto-cat-images/business-cat-pointing.jpg';
+      floatingCatImage.src = '/trading-cards/Grumpy_cat_neutral_pose_ba4a1b4d.png';
     } else {
       floatingCatImage.src = personaManager.getImage('pointing');
     }
@@ -4311,10 +4311,10 @@ function drawAltSeasonGauge(canvas, value, options = {}) {
 // Get random Crypto Cat image based on persona
 function getRandomCatImage() {
   const businessCatImages = [
-    '/crypto-cat-images/business-cat-pointing.jpg',
-    '/crypto-cat-images/business-cat-explaining.jpg',
-    '/crypto-cat-images/business-cat-sitting.jpg',
-    '/crypto-cat-images/business-cat-facepalm.jpg'
+    '/trading-cards/Grumpy_cat_neutral_pose_ba4a1b4d.png',
+    '/trading-cards/Grumpy_cat_arms_crossed_f8e46099.png',
+    '/trading-cards/Grumpy_cat_facepalm_pose_2fdc5a6a.png',
+    '/trading-cards/Grumpy_cat_angry_pose_63318575.png'
   ];
   
   // Random selection from business cat images
@@ -4785,8 +4785,8 @@ function openCoinPopup(coinId) {
   // Single panel with optional cat (only if mode is selected)
   const catImage = persona !== 'off' 
     ? (persona === 'business' 
-      ? '/crypto-cat-images/business-cat-pointing.jpg'
-      : '/crypto-cat-images/sarcastic-cat-pointing.jpg')
+      ? '/trading-cards/Grumpy_cat_neutral_pose_ba4a1b4d.png'
+      : '/trading-cards/Grumpy_cat_sideeye_pose_5e52df88.png')
     : null;
   
   const catHtml = catImage ? `

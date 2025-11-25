@@ -10,28 +10,34 @@
 - Agent diversity: Equal distribution across age groups, gender, race, and hair color (Nov 24, 2025)
 
 ## Recent Changes (Nov 25, 2025)
-- **STAKING TAB RESTORED TO NAVIGATION**: Added 💰 Staking tab back to main navigation (between Community and Settings)
-  - Navigation now has 7 tabs: Markets, Projects, Learn, Portfolio, Community, Staking, Settings
-  - Beta V1 and Legacy Founder buttons now work correctly (navigate to staking)
-- **TRUTH TAB REDESIGN**: Replaced giant red hero box with compact header bar
-  - Small pill icon (💊) and title on left, close button (×) on right
-  - Much more low-profile design
-  - Visible close button that returns to Markets tab
-- **MOBILE OVERFLOW FIXES**: Added comprehensive mobile formatting fixes
-  - Global max-width: 100vw on all elements to prevent horizontal scroll
-  - Force grids to single column on mobile (768px and below)
-  - Word-wrap and overflow-wrap on all text elements
-  - Reduced font sizes and padding for mobile
-  - Extra small screen fixes (400px breakpoint)
-- **SWITCHTAB FUNCTION IMPROVED**: Now works even without matching nav button
-  - Validates target pane first, then nav button
-  - Scrolls to top of page on tab switch
-- **CRITICAL HTML STRUCTURE FIX**: Fixed tab navigation issues caused by unbalanced div tags
-  - Removed 2 extra closing `</div>` tags in staking tab that caused staking content to appear on main crypto page
-  - Removed 1 orphan closing `</div>` after footer that broke overall page structure
-  - HTML now properly balanced: 1119 opening divs = 1119 closing divs
-  - Settings tab now works correctly instead of redirecting to staking
-  - All tab content now properly contained within their respective tab-pane containers
+- **NAVIGATION UPDATED**: 7 tabs - Crypto, Stocks, Projects, Learn, Portfolio, Staking, Settings
+  - Removed Community tab
+  - Added Stocks tab back to main navigation
+- **INFO BANNER BUTTONS FIXED**: Moved from inline styles to CSS classes
+  - Responsive mobile layout (emoji-only on small screens, stack on very small)
+  - All 3 buttons now visible on 320px screens
+  - Touch targets 44px minimum height
+  - Added hover effects with subtle glow on pointer devices
+- **MOBILE LAYOUT REFINED**: Removed aggressive CSS rules that broke layouts
+  - Removed forced single-column grids
+  - Added targeted overflow fixes only where needed
+  - Better text containment with overflow-wrap
+- **VISUAL POLISH**: Added depth and hover effects to cards
+  - Metric boxes have subtle shadows and inner glow
+  - Hover effects on pointer devices only (no bouncy on touch)
+  - Cards scale slightly on hover for depth
+- **FLOATING BUTTON MODES FIXED**: All four modes now work correctly
+  - Off mode: Shows emoji buttons (🤖, 💬) at 40% opacity
+  - Agent mode: Shows agent cutout images
+  - Business/Casual cat mode: Shows Grumpy cat images from trading-cards directory
+  - Added fallback handling if images fail to load
+- **CAT IMAGE PATHS FIXED**: Updated all paths from /crypto-cat-images/ to /trading-cards/
+  - PersonaManager, app.js, and all modal/popup code now uses correct paths
+- **DATA FETCH RETRY LOGIC**: Added retryWithBackoff function for API calls
+  - 5 retries with exponential backoff (1s, 2s, 4s, 8s, 16s)
+  - Handles backend startup delays gracefully
+  - Loading states shown while retrying
+- **SENTRY FIXED**: Removed integrity attribute that was causing CDN blocking
 
 ## Recent Changes (Nov 24, 2025)
 - **ANALYTICS BUTTON & MULTI-CHAIN SEARCH FIXES**: 
