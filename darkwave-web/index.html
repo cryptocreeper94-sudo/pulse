@@ -2485,16 +2485,18 @@
           </div>
           <div class="setting-item">
             <label>Commentary Mode</label>
-            <p style="font-size: 11px; color: #888; margin: 6px 0 10px 0; line-height: 1.5;">Choose how your AI guide talks to you</p>
-            <div class="persona-toggle">
-              <button class="persona-btn" id="businessBtn" onclick="setPersonaMode('business')">Business</button>
-              <button class="persona-btn active" id="casualBtn" onclick="setPersonaMode('casual')">Casual</button>
-              <button class="persona-btn" id="offBtn" onclick="setPersonaMode('off')">OFF</button>
+            <p style="font-size: 11px; color: #888; margin: 6px 0 10px 0; line-height: 1.5;">Choose your AI assistant style</p>
+            <div class="persona-toggle" style="display: flex; flex-wrap: wrap; gap: 6px;">
+              <button class="persona-btn active" id="agentBtn" onclick="setPersonaMode('agent')" style="flex: 1; min-width: 70px;">🕵️ Agent</button>
+              <button class="persona-btn" id="businessBtn" onclick="setPersonaMode('business')" style="flex: 1; min-width: 70px;">🐱 Business</button>
+              <button class="persona-btn" id="casualBtn" onclick="setPersonaMode('casual')" style="flex: 1; min-width: 70px;">😼 Casual</button>
+              <button class="persona-btn" id="offBtn" onclick="setPersonaMode('off')" style="flex: 1; min-width: 70px;">🔇 OFF</button>
             </div>
             <ul style="font-size: 11px; color: #888; margin-top: 8px; padding-left: 20px; line-height: 1.6;">
-              <li><strong>Business:</strong> Professional tone, helpful tips</li>
-              <li><strong>Casual:</strong> Friendly tone, fun personality</li>
-              <li><strong>OFF:</strong> No AI guide, clean view</li>
+              <li><strong>Agent:</strong> Professional agents with spy-themed intel (default)</li>
+              <li><strong>Business:</strong> Crypto Cat with professional analysis</li>
+              <li><strong>Casual:</strong> Crypto Cat with witty, sarcastic personality</li>
+              <li><strong>OFF:</strong> No characters, clean minimal interface</li>
             </ul>
           </div>
         </div>
@@ -4883,13 +4885,15 @@ Thanks for being here — let's build something powerful together!</textarea>
     </div>
   </div>
 
-  <!-- Floating Stacked Circular Buttons -->
-  <div class="floating-buttons-stack">
-    <button class="floating-btn floating-btn-community" onclick="switchTab('community')" title="Community Chat">
-      <span style="font-size: 20px;">💬</span>
+  <!-- Floating Stacked Circular Buttons - Mode Aware -->
+  <div class="floating-buttons-stack" id="floatingButtonsStack">
+    <button class="floating-btn floating-btn-community" id="floatingCommunityBtn" onclick="switchTab('community')" title="Community Chat">
+      <span class="floating-btn-emoji">💬</span>
+      <img class="floating-btn-character" id="floatingCommunityCharacter" src="" alt="" style="display: none;" />
     </button>
-    <button class="floating-btn floating-btn-ai" onclick="openFloatingAI()" title="AI Analyst">
-      <span style="font-size: 20px;">🤖</span>
+    <button class="floating-btn floating-btn-ai" id="floatingAIBtn" onclick="openFloatingAI()" title="AI Analyst">
+      <span class="floating-btn-emoji">🤖</span>
+      <img class="floating-btn-character" id="floatingAICharacter" src="" alt="" style="display: none;" />
     </button>
   </div>
 
@@ -4972,6 +4976,8 @@ Thanks for being here — let's build something powerful together!</textarea>
       transition: all 0.3s ease;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       opacity: 0.7;
+      position: relative;
+      overflow: hidden;
     }
     
     .floating-btn:hover {
@@ -4997,6 +5003,49 @@ Thanks for being here — let's build something powerful together!</textarea>
     .floating-btn-ai:hover {
       background: rgba(139, 92, 246, 0.6);
       box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+    }
+    
+    /* Character mode floating buttons */
+    .floating-btn.character-mode {
+      background: transparent !important;
+      box-shadow: none !important;
+      opacity: 1 !important;
+      overflow: visible;
+    }
+    
+    .floating-btn.character-mode:hover {
+      background: transparent !important;
+      transform: scale(1.15);
+      filter: drop-shadow(0 4px 12px rgba(56, 97, 251, 0.5));
+    }
+    
+    .floating-btn-character {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+      object-position: center;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.4));
+    }
+    
+    .floating-btn.character-mode .floating-btn-emoji {
+      display: none;
+    }
+    
+    .floating-btn.character-mode .floating-btn-character {
+      display: block;
+    }
+    
+    /* Cat mode - round crop */
+    .floating-btn.cat-mode .floating-btn-character {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      object-fit: cover;
     }
     
     .floating-ai-header {

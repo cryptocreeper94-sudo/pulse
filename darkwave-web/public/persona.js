@@ -2,6 +2,7 @@ class PersonaManager {
   constructor() {
     this.STORAGE_KEY = 'darkwave-persona-mode';
     this.currentPersona = this.loadFromStorage();
+    this.currentAgent = null;
     
     this.imageMap = {
       business: {
@@ -18,11 +19,55 @@ class PersonaManager {
         sunglasses: '/crypto-cat-images/sarcastic-cat-sunglasses.jpg'
       }
     };
+    
+    this.agentQuotes = [
+      "Intel confirmed. Markets are moving.",
+      "Running analysis protocols now.",
+      "My sources indicate volatility ahead.",
+      "Asset acquired. Monitoring commenced.",
+      "Pattern recognition complete.",
+      "Field report: Market conditions optimal.",
+      "Decrypting market signals...",
+      "Threat level: manageable. Proceed.",
+      "Asset verified. Trust rating: high.",
+      "Surveillance complete. Data secured.",
+      "Neural network analysis in progress.",
+      "Target acquired. Initiating deep scan.",
+      "Blockchain intel verified.",
+      "Risk assessment: calculated.",
+      "Signal intercepted. Processing...",
+      "Market infiltration successful.",
+      "Encoded data decrypted.",
+      "Strategic position locked.",
+      "Covert operations: nominal.",
+      "Mission brief: portfolio optimization.",
+      "Extracting alpha from noise.",
+      "Perimeter secured. Safe to trade.",
+      "Intelligence gathering complete.",
+      "Agent protocols activated.",
+      "Deploying predictive algorithms."
+    ];
+    
+    this.agentGreetings = [
+      "Agent {name} reporting for duty. What's your mission?",
+      "This is {name}. I've been monitoring the markets. How can I assist?",
+      "{name} here. Ready to analyze any asset you need.",
+      "Agent {name} online. What intel do you require?",
+      "Operative {name} at your service. Target acquired?",
+      "{name} checking in. The blockchain never sleeps, and neither do I.",
+      "Agent {name} standing by. What's your objective?",
+      "This is {name}. I've got eyes on the market. What do you need?",
+      "{name} reporting. All systems operational.",
+      "Agent {name} activated. Let's find your alpha."
+    ];
   }
 
   loadFromStorage() {
     const stored = localStorage.getItem(this.STORAGE_KEY);
-    return stored === 'casual' ? 'casual' : 'business';
+    if (stored === 'casual' || stored === 'business' || stored === 'agent') {
+      return stored;
+    }
+    return 'agent';
   }
 
   getPersona() {
@@ -30,7 +75,7 @@ class PersonaManager {
   }
 
   setPersona(mode) {
-    if (mode !== 'business' && mode !== 'casual') {
+    if (mode !== 'business' && mode !== 'casual' && mode !== 'agent') {
       console.error('Invalid persona mode:', mode);
       return;
     }
@@ -44,12 +89,34 @@ class PersonaManager {
   }
 
   togglePersona() {
-    const newMode = this.currentPersona === 'business' ? 'casual' : 'business';
+    const modes = ['agent', 'business', 'casual'];
+    const currentIndex = modes.indexOf(this.currentPersona);
+    const newMode = modes[(currentIndex + 1) % modes.length];
     this.setPersona(newMode);
+  }
+
+  setCurrentAgent(agent) {
+    this.currentAgent = agent;
+  }
+  
+  getCurrentAgent() {
+    if (this.currentAgent) return this.currentAgent;
+    if (window.AGENTS && window.AGENTS.length > 0) {
+      return window.AGENTS[0];
+    }
+    return null;
   }
 
   getImage(imageName) {
     const persona = this.currentPersona;
+    
+    if (persona === 'agent') {
+      const agent = this.getCurrentAgent();
+      if (agent && agent.image) {
+        return agent.image;
+      }
+      return '/trading-cards/caucasian_blonde_male_agent.png';
+    }
     
     if (this.imageMap[persona] && this.imageMap[persona][imageName]) {
       return this.imageMap[persona][imageName];
@@ -58,9 +125,24 @@ class PersonaManager {
     return this.imageMap.business.explaining;
   }
 
+  getRandomAgentQuote() {
+    return this.agentQuotes[Math.floor(Math.random() * this.agentQuotes.length)];
+  }
+  
+  getAgentGreeting() {
+    const agent = this.getCurrentAgent();
+    const name = agent ? agent.name.replace('Agent ', '') : 'Unknown';
+    const greeting = this.agentGreetings[Math.floor(Math.random() * this.agentGreetings.length)];
+    return greeting.replace('{name}', name);
+  }
+
   getCommentary(term) {
     if (!term || !term.smartass || !term.plain) {
       return term?.definition || '';
+    }
+    
+    if (this.currentPersona === 'agent') {
+      return term.plain;
     }
     
     return this.currentPersona === 'casual' ? term.smartass : term.plain;
@@ -72,6 +154,10 @@ class PersonaManager {
 
   isCasual() {
     return this.currentPersona === 'casual';
+  }
+  
+  isAgent() {
+    return this.currentPersona === 'agent';
   }
 }
 

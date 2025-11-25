@@ -1049,14 +1049,15 @@ function changeTheme(theme) {
 
 // Persona Management
 function initPersona() {
-  // Load saved commentary mode
-  const savedCatMode = localStorage.getItem('cryptoCatMode') || 'off';
+  // Load saved commentary mode (now supports: off, business, casual, agent)
+  const savedCatMode = localStorage.getItem('cryptoCatMode') || 'agent';
   
   // CRITICAL: Register personaChanged listener ONCE, globally, regardless of initial mode
   window.addEventListener('personaChanged', (e) => {
     const newPersona = e.detail.persona;
     updatePersonaUI(newPersona);
     updateAllCatImages(newPersona);
+    updateFloatingButtons(newPersona);
     refreshAllGauges();
   });
   
@@ -1068,12 +1069,32 @@ function initPersona() {
   if (savedCatMode === 'off') {
     // Initialize in OFF mode
     updatePersonaUI('off');
+    updateFloatingButtons('off');
     if (window.hideSeekEnabled !== undefined) {
       window.hideSeekEnabled = false;
     }
     console.log('🎙️ Commentary Mode: OFF');
     
     // Refresh gauges to show regular needles
+    if (typeof refreshAllGauges === 'function') {
+      refreshAllGauges();
+    }
+  } else if (savedCatMode === 'agent') {
+    // Initialize in Agent mode
+    updatePersonaUI('agent');
+    updateFloatingButtons('agent');
+    
+    if (window.personaManager) {
+      personaManager.setPersona('agent');
+    }
+    
+    // Enable hide and seek for agents
+    if (typeof window.hideSeekEnabled !== 'undefined') {
+      window.hideSeekEnabled = true;
+    }
+    
+    console.log('🕵️ Commentary Mode: AGENT');
+    
     if (typeof refreshAllGauges === 'function') {
       refreshAllGauges();
     }
@@ -1095,10 +1116,11 @@ function initPersona() {
 }
 
 function setPersonaMode(mode) {
-  // Orchestrate Commentary Mode: 'business', 'casual', or 'off'
+  // Orchestrate Commentary Mode: 'business', 'casual', 'agent', or 'off'
+  localStorage.setItem('cryptoCatMode', mode);
   
   if (mode === 'off') {
-    // OFF Mode: disable all cat interactions
+    // OFF Mode: disable all character interactions
     if (window.setCryptoCatMode) {
       window.setCryptoCatMode('off');
     }
@@ -1114,15 +1136,43 @@ function setPersonaMode(mode) {
     
     // Update UI buttons
     updatePersonaUI('off');
+    updateFloatingButtons('off');
     
-    console.log('🐱 Crypto Cat disabled');
+    console.log('🎙️ Commentary Mode set to: off');
     
     // Refresh gauges to show regular needles
     if (typeof refreshAllGauges === 'function') {
       refreshAllGauges();
     }
+  } else if (mode === 'agent') {
+    // Agent Mode
+    if (window.setCryptoCatMode) {
+      window.setCryptoCatMode('agent');
+    }
+    
+    if (window.personaManager) {
+      personaManager.setPersona('agent');
+    }
+    
+    // Enable hide and seek for agents
+    if (typeof window.hideSeekEnabled !== 'undefined') {
+      window.hideSeekEnabled = true;
+    }
+    if (window.initHideAndSeek) {
+      window.initHideAndSeek();
+    }
+    
+    // Update UI
+    updatePersonaUI('agent');
+    updateFloatingButtons('agent');
+    
+    console.log('🕵️ Agent mode activated');
+    
+    if (typeof refreshAllGauges === 'function') {
+      refreshAllGauges();
+    }
   } else {
-    // Business or Casual Mode
+    // Business or Casual Cat Mode
     if (!window.personaManager) {
       console.error('PersonaManager not loaded');
       return;
@@ -1150,94 +1200,228 @@ function setPersonaMode(mode) {
   }
 }
 
+// Update floating buttons based on current mode
+function updateFloatingButtons(mode) {
+  const aiBtn = document.getElementById('floatingAIBtn');
+  const communityBtn = document.getElementById('floatingCommunityBtn');
+  const aiCharacter = document.getElementById('floatingAICharacter');
+  const communityCharacter = document.getElementById('floatingCommunityCharacter');
+  
+  if (!aiBtn || !communityBtn) return;
+  
+  // Remove all mode classes
+  aiBtn.classList.remove('character-mode', 'cat-mode');
+  communityBtn.classList.remove('character-mode', 'cat-mode');
+  
+  if (mode === 'off') {
+    // OFF mode: Show emoji buttons only
+    if (aiCharacter) aiCharacter.style.display = 'none';
+    if (communityCharacter) communityCharacter.style.display = 'none';
+    
+    const aiEmoji = aiBtn.querySelector('.floating-btn-emoji');
+    const communityEmoji = communityBtn.querySelector('.floating-btn-emoji');
+    if (aiEmoji) aiEmoji.style.display = 'flex';
+    if (communityEmoji) communityEmoji.style.display = 'flex';
+    
+    console.log('🔘 Floating buttons: default emoji mode');
+  } else if (mode === 'agent') {
+    // Agent mode: Show transparent agent cutouts
+    aiBtn.classList.add('character-mode');
+    communityBtn.classList.add('character-mode');
+    
+    // Get current agent or random agent
+    const agent = window.personaManager?.getCurrentAgent() || (window.AGENTS ? window.AGENTS[0] : null);
+    
+    if (agent && aiCharacter && communityCharacter) {
+      aiCharacter.src = agent.image;
+      communityCharacter.src = agent.image;
+      aiCharacter.style.display = 'block';
+      communityCharacter.style.display = 'block';
+      
+      const aiEmoji = aiBtn.querySelector('.floating-btn-emoji');
+      const communityEmoji = communityBtn.querySelector('.floating-btn-emoji');
+      if (aiEmoji) aiEmoji.style.display = 'none';
+      if (communityEmoji) communityEmoji.style.display = 'none';
+      
+      console.log('🕵️ Floating buttons: agent cutout mode -', agent.name);
+    }
+  } else if (mode === 'business' || mode === 'casual') {
+    // Cat mode: Show cat images in round buttons
+    aiBtn.classList.add('character-mode', 'cat-mode');
+    communityBtn.classList.add('character-mode', 'cat-mode');
+    
+    const catImage = mode === 'business' 
+      ? '/crypto-cat-images/business-cat-pointing.jpg'
+      : '/crypto-cat-images/sarcastic-cat-pointing.jpg';
+    
+    if (aiCharacter && communityCharacter) {
+      aiCharacter.src = catImage;
+      communityCharacter.src = catImage;
+      aiCharacter.style.display = 'block';
+      communityCharacter.style.display = 'block';
+      
+      const aiEmoji = aiBtn.querySelector('.floating-btn-emoji');
+      const communityEmoji = communityBtn.querySelector('.floating-btn-emoji');
+      if (aiEmoji) aiEmoji.style.display = 'none';
+      if (communityEmoji) communityEmoji.style.display = 'none';
+      
+      console.log(`🐱 Floating buttons: ${mode} cat mode`);
+    }
+  }
+}
+window.updateFloatingButtons = updateFloatingButtons;
+
 function updatePersonaUI(persona) {
   const businessBtn = document.getElementById('businessBtn');
   const casualBtn = document.getElementById('casualBtn');
   const offBtn = document.getElementById('offBtn');
+  const agentBtn = document.getElementById('agentBtn');
   
-  if (!businessBtn || !casualBtn || !offBtn) return;
-  
-  // Remove active from all buttons
-  businessBtn.classList.remove('active');
-  casualBtn.classList.remove('active');
-  offBtn.classList.remove('active');
+  // Remove active from all buttons that exist
+  if (businessBtn) businessBtn.classList.remove('active');
+  if (casualBtn) casualBtn.classList.remove('active');
+  if (offBtn) offBtn.classList.remove('active');
+  if (agentBtn) agentBtn.classList.remove('active');
   
   // Set active based on mode
-  if (persona === 'business') {
+  if (persona === 'business' && businessBtn) {
     businessBtn.classList.add('active');
-  } else if (persona === 'casual') {
+  } else if (persona === 'casual' && casualBtn) {
     casualBtn.classList.add('active');
-  } else if (persona === 'off') {
+  } else if (persona === 'off' && offBtn) {
     offBtn.classList.add('active');
+  } else if (persona === 'agent' && agentBtn) {
+    agentBtn.classList.add('active');
   }
+  
+  // Also update floating buttons
+  updateFloatingButtons(persona);
 }
 
 function updateAllCatImages(persona) {
   if (!window.personaManager) return;
   
+  // Get current agent for agent mode
+  const currentAgent = personaManager.getCurrentAgent();
+  const agentImage = currentAgent ? currentAgent.image : '/trading-cards/caucasian_blonde_male_agent.png';
+  
   const catImage = document.getElementById('catImage');
   if (catImage) {
-    catImage.src = personaManager.getImage('pointing');
+    if (persona === 'agent') {
+      catImage.src = agentImage;
+    } else if (persona === 'off') {
+      catImage.style.display = 'none';
+    } else {
+      catImage.style.display = '';
+      catImage.src = personaManager.getImage('pointing');
+    }
   }
   
   const gaugePopupImg = document.getElementById('gaugePopupCatImage');
   if (gaugePopupImg) {
-    gaugePopupImg.src = personaManager.getImage('explaining');
+    if (persona === 'agent') {
+      gaugePopupImg.src = agentImage;
+    } else if (persona === 'off') {
+      gaugePopupImg.style.display = 'none';
+    } else {
+      gaugePopupImg.style.display = '';
+      gaugePopupImg.src = personaManager.getImage('explaining');
+    }
   }
   
   const footerImg = document.getElementById('footerCatImage');
   if (footerImg) {
-    footerImg.src = personaManager.getImage('pointing');
+    if (persona === 'agent') {
+      footerImg.src = agentImage;
+    } else if (persona === 'off') {
+      footerImg.style.display = 'none';
+    } else {
+      footerImg.style.display = '';
+      footerImg.src = personaManager.getImage('pointing');
+    }
   }
   
-  // Update Stocks Coming Soon cat and message
+  // Update Stocks Coming Soon character and message
   const stocksComingSoonCat = document.getElementById('stocksComingSoonCat');
   const stocksComingSoonTitle = document.getElementById('stocksComingSoonTitle');
   
   if (stocksComingSoonCat) {
-    stocksComingSoonCat.src = personaManager.getImage('pointing');
+    if (persona === 'agent') {
+      stocksComingSoonCat.src = agentImage;
+    } else if (persona === 'off') {
+      stocksComingSoonCat.style.display = 'none';
+    } else {
+      stocksComingSoonCat.style.display = '';
+      stocksComingSoonCat.src = personaManager.getImage('pointing');
+    }
   }
   
   if (stocksComingSoonTitle) {
-    if (persona === 'casual') {
+    if (persona === 'agent') {
+      const agentName = currentAgent ? currentAgent.name : 'Agent';
+      stocksComingSoonTitle.textContent = `"Intel indicates this section is under development. Stand by for deployment."\n— ${agentName}`;
+    } else if (persona === 'casual') {
       stocksComingSoonTitle.textContent = '"HEY I\'M THE ONLY ONE WORKING ON THIS! GIVE ME SOME TIME... COMING SOON"\n— Crypto Cat';
+    } else if (persona === 'off') {
+      stocksComingSoonTitle.textContent = 'COMING SOON';
     } else {
       stocksComingSoonTitle.textContent = '"This portion of the stock page will be ready soon. Please give me a little more time as I am the only one working on it. Thank you."\n— Crypto Cat';
     }
   }
   
-  // Update Projects Coming Soon cat and message
+  // Update Projects Coming Soon character and message
   const comingSoonCat1 = document.getElementById('comingSoonCat1');
   const comingSoon1Title = document.getElementById('comingSoon1Title');
   
   if (comingSoonCat1) {
-    comingSoonCat1.src = personaManager.getImage('pointing');
+    if (persona === 'agent') {
+      comingSoonCat1.src = agentImage;
+    } else if (persona === 'off') {
+      comingSoonCat1.style.display = 'none';
+    } else {
+      comingSoonCat1.style.display = '';
+      comingSoonCat1.src = personaManager.getImage('pointing');
+    }
   }
   
   if (comingSoon1Title) {
-    if (persona === 'casual') {
+    if (persona === 'agent') {
+      comingSoon1Title.textContent = '"Additional projects currently classified. Awaiting clearance."';
+    } else if (persona === 'casual') {
       comingSoon1Title.textContent = '"MORE DOPE PROJECTS COMING SOON! STAY TUNED!"';
+    } else if (persona === 'off') {
+      comingSoon1Title.textContent = 'MORE PROJECTS COMING SOON';
     } else {
       comingSoon1Title.textContent = 'MORE PROJECTS COMING SOON';
     }
   }
   
-  // Switch glossary banner cats based on persona
+  // Switch glossary banner based on persona
   const casualGlossaryCat = document.getElementById('casualGlossaryCat');
   const businessGlossaryCat = document.getElementById('businessGlossaryCat');
   
   if (casualGlossaryCat && businessGlossaryCat) {
-    if (persona === 'off') {
-      // Hide both banners when Commentary Mode is OFF
+    if (persona === 'off' || persona === 'agent') {
       casualGlossaryCat.style.display = 'none';
       businessGlossaryCat.style.display = 'none';
     } else if (persona === 'business') {
       casualGlossaryCat.style.display = 'none';
       businessGlossaryCat.style.display = 'block';
     } else {
-      // casual mode
       casualGlossaryCat.style.display = 'block';
       businessGlossaryCat.style.display = 'none';
+    }
+  }
+  
+  // Update floating AI modal header image
+  const floatingCatImage = document.getElementById('floatingCatImage');
+  if (floatingCatImage) {
+    if (persona === 'agent') {
+      floatingCatImage.src = agentImage;
+    } else if (persona === 'off') {
+      floatingCatImage.src = '/crypto-cat-images/business-cat-pointing.jpg';
+    } else {
+      floatingCatImage.src = personaManager.getImage('pointing');
     }
   }
 }
