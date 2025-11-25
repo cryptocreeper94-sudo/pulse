@@ -141,22 +141,16 @@
   <div id="app"></div>
 
   <!-- Unified Info Banner - Three Equal Buttons -->
-  <div id="infoBannerBar" class="info-banner-mobile" style="background: linear-gradient(90deg, rgba(176,224,230,0.08), rgba(139,92,246,0.08), rgba(220,38,38,0.08)); padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; gap: 8px; align-items: center; justify-content: space-between;">
-    <!-- BETA V1 Button -->
-    <button id="betaBtn" class="info-btn" onclick="switchTab('staking')" style="flex: 1; background: linear-gradient(135deg, rgba(176,224,230,0.15), rgba(176,224,230,0.08)); border: 1px solid rgba(176,224,230,0.3); border-radius: 6px; padding: 10px 12px; cursor: pointer; color: rgba(255,255,255,0.9); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s; white-space: nowrap; text-align: center; min-height: 36px; display: flex; align-items: center; justify-content: center;">
+  <div id="infoBannerBar" class="info-banner-bar">
+    <button id="betaBtn" class="info-btn info-btn--beta" onclick="switchTab('staking')">
       <span class="info-btn-text" data-emoji="🧪">🧪 BETA V1 - V2 Dec 25</span>
     </button>
-    
-    <!-- LEGACY FOUNDER Button -->
-    <button id="founderBtn" class="info-btn" onclick="switchTab('staking')" style="flex: 1; background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(139,92,246,0.08)); border: 1px solid rgba(139,92,246,0.3); border-radius: 6px; padding: 10px 12px; cursor: pointer; color: rgba(255,255,255,0.9); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s; white-space: nowrap; text-align: center; min-height: 36px; display: flex; align-items: center; justify-content: center;">
+    <button id="founderBtn" class="info-btn info-btn--founder" onclick="switchTab('staking')">
       <span class="info-btn-text" data-emoji="💎">💎 LEGACY FOUNDER - <span id="founderCountdown">37 DAYS</span></span>
     </button>
-    
-    <!-- NEW HERE Button -->
-    <button id="newHereBtn" class="info-btn" onclick="switchTab('truth')" style="flex: 1; background: linear-gradient(135deg, rgba(220,38,38,0.15), rgba(220,38,38,0.08)); border: 1px solid rgba(220,38,38,0.3); border-radius: 6px; padding: 10px 12px; cursor: pointer; color: rgba(255,255,255,0.9); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s; white-space: nowrap; text-align: center; min-height: 36px; display: flex; align-items: center; justify-content: center;">
+    <button id="newHereBtn" class="info-btn info-btn--new" onclick="switchTab('truth')">
       <span class="info-btn-text" data-emoji="💊">💊 NEW HERE? READ FIRST</span>
     </button>
-    
   </div>
 
     <!-- Top Navigation Menu - Simplified to 6 tabs for mobile fit -->
@@ -4985,6 +4979,18 @@ Thanks for being here — let's build something powerful together!</textarea>
       background: rgba(56, 97, 251, 0.6);
       transform: scale(1.1);
       box-shadow: 0 6px 16px rgba(56, 97, 251, 0.4);
+    }
+    
+    /* Emoji styling for floating buttons - visible by default in off mode */
+    .floating-btn-emoji {
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      line-height: 1;
+      z-index: 1;
     }
     
     .floating-btn-community {

@@ -1058,7 +1058,8 @@ function changeTheme(theme) {
 // Persona Management
 function initPersona() {
   // Load saved commentary mode (now supports: off, business, casual, agent)
-  const savedCatMode = localStorage.getItem('cryptoCatMode') || 'agent';
+  // Default to 'off' mode if no saved preference for safer initialization
+  const savedCatMode = localStorage.getItem('cryptoCatMode') || 'off';
   
   // CRITICAL: Register personaChanged listener ONCE, globally, regardless of initial mode
   window.addEventListener('personaChanged', (e) => {
@@ -1093,12 +1094,13 @@ function initPersona() {
     }
   } else if (savedCatMode === 'agent') {
     // Initialize in Agent mode
-    updatePersonaUI('agent');
-    updateFloatingButtons('agent');
-    
+    // IMPORTANT: Set personaManager first so getCurrentAgent() works in updateFloatingButtons
     if (window.personaManager) {
       personaManager.setPersona('agent');
     }
+    
+    updatePersonaUI('agent');
+    updateFloatingButtons('agent');
     
     // Enable hide and seek for agents
     if (typeof window.hideSeekEnabled !== 'undefined') {
@@ -1227,64 +1229,112 @@ function updateFloatingButtons(mode) {
   
   if (!aiBtn || !communityBtn) return;
   
-  // Remove all mode classes
+  // Get emoji elements
+  const aiEmoji = aiBtn.querySelector('.floating-btn-emoji');
+  const communityEmoji = communityBtn.querySelector('.floating-btn-emoji');
+  
+  // Helper function to show emoji mode (fallback)
+  const showEmojiMode = () => {
+    aiBtn.classList.remove('character-mode', 'cat-mode');
+    communityBtn.classList.remove('character-mode', 'cat-mode');
+    if (aiCharacter) aiCharacter.style.display = 'none';
+    if (communityCharacter) communityCharacter.style.display = 'none';
+    if (aiEmoji) aiEmoji.style.display = 'flex';
+    if (communityEmoji) communityEmoji.style.display = 'flex';
+  };
+  
+  // Helper function to set up image with error handling
+  const setupImageWithFallback = (imgElement, src, onSuccess) => {
+    if (!imgElement) return false;
+    
+    // Create a test image to check if it loads
+    const testImg = new Image();
+    testImg.onload = () => {
+      imgElement.src = src;
+      imgElement.style.display = 'block';
+      if (onSuccess) onSuccess();
+    };
+    testImg.onerror = () => {
+      console.warn('⚠️ Image failed to load:', src);
+      showEmojiMode();
+    };
+    testImg.src = src;
+    return true;
+  };
+  
+  // Remove all mode classes first
   aiBtn.classList.remove('character-mode', 'cat-mode');
   communityBtn.classList.remove('character-mode', 'cat-mode');
   
   if (mode === 'off') {
-    // OFF mode: Show emoji buttons only
-    if (aiCharacter) aiCharacter.style.display = 'none';
-    if (communityCharacter) communityCharacter.style.display = 'none';
-    
-    const aiEmoji = aiBtn.querySelector('.floating-btn-emoji');
-    const communityEmoji = communityBtn.querySelector('.floating-btn-emoji');
-    if (aiEmoji) aiEmoji.style.display = 'flex';
-    if (communityEmoji) communityEmoji.style.display = 'flex';
-    
+    // OFF mode: Show emoji buttons with colored backgrounds
+    showEmojiMode();
     console.log('🔘 Floating buttons: default emoji mode');
   } else if (mode === 'agent') {
     // Agent mode: Show transparent agent cutouts
-    aiBtn.classList.add('character-mode');
-    communityBtn.classList.add('character-mode');
+    // Get current agent or first agent from AGENTS array
+    const agent = window.personaManager?.getCurrentAgent() || (window.AGENTS && window.AGENTS.length > 0 ? window.AGENTS[0] : null);
     
-    // Get current agent or random agent
-    const agent = window.personaManager?.getCurrentAgent() || (window.AGENTS ? window.AGENTS[0] : null);
-    
-    if (agent && aiCharacter && communityCharacter) {
-      aiCharacter.src = agent.image;
-      communityCharacter.src = agent.image;
-      aiCharacter.style.display = 'block';
-      communityCharacter.style.display = 'block';
+    if (agent && agent.image && aiCharacter && communityCharacter) {
+      // Add character-mode class first
+      aiBtn.classList.add('character-mode');
+      communityBtn.classList.add('character-mode');
       
-      const aiEmoji = aiBtn.querySelector('.floating-btn-emoji');
-      const communityEmoji = communityBtn.querySelector('.floating-btn-emoji');
+      // Hide emojis
       if (aiEmoji) aiEmoji.style.display = 'none';
       if (communityEmoji) communityEmoji.style.display = 'none';
       
-      console.log('🕵️ Floating buttons: agent cutout mode -', agent.name);
+      // Set up images with error handling
+      let loadedCount = 0;
+      const onImageLoaded = () => {
+        loadedCount++;
+        if (loadedCount === 2) {
+          console.log('🕵️ Floating buttons: agent cutout mode -', agent.name);
+        }
+      };
+      
+      setupImageWithFallback(aiCharacter, agent.image, onImageLoaded);
+      setupImageWithFallback(communityCharacter, agent.image, onImageLoaded);
+    } else {
+      // No agent available - fallback to emoji mode
+      console.warn('⚠️ No agent available for floating buttons, falling back to emoji mode');
+      showEmojiMode();
     }
   } else if (mode === 'business' || mode === 'casual') {
     // Cat mode: Show cat images in round buttons
-    aiBtn.classList.add('character-mode', 'cat-mode');
-    communityBtn.classList.add('character-mode', 'cat-mode');
-    
+    // Use Grumpy cat images from trading-cards directory
     const catImage = mode === 'business' 
-      ? '/crypto-cat-images/business-cat-pointing.jpg'
-      : '/crypto-cat-images/sarcastic-cat-pointing.jpg';
+      ? '/trading-cards/Grumpy_cat_neutral_pose_ba4a1b4d.png'
+      : '/trading-cards/Grumpy_cat_sideeye_pose_5e52df88.png';
     
     if (aiCharacter && communityCharacter) {
-      aiCharacter.src = catImage;
-      communityCharacter.src = catImage;
-      aiCharacter.style.display = 'block';
-      communityCharacter.style.display = 'block';
+      // Add mode classes first
+      aiBtn.classList.add('character-mode', 'cat-mode');
+      communityBtn.classList.add('character-mode', 'cat-mode');
       
-      const aiEmoji = aiBtn.querySelector('.floating-btn-emoji');
-      const communityEmoji = communityBtn.querySelector('.floating-btn-emoji');
+      // Hide emojis
       if (aiEmoji) aiEmoji.style.display = 'none';
       if (communityEmoji) communityEmoji.style.display = 'none';
       
-      console.log(`🐱 Floating buttons: ${mode} cat mode`);
+      // Set up images with error handling
+      let loadedCount = 0;
+      const onImageLoaded = () => {
+        loadedCount++;
+        if (loadedCount === 2) {
+          console.log(`🐱 Floating buttons: ${mode} cat mode`);
+        }
+      };
+      
+      setupImageWithFallback(aiCharacter, catImage, onImageLoaded);
+      setupImageWithFallback(communityCharacter, catImage, onImageLoaded);
+    } else {
+      // Elements not found - fallback to emoji mode
+      showEmojiMode();
     }
+  } else {
+    // Unknown mode - default to emoji
+    console.warn('⚠️ Unknown mode for floating buttons:', mode);
+    showEmojiMode();
   }
 }
 window.updateFloatingButtons = updateFloatingButtons;
