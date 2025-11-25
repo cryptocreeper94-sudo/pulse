@@ -954,52 +954,60 @@ function switchTab(tabName) {
   const tabBtn = document.querySelector(`.nav-btn[data-tab="${tabName}"]`);
   const tabPanes = document.querySelectorAll('.tab-pane');
   const tabBtns = document.querySelectorAll('.nav-btn');
+  const targetPane = document.getElementById(tabName);
   
-  if (tabBtn) {
+  // Always try to switch the tab pane, even without a nav button
+  if (targetPane) {
     // Remove active from all
     tabBtns.forEach(b => b.classList.remove('active'));
     tabPanes.forEach(p => p.classList.remove('active'));
     
-    // Add active to target
-    tabBtn.classList.add('active');
-    const targetPane = document.getElementById(tabName);
-    if (targetPane) {
-      targetPane.classList.add('active');
-      console.log('✅ Tab switched to:', tabName);
-      
-      // Disable hide-and-seek on settings tab (for clean admin login experience)
-      if (tabName === 'settings') {
-        if (window.hideSeekEnabled !== undefined) {
-          window.hideSeekEnabled = false;
-        }
-        if (window.teardownHideAndSeek) {
-          window.teardownHideAndSeek();
-        }
-        console.log('🔒 Hide-and-seek disabled for Settings tab');
-      } else {
-        // Re-enable hide-and-seek when leaving settings
-        if (window.hideSeekEnabled !== undefined) {
-          window.hideSeekEnabled = true;
-        }
-        if (window.initHideAndSeek) {
-          window.initHideAndSeek();
-        }
+    // Add active to nav button if it exists
+    if (tabBtn) {
+      tabBtn.classList.add('active');
+    }
+    
+    // Add active to target pane
+    targetPane.classList.add('active');
+    console.log('✅ Tab switched to:', tabName);
+    
+    // Scroll to top of page
+    window.scrollTo(0, 0);
+    
+    // Disable hide-and-seek on settings tab (for clean admin login experience)
+    if (tabName === 'settings') {
+      if (window.hideSeekEnabled !== undefined) {
+        window.hideSeekEnabled = false;
       }
-      
-      // Initialize stock market data when stocks tab is opened
-      if (tabName === 'stocks') {
-        if (typeof initStockMarketData === 'function') {
-          initStockMarketData();
-        }
-        
-        // Link glossary terms on stocks page
-        if (window.glossaryLinker) {
-          setTimeout(() => {
-            window.glossaryLinker.linkStocksPage();
-          }, 300);
-        }
+      if (window.teardownHideAndSeek) {
+        window.teardownHideAndSeek();
+      }
+      console.log('🔒 Hide-and-seek disabled for Settings tab');
+    } else {
+      // Re-enable hide-and-seek when leaving settings
+      if (window.hideSeekEnabled !== undefined) {
+        window.hideSeekEnabled = true;
+      }
+      if (window.initHideAndSeek) {
+        window.initHideAndSeek();
       }
     }
+    
+    // Initialize stock market data when stocks tab is opened
+    if (tabName === 'stocks') {
+      if (typeof initStockMarketData === 'function') {
+        initStockMarketData();
+      }
+      
+      // Link glossary terms on stocks page
+      if (window.glossaryLinker) {
+        setTimeout(() => {
+          window.glossaryLinker.linkStocksPage();
+        }, 300);
+      }
+    }
+  } else {
+    console.error('❌ Tab pane not found:', tabName);
   }
 }
 
