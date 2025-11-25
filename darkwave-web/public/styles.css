@@ -866,35 +866,35 @@ body.theme-light .banner-title {
   }
 }
 
-/* Center only Market Cap and Volume boxes (3rd and 4th) */
+/* Center content vertically for Market Cap and Volume boxes (3rd and 4th) */
 .metric-box-wide:nth-child(3),
 .metric-box-wide:nth-child(4) {
-  justify-content: flex-start;
+  justify-content: center;
   position: relative;
+  padding: 8px 4px;
 }
 
-/* Position title at horizontal centerline for boxes 3 & 4 */
+/* Normal flow for boxes 3 & 4 - no absolute positioning */
 .metric-box-wide:nth-child(3) .metric-label,
 .metric-box-wide:nth-child(4) .metric-label {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-100%);
-  left: 0;
-  right: 0;
-  width: 100%;
-  z-index: 10;
-  margin: 0;
+  position: static;
+  margin: 0 0 4px 0;
+  font-size: 11px;
+  font-weight: 700;
 }
 
-/* Push content below title down */
+/* Tighten spacing for value display */
 .metric-box-wide:nth-child(3) .gauge-value-display,
 .metric-box-wide:nth-child(4) .gauge-value-display {
-  margin-top: calc(50% + 2px);
+  margin: 0 0 2px 0;
+  font-size: 16px;
+  font-weight: 700;
 }
 
 .metric-box-wide:nth-child(3) .metric-change,
 .metric-box-wide:nth-child(4) .metric-change {
-  margin-top: 2px;
+  margin: 0;
+  font-size: 12px;
 }
 
 .metric-box-wide:hover {
@@ -4945,14 +4945,8 @@ body.theme-light .banner-title {
   flex-shrink: 0;
 }
 
-/* For CAP and VOL boxes - center values vertically */
-.metric-box-wide:nth-child(3) .gauge-container,
-.metric-box-wide:nth-child(4) .gauge-container {
-  justify-content: center;
-  padding-bottom: 0px;
-  margin-top: 0px;
-  flex: 1;
-}
+/* Market Cap and Volume boxes don't have gauge containers - they just use flexbox centering */
+/* All content in boxes 3 and 4 is centered via justify-content: center on parent */
 
 /* OLD gauge-value - REPLACED with gauge-value-display */
 .gauge-value {
@@ -5694,30 +5688,13 @@ body.theme-light .banner-title {
     font-size: 28px !important;
   }
   
-  /* Market Cap and Volume - centered baseline */
-  .metric-box-wide:nth-child(3) .gauge-value,
-  .metric-box-wide:nth-child(4) .gauge-value {
-    position: relative !important;
-    bottom: auto !important;
-    left: auto !important;
-    right: auto !important;
-    transform: none !important;
-    z-index: 10 !important;
-    font-size: 28px !important;
-    font-weight: 900 !important;
-    line-height: 1 !important;
+  /* Market Cap and Volume use gauge-value-display, not gauge-value */
+  .metric-box-wide:nth-child(3) .gauge-value-display,
+  .metric-box-wide:nth-child(4) .gauge-value-display {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    margin: 0 0 4px 0 !important;
     text-align: center !important;
-    width: auto;
-    max-width: 95%;
-    margin: 0 auto !important;
-    flex-shrink: 0;
-    padding: 2px 0;
-    white-space: nowrap;
-  }
-  
-  /* Volume value alignment - move down to match Market Cap */
-  .metric-box-wide:nth-child(4) .gauge-value {
-    margin-top: 24px !important;
   }
   
   /* Market Cap & Volume Change % display */
@@ -5897,19 +5874,13 @@ body.theme-light .banner-title {
     line-height: 1.1;
   }
   
-  /* Market Cap and Volume values on mobile - scaled down to fit */
-  .metric-box-wide:nth-child(3) .gauge-value,
-  .metric-box-wide:nth-child(4) .gauge-value {
-    font-size: 18px !important; /* Much smaller on mobile to prevent overlap */
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
+  /* Market Cap and Volume use gauge-value-display on mobile */
+  .metric-box-wide:nth-child(3) .gauge-value-display,
+  .metric-box-wide:nth-child(4) .gauge-value-display {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    margin: 0 0 2px 0 !important;
     line-height: 1 !important;
-    position: relative !important;
-  }
-  
-  /* Volume value alignment on mobile - match desktop baseline */
-  .metric-box-wide:nth-child(4) .gauge-value {
-    margin-top: 24px !important;
   }
   
   /* Market Cap & Volume change indicators on mobile - much smaller */
