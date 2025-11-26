@@ -976,11 +976,28 @@ const analysisModalController = {
     document.getElementById('aiAnalysis').textContent = 'Analyzing market conditions...';
   },
   
-  // Show error state - silently close modal instead of showing error
+  // Show error state - display error in modal instead of closing
   showErrorState(message) {
-    // Silently close the modal and let user try another ticker
     console.warn(`Analysis failed: ${message}`);
-    this.closeAnalysisModal();
+    
+    // Keep modal open and display error message
+    document.getElementById('analysisAssetName').textContent = 'Error Loading Data';
+    document.getElementById('analysisSignal').textContent = 'ERROR';
+    document.getElementById('analysisSignal').className = 'signal-badge error';
+    document.getElementById('analysisSignal').style.display = 'block';
+    document.getElementById('analysisPrice').textContent = '-';
+    document.getElementById('analysisChange').textContent = '-';
+    
+    // Display user-friendly error message
+    const aiAnalysisEl = document.getElementById('aiAnalysis');
+    if (aiAnalysisEl) {
+      aiAnalysisEl.textContent = `Unable to load analysis data. ${message}. Please try another ticker or check your connection.`;
+      aiAnalysisEl.style.color = '#EA3943';
+    }
+    
+    // Hide avatar on error
+    const avatarContainer = document.getElementById('avatarDisplayContainer');
+    if (avatarContainer) avatarContainer.style.display = 'none';
   },
   
   // Close modal
