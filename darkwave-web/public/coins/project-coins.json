@@ -1,16 +1,128 @@
 [
-  { "id": 1001, "name": "Crypto Cat Energy", "ticker": "MEOW", "image": "/trading-cards/Grumpy_cat_angry_pose_63318575.png", "category": "cryptocat", "contractAddress": "5z3U8zvXUpggTLxyNMfEmpvKC24F2gjw37gpVtV8pump", "description": "The OG grumpy cat energy on chain" },
-  { "id": 1002, "name": "Crypto Cat Vibes", "ticker": "VIBE", "image": "/trading-cards/Grumpy_cat_thumbs_up_e77056f4.png", "category": "cryptocat", "contractAddress": "5z3U8zvXUpggTLxyNMfEmpvKC24F2gjw37gpVtV8pump", "description": "Thumbs up energy for bullish times" },
-  { "id": 1003, "name": "Crypto Cat Sarcasm", "ticker": "SNARK", "image": "/trading-cards/Grumpy_cat_sideeye_pose_5e52df88.png", "category": "cryptocat", "contractAddress": "5z3U8zvXUpggTLxyNMfEmpvKC24F2gjw37gpVtV8pump", "description": "Peak sarcasm token" },
-  { "id": 1004, "name": "Grumpy Facepalm", "ticker": "PALM", "image": "/trading-cards/Grumpy_cat_facepalm_pose_2fdc5a6a.png", "category": "cryptocat", "contractAddress": "5z3U8zvXUpggTLxyNMfEmpvKC24F2gjw37gpVtV8pump", "description": "When the market fails you" },
-  { "id": 1005, "name": "Grumpy Punch", "ticker": "FIST", "image": "/trading-cards/Grumpy_cat_fist_pump_e028a55a.png", "category": "cryptocat", "contractAddress": "5z3U8zvXUpggTLxyNMfEmpvKC24F2gjw37gpVtV8pump", "description": "HODL celebration energy" },
-  { "id": 2001, "name": "Illuminati Coin", "ticker": "ILLUM", "image": "/darkwave-coin.png", "category": "conspiracy", "contractAddress": "HpqKPSHXkbRYpkTqsJEpLJXWpuHhiGhzqMhTBgH7pump", "description": "The truth is out there" },
-  { "id": 2002, "name": "Area 51 Token", "ticker": "A51", "image": "/darkwave-coin.png", "category": "conspiracy", "contractAddress": "HpqKPSHXkbRYpkTqsJEpLJXWpuHhiGhzqMhTBgH7pump", "description": "What they don't want you to know" },
-  { "id": 2003, "name": "Deep State Crypto", "ticker": "DEEP", "image": "/darkwave-coin.png", "category": "conspiracy", "contractAddress": "HpqKPSHXkbRYpkTqsJEpLJXWpuHhiGhzqMhTBgH7pump", "description": "They control the charts" },
-  { "id": 3001, "name": "Light & Love", "ticker": "LOVE", "image": "/darkwave-coin.png", "category": "spiritual", "contractAddress": "SpiritualBlockchain123456789012345678901234", "description": "Vibrations of positivity" },
-  { "id": 3002, "name": "Unity Consciousness", "ticker": "UNITY", "image": "/darkwave-coin.png", "category": "spiritual", "contractAddress": "SpiritualBlockchain123456789012345678901234", "description": "We are all connected" },
-  { "id": 3003, "name": "Ascension Token", "ticker": "ASCEND", "image": "/darkwave-coin.png", "category": "spiritual", "contractAddress": "SpiritualBlockchain123456789012345678901234", "description": "Reach enlightenment through blockchain" },
-  { "id": 4001, "name": "Degen Dreams", "ticker": "DEGEN", "image": "/darkwave-coin.png", "category": "meme", "contractAddress": "DegenMemeBlockchain98765432109876543210pump", "description": "Pure degen energy" },
-  { "id": 4002, "name": "Paper Hands Token", "ticker": "PAPER", "image": "/darkwave-coin.png", "category": "meme", "contractAddress": "DegenMemeBlockchain98765432109876543210pump", "description": "For those who sell at loss" },
-  { "id": 4003, "name": "HODL or Fold", "ticker": "FOLD", "image": "/darkwave-coin.png", "category": "meme", "contractAddress": "DegenMemeBlockchain98765432109876543210pump", "description": "The ultimate degenerate choice" }
+  {
+    "id": 1001,
+    "name": "Illuminati",
+    "ticker": "OBEY",
+    "image": "/coins/obey-illuminati.jpg",
+    "category": "conspiracy",
+    "contractAddress": "FXXVV7T7MHptzLMd9b4cCtUYpqqbVg8rUGxMtRTuUq5k",
+    "description": "The all-seeing eye watches"
+  },
+  {
+    "id": 1002,
+    "name": "Vertigo I",
+    "ticker": "V-25",
+    "image": "/coins/v25-vertigo.jpg",
+    "category": "conspiracy",
+    "contractAddress": "DitutwBDmEU1fM82ePTymzjLStjraLdwSQDwvSdgCmTs",
+    "description": "Experience the rush"
+  },
+  {
+    "id": 1003,
+    "name": "Pumpocracy",
+    "ticker": "P-25",
+    "image": "/coins/p25-pumpocracy.jpg",
+    "category": "conspiracy",
+    "contractAddress": "3eFj4ujRnuWH9SpvHyK9o4VJymkWHKsoweP5916Rywux",
+    "description": "Power to the pumpers"
+  },
+  {
+    "id": 2001,
+    "name": "CryptoCat",
+    "ticker": "CCAT",
+    "image": "/coins/ccat-cryptocat.jpg",
+    "category": "cryptocat",
+    "contractAddress": "CyokFVBYyvdDzvScSSpHeJ3gR2oGPU5o9CjBHXwkpump",
+    "description": "The crypto cat community token"
+  },
+  {
+    "id": 2002,
+    "name": "Liquidation",
+    "ticker": "REKTMEOW",
+    "image": "/coins/rektmeow-liquidation.jpg",
+    "category": "cryptocat",
+    "contractAddress": "4BqYgxjhcc3ew44WEkaxzxxtSUpL62emzmRvuraxpump",
+    "description": "When crypto cats get liquidated"
+  },
+  {
+    "id": 2003,
+    "name": "Catwifcash",
+    "ticker": "CWC",
+    "image": "/coins/cwc-catwifcash.png",
+    "category": "cryptocat",
+    "contractAddress": "75A2MwNbiXMBNoJuKFgEsaN42fHAqjHhEuW4fPpKMGF",
+    "description": "Cat with cash on Raydium"
+  },
+  {
+    "id": 2004,
+    "name": "Uncertainty",
+    "ticker": "UNCAT",
+    "image": "/coins/uncat-uncertainty.jpg",
+    "category": "cryptocat",
+    "contractAddress": "H9BhViZnhNDpUAwv1vpt2waRNLcRNNQ1wYsaWJ6Npump",
+    "description": "Embracing the unknown"
+  },
+  {
+    "id": 3001,
+    "name": "Yahusha",
+    "ticker": "YAHU",
+    "image": "/coins/yahu-yahusha.jpg",
+    "category": "spiritual",
+    "contractAddress": "ADRs4hrVr729GDqCS5NeRSrVLPBvErpWJcF69vCJWsZT",
+    "description": "Yahusha token on Solana"
+  },
+  {
+    "id": 3002,
+    "name": "Yahuah",
+    "ticker": "YAH",
+    "image": "/coins/yah-yahuah.jpg",
+    "category": "spiritual",
+    "contractAddress": "ERf16TD1VrUHdhpUFbUJpSPXVu9rbtzrzkKfCbwLMYiP",
+    "description": "Divine token on Solana"
+  },
+  {
+    "id": 3003,
+    "name": "Rhodium",
+    "ticker": "RHODI",
+    "image": "/coins/rhodi-rhodium.jpg",
+    "category": "spiritual",
+    "contractAddress": "HEkEQd1nwvD7qiRHcwLEw9d7bnsg2PffrkZrWMkKpump",
+    "description": "Precious metal token on Solana"
+  },
+  {
+    "id": 4001,
+    "name": "United",
+    "ticker": "LOVE",
+    "image": "/coins/love-united.jpg",
+    "category": "meme",
+    "contractAddress": "Gvt8zjmMrUXKgvckQzJMobsegF373M6ALYtmCq6qpump",
+    "description": "United in love and community"
+  },
+  {
+    "id": 4002,
+    "name": "Justice for Humanity",
+    "ticker": "JH-25",
+    "image": "/coins/jh25-justice.jpg",
+    "category": "meme",
+    "contractAddress": "22PXfkPGkhVUwMqQaeFzjtdzyFNU8ZQRk2shifwAuSkx",
+    "description": "A movement for global justice"
+  },
+  {
+    "id": 4003,
+    "name": "Pumpaholic",
+    "ticker": "CHEERS",
+    "image": "/coins/cheers-pumpaholic.jpg",
+    "category": "meme",
+    "contractAddress": "3gyRB7GVxzM4tUj41WvWpcgaHqbmZsvU7ANP9vnaLSgZ",
+    "description": "Celebrating the pump lifestyle"
+  },
+  {
+    "id": 4004,
+    "name": "Overstimulated",
+    "ticker": "INSANE",
+    "image": "/coins/insane-overstimulated.jpg",
+    "category": "meme",
+    "contractAddress": "TBD",
+    "description": "When crypto drives you insane"
+  }
 ]
