@@ -7,6 +7,7 @@
 - User name: Jason
 - Preferred communication style: Simple, everyday language
 - Call him "Jason" not "DW"
+- **IMPORTANT**: Always check with Jason before proceeding to verify any task - confirm changes look correct before moving on
 - Agent diversity: Equal distribution across age groups, gender, race, and hair color (Nov 24, 2025)
 
 ## Recent Changes (Nov 25, 2025)

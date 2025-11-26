@@ -1263,10 +1263,12 @@ function updateFloatingButtons(mode) {
   const aiEmoji = aiBtn.querySelector('.floating-btn-emoji');
   const communityEmoji = communityBtn.querySelector('.floating-btn-emoji');
   
-  // Helper function to show emoji mode (fallback)
-  const showEmojiMode = () => {
+  // Helper function to show OFF mode (pastel transparent buttons with icons)
+  const showOffMode = () => {
     aiBtn.classList.remove('character-mode', 'cat-mode');
     communityBtn.classList.remove('character-mode', 'cat-mode');
+    aiBtn.classList.add('off-mode');
+    communityBtn.classList.add('off-mode');
     if (aiCharacter) aiCharacter.style.display = 'none';
     if (communityCharacter) communityCharacter.style.display = 'none';
     if (aiEmoji) aiEmoji.style.display = 'flex';
@@ -1274,8 +1276,11 @@ function updateFloatingButtons(mode) {
   };
   
   // Helper function to set up image with error handling
-  const setupImageWithFallback = (imgElement, src, onSuccess) => {
-    if (!imgElement) return false;
+  const setupImageWithFallback = (imgElement, src, onSuccess, onError) => {
+    if (!imgElement) {
+      if (onError) onError();
+      return false;
+    }
     
     // Create a test image to check if it loads
     const testImg = new Image();
@@ -1286,31 +1291,31 @@ function updateFloatingButtons(mode) {
     };
     testImg.onerror = () => {
       console.warn('⚠️ Image failed to load:', src);
-      showEmojiMode();
+      if (onError) onError();
     };
     testImg.src = src;
     return true;
   };
   
   // Remove all mode classes first
-  aiBtn.classList.remove('character-mode', 'cat-mode');
-  communityBtn.classList.remove('character-mode', 'cat-mode');
+  aiBtn.classList.remove('character-mode', 'cat-mode', 'off-mode');
+  communityBtn.classList.remove('character-mode', 'cat-mode', 'off-mode');
   
   if (mode === 'off') {
-    // OFF mode: Show emoji buttons with colored backgrounds
-    showEmojiMode();
-    console.log('🔘 Floating buttons: default emoji mode');
+    // OFF mode: Pastel transparent buttons with robot/chat icons
+    showOffMode();
+    console.log('🔘 Floating buttons: OFF mode (pastel icons)');
   } else if (mode === 'agent') {
-    // Agent mode: Show transparent agent cutouts
+    // Agent mode: Show transparent agent cutouts (headshots floating on background)
     // Get current agent or first agent from AGENTS array
     const agent = window.personaManager?.getCurrentAgent() || (window.AGENTS && window.AGENTS.length > 0 ? window.AGENTS[0] : null);
     
     if (agent && agent.image && aiCharacter && communityCharacter) {
-      // Add character-mode class first
+      // Add character-mode class first (NOT cat-mode - agents are full cutouts)
       aiBtn.classList.add('character-mode');
       communityBtn.classList.add('character-mode');
       
-      // Hide emojis
+      // Hide emojis immediately
       if (aiEmoji) aiEmoji.style.display = 'none';
       if (communityEmoji) communityEmoji.style.display = 'none';
       
@@ -1319,30 +1324,30 @@ function updateFloatingButtons(mode) {
       const onImageLoaded = () => {
         loadedCount++;
         if (loadedCount === 2) {
-          console.log('🕵️ Floating buttons: agent cutout mode -', agent.name);
+          console.log('🕵️ Floating buttons: AGENT cutout mode -', agent.name);
         }
       };
       
-      setupImageWithFallback(aiCharacter, agent.image, onImageLoaded);
-      setupImageWithFallback(communityCharacter, agent.image, onImageLoaded);
+      setupImageWithFallback(aiCharacter, agent.image, onImageLoaded, showOffMode);
+      setupImageWithFallback(communityCharacter, agent.image, onImageLoaded, showOffMode);
     } else {
-      // No agent available - fallback to emoji mode
-      console.warn('⚠️ No agent available for floating buttons, falling back to emoji mode');
-      showEmojiMode();
+      // No agent available - fallback to OFF mode
+      console.warn('⚠️ No agent available for floating buttons, falling back to OFF mode');
+      showOffMode();
     }
   } else if (mode === 'business' || mode === 'casual') {
-    // Cat mode: Show cat images in round buttons
+    // Cat mode: Show Grumpy cat as transparent cutouts (floating on background)
     // Use Grumpy cat images from trading-cards directory
     const catImage = mode === 'business' 
       ? '/trading-cards/Grumpy_cat_neutral_pose_ba4a1b4d.png'
       : '/trading-cards/Grumpy_cat_sideeye_pose_5e52df88.png';
     
     if (aiCharacter && communityCharacter) {
-      // Add mode classes first
+      // Add character-mode AND cat-mode for cat styling
       aiBtn.classList.add('character-mode', 'cat-mode');
       communityBtn.classList.add('character-mode', 'cat-mode');
       
-      // Hide emojis
+      // Hide emojis immediately
       if (aiEmoji) aiEmoji.style.display = 'none';
       if (communityEmoji) communityEmoji.style.display = 'none';
       
@@ -1351,20 +1356,20 @@ function updateFloatingButtons(mode) {
       const onImageLoaded = () => {
         loadedCount++;
         if (loadedCount === 2) {
-          console.log(`🐱 Floating buttons: ${mode} cat mode`);
+          console.log(`🐱 Floating buttons: ${mode.toUpperCase()} CAT cutout mode`);
         }
       };
       
-      setupImageWithFallback(aiCharacter, catImage, onImageLoaded);
-      setupImageWithFallback(communityCharacter, catImage, onImageLoaded);
+      setupImageWithFallback(aiCharacter, catImage, onImageLoaded, showOffMode);
+      setupImageWithFallback(communityCharacter, catImage, onImageLoaded, showOffMode);
     } else {
-      // Elements not found - fallback to emoji mode
-      showEmojiMode();
+      // Elements not found - fallback to OFF mode
+      showOffMode();
     }
   } else {
-    // Unknown mode - default to emoji
+    // Unknown mode - default to OFF mode
     console.warn('⚠️ Unknown mode for floating buttons:', mode);
-    showEmojiMode();
+    showOffMode();
   }
 }
 window.updateFloatingButtons = updateFloatingButtons;

@@ -4933,7 +4933,7 @@ Thanks for being here — let's build something powerful together!</textarea>
     <div class="floating-ai-widget">
       <div class="floating-ai-header" onclick="closeFloatingAI()">
         <div style="display: flex; align-items: center; gap: 8px;">
-          <img src="/crypto-cat-images/business-cat-pointing.jpg" alt="Crypto Cat AI" id="floatingCatImage" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;" />
+          <img src="/trading-cards/Grumpy_cat_neutral_pose_ba4a1b4d.png" alt="AI Analyst" id="floatingCatImage" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;" />
           <span style="font-size: 13px; font-weight: 700;">AI Analyst</span>
         </div>
         <button class="floating-ai-toggle" onclick="event.stopPropagation(); closeFloatingAI()" title="Close">×</button>
@@ -5036,47 +5036,82 @@ Thanks for being here — let's build something powerful together!</textarea>
       box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
     }
     
-    /* Character mode floating buttons */
+    /* ============================================
+       TRANSPARENT CUTOUT MODE - Agent/Cat Images
+       Images float directly on background with NO button visible
+       ============================================ */
+    
+    /* Agent Mode - Transparent cutout headshots */
     .floating-btn.character-mode {
       background: transparent !important;
       box-shadow: none !important;
+      border: none !important;
       opacity: 1 !important;
       overflow: visible;
+      width: 65px;
+      height: 65px;
     }
     
     .floating-btn.character-mode:hover {
       background: transparent !important;
       transform: scale(1.15);
-      filter: drop-shadow(0 4px 12px rgba(56, 97, 251, 0.5));
     }
     
+    /* The actual character image - floats with drop shadow */
     .floating-btn-character {
-      width: 70px;
-      height: 70px;
+      width: 60px;
+      height: 60px;
       object-fit: contain;
-      object-position: center;
+      object-position: bottom center;
       position: absolute;
-      top: 50%;
+      bottom: 0;
       left: 50%;
-      transform: translate(-50%, -50%);
+      transform: translateX(-50%);
       pointer-events: none;
-      filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.4));
-    }
-    
-    .floating-btn.character-mode .floating-btn-emoji {
+      filter: drop-shadow(2px 4px 8px rgba(0, 0, 0, 0.5));
       display: none;
     }
     
-    .floating-btn.character-mode .floating-btn-character {
-      display: block;
+    /* Hide emoji when character is showing */
+    .floating-btn.character-mode .floating-btn-emoji {
+      display: none !important;
     }
     
-    /* Cat mode - round crop */
+    /* Show character image in character mode */
+    .floating-btn.character-mode .floating-btn-character {
+      display: block !important;
+    }
+    
+    /* Cat mode - Same transparent cutout but smaller */
+    .floating-btn.cat-mode {
+      width: 60px;
+      height: 60px;
+    }
+    
     .floating-btn.cat-mode .floating-btn-character {
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      object-fit: cover;
+      width: 55px;
+      height: 55px;
+      object-fit: contain;
+      border-radius: 0;
+      filter: drop-shadow(2px 4px 8px rgba(0, 0, 0, 0.5));
+    }
+    
+    /* OFF Mode - Pastel transparent buttons with icons */
+    .floating-btn.off-mode {
+      background: rgba(100, 116, 139, 0.25) !important;
+      border: 1px solid rgba(148, 163, 184, 0.3) !important;
+      opacity: 0.5 !important;
+    }
+    
+    .floating-btn.off-mode:hover {
+      opacity: 0.8 !important;
+      background: rgba(100, 116, 139, 0.35) !important;
+      transform: scale(1.05);
+    }
+    
+    .floating-btn.off-mode .floating-btn-emoji {
+      font-size: 22px;
+      opacity: 0.7;
     }
     
     .floating-ai-header {
