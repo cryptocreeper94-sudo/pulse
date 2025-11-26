@@ -3,60 +3,18 @@
 const API_BASE = '';
 let currentCatMode = 'normal';
 
-// Preload Business Cat images for Altcoin Season gauge (SIMPLIFIED - Nov 15 2025)
+// Cat images for Altcoin Season gauge disabled - using clean gauges instead (Nov 26 2025)
 const businessCatAltSeasonImages = {
-  grumpyFace: null,  // Grumpy cat face (for Bitcoin season)
-  coolFace: null,    // Cool cat with sunglasses (for Alt season)
-  arm: null,         // Rotating arm
+  grumpyFace: null,
+  coolFace: null,
+  arm: null,
   loaded: false
 };
 
 function preloadAltSeasonCatImages() {
-  // Load the composite asset image (same as Fear & Greed)
-  const compositeImg = new Image();
-  compositeImg.src = '/cat-popup-images/gauge-cat-assets.jpeg';
-  
-  compositeImg.onload = () => {
-    // Create separate canvases for each asset (crop from composite)
-    // Image size: 1024x1536
-    
-    // Grumpy face (left): x=0, y=0, w=512, h=1024
-    const grumpyCanvas = document.createElement('canvas');
-    grumpyCanvas.width = 512;
-    grumpyCanvas.height = 1024;
-    const grumpyCtx = grumpyCanvas.getContext('2d');
-    grumpyCtx.drawImage(compositeImg, 0, 0, 512, 1024, 0, 0, 512, 1024);
-    businessCatAltSeasonImages.grumpyFace = grumpyCanvas;
-    
-    // Cool face (right): x=512, y=0, w=512, h=1024
-    const coolCanvas = document.createElement('canvas');
-    coolCanvas.width = 512;
-    coolCanvas.height = 1024;
-    const coolCtx = coolCanvas.getContext('2d');
-    coolCtx.drawImage(compositeImg, 512, 0, 512, 1024, 0, 0, 512, 1024);
-    businessCatAltSeasonImages.coolFace = coolCanvas;
-    
-    // Orange arm (bottom half, LEFT side only): x=0, y=1024, w=512, h=512
-    const armCanvas = document.createElement('canvas');
-    armCanvas.width = 512;
-    armCanvas.height = 512;
-    const armCtx = armCanvas.getContext('2d');
-    armCtx.drawImage(compositeImg, 0, 1024, 512, 512, 0, 0, 512, 512);
-    businessCatAltSeasonImages.arm = armCanvas;
-    
-    businessCatAltSeasonImages.loaded = true;
-    console.log('✅ Simple Cat Face + Arm loaded for Altcoin Season gauge!');
-    
-    // Redraw gauge - DASHBOARD MODE ONLY (no cat needles on dashboard)
-    const altSeasonCanvas = document.getElementById('altSeasonGauge');
-    if (altSeasonCanvas && typeof drawAltSeasonGauge === 'function') {
-      drawAltSeasonGauge(altSeasonCanvas, window.gaugeState.altSeason, { mode: 'dashboard' });
-    }
-  };
-  
-  compositeImg.onerror = () => {
-    console.error('❌ Failed to load Altcoin Season cat assets');
-  };
+  // Disabled - no longer using cat sprite sheets for gauges
+  // Using clean needle-only gauges from gauges-clean.js
+  console.log('ℹ️ Cat gauge images disabled - using clean gauges');
 }
 
 // Preload images on script load

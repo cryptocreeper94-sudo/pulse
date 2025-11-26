@@ -1,55 +1,18 @@
 // Fear & Greed Gauge - CMC Style (UPDATED VERSION - NOV 14 2025)
 console.log('🎯 Fear & Greed Gauge UPDATED VERSION loaded - Nov 14 2025');
 
-// Preload Business Cat images for Fear & Greed gauge (SIMPLIFIED - Nov 15 2025)
+// Cat images for Fear & Greed gauge disabled - using clean gauges instead (Nov 26 2025)
 const businessCatImages = {
-  grumpyFace: null,  // Grumpy cat face (for fear)
-  coolFace: null,    // Cool cat with sunglasses (for greed)
-  arm: null,         // Rotating arm
+  grumpyFace: null,
+  coolFace: null,
+  arm: null,
   loaded: false
 };
 
 function preloadBusinessCatImages() {
-  // Load the composite asset image
-  const compositeImg = new Image();
-  compositeImg.src = '/cat-popup-images/gauge-cat-assets.jpeg';
-  
-  compositeImg.onload = () => {
-    // Composite: 1024×1536
-    // Top 1024px: Two cat faces side-by-side (512×1024 each)
-    // Bottom 512px: Arm (1024×512)
-    
-    // Grumpy face (left): x=0, y=0, w=512, h=1024
-    const grumpyCanvas = document.createElement('canvas');
-    grumpyCanvas.width = 512;
-    grumpyCanvas.height = 1024;
-    const grumpyCtx = grumpyCanvas.getContext('2d');
-    grumpyCtx.drawImage(compositeImg, 0, 0, 512, 1024, 0, 0, 512, 1024);
-    businessCatImages.grumpyFace = grumpyCanvas;
-    
-    // Cool face (right): x=512, y=0, w=512, h=1024
-    const coolCanvas = document.createElement('canvas');
-    coolCanvas.width = 512;
-    coolCanvas.height = 1024;
-    const coolCtx = coolCanvas.getContext('2d');
-    coolCtx.drawImage(compositeImg, 512, 0, 512, 1024, 0, 0, 512, 1024);
-    businessCatImages.coolFace = coolCanvas;
-    
-    // Orange arm (bottom half, LEFT side only): x=0, y=1024, w=512, h=512
-    const armCanvas = document.createElement('canvas');
-    armCanvas.width = 512;
-    armCanvas.height = 512;
-    const armCtx = armCanvas.getContext('2d');
-    armCtx.drawImage(compositeImg, 0, 1024, 512, 512, 0, 0, 512, 512);
-    businessCatImages.arm = armCanvas;
-    
-    businessCatImages.loaded = true;
-    console.log('✅ Simple Cat Face + Arm loaded for Fear & Greed gauge!');
-  };
-  
-  compositeImg.onerror = () => {
-    console.error('❌ Failed to load cat assets');
-  };
+  // Disabled - no longer using cat sprite sheets for gauges
+  // Using clean needle-only gauges from gauges-clean.js
+  console.log('ℹ️ Cat gauge images disabled - using clean gauges');
 }
 
 // Preload images on script load

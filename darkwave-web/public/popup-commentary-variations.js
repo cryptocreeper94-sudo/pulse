@@ -206,36 +206,21 @@ class CatImageManager {
   constructor() {
     this.recentImages = {};
     
-    // Available cat images for popups - Now includes full sprite sheet extractions!
+    // Available cat images for popups - Using Grumpy Cat from trading-cards (transparent PNGs)
     this.catImages = {
       business: [
-        '/cat-images/business-cat.png',
-        '/crypto-cat-images/business-cat-explaining.jpg',
-        // Gauge needle bodies (armless - clean for popups)
-        '/cat-popup-images/gauge-fear-greed-1.png',
-        '/cat-popup-images/gauge-fear-greed-2.png',
-        '/cat-popup-images/gauge-fear-greed-3.png',
-        '/cat-popup-images/gauge-altseason-1.png',
-        '/cat-popup-images/gauge-altseason-2.png',
-        '/cat-popup-images/gauge-altseason-3.png',
-        '/cat-popup-images/gauge-neutral-body.png'
+        '/trading-cards/Grumpy_cat_neutral_pose_ba4a1b4d.png',
+        '/trading-cards/Grumpy_cat_arms_crossed_f8e46099.png',
+        '/trading-cards/Grumpy_cat_pointing_pose_6bbe6ae8.png',
+        '/trading-cards/Grumpy_cat_thumbs_up_e77056f4.png',
+        '/trading-cards/Grumpy_cat_fist_pump_e028a55a.png'
       ],
       casual: [
-        '/cat-images/casual-cat.png',
-        // Full body cats with arms/expressions (great variety!)
-        '/cat-popup-images/fear-greed-worried.png',
-        '/cat-popup-images/fear-greed-annoyed.png',
-        '/cat-popup-images/fear-greed-happy.png',
-        '/cat-popup-images/altseason-thinking.png',
-        '/cat-popup-images/altseason-pointing.png',
-        '/cat-popup-images/altseason-excited.png',
-        // Also include gauge bodies for casual
-        '/cat-popup-images/gauge-fear-greed-1.png',
-        '/cat-popup-images/gauge-fear-greed-2.png',
-        '/cat-popup-images/gauge-fear-greed-3.png',
-        '/cat-popup-images/gauge-altseason-1.png',
-        '/cat-popup-images/gauge-altseason-2.png',
-        '/cat-popup-images/gauge-altseason-3.png'
+        '/trading-cards/Grumpy_cat_sideeye_pose_5e52df88.png',
+        '/trading-cards/Grumpy_cat_facepalm_pose_2fdc5a6a.png',
+        '/trading-cards/Grumpy_cat_angry_pose_63318575.png',
+        '/trading-cards/Grumpy_cat_walking_pose_4be44c5b.png',
+        '/trading-cards/Grumpy_orange_Crypto_Cat_ac1ff7e8.png'
       ]
     };
   }
