@@ -37,6 +37,21 @@ async function retryWithBackoff(fetchFn, maxRetries = 3, baseDelay = 1000) {
   }
 }
 
+// Toggle collapsible sections (Learn page)
+function toggleCollapsible(btn) {
+  const section = btn.closest('.collapsible-section');
+  const content = section.querySelector('.collapsible-content');
+  const icon = btn.querySelector('.collapsible-icon');
+  
+  if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+    content.style.maxHeight = '0px';
+    icon.style.transform = 'rotate(0deg)';
+  } else {
+    content.style.maxHeight = content.scrollHeight + 'px';
+    icon.style.transform = 'rotate(180deg)';
+  }
+}
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
   console.log('🚀 DarkWave Pulse initializing...');

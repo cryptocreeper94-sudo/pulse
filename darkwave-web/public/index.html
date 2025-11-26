@@ -1038,179 +1038,203 @@
             </div>
           </div>
 
-          <!-- SKEPTIC'S CORNER -->
-          <div style="background: #1e293b; padding: 25px; border-radius: 12px; margin-bottom: 25px; border: 2px solid rgba(255,255,255,0.1);">
-            <h2 style="font-size: 20px; font-weight: 700; color: #fff; margin: 0 0 20px 0; text-transform: uppercase;">SKEPTIC'S CORNER</h2>
-            <p style="font-size: 13px; color: #94a3b8; margin: 0 0 25px 0; line-height: 1.6; font-style: italic;">
-              For those who are cautious or new to crypto, here are the tough questions answered honestly:
-            </p>
+          <!-- SKEPTIC'S CORNER - COLLAPSIBLE -->
+          <div class="collapsible-section" style="background: #1e293b; border-radius: 12px; margin-bottom: 25px; border: 2px solid rgba(255,255,255,0.1); overflow: hidden;">
+            <button class="collapsible-btn" onclick="toggleCollapsible(this);" style="width: 100%; padding: 25px; text-align: left; background: none; border: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+              <h2 style="font-size: 20px; font-weight: 700; color: #fff; margin: 0; text-transform: uppercase;">SKEPTIC'S CORNER</h2>
+              <span class="collapsible-icon" style="font-size: 24px; color: #3861FB;">▼</span>
+            </button>
+            <div class="collapsible-content" style="padding: 0 25px 25px 25px; max-height: 2000px; overflow: hidden; transition: max-height 0.3s ease-in-out;">
+              <p style="font-size: 13px; color: #94a3b8; margin: 0 0 25px 0; line-height: 1.6; font-style: italic;">
+                For those who are cautious or new to crypto, here are the tough questions answered honestly:
+              </p>
 
-            <!-- FAQ 1 -->
-            <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-              <h3 style="font-size: 15px; font-weight: 700; color: #f59e0b; margin: 0 0 10px 0;">"WHY BUY SOMETHING YOU CAN'T HOLD?"</h3>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
-                Fair question. You CAN hold crypto - just differently. Hardware wallets (like Ledger, Trezor) are physical devices that store your crypto offline. It's like a safe deposit box for digital money.
-              </p>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0; line-height: 1.7;">
-                <strong>Analogy:</strong> Remember when online banking started? You couldn't "hold" your bank balance either - but it's real money. Crypto is similar, just not controlled by banks.
-              </p>
+              <!-- FAQ 1 -->
+              <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="font-size: 15px; font-weight: 700; color: #f59e0b; margin: 0 0 10px 0;">"WHY BUY SOMETHING YOU CAN'T HOLD?"</h3>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
+                  Fair question. You CAN hold crypto - just differently. Hardware wallets (like Ledger, Trezor) are physical devices that store your crypto offline. It's like a safe deposit box for digital money.
+                </p>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0; line-height: 1.7;">
+                  <strong>Analogy:</strong> Remember when online banking started? You couldn't "hold" your bank balance either - but it's real money. Crypto is similar, just not controlled by banks.
+                </p>
+              </div>
+
+              <!-- FAQ 2 -->
+              <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="font-size: 15px; font-weight: 700; color: #f59e0b; margin: 0 0 10px 0;">"WHY INVEST IN SOMETHING THAT ALWAYS GOES DOWN?"</h3>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
+                  It doesn't always go down - that's just what you see in headlines. Bitcoin went from $1 (2011) to $69K (2021). Ethereum went from $10 (2016) to $4,800 (2021).
+                </p>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0; line-height: 1.7;">
+                  <strong>The truth:</strong> Crypto is volatile (big swings up AND down). That's why DarkWave has price alerts, stop-loss reminders, and AI signals to help you manage risk. We teach dollar-cost averaging (buy small amounts regularly) instead of gambling it all at once.
+                </p>
+              </div>
+
+              <!-- FAQ 3 -->
+              <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="font-size: 15px; font-weight: 700; color: #f59e0b; margin: 0 0 10px 0;">"CASH IS REAL. CRYPTO IS FAKE."</h3>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
+                  Cash loses value every year (inflation - your $100 today is worth $97 next year). Crypto can too, but some coins are designed to HOLD or GROW value instead.
+                </p>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0; line-height: 1.7;">
+                  <strong>Example:</strong> El Salvador made Bitcoin legal tender. You CAN spend it in stores there. Major companies (Microsoft, Starbucks, Whole Foods) accept crypto payments through third-party apps. It's becoming "real money" whether we like it or not.
+                </p>
+              </div>
+
+              <!-- FAQ 4 -->
+              <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="font-size: 15px; font-weight: 700; color: #f59e0b; margin: 0 0 10px 0;">"WHAT IF THE GOVERNMENT BANS IT?"</h3>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
+                  They've tried. China banned Bitcoin mining - Bitcoin is still here. The U.S. SEC is creating regulations instead of banning because they know they can't stop it.
+                </p>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0; line-height: 1.7;">
+                  <strong>Plan B:</strong> DarkWave covers STOCKS too. If crypto dies tomorrow, you still have access to traditional market analysis. You're not stuck in one world.
+                </p>
+              </div>
+
+              <!-- FAQ 5 -->
+              <div style="margin-bottom: 0;">
+                <h3 style="font-size: 15px; font-weight: 700; color: #f59e0b; margin: 0 0 10px 0;">"WHY SHOULD I TRUST YOU?"</h3>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
+                  You shouldn't - not blindly. That's why everything is documented:
+                </p>
+                <ul style="margin: 0; padding: 0 0 0 20px; color: #cbd5e1; font-size: 14px; line-height: 2;">
+                  <li>This TRUTH tab shows Jason's losses (not his wins)</li>
+                  <li>Business plans show conservative projections (not hype)</li>
+                  <li>10-phase roadmap shows execution history (not empty promises)</li>
+                  <li>All sources cited (scroll down to References section)</li>
+                </ul>
+                <p style="font-size: 14px; color: #10b981; margin: 12px 0 0 0; line-height: 1.7; font-weight: 600;">
+                  Don't trust blindly. Verify everything. That's literally why we built this tab.
+                </p>
+              </div>
             </div>
+          </div>
 
-            <!-- FAQ 2 -->
-            <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-              <h3 style="font-size: 15px; font-weight: 700; color: #f59e0b; margin: 0 0 10px 0;">"WHY INVEST IN SOMETHING THAT ALWAYS GOES DOWN?"</h3>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
-                It doesn't always go down - that's just what you see in headlines. Bitcoin went from $1 (2011) to $69K (2021). Ethereum went from $10 (2016) to $4,800 (2021).
-              </p>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0; line-height: 1.7;">
-                <strong>The truth:</strong> Crypto is volatile (big swings up AND down). That's why DarkWave has price alerts, stop-loss reminders, and AI signals to help you manage risk. We teach dollar-cost averaging (buy small amounts regularly) instead of gambling it all at once.
-              </p>
+          <!-- Hard Facts Section - COLLAPSIBLE -->
+          <div class="collapsible-section" style="background: #1e293b; border-radius: 12px; margin-bottom: 25px; overflow: hidden;">
+            <button class="collapsible-btn" onclick="toggleCollapsible(this);" style="width: 100%; padding: 25px; text-align: left; background: none; border: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+              <h2 style="font-size: 20px; font-weight: 700; color: #fff; margin: 0; text-transform: uppercase;">HARD FACTS (WITH SOURCES)</h2>
+              <span class="collapsible-icon" style="font-size: 24px; color: #3861FB;">▼</span>
+            </button>
+            <div class="collapsible-content" style="padding: 0 25px 25px 25px; max-height: 2000px; overflow: hidden; transition: max-height 0.3s ease-in-out;">
+              <!-- Fact 1 -->
+              <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="font-size: 16px; font-weight: 700; color: #10b981; margin: 0 0 10px 0;">1. CRYPTO IS NOT ANONYMOUS</h3>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
+                  Every blockchain transaction is <strong>permanent and public</strong>. Your wallet address is pseudonymous, not anonymous. KYC exchanges (Coinbase, Binance) link your wallet to your real identity. If the government wants to find you, they can.
+                </p>
+                <p style="font-size: 12px; color: #64748b; margin: 0;">
+                  <strong>Source:</strong> Chainalysis Crypto Crime Report 2024 - blockchain analysis tracks $24.2B in illicit transactions annually<sup>[1]</sup>
+                </p>
+              </div>
+
+              <!-- Fact 2 -->
+              <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="font-size: 16px; font-weight: 700; color: #10b981; margin: 0 0 10px 0;">2. MOST COINS ARE SCAMS</h3>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
+                  There are 20,000+ cryptocurrencies. 99% have no real use case. Pump.fun launches 10,000+ tokens per day - most are rug pulls within 24 hours. The average "moonshot" coin loses 90% of its value in 30 days.
+                </p>
+                <p style="font-size: 12px; color: #64748b; margin: 0;">
+                  <strong>Sources:</strong> FTC Report 2024 - $5.6B lost to crypto scams since 2021<sup>[2]</sup>; CoinGecko data shows 18,000+ dead coins<sup>[3]</sup>
+                </p>
+              </div>
+
+              <!-- Fact 3 -->
+              <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="font-size: 16px; font-weight: 700; color: #10b981; margin: 0 0 10px 0;">3. MARKET MANIPULATION IS RAMPANT</h3>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
+                  Paid shill campaigns, coordinated pump & dumps, wash trading, and whale manipulation happen daily. That Telegram group hyping a coin? They're getting paid. That influencer shilling a token? They dumped before you bought.
+                </p>
+                <p style="font-size: 12px; color: #64748b; margin: 0;">
+                  <strong>Source:</strong> University of Texas study - 87% of meme coins show signs of coordinated pump & dump schemes<sup>[4]</sup>
+                </p>
+              </div>
+
+              <!-- Fact 4 -->
+              <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="font-size: 16px; font-weight: 700; color: #10b981; margin: 0 0 10px 0;">4. YOU'RE ON YOUR OWN (NO SAFETY NET)</h3>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
+                  Crypto is unregulated. No FDIC insurance. No chargebacks. No customer support. Send money to wrong address? Gone forever. Exchange gets hacked? Your loss. Smart contract bug? Tough luck.
+                </p>
+                <p style="font-size: 12px; color: #64748b; margin: 0;">
+                  <strong>Source:</strong> SEC Commissioner Hester Peirce 2024 testimony - "Crypto investors have minimal regulatory protection"<sup>[5]</sup>
+                </p>
+              </div>
+
+              <!-- Fact 5 -->
+              <div style="margin-bottom: 0;">
+                <h3 style="font-size: 16px; font-weight: 700; color: #10b981; margin: 0 0 10px 0;">5. ISO 20022 IS MARKETING HYPE (NOT SURVIVAL)</h3>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
+                  XRP/XLM/XDC claim "ISO 20022 certification means you'll survive regulation." This is false. ISO 20022 is a bank messaging standard for financial institutions, not a crypto survival requirement. It helps banks talk to each other - it doesn't make a coin "regulation-proof."
+                </p>
+                <p style="font-size: 12px; color: #64748b; margin: 0;">
+                  <strong>Source:</strong> ISO.org official documentation - "ISO 20022 is a methodology for developing financial messaging standards"<sup>[6]</sup>
+                </p>
+              </div>
             </div>
+          </div>
 
-            <!-- FAQ 3 -->
-            <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-              <h3 style="font-size: 15px; font-weight: 700; color: #f59e0b; margin: 0 0 10px 0;">"CASH IS REAL. CRYPTO IS FAKE."</h3>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
-                Cash loses value every year (inflation - your $100 today is worth $97 next year). Crypto can too, but some coins are designed to HOLD or GROW value instead.
-              </p>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0; line-height: 1.7;">
-                <strong>Example:</strong> El Salvador made Bitcoin legal tender. You CAN spend it in stores there. Major companies (Microsoft, Starbucks, Whole Foods) accept crypto payments through third-party apps. It's becoming "real money" whether we like it or not.
-              </p>
+          <!-- How to Protect Yourself - COLLAPSIBLE -->
+          <div class="collapsible-section" style="background: #1e293b; border-radius: 12px; margin-bottom: 25px; overflow: hidden;">
+            <button class="collapsible-btn" onclick="toggleCollapsible(this);" style="width: 100%; padding: 25px; text-align: left; background: none; border: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+              <h2 style="font-size: 20px; font-weight: 700; color: #fff; margin: 0; text-transform: uppercase;">HOW TO PROTECT YOURSELF</h2>
+              <span class="collapsible-icon" style="font-size: 24px; color: #3861FB;">▼</span>
+            </button>
+            <div class="collapsible-content" style="padding: 0 25px 25px 25px; max-height: 2000px; overflow: hidden; transition: max-height 0.3s ease-in-out;">
+              <ul style="margin: 0; padding: 0 0 0 20px; color: #cbd5e1; font-size: 14px; line-height: 2;">
+                <li><strong>Use multiple wallets</strong> - Don't link everything to one address</li>
+                <li><strong>Never share seed phrases</strong> - Anyone asking is a scammer</li>
+                <li><strong>Research before buying</strong> - Check contract address, audit reports, team doxxing</li>
+                <li><strong>Set stop losses</strong> - DarkWave price alerts (coming V1.1) help with this</li>
+                <li><strong>Diversify</strong> - Don't go all-in on one coin</li>
+                <li><strong>Trust your gut</strong> - If it sounds too good to be true, it is</li>
+              </ul>
             </div>
+          </div>
 
-            <!-- FAQ 4 -->
-            <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-              <h3 style="font-size: 15px; font-weight: 700; color: #f59e0b; margin: 0 0 10px 0;">"WHAT IF THE GOVERNMENT BANS IT?"</h3>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
-                They've tried. China banned Bitcoin mining - Bitcoin is still here. The U.S. SEC is creating regulations instead of banning because they know they can't stop it.
-              </p>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0; line-height: 1.7;">
-                <strong>Plan B:</strong> DarkWave covers STOCKS too. If crypto dies tomorrow, you still have access to traditional market analysis. You're not stuck in one world.
-              </p>
-            </div>
-
-            <!-- FAQ 5 -->
-            <div style="margin-bottom: 0;">
-              <h3 style="font-size: 15px; font-weight: 700; color: #f59e0b; margin: 0 0 10px 0;">"WHY SHOULD I TRUST YOU?"</h3>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
-                You shouldn't - not blindly. That's why everything is documented:
+          <!-- What If Crypto Collapses - COLLAPSIBLE -->
+          <div class="collapsible-section" style="background: #1e293b; border-radius: 12px; margin-bottom: 25px; border-left: 4px solid #dc2626; overflow: hidden;">
+            <button class="collapsible-btn" onclick="toggleCollapsible(this);" style="width: 100%; padding: 25px; text-align: left; background: none; border: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+              <h2 style="font-size: 20px; font-weight: 700; color: #fff; margin: 0; text-transform: uppercase;">WHAT IF CRYPTO GOES TO ZERO?</h2>
+              <span class="collapsible-icon" style="font-size: 24px; color: #3861FB;">▼</span>
+            </button>
+            <div class="collapsible-content" style="padding: 0 25px 25px 25px; max-height: 2000px; overflow: hidden; transition: max-height 0.3s ease-in-out;">
+              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 12px 0; line-height: 1.7;">
+                It could happen. Here's what you should have as backup:
               </p>
               <ul style="margin: 0; padding: 0 0 0 20px; color: #cbd5e1; font-size: 14px; line-height: 2;">
-                <li>This TRUTH tab shows Jason's losses (not his wins)</li>
-                <li>Business plans show conservative projections (not hype)</li>
-                <li>10-phase roadmap shows execution history (not empty promises)</li>
-                <li>All sources cited (scroll down to References section)</li>
+                <li><strong>Traditional investments</strong> - Stocks, bonds, index funds (boring but safe)</li>
+                <li><strong>Real assets</strong> - Real estate, precious metals, tangible goods</li>
+                <li><strong>Emergency fund</strong> - 3-6 months expenses in cash (not crypto)</li>
+                <li><strong>Exit strategy</strong> - Know when to cut losses and walk away</li>
               </ul>
-              <p style="font-size: 14px; color: #10b981; margin: 12px 0 0 0; line-height: 1.7; font-weight: 600;">
-                Don't trust blindly. Verify everything. That's literally why we built this tab.
+              <p style="font-size: 14px; color: #f59e0b; margin: 15px 0 0 0; line-height: 1.7; font-weight: 600;">
+                Never invest more than you can afford to lose. Period.
               </p>
             </div>
           </div>
 
-          <!-- Hard Facts Section -->
-          <div style="background: #1e293b; padding: 25px; border-radius: 12px; margin-bottom: 25px;">
-            <h2 style="font-size: 20px; font-weight: 700; color: #fff; margin: 0 0 20px 0; text-transform: uppercase;">HARD FACTS (WITH SOURCES)</h2>
-
-            <!-- Fact 1 -->
-            <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-              <h3 style="font-size: 16px; font-weight: 700; color: #10b981; margin: 0 0 10px 0;">1. CRYPTO IS NOT ANONYMOUS</h3>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
-                Every blockchain transaction is <strong>permanent and public</strong>. Your wallet address is pseudonymous, not anonymous. KYC exchanges (Coinbase, Binance) link your wallet to your real identity. If the government wants to find you, they can.
-              </p>
-              <p style="font-size: 12px; color: #64748b; margin: 0;">
-                <strong>Source:</strong> Chainalysis Crypto Crime Report 2024 - blockchain analysis tracks $24.2B in illicit transactions annually<sup>[1]</sup>
-              </p>
-            </div>
-
-            <!-- Fact 2 -->
-            <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-              <h3 style="font-size: 16px; font-weight: 700; color: #10b981; margin: 0 0 10px 0;">2. MOST COINS ARE SCAMS</h3>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
-                There are 20,000+ cryptocurrencies. 99% have no real use case. Pump.fun launches 10,000+ tokens per day - most are rug pulls within 24 hours. The average "moonshot" coin loses 90% of its value in 30 days.
-              </p>
-              <p style="font-size: 12px; color: #64748b; margin: 0;">
-                <strong>Sources:</strong> FTC Report 2024 - $5.6B lost to crypto scams since 2021<sup>[2]</sup>; CoinGecko data shows 18,000+ dead coins<sup>[3]</sup>
+          <!-- Sources/References - COLLAPSIBLE -->
+          <div class="collapsible-section" style="background: #0f172a; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); overflow: hidden;">
+            <button class="collapsible-btn" onclick="toggleCollapsible(this);" style="width: 100%; padding: 25px; text-align: left; background: none; border: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+              <h2 style="font-size: 18px; font-weight: 700; color: #fff; margin: 0; text-transform: uppercase;">SOURCES & REFERENCES</h2>
+              <span class="collapsible-icon" style="font-size: 24px; color: #3861FB;">▼</span>
+            </button>
+            <div class="collapsible-content" style="padding: 0 25px 25px 25px; max-height: 2000px; overflow: hidden; transition: max-height 0.3s ease-in-out;">
+              <div style="font-size: 12px; color: #94a3b8; line-height: 2;">
+                <p style="margin: 0 0 8px 0;"><sup>[1]</sup> Chainalysis. (2024). "Crypto Crime Report 2024." Available at: chainalysis.com/reports</p>
+                <p style="margin: 0 0 8px 0;"><sup>[2]</sup> Federal Trade Commission. (2024). "Consumer Sentinel Network Data Book 2023." Available at: ftc.gov/reports</p>
+                <p style="margin: 0 0 8px 0;"><sup>[3]</sup> CoinGecko. (2024). "Cryptocurrency Market Data." Available at: coingecko.com</p>
+                <p style="margin: 0 0 8px 0;"><sup>[4]</sup> University of Texas at Austin. (2023). "Price Manipulation in the Cryptocurrency Market." Journal of Financial Economics.</p>
+                <p style="margin: 0 0 8px 0;"><sup>[5]</sup> U.S. Securities and Exchange Commission. (2024). "Commissioner Hester Peirce Testimony on Digital Assets."</p>
+                <p style="margin: 0 0 8px 0;"><sup>[6]</sup> International Organization for Standardization. (2024). "ISO 20022 Financial Services - Universal Financial Industry Message Scheme." Available at: iso20022.org</p>
+              </div>
+              <p style="font-size: 11px; color: #64748b; margin: 15px 0 0 0; line-height: 1.6;">
+                <strong>Note:</strong> DarkWave Pulse is committed to factual accuracy. All claims are backed by credible sources. Last updated: November 19, 2024.
               </p>
             </div>
-
-            <!-- Fact 3 -->
-            <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-              <h3 style="font-size: 16px; font-weight: 700; color: #10b981; margin: 0 0 10px 0;">3. MARKET MANIPULATION IS RAMPANT</h3>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
-                Paid shill campaigns, coordinated pump & dumps, wash trading, and whale manipulation happen daily. That Telegram group hyping a coin? They're getting paid. That influencer shilling a token? They dumped before you bought.
-              </p>
-              <p style="font-size: 12px; color: #64748b; margin: 0;">
-                <strong>Source:</strong> University of Texas study - 87% of meme coins show signs of coordinated pump & dump schemes<sup>[4]</sup>
-              </p>
-            </div>
-
-            <!-- Fact 4 -->
-            <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-              <h3 style="font-size: 16px; font-weight: 700; color: #10b981; margin: 0 0 10px 0;">4. YOU'RE ON YOUR OWN (NO SAFETY NET)</h3>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
-                Crypto is unregulated. No FDIC insurance. No chargebacks. No customer support. Send money to wrong address? Gone forever. Exchange gets hacked? Your loss. Smart contract bug? Tough luck.
-              </p>
-              <p style="font-size: 12px; color: #64748b; margin: 0;">
-                <strong>Source:</strong> SEC Commissioner Hester Peirce 2024 testimony - "Crypto investors have minimal regulatory protection"<sup>[5]</sup>
-              </p>
-            </div>
-
-            <!-- Fact 5 -->
-            <div style="margin-bottom: 0;">
-              <h3 style="font-size: 16px; font-weight: 700; color: #10b981; margin: 0 0 10px 0;">5. ISO 20022 IS MARKETING HYPE (NOT SURVIVAL)</h3>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
-                XRP/XLM/XDC claim "ISO 20022 certification means you'll survive regulation." This is false. ISO 20022 is a bank messaging standard for financial institutions, not a crypto survival requirement. It helps banks talk to each other - it doesn't make a coin "regulation-proof."
-              </p>
-              <p style="font-size: 12px; color: #64748b; margin: 0;">
-                <strong>Source:</strong> ISO.org official documentation - "ISO 20022 is a methodology for developing financial messaging standards"<sup>[6]</sup>
-              </p>
-            </div>
-          </div>
-
-          <!-- How to Protect Yourself -->
-          <div style="background: #1e293b; padding: 25px; border-radius: 12px; margin-bottom: 25px;">
-            <h2 style="font-size: 20px; font-weight: 700; color: #fff; margin: 0 0 20px 0; text-transform: uppercase;">HOW TO PROTECT YOURSELF</h2>
-            <ul style="margin: 0; padding: 0 0 0 20px; color: #cbd5e1; font-size: 14px; line-height: 2;">
-              <li><strong>Use multiple wallets</strong> - Don't link everything to one address</li>
-              <li><strong>Never share seed phrases</strong> - Anyone asking is a scammer</li>
-              <li><strong>Research before buying</strong> - Check contract address, audit reports, team doxxing</li>
-              <li><strong>Set stop losses</strong> - DarkWave price alerts (coming V1.1) help with this</li>
-              <li><strong>Diversify</strong> - Don't go all-in on one coin</li>
-              <li><strong>Trust your gut</strong> - If it sounds too good to be true, it is</li>
-            </ul>
-          </div>
-
-          <!-- What If Crypto Collapses -->
-          <div style="background: #1e293b; padding: 25px; border-radius: 12px; margin-bottom: 25px; border-left: 4px solid #dc2626;">
-            <h2 style="font-size: 20px; font-weight: 700; color: #fff; margin: 0 0 15px 0; text-transform: uppercase;">WHAT IF CRYPTO GOES TO ZERO?</h2>
-            <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 12px 0; line-height: 1.7;">
-              It could happen. Here's what you should have as backup:
-            </p>
-            <ul style="margin: 0; padding: 0 0 0 20px; color: #cbd5e1; font-size: 14px; line-height: 2;">
-              <li><strong>Traditional investments</strong> - Stocks, bonds, index funds (boring but safe)</li>
-              <li><strong>Real assets</strong> - Real estate, precious metals, tangible goods</li>
-              <li><strong>Emergency fund</strong> - 3-6 months expenses in cash (not crypto)</li>
-              <li><strong>Exit strategy</strong> - Know when to cut losses and walk away</li>
-            </ul>
-            <p style="font-size: 14px; color: #f59e0b; margin: 15px 0 0 0; line-height: 1.7; font-weight: 600;">
-              Never invest more than you can afford to lose. Period.
-            </p>
-          </div>
-
-          <!-- Sources/References -->
-          <div style="background: #0f172a; padding: 25px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
-            <h2 style="font-size: 18px; font-weight: 700; color: #fff; margin: 0 0 20px 0; text-transform: uppercase;">SOURCES & REFERENCES</h2>
-            <div style="font-size: 12px; color: #94a3b8; line-height: 2;">
-              <p style="margin: 0 0 8px 0;"><sup>[1]</sup> Chainalysis. (2024). "Crypto Crime Report 2024." Available at: chainalysis.com/reports</p>
-              <p style="margin: 0 0 8px 0;"><sup>[2]</sup> Federal Trade Commission. (2024). "Consumer Sentinel Network Data Book 2023." Available at: ftc.gov/reports</p>
-              <p style="margin: 0 0 8px 0;"><sup>[3]</sup> CoinGecko. (2024). "Cryptocurrency Market Data." Available at: coingecko.com</p>
-              <p style="margin: 0 0 8px 0;"><sup>[4]</sup> University of Texas at Austin. (2023). "Price Manipulation in the Cryptocurrency Market." Journal of Financial Economics.</p>
-              <p style="margin: 0 0 8px 0;"><sup>[5]</sup> U.S. Securities and Exchange Commission. (2024). "Commissioner Hester Peirce Testimony on Digital Assets."</p>
-              <p style="margin: 0 0 8px 0;"><sup>[6]</sup> International Organization for Standardization. (2024). "ISO 20022 Financial Services - Universal Financial Industry Message Scheme." Available at: iso20022.org</p>
-            </div>
-            <p style="font-size: 11px; color: #64748b; margin: 15px 0 0 0; line-height: 1.6;">
-              <strong>Note:</strong> DarkWave Pulse is committed to factual accuracy. All claims are backed by credible sources. Last updated: November 19, 2024.
-            </p>
           </div>
 
           <!-- Product Experience CTA -->

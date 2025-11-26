@@ -112,6 +112,34 @@ body.theme-light .banner-subtitle {
   font-weight: 400;
 }
 
+/* ===== COLLAPSIBLE SECTIONS (Learn Page) ===== */
+.collapsible-section {
+  transition: all 0.2s ease;
+}
+
+.collapsible-btn {
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.collapsible-btn:hover {
+  opacity: 0.9;
+}
+
+.collapsible-btn:hover .collapsible-icon {
+  color: #6b82ff;
+}
+
+.collapsible-icon {
+  transition: transform 0.3s ease-in-out, color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.collapsible-content {
+  border-top: 1px solid rgba(255,255,255,0.1);
+  transition: max-height 0.3s ease-in-out;
+}
+
 /* ===== PREMIUM THEME SKINS (Premium Users Only) ===== */
 
 /* Jupiter Theme - Orange/Red Space Vibes */
