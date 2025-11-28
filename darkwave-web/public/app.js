@@ -1245,12 +1245,66 @@ function setPersonaMode(mode) {
   }
 }
 
-// Floating buttons are now simple static buttons - no mode switching needed
-// They always show the same clean icons (AI robot and Chat bubble)
+// Update floating buttons with character cutouts based on mode
 function updateFloatingButtons(mode) {
-  // Floating buttons are now simple static buttons
-  // No character images or mode switching - just clean icons
-  console.log('✅ Floating buttons: Standard mode');
+  // Update character system floating button
+  if (window.characterSystem) {
+    window.characterSystem.currentMode = mode;
+    window.characterSystem.updateFloatingButton();
+  }
+  
+  // Get character image for current mode using transparent cutouts
+  const getCharacterImage = () => {
+    if (mode === 'off') return null;
+    if (mode === 'agent') {
+      const agent = window.personaManager?.getCurrentAgent();
+      if (agent && agent.image) {
+        return agent.image.replace('/trading-cards/', '/trading-cards-cutouts/');
+      }
+      return '/trading-cards-cutouts/caucasian_blonde_male_agent.png';
+    }
+    if (mode === 'business') {
+      return '/trading-cards-cutouts/Grumpy_cat_neutral_pose_ba4a1b4d.png';
+    }
+    if (mode === 'casual') {
+      return '/trading-cards-cutouts/Grumpy_cat_sideeye_pose_5e52df88.png';
+    }
+    return null;
+  };
+  
+  const charImage = getCharacterImage();
+  
+  // Update Community/Chat floating button (correct ID: floatingCommunityBtn)
+  const communityBtn = document.getElementById('floatingCommunityBtn');
+  if (communityBtn) {
+    const iconSpan = communityBtn.querySelector('.floating-btn-icon');
+    if (charImage && mode !== 'off') {
+      if (iconSpan) {
+        iconSpan.innerHTML = `<img src="${charImage}" alt="Chat" style="width: 32px; height: 32px; object-fit: cover; object-position: top; border-radius: 50%;">`;
+      }
+      communityBtn.style.opacity = '1';
+    } else {
+      if (iconSpan) iconSpan.innerHTML = '💬';
+      communityBtn.style.opacity = '0.5';
+    }
+  }
+  
+  // Update AI floating button (correct ID: floatingAIBtn)
+  const aiBtn = document.getElementById('floatingAIBtn');
+  if (aiBtn) {
+    const iconSpan = aiBtn.querySelector('.floating-btn-icon');
+    if (charImage && mode !== 'off') {
+      if (iconSpan) {
+        iconSpan.innerHTML = `<img src="${charImage}" alt="AI" style="width: 32px; height: 32px; object-fit: cover; object-position: top; border-radius: 50%;">`;
+      }
+      aiBtn.style.opacity = '1';
+    } else {
+      if (iconSpan) iconSpan.innerHTML = '🤖';
+      aiBtn.style.opacity = '0.5';
+    }
+  }
+  
+  console.log('✅ Floating buttons updated for mode:', mode);
 }
 window.updateFloatingButtons = updateFloatingButtons;
 
@@ -1284,9 +1338,10 @@ function updatePersonaUI(persona) {
 function updateAllCatImages(persona) {
   if (!window.personaManager) return;
   
-  // Get current agent for agent mode
+  // Get current agent for agent mode - use cutout images
   const currentAgent = personaManager.getCurrentAgent();
-  const agentImage = currentAgent ? currentAgent.image : '/trading-cards/caucasian_blonde_male_agent.png';
+  let agentImage = currentAgent ? currentAgent.image : '/trading-cards-cutouts/caucasian_blonde_male_agent.png';
+  agentImage = agentImage.replace('/trading-cards/', '/trading-cards-cutouts/');
   
   const catImage = document.getElementById('catImage');
   if (catImage) {
