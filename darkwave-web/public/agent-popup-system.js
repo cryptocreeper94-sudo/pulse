@@ -70,29 +70,10 @@ const casualResponses = {
   'shitcoin': '💩 99% of all cryptocurrencies. But yours is different, right?'
 };
 
-// Show agent popup with transparent cutout image
+// Show agent popup with slide-in animation
 function showAgentPopup(term, definition) {
-  const existingPopup = document.getElementById('agentPopupOverlay');
-  if (existingPopup) existingPopup.remove();
-
   const agent = getPopupAgent();
   
-  // Create overlay
-  const overlay = document.createElement('div');
-  overlay.id = 'agentPopupOverlay';
-  overlay.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10100;
-  `;
-
   // Determine response text
   let responseText;
   if (agentPopupMode === 'off') {
@@ -103,133 +84,26 @@ function showAgentPopup(term, definition) {
     responseText = casualResponses[term.toLowerCase()] || definition;
   }
 
-  // Create modal with agent image on left, text on right
-  const modal = document.createElement('div');
-  modal.style.cssText = `
-    background: #1a1a1a;
-    border: 3px solid #3861fb;
-    border-radius: 12px;
-    padding: 30px;
-    max-width: 650px;
-    width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
-    display: flex;
-    gap: 20px;
-    box-shadow: 0 0 40px rgba(56, 97, 251, 0.6);
-    position: relative;
-    align-items: flex-start;
-  `;
-
-  modal.innerHTML = `
-    <button onclick="closeAgentPopup()" style="
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      background: none;
-      border: none;
-      color: #3861fb;
-      font-size: 32px;
-      cursor: pointer;
-      padding: 0;
-      line-height: 1;
-    ">×</button>
-
-    <div style="
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      min-width: 140px;
-    ">
-      <img src="${agent.image}" alt="${agent.name}" style="
-        width: 140px;
-        height: auto;
-        object-fit: contain;
-        filter: drop-shadow(0 0 8px rgba(56, 97, 251, 0.4));
-      ">
-      <div style="
-        font-size: 11px;
-        font-weight: 700;
-        color: #3861fb;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        text-align: center;
-      ">${agent.name}</div>
-      <button onclick="switchAgentInPopup()" style="
-        background: linear-gradient(135deg, rgba(56, 97, 251, 0.2), rgba(131, 56, 236, 0.2));
-        border: 1px solid #3861fb;
-        color: #3861fb;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 9px;
-        cursor: pointer;
-        font-weight: 700;
-        transition: all 0.2s;
-      ">Switch</button>
-    </div>
-
-    <div style="flex: 1;">
-      <div style="font-size: 24px; font-weight: 900; color: #3861fb; margin-bottom: 12px; text-transform: uppercase;">${term}</div>
-      <div style="font-size: 14px; color: #ddd; line-height: 1.6;">${responseText}</div>
-      
-      <div style="
-        margin-top: 16px;
-        display: flex;
-        gap: 6px;
-        flex-wrap: wrap;
-      ">
-        <button onclick="setAgentPopupMode('off')" style="
-          padding: 5px 10px;
-          background: ${agentPopupMode === 'off' ? '#3861fb' : 'rgba(56, 97, 251, 0.2)'};
-          border: 1px solid #3861fb;
-          color: #3861fb;
-          border-radius: 4px;
-          cursor: pointer;
-          font-size: 10px;
-          font-weight: 700;
-          transition: all 0.2s;
-        ">Definition</button>
-        <button onclick="setAgentPopupMode('business')" style="
-          padding: 5px 10px;
-          background: ${agentPopupMode === 'business' ? '#3861fb' : 'rgba(56, 97, 251, 0.2)'};
-          border: 1px solid #3861fb;
-          color: #3861fb;
-          border-radius: 4px;
-          cursor: pointer;
-          font-size: 10px;
-          font-weight: 700;
-          transition: all 0.2s;
-        ">Pro</button>
-        <button onclick="setAgentPopupMode('casual')" style="
-          padding: 5px 10px;
-          background: ${agentPopupMode === 'casual' ? '#3861fb' : 'rgba(56, 97, 251, 0.2)'};
-          border: 1px solid #3861fb;
-          color: #3861fb;
-          border-radius: 4px;
-          cursor: pointer;
-          font-size: 10px;
-          font-weight: 700;
-          transition: all 0.2s;
-        ">Casual</button>
-      </div>
-    </div>
-  `;
-
-  overlay.appendChild(modal);
-  document.body.appendChild(overlay);
-
-  // Close on overlay click
-  overlay.onclick = (e) => {
-    if (e.target === overlay) closeAgentPopup();
-  };
-
-  // Auto close after 10 seconds
-  setTimeout(closeAgentPopup, 10000);
+  // Use new slide-in popup system
+  if (window.showSlideInPopup) {
+    window.showSlideInPopup({
+      image: agent.image,
+      name: agent.name,
+      title: term,
+      message: responseText,
+      direction: 'left',
+      duration: 10000
+    });
+  }
 }
 
 function closeAgentPopup() {
+  // Use new slide-in close if available
+  if (window.closeSlideInPopup) {
+    window.closeSlideInPopup('left');
+    return;
+  }
+  // Fallback for old system
   const overlay = document.getElementById('agentPopupOverlay');
   if (overlay) overlay.remove();
 }

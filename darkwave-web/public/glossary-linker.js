@@ -145,8 +145,15 @@ class GlossaryLinker {
       popupText = definition.definition;
     }
 
-    // Show cat popup using existing system
-    if (window.showCatPopup) {
+    // Use new slide-in popup system
+    if (window.showCharacterSlideIn) {
+      window.showCharacterSlideIn({
+        term: definition.term.toUpperCase(),
+        definition: popupText,
+        message: popupText
+      });
+    } else if (window.showCatPopup) {
+      // Fallback to old system
       window.showCatPopup(definition.term.toUpperCase(), popupText);
     }
   }

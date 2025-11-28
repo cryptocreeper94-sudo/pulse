@@ -50,83 +50,40 @@ const businessResponses = {
 };
 
 function showCatPopup(term, definition) {
-  const existingPopup = document.getElementById('catPopup');
-  if (existingPopup) existingPopup.remove();
-  
-  // Create overlay
-  const overlay = document.createElement('div');
-  overlay.id = 'catPopup';
-  overlay.className = 'cat-popup';
-  overlay.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10100;
-  `;
-  
-  // ALWAYS SHOW POPUP (even when mode is 'off', just without the cat)
+  // Determine response and cat image based on mode
   let catResponse;
+  let catImage = '/trading-cards/Grumpy_cat_neutral_pose_ba4a1b4d.png';
   
   if (cryptoCatMode === 'off') {
     catResponse = definition;
   } else if (cryptoCatMode === 'business') {
     catResponse = businessResponses[term.toLowerCase()] || definition;
+    catImage = '/trading-cards/Grumpy_cat_neutral_pose_ba4a1b4d.png';
   } else {
     catResponse = casualResponses[term.toLowerCase()] || `🐱 ${definition}`;
+    catImage = '/trading-cards/Grumpy_cat_sideeye_pose_5e52df88.png';
   }
   
-  // Create modal box
-  const modal = document.createElement('div');
-  modal.style.cssText = `
-    background: #1a1a1a;
-    border: 3px solid #3861fb;
-    border-radius: 12px;
-    padding: 30px;
-    max-width: 500px;
-    width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
-    text-align: center;
-    box-shadow: 0 0 40px rgba(56, 97, 251, 0.6);
-  `;
-  
-  modal.innerHTML = `
-    <button onclick="closeCatPopup()" style="
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      background: none;
-      border: none;
-      color: #3861fb;
-      font-size: 32px;
-      cursor: pointer;
-      padding: 0;
-      line-height: 1;
-    ">×</button>
-    
-    <div style="font-size: 24px; font-weight: 900; color: #3861fb; margin-bottom: 20px; text-transform: uppercase;">${term}</div>
-    <div style="font-size: 16px; color: #ddd; line-height: 1.6;">${catResponse}</div>
-  `;
-  
-  overlay.appendChild(modal);
-  document.body.appendChild(overlay);
-  
-  // Close on overlay click
-  overlay.onclick = (e) => {
-    if (e.target === overlay) closeCatPopup();
-  };
-  
-  // Auto close after 10 seconds
-  setTimeout(() => closeCatPopup(), 10000);
+  // Use new slide-in popup system
+  if (window.showSlideInPopup) {
+    window.showSlideInPopup({
+      image: catImage,
+      name: 'Grumpy Cat',
+      title: term,
+      message: catResponse,
+      direction: 'right',
+      duration: 10000
+    });
+  }
 }
 
 function closeCatPopup() {
+  // Use new slide-in close if available
+  if (window.closeSlideInPopup) {
+    window.closeSlideInPopup('right');
+    return;
+  }
+  // Fallback for old system
   const popup = document.getElementById('catPopup');
   if (popup) {
     popup.classList.add('cat-popup-closing');
