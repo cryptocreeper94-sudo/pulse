@@ -257,6 +257,159 @@ export const mastra = new Mastra({
           return c.json({ success: true, articles });
         }
       },
+      // Multi-Model Streaming Analysis endpoint
+      {
+        path: "/api/stream-analysis",
+        method: "POST",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          
+          try {
+            const { ticker, provider, analysisType } = await c.req.json();
+            logger?.info('🧠 [StreamAnalysis] Request received', { ticker, provider, analysisType });
+            
+            if (!ticker) {
+              return c.json({ error: 'Ticker is required' }, 400);
+            }
+            
+            const { streamAnalysis } = await import('./ai/streamingAnalysis.js');
+            
+            c.header('Content-Type', 'text/event-stream');
+            c.header('Cache-Control', 'no-cache');
+            c.header('Connection', 'keep-alive');
+            
+            const stream = new ReadableStream({
+              async start(controller) {
+                try {
+                  for await (const chunk of streamAnalysis({
+                    ticker,
+                    analysisType: analysisType || 'technical',
+                    provider: provider || 'openai'
+                  })) {
+                    controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify({ text: chunk })}\n\n`));
+                  }
+                  controller.enqueue(new TextEncoder().encode('data: [DONE]\n\n'));
+                  controller.close();
+                } catch (error: any) {
+                  controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify({ error: error.message })}\n\n`));
+                  controller.close();
+                }
+              }
+            });
+            
+            return new Response(stream, {
+              headers: {
+                'Content-Type': 'text/event-stream',
+                'Cache-Control': 'no-cache',
+                'Connection': 'keep-alive'
+              }
+            });
+          } catch (error: any) {
+            logger?.error('❌ [StreamAnalysis] Error', { error: error.message });
+            return c.json({ error: error.message || 'Streaming failed' }, 500);
+          }
+        }
+      },
+      // Multi-Model Ensemble Analysis endpoint
+      {
+        path: "/api/ensemble-analysis",
+        method: "POST",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          
+          try {
+            const { ticker } = await c.req.json();
+            logger?.info('🧠 [EnsembleAnalysis] Request received', { ticker });
+            
+            if (!ticker) {
+              return c.json({ error: 'Ticker is required' }, 400);
+            }
+            
+            const { streamMultiModelAnalysis } = await import('./ai/streamingAnalysis.js');
+            
+            const results = await streamMultiModelAnalysis(ticker, (chunk, source) => {
+              logger?.debug(`[${source}] ${chunk.substring(0, 50)}...`);
+            });
+            
+            logger?.info('✅ [EnsembleAnalysis] Completed', { ticker });
+            return c.json({
+              ticker,
+              openaiAnalysis: results.openai,
+              claudeAnalysis: results.claude,
+              consensusAnalysis: results.consensus,
+              providers: ['openai', 'claude'],
+              timestamp: new Date().toISOString()
+            });
+          } catch (error: any) {
+            logger?.error('❌ [EnsembleAnalysis] Error', { error: error.message });
+            return c.json({ error: error.message || 'Ensemble analysis failed' }, 500);
+          }
+        }
+      },
+      // Agent Personas endpoint
+      {
+        path: "/api/agent-personas",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          logger?.info('🤖 [AgentPersonas] Request received');
+          
+          try {
+            const { agentPersonas } = await import('./ai/agentPersonas.js');
+            
+            const personas = Object.values(agentPersonas).map(p => ({
+              id: p.id,
+              name: p.name,
+              displayName: p.displayName,
+              age: p.age,
+              gender: p.gender,
+              tradingStyle: p.tradingStyle,
+              specialization: p.specialization,
+              riskTolerance: p.riskTolerance,
+              catchphrase: p.catchphrase
+            }));
+            
+            return c.json({ personas, count: personas.length });
+          } catch (error: any) {
+            logger?.error('❌ [AgentPersonas] Error', { error: error.message });
+            return c.json({ error: error.message }, 500);
+          }
+        }
+      },
+      // Unified Market Data endpoint
+      {
+        path: "/api/unified-data",
+        method: "POST",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          
+          try {
+            const { ticker } = await c.req.json();
+            logger?.info('📊 [UnifiedData] Request received', { ticker });
+            
+            if (!ticker) {
+              return c.json({ error: 'Ticker is required' }, 400);
+            }
+            
+            const { dataIntegration } = await import('./ai/dataIntegration.js');
+            const data = await dataIntegration.fetchUnifiedData(ticker);
+            
+            logger?.info('✅ [UnifiedData] Data fetched', { 
+              ticker, 
+              sources: data.market?.sources?.length || 0 
+            });
+            
+            return c.json({
+              ticker,
+              ...data,
+              timestamp: new Date().toISOString()
+            });
+          } catch (error: any) {
+            logger?.error('❌ [UnifiedData] Error', { error: error.message });
+            return c.json({ error: error.message || 'Data fetch failed' }, 500);
+          }
+        }
+      },
       // AI Chat endpoint - Compatible with AI SDK v4
       {
         path: "/api/chat",
