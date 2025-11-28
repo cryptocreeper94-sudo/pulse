@@ -122,7 +122,7 @@ function showSlideInPopup(options) {
   };
   
   characterImg.onerror = () => {
-    characterImg.src = '/trading-cards/Grumpy_cat_neutral_pose_ba4a1b4d.png';
+    characterImg.src = '/trading-cards-cutouts/Grumpy_cat_neutral_pose_ba4a1b4d.png';
   };
   
   characterContainer.appendChild(characterImg);
@@ -233,7 +233,8 @@ function showAgentSlideIn(term, definition) {
     message = window.casualResponses[term.toLowerCase()] || definition;
   }
   
-  const agentImage = agent?.image || '/trading-cards/caucasian_blonde_male_agent.png';
+  let agentImage = agent?.image || '/trading-cards/caucasian_blonde_male_agent.png';
+  agentImage = agentImage.replace('/trading-cards/', '/trading-cards-cutouts/');
   const agentName = agent?.name || 'Agent';
   
   showSlideInPopup({
@@ -251,15 +252,15 @@ function showCatSlideIn(term, definition) {
   const persona = window.personaManager?.getPersona() || mode;
   
   let message = definition;
-  let catImage = '/trading-cards/Grumpy_cat_neutral_pose_ba4a1b4d.png';
+  let catImage = '/trading-cards-cutouts/Grumpy_cat_neutral_pose_ba4a1b4d.png';
   
   if (persona === 'business' || mode === 'business') {
-    catImage = '/trading-cards/Grumpy_cat_neutral_pose_ba4a1b4d.png';
+    catImage = '/trading-cards-cutouts/Grumpy_cat_neutral_pose_ba4a1b4d.png';
     if (window.businessResponses) {
       message = window.businessResponses[term.toLowerCase()] || definition;
     }
   } else if (persona === 'casual' || mode === 'casual') {
-    catImage = '/trading-cards/Grumpy_cat_sideeye_pose_5e52df88.png';
+    catImage = '/trading-cards-cutouts/Grumpy_cat_sideeye_pose_5e52df88.png';
     if (window.casualResponses) {
       message = window.casualResponses[term.toLowerCase()] || definition;
     }
@@ -282,7 +283,7 @@ function showCharacterSlideIn(options) {
     showAgentSlideIn(options.term || '', options.message || options.definition || '');
   } else if (persona === 'off') {
     showSlideInPopup({
-      image: '/trading-cards/Grumpy_cat_neutral_pose_ba4a1b4d.png',
+      image: '/trading-cards-cutouts/Grumpy_cat_neutral_pose_ba4a1b4d.png',
       title: options.term,
       message: options.definition || options.message,
       direction: 'left',

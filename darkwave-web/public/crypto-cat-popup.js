@@ -50,18 +50,18 @@ const businessResponses = {
 };
 
 function showCatPopup(term, definition) {
-  // Determine response and cat image based on mode
+  // Determine response and cat image based on mode - using cutout images
   let catResponse;
-  let catImage = '/trading-cards/Grumpy_cat_neutral_pose_ba4a1b4d.png';
+  let catImage = '/trading-cards-cutouts/Grumpy_cat_neutral_pose_ba4a1b4d.png';
   
   if (cryptoCatMode === 'off') {
     catResponse = definition;
   } else if (cryptoCatMode === 'business') {
     catResponse = businessResponses[term.toLowerCase()] || definition;
-    catImage = '/trading-cards/Grumpy_cat_neutral_pose_ba4a1b4d.png';
+    catImage = '/trading-cards-cutouts/Grumpy_cat_neutral_pose_ba4a1b4d.png';
   } else {
     catResponse = casualResponses[term.toLowerCase()] || `🐱 ${definition}`;
-    catImage = '/trading-cards/Grumpy_cat_sideeye_pose_5e52df88.png';
+    catImage = '/trading-cards-cutouts/Grumpy_cat_sideeye_pose_5e52df88.png';
   }
   
   // Use new slide-in popup system

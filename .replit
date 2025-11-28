@@ -1,4 +1,4 @@
-modules = ["nodejs-22", "postgresql-16"]
+modules = ["nodejs-22", "postgresql-16", "python-3.11"]
 
 [agent]
 stack = "AGENT_STACK"
@@ -7,7 +7,7 @@ expertMode = true
 
 [nix]
 channel = "stable-24_11"
-packages = ["jq", "imagemagick"]
+packages = ["freetype", "imagemagick", "jq", "lcms2", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "oneDNN", "openjpeg", "re2", "tcl", "tk", "zlib"]
 
 [env]
 MASTRA_HIDE_CLOUD_CTA = "true"

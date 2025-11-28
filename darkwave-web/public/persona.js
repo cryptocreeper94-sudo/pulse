@@ -6,17 +6,17 @@ class PersonaManager {
     
     this.imageMap = {
       business: {
-        explaining: '/trading-cards/Grumpy_cat_neutral_pose_ba4a1b4d.png',
-        facepalm: '/trading-cards/Grumpy_cat_facepalm_pose_2fdc5a6a.png',
-        pointing: '/trading-cards/Grumpy_cat_neutral_pose_ba4a1b4d.png',
-        sitting: '/trading-cards/Grumpy_cat_arms_crossed_f8e46099.png'
+        explaining: '/trading-cards-cutouts/Grumpy_cat_neutral_pose_ba4a1b4d.png',
+        facepalm: '/trading-cards-cutouts/Grumpy_cat_facepalm_pose_2fdc5a6a.png',
+        pointing: '/trading-cards-cutouts/Grumpy_cat_neutral_pose_ba4a1b4d.png',
+        sitting: '/trading-cards-cutouts/Grumpy_cat_arms_crossed_f8e46099.png'
       },
       casual: {
-        explaining: '/trading-cards/Grumpy_cat_sideeye_pose_5e52df88.png',
-        facepalm: '/trading-cards/Grumpy_cat_facepalm_pose_2fdc5a6a.png',
-        pointing: '/trading-cards/Grumpy_cat_sideeye_pose_5e52df88.png',
-        sitting: '/trading-cards/Grumpy_cat_arms_crossed_f8e46099.png',
-        sunglasses: '/trading-cards/Grumpy_cat_fist_pump_e028a55a.png'
+        explaining: '/trading-cards-cutouts/Grumpy_cat_sideeye_pose_5e52df88.png',
+        facepalm: '/trading-cards-cutouts/Grumpy_cat_facepalm_pose_2fdc5a6a.png',
+        pointing: '/trading-cards-cutouts/Grumpy_cat_sideeye_pose_5e52df88.png',
+        sitting: '/trading-cards-cutouts/Grumpy_cat_arms_crossed_f8e46099.png',
+        sunglasses: '/trading-cards-cutouts/Grumpy_cat_fist_pump_e028a55a.png'
       }
     };
     
@@ -116,14 +116,14 @@ class PersonaManager {
       if (agent && agent.image) {
         return agent.image;
       }
-      return '/trading-cards/caucasian_blonde_male_agent.png';
+      return '/trading-cards-cutouts/caucasian_blonde_male_agent.png';
     }
     
     if (this.imageMap[persona] && this.imageMap[persona][imageName]) {
       return this.imageMap[persona][imageName];
     }
     
-    return this.imageMap.business.explaining;
+    return this.imageMap.business?.explaining || '/trading-cards-cutouts/Grumpy_cat_neutral_pose_ba4a1b4d.png';
   }
 
   getRandomAgentQuote() {
