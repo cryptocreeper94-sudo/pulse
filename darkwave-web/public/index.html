@@ -2609,91 +2609,145 @@
         
         <button class="close-btn-circle" onclick="switchTab('crypto')">×</button>
         <button class="admin-btn-circle" onclick="showAdminLogin()" title="Admin Dashboard">👑</button>
-        <div class="widget">
-          <h3>Settings</h3>
+        
+        <!-- Settings Title -->
+        <h3 style="font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 16px 0; color: #fff;">Settings</h3>
+        
+        <!-- Two Column Grid for Desktop -->
+        <div class="settings-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           
-          <!-- Username & Theme Customization -->
-          <div style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 8px; padding: 15px; margin-bottom: 20px;">
-            <div style="margin-bottom: 15px;">
-              <label style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888;">Your Display Name (for Community Chat)</label>
-              <div style="display: flex; gap: 8px; margin-top: 8px;">
-                <input type="text" id="usernameInput" placeholder="Enter your display name..." maxlength="30" style="flex: 1; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 13px;" />
-                <button onclick="saveUsername()" style="padding: 10px 15px; background: linear-gradient(135deg, #10B981, #059669); border: none; border-radius: 6px; color: white; font-weight: 700; cursor: pointer;">Save</button>
+          <!-- LEFT COLUMN -->
+          <div class="settings-column">
+            
+            <!-- Display Name -->
+            <div class="widget" style="margin-bottom: 12px; padding: 12px;">
+              <label style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 6px; display: block;">Display Name</label>
+              <div style="display: flex; gap: 6px;">
+                <input type="text" id="usernameInput" placeholder="Enter name..." maxlength="30" style="flex: 1; padding: 8px 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 12px;" />
+                <button onclick="saveUsername()" style="padding: 8px 12px; background: linear-gradient(135deg, #10B981, #059669); border: none; border-radius: 4px; color: white; font-weight: 600; cursor: pointer; font-size: 11px;">Save</button>
               </div>
-              <p style="font-size: 11px; color: #888; margin-top: 6px;">This is what other users will see in the community chat</p>
             </div>
+            
+            <!-- Commentary Mode -->
+            <div class="widget" style="margin-bottom: 12px; padding: 12px;">
+              <label style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 8px; display: block;">Commentary Mode</label>
+              <div class="persona-toggle" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                <button class="persona-btn active" id="agentBtn" onclick="setPersonaMode('agent')" style="padding: 8px; font-size: 11px; border-radius: 4px;">🕵️ Agent</button>
+                <button class="persona-btn" id="businessBtn" onclick="setPersonaMode('business')" style="padding: 8px; font-size: 11px; border-radius: 4px;">🐱 Business</button>
+                <button class="persona-btn" id="casualBtn" onclick="setPersonaMode('casual')" style="padding: 8px; font-size: 11px; border-radius: 4px;">😼 Casual</button>
+                <button class="persona-btn" id="offBtn" onclick="setPersonaMode('off')" style="padding: 8px; font-size: 11px; border-radius: 4px;">🔇 OFF</button>
+              </div>
+            </div>
+            
+            <!-- Quick Actions (2x2 Grid) -->
+            <div class="widget" style="margin-bottom: 12px; padding: 12px;">
+              <label style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 8px; display: block;">Quick Actions</label>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                <button onclick="openAddToHomeModal()" style="background: linear-gradient(135deg, #3861FB, #8338EC); border: none; border-radius: 4px; color: white; font-weight: 600; cursor: pointer; font-size: 10px; padding: 10px 6px; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                  📱 Add to Home
+                </button>
+                <button onclick="showOnboardingModal()" style="background: linear-gradient(135deg, #10B981, #059669); border: none; border-radius: 4px; color: white; font-weight: 600; cursor: pointer; font-size: 10px; padding: 10px 6px; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                  🚀 Guide
+                </button>
+                <select id="themeSelect" onchange="changeTheme(this.value)" style="padding: 10px 6px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; color: #fff; font-size: 10px; font-weight: 600; cursor: pointer;">
+                  <option value="dark">🌙 Dark</option>
+                  <option value="light">☀️ Light</option>
+                </select>
+                <button onclick="handleLogout()" style="background: linear-gradient(135deg, #DC2626, #B91C1C); border: none; border-radius: 4px; color: white; font-weight: 600; cursor: pointer; font-size: 10px; padding: 10px 6px; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                  🚪 Log Out
+                </button>
+              </div>
+            </div>
+            
+            <!-- Gift & Affiliate (Side by Side Compact) -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <!-- Gift -->
+              <div class="widget" style="margin: 0; padding: 10px;">
+                <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+                  <span style="font-size: 14px;">🎁</span>
+                  <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: #dc2626;">Gift</span>
+                </div>
+                <button onclick="openGiftModal()" style="width: 100%; background: linear-gradient(135deg, #dc2626, #991b1b); color: white; padding: 8px; border-radius: 4px; font-weight: 600; font-size: 10px; border: none; cursor: pointer;">
+                  Send Gift
+                </button>
+              </div>
+              <!-- Affiliate -->
+              <div class="widget" style="margin: 0; padding: 10px;">
+                <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+                  <span style="font-size: 14px;">💰</span>
+                  <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: #10B981;">Earn 20%</span>
+                </div>
+                <button onclick="copyAffiliateLink()" style="width: 100%; background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 8px; border-radius: 4px; font-weight: 600; font-size: 10px; border: none; cursor: pointer;">
+                  Copy Link
+                </button>
+              </div>
+            </div>
+            
           </div>
           
-          <!-- Add to Home Screen, Beginner Guide, Theme & Logout (4 Buttons Side by Side) -->
-          <div class="settings-buttons-row" style="display: flex; gap: 12px; margin-bottom: 20px; align-items: flex-start;">
-            <div style="flex: 1;">
-              <button class="logout-btn" onclick="openAddToHomeModal()" style="background: linear-gradient(135deg, #3861FB, #8338EC); font-weight: 700; width: 100%; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 11px; padding: 0 8px;">
-                📱 ADD TO HOME
+          <!-- RIGHT COLUMN -->
+          <div class="settings-column">
+            
+            <!-- Subscription Status -->
+            <div class="widget" style="margin-bottom: 12px; padding: 12px;">
+              <label style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 8px; display: block;">Your Plan</label>
+              <div id="subscriptionStatus" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 6px; padding: 10px;">
+                <div id="currentTierDisplay" style="font-size: 16px; font-weight: 700; color: white;">Loading...</div>
+                <div id="subscriptionDetails" style="font-size: 10px; color: #888; margin-top: 4px;"></div>
+              </div>
+              <button id="cancelSubButton" onclick="cancelSubscription()" style="margin-top: 8px; background: #dc2626; display: none; width: 100%; font-size: 10px; padding: 8px; border: none; border-radius: 4px; color: white; font-weight: 600; cursor: pointer;">
+                Cancel Subscription
               </button>
-              <p style="font-size: 11px; color: #888; margin-top: 8px; text-align: center; min-height: 32px;">
-                Install DarkWave Pulse as a mobile app for instant access
+            </div>
+            
+            <!-- Wallet Notice -->
+            <div class="widget" style="margin-bottom: 12px; padding: 12px; border: 1px solid rgba(171, 71, 188, 0.3); background: linear-gradient(135deg, rgba(171, 71, 188, 0.1), rgba(123, 31, 162, 0.05));">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <span style="font-size: 16px;">💎</span>
+                <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: #ab47bc;">Wallet Required</span>
+              </div>
+              <p style="font-size: 10px; color: rgba(255,255,255,0.8); line-height: 1.5; margin: 0 0 8px 0;">
+                To receive PULSE tokens, you need a Solana wallet.
               </p>
+              <a href="https://phantom.app/download" target="_blank" style="display: block; text-align: center; background: linear-gradient(135deg, #ab47bc, #7b1fa2); color: white; padding: 8px; border-radius: 4px; font-weight: 600; font-size: 10px; text-decoration: none;">
+                👻 Get Phantom Wallet
+              </a>
             </div>
-            <div style="flex: 1;">
-              <button class="logout-btn" onclick="showOnboardingModal()" style="background: linear-gradient(135deg, #10B981, #059669); font-weight: 700; width: 100%; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 11px; padding: 0 8px;">
-                🚀 BEGINNER GUIDE
-              </button>
-              <p style="font-size: 11px; color: #888; margin-top: 8px; text-align: center; min-height: 32px;">
-                Review the crypto basics and platform walkthrough
-              </p>
+            
+            <!-- Affiliate Stats (Compact) -->
+            <div class="widget" id="affiliateWidget" style="padding: 12px;">
+              <label style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 8px; display: block;">Affiliate Stats</label>
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;">
+                <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 4px; padding: 6px; text-align: center;">
+                  <div style="font-size: 14px; font-weight: 700; color: #3B82F6;" id="affiliateClicks">0</div>
+                  <div style="font-size: 8px; color: #888;">Clicks</div>
+                </div>
+                <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 4px; padding: 6px; text-align: center;">
+                  <div style="font-size: 14px; font-weight: 700; color: #10B981;" id="affiliateSignups">0</div>
+                  <div style="font-size: 8px; color: #888;">Signups</div>
+                </div>
+                <div style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 4px; padding: 6px; text-align: center;">
+                  <div style="font-size: 14px; font-weight: 700; color: #8B5CF6;" id="affiliateConversions">0</div>
+                  <div style="font-size: 8px; color: #888;">Subs</div>
+                </div>
+                <div style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.2); border-radius: 4px; padding: 6px; text-align: center;">
+                  <div style="font-size: 14px; font-weight: 700; color: #FBBF24;" id="affiliateEarnings">$0</div>
+                  <div style="font-size: 8px; color: #888;">Pending</div>
+                </div>
+              </div>
+              <div style="display: flex; gap: 6px; margin-top: 8px;">
+                <input type="text" id="affiliateUrlInput" readonly value="Loading..." style="flex: 1; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #10B981; font-size: 9px; padding: 6px; outline: none;">
+                <button onclick="shareAffiliateLink()" style="background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 6px 10px; border-radius: 4px; border: none; font-weight: 600; font-size: 9px; cursor: pointer;">Share</button>
+              </div>
             </div>
-            <div style="flex: 1;">
-              <select id="themeSelect" onchange="changeTheme(this.value)" style="width: 100%; height: 44px; padding: 0 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 11px; font-weight: 600; display: flex; align-items: center;">
-                <option value="dark">🌙 DARK</option>
-                <option value="light">☀️ LIGHT</option>
-              </select>
-              <p style="font-size: 11px; color: #888; margin-top: 8px; text-align: center; min-height: 32px;">
-                Choose your preferred visual theme
-              </p>
-            </div>
-            <div style="flex: 1;">
-              <button class="logout-btn" onclick="handleLogout()" style="background: linear-gradient(135deg, #DC2626, #B91C1C); font-weight: 700; width: 100%; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 11px; padding: 0 8px;">
-                🚪 LOG OUT
-              </button>
-              <p style="font-size: 11px; color: #888; margin-top: 8px; text-align: center; min-height: 32px;">
-                Logged in for 30 days. Click to end session.
-              </p>
-            </div>
-          </div>
-          <div class="setting-item">
-            <label>Commentary Mode</label>
-            <p style="font-size: 11px; color: #888; margin: 6px 0 10px 0; line-height: 1.5;">Choose your AI assistant style</p>
-            <div class="persona-toggle" style="display: flex; flex-wrap: wrap; gap: 6px;">
-              <button class="persona-btn active" id="agentBtn" onclick="setPersonaMode('agent')" style="flex: 1; min-width: 70px;">🕵️ Agent</button>
-              <button class="persona-btn" id="businessBtn" onclick="setPersonaMode('business')" style="flex: 1; min-width: 70px;">🐱 Business</button>
-              <button class="persona-btn" id="casualBtn" onclick="setPersonaMode('casual')" style="flex: 1; min-width: 70px;">😼 Casual</button>
-              <button class="persona-btn" id="offBtn" onclick="setPersonaMode('off')" style="flex: 1; min-width: 70px;">🔇 OFF</button>
-            </div>
-            <ul style="font-size: 11px; color: #888; margin-top: 8px; padding-left: 20px; line-height: 1.6;">
-              <li><strong>Agent:</strong> Professional agents with spy-themed intel (default)</li>
-              <li><strong>Business:</strong> Crypto Cat with professional analysis</li>
-              <li><strong>Casual:</strong> Crypto Cat with witty, sarcastic personality</li>
-              <li><strong>OFF:</strong> No characters, clean minimal interface</li>
-            </ul>
+            
           </div>
         </div>
-
-        <!-- Subscription Status & Billing -->
-        <div class="widget" style="margin-top: 12px;">
-          <h3 style="font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; color: #FFF;">YOUR SUBSCRIPTION</h3>
-          
-          <!-- Current Status Display -->
-          <div id="subscriptionStatus" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 15px;">
-            <div style="font-size: 12px; color: #60a5fa; font-weight: 600; margin-bottom: 4px;">CURRENT PLAN</div>
-            <div id="currentTierDisplay" style="font-size: 18px; font-weight: 700; color: white;">Loading...</div>
-            <div id="subscriptionDetails" style="font-size: 11px; color: #888; margin-top: 6px;"></div>
-            <button id="cancelSubButton" onclick="cancelSubscription()" class="logout-btn" style="margin-top: 12px; background: #dc2626; display: none; width: 100%; font-size: 12px; padding: 10px;">
-              Cancel Subscription
-            </button>
-          </div>
-          
-          <h3 style="font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; color: #FFF;">SUBSCRIPTION OPTIONS</h3>
-          <div class="subscription-tiers" style="display: flex; flex-wrap: wrap; gap: 12px;">
+        
+        <!-- Subscription Tiers (Full Width Below Grid) -->
+        <div class="widget" style="margin-top: 12px; padding: 12px;">
+          <label style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 10px; display: block;">Subscription Options</label>
+          <div class="subscription-tiers" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
             
             <!-- Base Subscription (Monthly Recurring) -->
             <div class="tier-card" style="max-width: 100%; margin: 0; border: 2px solid #8b5cf6; flex: 1; cursor: default;">
@@ -2771,75 +2825,12 @@
             </div>
           </div>
           
-          <p style="font-size: 11px; color: #10b981; text-align: center; margin-top: 12px; font-weight: 600; line-height: 1.5;">
-            🔥 Legacy Founder closes Dec 25, 2025 • After V2 launch: No token rewards + higher pricing
+          <p style="font-size: 10px; color: #10b981; text-align: center; margin-top: 10px; font-weight: 600;">
+            🔥 Legacy Founder closes Dec 25, 2025
           </p>
-
-          <!-- Wallet Notice for PULSE Airdrops -->
-          <div style="background: linear-gradient(135deg, rgba(171, 71, 188, 0.15) 0%, rgba(123, 31, 162, 0.05) 100%); border: 2px solid rgba(171, 71, 188, 0.4); border-radius: 8px; padding: 14px; margin-top: 16px; text-align: center;">
-            <div style="font-size: 12px; font-weight: 700; color: #ab47bc; margin-bottom: 8px;">💎 WALLET REQUIRED TO RECEIVE PULSE TOKENS</div>
-            <div style="font-size: 11px; color: rgba(255,255,255,0.9); line-height: 1.6; margin-bottom: 10px;">
-              To receive your PULSE airdrop (27K-35K tokens) on Dec 25, 2025, you must have a Solana wallet where YOU control the private keys. We recommend <strong style="color: #ab47bc;">Phantom Wallet</strong>.
-            </div>
-            <a href="https://phantom.app/download" target="_blank" style="display: inline-block; background: linear-gradient(135deg, #ab47bc 0%, #7b1fa2 100%); color: white; padding: 8px 16px; border-radius: 6px; font-weight: 700; font-size: 11px; text-decoration: none; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid rgba(255,255,255,0.2);">
-              👻 INSTALL PHANTOM WALLET →
-            </a>
-          </div>
-
-          <!-- Gift & Affiliate Side by Side -->
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
-            
-            <!-- Gift Subscription -->
-            <div class="widget" style="margin: 0; padding: 12px; border: 2px solid rgba(220, 38, 38, 0.3); background: linear-gradient(135deg, rgba(220, 38, 38, 0.05) 0%, rgba(153, 27, 27, 0.02) 100%);">
-              <h3 style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 10px 0; color: #dc2626;">🎁 GIFT</h3>
-              <button onclick="openGiftModal()" style="width: 100%; background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: white; padding: 10px; border-radius: 6px; font-weight: 700; font-size: 12px; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
-                SEND GIFT
-              </button>
-              <p style="font-size: 10px; color: #888; text-align: center; line-height: 1.4; margin: 0;">
-                3 tiers available<br>Email delivery
-              </p>
-            </div>
-
-            <!-- Affiliate Program -->
-            <div class="widget" id="affiliateWidget" style="margin: 0; padding: 12px; border: 2px solid rgba(16, 185, 129, 0.3); background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(16, 185, 129, 0.02) 100%);">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-                <h3 style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin: 0; color: #10B981;">💰 EARN</h3>
-                <div style="background: rgba(16, 185, 129, 0.2); padding: 2px 6px; border-radius: 12px; font-size: 9px; font-weight: 700; color: #10B981;">20%</div>
-              </div>
-              
-              <div id="affiliateCodeDisplay" style="display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; margin-bottom: 8px;">
-                <input type="text" id="affiliateUrlInput" readonly value="Loading..." style="flex: 1; background: transparent; border: none; color: #10B981; font-size: 10px; font-weight: 600; outline: none;">
-                <button onclick="copyAffiliateLink()" style="background: #10B981; color: #000; padding: 4px 8px; border-radius: 4px; border: none; font-weight: 700; font-size: 10px; cursor: pointer; white-space: nowrap;">COPY</button>
-              </div>
-              <div id="copySuccess" style="display: none; font-size: 9px; color: #10B981; text-align: center; font-weight: 600;">✓ Copied!</div>
-              
-              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 8px;">
-                <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 6px; padding: 6px; text-align: center;">
-                  <div style="font-size: 16px; font-weight: 700; color: #3B82F6;" id="affiliateClicks">0</div>
-                  <div style="font-size: 9px; color: #888;">Clicks</div>
-                </div>
-                <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 6px; text-align: center;">
-                  <div style="font-size: 16px; font-weight: 700; color: #10B981;" id="affiliateSignups">0</div>
-                  <div style="font-size: 9px; color: #888;">Signups</div>
-                </div>
-                <div style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 6px; padding: 6px; text-align: center;">
-                  <div style="font-size: 16px; font-weight: 700; color: #8B5CF6;" id="affiliateConversions">0</div>
-                  <div style="font-size: 9px; color: #888;">Subs</div>
-                </div>
-                <div style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 6px; padding: 6px; text-align: center;">
-                  <div style="font-size: 16px; font-weight: 700; color: #FBBF24;" id="affiliateEarnings">$0</div>
-                  <div style="font-size: 9px; color: #888;">Pending</div>
-                </div>
-              </div>
-              
-              <button onclick="shareAffiliateLink()" style="width: 100%; background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 10px; border-radius: 6px; font-weight: 700; font-size: 12px; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;">
-                SHARE LINK
-              </button>
-            </div>
-          </div>
         </div>
 
-        <!-- Feature List Marketing Box -->
+        <!-- Feature List Marketing Box (Compact) -->
         <div class="widget features-widget" style="margin-top: 12px;">
           <div class="features-header" style="display: flex; align-items: center; margin-bottom: 15px;">
             <img src="/crypto-cat-images/business-cat-pointing.jpg" alt="Business Crypto Cat mascot guiding users through DarkWave Pulse crypto stock analysis dashboard with real-time market data" style="width: 60px; height: 60px; border-radius: 50%; margin-right: 12px; border: 2px solid #1e90ff;">

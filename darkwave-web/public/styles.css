@@ -11086,7 +11086,65 @@ body {
   overflow-x: hidden !important;
 }
 
-/* Settings Button Row - Responsive Layout */
+/* Settings Page - Two Column Grid Layout */
+.settings-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.settings-column .widget {
+  margin-bottom: 12px;
+  padding: 12px;
+}
+
+/* Subscription Tiers - 3 Column on Desktop */
+.subscription-tiers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.subscription-tiers .tier-card {
+  padding: 12px;
+  font-size: 11px;
+}
+
+.subscription-tiers .tier-badge {
+  font-size: 9px;
+  padding: 4px 8px;
+}
+
+.subscription-tiers .tier-header .tier-price {
+  font-size: 20px;
+}
+
+.subscription-tiers .tier-feature {
+  font-size: 10px;
+  padding: 2px 0;
+}
+
+/* Mobile: Stack Settings Grid */
+@media (max-width: 768px) {
+  .settings-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .subscription-tiers {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+/* Tablet: 2 columns for subscription tiers */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .subscription-tiers {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Settings Button Row - Responsive Layout (Legacy) */
 .settings-buttons-row {
   display: flex !important;
   gap: 12px !important;
