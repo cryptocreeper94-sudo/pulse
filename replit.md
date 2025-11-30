@@ -10,6 +10,33 @@
 - **IMPORTANT**: Always check with Jason before proceeding to verify any task - confirm changes look correct before moving on
 - Agent diversity: Equal distribution across age groups, gender, race, and hair color (Nov 24, 2025)
 
+## Recent Changes (Nov 30, 2025)
+- **SOLANA AUDIT TRAIL SYSTEM**: Built complete blockchain-backed audit trail
+  - Database tables: audit_events, hallmark_profiles, hallmark_mints, system_config
+  - SHA-256 hashing of all important events (account changes, payments, subscriptions, wallet actions)
+  - Helius API integration for posting hashes to Solana Memo program
+  - System is "dormant" until wallet credentials added - queues events in database ready to go live
+  - API endpoints: /api/audit-trail, /api/audit-trail/verify/:eventId, /api/audit-trail/stats
+- **HALLMARK NFT SYSTEM**: $1.99 collectible NFTs for users
+  - Unique serial numbers in format HW-{USERID}-{0001} (e.g., HW-JASON123-0001)
+  - Combines user's avatar, recent audit hashes, and on-chain verification
+  - Multiple templates: Classic, Premium Gold, Cyber Neon, Vintage
+  - API endpoints: /api/hallmark/profile, /api/hallmark/collection, /api/hallmark/create-draft, /api/hallmark/verify/:serialNumber
+- **DEVELOPER DASHBOARD**: Full system controls with accordion UI
+  - Real-time stats: subscriptions, users, audit events, hallmarks, revenue
+  - System configuration management (add wallet, update settings)
+  - Status indicators for Helius API and Solana wallet configuration
+  - Accessible via /api/dev/dashboard with admin code
+- **ACCORDION STYLING**: Applied throughout the app
+  - Collapsible sections for compact navigation
+  - Smooth open/close animations
+  - Consistent styling for all accordion components
+- **NEW FILES CREATED**:
+  - src/services/auditTrailService.ts - Blockchain audit trail service
+  - src/services/hallmarkService.ts - Hallmark NFT minting service
+  - darkwave-web/public/blockchain-trail.js - User's blockchain trail dashboard UI
+  - darkwave-web/public/dev-page.js - Developer dashboard page
+
 ## Recent Changes (Nov 25, 2025)
 - **V2 LAUNCH CHECKLIST**: Converted V2 Details page to interactive checklist with 27 trackable tasks
   - 6 categories: Core Platform, AI & Agents, Trading Features, Staking & Ecosystem, Mobile & Polish, Roadmap
