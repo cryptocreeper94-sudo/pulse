@@ -4564,6 +4564,379 @@ export const mastra = new Mastra({
           }
         },
       },
+      // ============================================
+      // AUDIT TRAIL & HALLMARK API ROUTES
+      // ============================================
+      
+      // Get user's audit trail
+      {
+        path: "/api/audit-trail",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          try {
+            const { checkAccessSession } = await import('./middleware/accessControl.js');
+            const sessionCheck = await checkAccessSession(c);
+            if (!sessionCheck.valid) {
+              return c.json({ error: 'Unauthorized' }, 401);
+            }
+            
+            const userId = sessionCheck.userId || c.req.query('userId');
+            if (!userId) {
+              return c.json({ error: 'User ID required' }, 400);
+            }
+            
+            const { auditTrailService } = await import('../services/auditTrailService.js');
+            const events = await auditTrailService.getUserAuditTrail(userId, 100);
+            
+            logger?.info('📋 [AuditTrail] Trail retrieved', { userId, count: events.length });
+            
+            return c.json({
+              success: true,
+              events: events.map(e => ({
+                id: e.id,
+                type: e.eventType,
+                category: e.eventCategory,
+                hash: e.payloadHash,
+                status: e.status,
+                onChainSignature: e.onchainSignature,
+                createdAt: e.createdAt,
+                confirmedAt: e.confirmedAt,
+              })),
+            });
+          } catch (error: any) {
+            logger?.error('❌ [AuditTrail] Error', { error: error.message });
+            return c.json({ error: 'Failed to get audit trail' }, 500);
+          }
+        }
+      },
+      
+      // Verify an audit event
+      {
+        path: "/api/audit-trail/verify/:eventId",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          try {
+            const eventId = c.req.param('eventId');
+            
+            const { auditTrailService } = await import('../services/auditTrailService.js');
+            const result = await auditTrailService.verifyEventHash(eventId);
+            
+            return c.json({
+              valid: result.valid,
+              eventId,
+              storedHash: result.event?.payloadHash,
+              computedHash: result.computedHash,
+              match: result.valid,
+              onChain: !!result.event?.onchainSignature,
+              signature: result.event?.onchainSignature,
+            });
+          } catch (error: any) {
+            logger?.error('❌ [AuditTrail] Verify error', { error: error.message });
+            return c.json({ error: 'Verification failed' }, 500);
+          }
+        }
+      },
+      
+      // Get audit trail stats (admin)
+      {
+        path: "/api/audit-trail/stats",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          try {
+            const { auditTrailService } = await import('../services/auditTrailService.js');
+            const stats = await auditTrailService.getStats();
+            
+            return c.json({ success: true, stats });
+          } catch (error: any) {
+            logger?.error('❌ [AuditTrail] Stats error', { error: error.message });
+            return c.json({ error: 'Failed to get stats' }, 500);
+          }
+        }
+      },
+      
+      // Get user's Hallmark profile
+      {
+        path: "/api/hallmark/profile",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          try {
+            const { checkAccessSession } = await import('./middleware/accessControl.js');
+            const sessionCheck = await checkAccessSession(c);
+            if (!sessionCheck.valid) {
+              return c.json({ error: 'Unauthorized' }, 401);
+            }
+            
+            const userId = sessionCheck.userId || c.req.query('userId');
+            if (!userId) {
+              return c.json({ error: 'User ID required' }, 400);
+            }
+            
+            const { hallmarkService } = await import('../services/hallmarkService.js');
+            const profile = await hallmarkService.getOrCreateProfile(userId);
+            
+            return c.json({ success: true, profile });
+          } catch (error: any) {
+            logger?.error('❌ [Hallmark] Profile error', { error: error.message });
+            return c.json({ error: 'Failed to get profile' }, 500);
+          }
+        }
+      },
+      
+      // Get user's Hallmark collection
+      {
+        path: "/api/hallmark/collection",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          try {
+            const { checkAccessSession } = await import('./middleware/accessControl.js');
+            const sessionCheck = await checkAccessSession(c);
+            if (!sessionCheck.valid) {
+              return c.json({ error: 'Unauthorized' }, 401);
+            }
+            
+            const userId = sessionCheck.userId || c.req.query('userId');
+            if (!userId) {
+              return c.json({ error: 'User ID required' }, 400);
+            }
+            
+            const { hallmarkService } = await import('../services/hallmarkService.js');
+            const hallmarks = await hallmarkService.getUserHallmarks(userId);
+            
+            return c.json({ success: true, hallmarks });
+          } catch (error: any) {
+            logger?.error('❌ [Hallmark] Collection error', { error: error.message });
+            return c.json({ error: 'Failed to get collection' }, 500);
+          }
+        }
+      },
+      
+      // Create draft Hallmark (before payment)
+      {
+        path: "/api/hallmark/create-draft",
+        method: "POST",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          try {
+            const { checkAccessSession } = await import('./middleware/accessControl.js');
+            const sessionCheck = await checkAccessSession(c);
+            if (!sessionCheck.valid) {
+              return c.json({ error: 'Unauthorized' }, 401);
+            }
+            
+            const { userId, avatarType, avatarId, template } = await c.req.json();
+            if (!userId) {
+              return c.json({ error: 'User ID required' }, 400);
+            }
+            
+            const { hallmarkService } = await import('../services/hallmarkService.js');
+            const draft = await hallmarkService.createDraftHallmark(userId, {
+              avatarType,
+              avatarId,
+              template,
+            });
+            
+            logger?.info('📋 [Hallmark] Draft created', { hallmarkId: draft.id, serialNumber: draft.serialNumber });
+            
+            return c.json({
+              success: true,
+              hallmark: draft,
+              price: '1.99',
+            });
+          } catch (error: any) {
+            logger?.error('❌ [Hallmark] Create draft error', { error: error.message });
+            return c.json({ error: 'Failed to create draft' }, 500);
+          }
+        }
+      },
+      
+      // Verify a Hallmark
+      {
+        path: "/api/hallmark/verify/:serialNumber",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          try {
+            const serialNumber = c.req.param('serialNumber');
+            
+            const { hallmarkService } = await import('../services/hallmarkService.js');
+            const result = await hallmarkService.verifyHallmark(serialNumber);
+            
+            return c.json({
+              valid: result.valid,
+              serialNumber,
+              onChain: result.onChain,
+              hallmark: result.valid ? {
+                userId: result.hallmark?.userId,
+                createdAt: result.hallmark?.createdAt,
+                template: result.hallmark?.templateUsed,
+                payloadHash: result.hallmark?.payloadHash,
+              } : null,
+            });
+          } catch (error: any) {
+            logger?.error('❌ [Hallmark] Verify error', { error: error.message });
+            return c.json({ error: 'Verification failed' }, 500);
+          }
+        }
+      },
+      
+      // Get Hallmark stats (admin)
+      {
+        path: "/api/hallmark/stats",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          try {
+            const { hallmarkService } = await import('../services/hallmarkService.js');
+            const stats = await hallmarkService.getStats();
+            
+            return c.json({ success: true, stats });
+          } catch (error: any) {
+            logger?.error('❌ [Hallmark] Stats error', { error: error.message });
+            return c.json({ error: 'Failed to get stats' }, 500);
+          }
+        }
+      },
+      
+      // Developer/Admin dashboard data
+      {
+        path: "/api/dev/dashboard",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          
+          const expectedCode = process.env.ADMIN_ACCESS_CODE;
+          const adminCode = c.req.query('code') || c.req.header('X-Admin-Code');
+          
+          if (!expectedCode || adminCode !== expectedCode) {
+            return c.json({ error: 'Unauthorized' }, 401);
+          }
+          
+          try {
+            const { db } = await import('../db/client.js');
+            const { subscriptions, whitelistedUsers, sessions, auditEvents, hallmarkMints, systemConfig } = await import('../db/schema.js');
+            const { desc } = await import('drizzle-orm');
+            
+            const allSubscribers = await db.select().from(subscriptions);
+            const allWhitelisted = await db.select().from(whitelistedUsers);
+            const activeSessions = await db.select().from(sessions);
+            
+            let auditStats = { total: 0, pending: 0, confirmed: 0 };
+            let hallmarkStats = { total: 0, revenue: 0 };
+            
+            try {
+              const allAuditEvents = await db.select().from(auditEvents);
+              auditStats = {
+                total: allAuditEvents.length,
+                pending: allAuditEvents.filter(e => e.status === 'pending').length,
+                confirmed: allAuditEvents.filter(e => e.status === 'confirmed').length,
+              };
+            } catch (e) {}
+            
+            try {
+              const allHallmarks = await db.select().from(hallmarkMints);
+              hallmarkStats = {
+                total: allHallmarks.filter(h => h.status !== 'draft').length,
+                revenue: allHallmarks.filter(h => h.paidAt).length * 1.99,
+              };
+            } catch (e) {}
+            
+            let config: Record<string, any> = {};
+            try {
+              const allConfig = await db.select().from(systemConfig);
+              allConfig.forEach(c => {
+                if (!c.isSecret) {
+                  config[c.key] = c.value;
+                } else {
+                  config[c.key] = '***HIDDEN***';
+                }
+              });
+            } catch (e) {}
+            
+            const premiumCount = allSubscribers.filter(s => s.plan === 'premium' && s.status === 'active').length;
+            const basicCount = allSubscribers.filter(s => s.plan === 'basic' && s.status === 'active').length;
+            
+            return c.json({
+              success: true,
+              dashboard: {
+                subscriptions: {
+                  total: allSubscribers.length,
+                  premium: premiumCount,
+                  basic: basicCount,
+                  monthlyRevenue: (premiumCount * 6) + (basicCount * 2),
+                },
+                users: {
+                  whitelisted: allWhitelisted.length,
+                  activeSessions: activeSessions.length,
+                },
+                auditTrail: auditStats,
+                hallmarks: hallmarkStats,
+                systemConfig: config,
+                walletConfigured: !!config['solana_audit_wallet'],
+                heliusConfigured: !!process.env.HELIUS_API_KEY,
+              },
+            });
+          } catch (error: any) {
+            logger?.error('❌ [Dev] Dashboard error', { error: error.message });
+            return c.json({ error: 'Failed to load dashboard' }, 500);
+          }
+        }
+      },
+      
+      // Update system config (admin)
+      {
+        path: "/api/dev/config",
+        method: "POST",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          
+          const expectedCode = process.env.ADMIN_ACCESS_CODE;
+          const adminCode = c.req.header('X-Admin-Code');
+          
+          if (!expectedCode || adminCode !== expectedCode) {
+            return c.json({ error: 'Unauthorized' }, 401);
+          }
+          
+          try {
+            const { key, value, description, isSecret } = await c.req.json();
+            
+            if (!key || !value) {
+              return c.json({ error: 'Key and value required' }, 400);
+            }
+            
+            const { db } = await import('../db/client.js');
+            const { systemConfig } = await import('../db/schema.js');
+            
+            await db.insert(systemConfig).values({
+              key,
+              value,
+              description,
+              isSecret: isSecret || false,
+              updatedAt: new Date(),
+            }).onConflictDoUpdate({
+              target: systemConfig.key,
+              set: {
+                value,
+                description,
+                isSecret: isSecret || false,
+                updatedAt: new Date(),
+              },
+            });
+            
+            logger?.info('✅ [Dev] Config updated', { key });
+            
+            return c.json({ success: true, key });
+          } catch (error: any) {
+            logger?.error('❌ [Dev] Config error', { error: error.message });
+            return c.json({ error: 'Failed to update config' }, 500);
+          }
+        }
+      },
+      
       // Catch-all static file handler (MUST BE LAST) - serves all assets from public/
       {
         path: "/*",
@@ -4577,7 +4950,7 @@ export const mastra = new Mastra({
           const requestPath = c.req.path.substring(1); // Remove leading slash
           
           // Skip API routes (already handled above)
-          if (requestPath.startsWith('api/') || requestPath === 'admin' || requestPath.startsWith('webhooks/')) {
+          if (requestPath.startsWith('api/') || requestPath === 'admin' || requestPath === 'dev' || requestPath.startsWith('webhooks/')) {
             return c.text('Not found', 404);
           }
           

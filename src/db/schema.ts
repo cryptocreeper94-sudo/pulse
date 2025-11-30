@@ -1,4 +1,4 @@
-import { pgTable, varchar, timestamp, boolean, text, integer } from 'drizzle-orm/pg-core';
+import { pgTable, varchar, timestamp, boolean, text, integer, serial, json } from 'drizzle-orm/pg-core';
 
 export const subscriptions = pgTable('subscriptions', {
   userId: varchar('user_id', { length: 255 }).primaryKey(),
@@ -196,4 +196,99 @@ export const launchWhitelist = pgTable('launch_whitelist', {
   status: varchar('status', { length: 50 }).notNull().default('pending'), // 'pending' | 'approved' | 'participated' | 'claimed'
   signedUpAt: timestamp('signed_up_at').defaultNow().notNull(),
   approvedAt: timestamp('approved_at'),
+});
+
+// ============================================
+// SOLANA AUDIT TRAIL & HALLMARK NFT SYSTEM
+// ============================================
+
+// Audit Events - All important events that get hashed to Solana
+export const auditEvents = pgTable('audit_events', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  
+  // Event Details
+  eventType: varchar('event_type', { length: 100 }).notNull(),
+  eventCategory: varchar('event_category', { length: 50 }).notNull(),
+  actor: varchar('actor', { length: 255 }),
+  
+  // Payload & Hash
+  payload: text('payload').notNull(),
+  payloadHash: varchar('payload_hash', { length: 128 }).notNull(),
+  hashAlgorithm: varchar('hash_algorithm', { length: 20 }).notNull().default('SHA-256'),
+  
+  // On-Chain Status
+  status: varchar('status', { length: 50 }).notNull().default('pending'),
+  onchainSignature: varchar('onchain_signature', { length: 128 }),
+  heliusTxId: varchar('helius_tx_id', { length: 128 }),
+  solanaSlot: integer('solana_slot'),
+  
+  // Timestamps
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  processedAt: timestamp('processed_at'),
+  confirmedAt: timestamp('confirmed_at'),
+});
+
+// Hallmark Profiles - User configuration for their Hallmark NFTs
+export const hallmarkProfiles = pgTable('hallmark_profiles', {
+  userId: varchar('user_id', { length: 255 }).primaryKey(),
+  
+  // Avatar Configuration
+  avatarType: varchar('avatar_type', { length: 50 }).notNull().default('agent'),
+  avatarId: varchar('avatar_id', { length: 100 }),
+  customAvatarUrl: text('custom_avatar_url'),
+  
+  // Serial Number Tracking
+  currentSerial: integer('current_serial').notNull().default(0),
+  preferredTemplate: varchar('preferred_template', { length: 50 }).default('classic'),
+  
+  // Metadata
+  displayName: varchar('display_name', { length: 100 }),
+  bio: text('bio'),
+  
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// Hallmark Mints - Individual Hallmark NFTs that have been purchased/minted
+export const hallmarkMints = pgTable('hallmark_mints', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  
+  // Serial & Identity
+  serialNumber: varchar('serial_number', { length: 100 }).notNull().unique(),
+  avatarSnapshot: text('avatar_snapshot'),
+  templateUsed: varchar('template_used', { length: 50 }).notNull().default('classic'),
+  
+  // Hash & On-Chain Reference
+  payloadHash: varchar('payload_hash', { length: 128 }).notNull(),
+  auditEventIds: text('audit_event_ids'),
+  memoSignature: varchar('memo_signature', { length: 128 }),
+  heliusTxId: varchar('helius_tx_id', { length: 128 }),
+  
+  // Artwork
+  artworkUrl: text('artwork_url'),
+  metadataUri: text('metadata_uri'),
+  
+  // Payment
+  priceUsd: varchar('price_usd', { length: 20 }).notNull().default('1.99'),
+  paymentProvider: varchar('payment_provider', { length: 50 }),
+  paymentId: varchar('payment_id', { length: 255 }),
+  
+  // Status
+  status: varchar('status', { length: 50 }).notNull().default('draft'),
+  
+  // Timestamps
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  paidAt: timestamp('paid_at'),
+  mintedAt: timestamp('minted_at'),
+});
+
+// System Configuration - For storing wallet addresses and system settings
+export const systemConfig = pgTable('system_config', {
+  key: varchar('key', { length: 100 }).primaryKey(),
+  value: text('value').notNull(),
+  description: text('description'),
+  isSecret: boolean('is_secret').default(false),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
