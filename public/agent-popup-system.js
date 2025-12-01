@@ -131,9 +131,26 @@ function switchAgentInPopup() {
   }
 }
 
-// Initialize popup mode
+// Initialize popup mode - sync with commentary mode if not explicitly set
 function initAgentPopupSystem() {
-  const savedMode = localStorage.getItem('agentPopupMode') || 'off';
+  // Check if agentPopupMode was explicitly set
+  let savedMode = localStorage.getItem('agentPopupMode');
+  
+  // If not set, sync with commentary mode (cryptoCatMode)
+  if (!savedMode) {
+    const commentaryMode = localStorage.getItem('cryptoCatMode') || 'off';
+    // Map commentary modes to popup modes
+    if (commentaryMode === 'agent') {
+      savedMode = 'business'; // Agents use business-style responses
+    } else if (commentaryMode === 'business' || commentaryMode === 'casual') {
+      savedMode = commentaryMode;
+    } else {
+      savedMode = 'off';
+    }
+    // Save for future loads
+    localStorage.setItem('agentPopupMode', savedMode);
+  }
+  
   agentPopupMode = savedMode;
   console.log('✅ Agent popup mode:', agentPopupMode);
 }

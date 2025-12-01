@@ -1105,6 +1105,12 @@ function initPersona() {
     if (window.personaManager) {
       personaManager.setPersona('off');
     }
+    
+    // Sync agent popup mode (disable slide-ins)
+    if (window.setAgentPopupMode) {
+      window.setAgentPopupMode('off');
+    }
+    
     updatePersonaUI('off');
     updateFloatingButtons('off');
     updateAllCatImages('off');
@@ -1124,12 +1130,22 @@ function initPersona() {
       personaManager.setPersona('agent');
     }
     
+    // Sync agent popup mode (enable slide-ins for agents)
+    if (window.setAgentPopupMode) {
+      window.setAgentPopupMode('business');
+    }
+    
     updatePersonaUI('agent');
     updateFloatingButtons('agent');
     
     // Enable hide and seek for agents
     if (typeof window.hideSeekEnabled !== 'undefined') {
       window.hideSeekEnabled = true;
+    }
+    
+    // Initialize hide and seek
+    if (window.initHideAndSeek) {
+      window.initHideAndSeek();
     }
     
     console.log('🕵️ Commentary Mode: AGENT');
@@ -1146,6 +1162,19 @@ function initPersona() {
     
     // CRITICAL: Sync persona manager with saved mode to trigger personaChanged event
     personaManager.setPersona(savedCatMode);
+    
+    // Sync agent popup mode for slide-ins
+    if (window.setAgentPopupMode) {
+      window.setAgentPopupMode(savedCatMode);
+    }
+    
+    // Enable hide and seek for cat modes
+    if (typeof window.hideSeekEnabled !== 'undefined') {
+      window.hideSeekEnabled = true;
+    }
+    if (window.initHideAndSeek) {
+      window.initHideAndSeek();
+    }
     
     console.log(`🎙️ Commentary Mode: ${savedCatMode}`);
     
@@ -1174,6 +1203,11 @@ function setPersonaMode(mode) {
       window.hideSeekEnabled = false;
     }
     
+    // Sync agent popup mode for slide-in popups (disable)
+    if (window.setAgentPopupMode) {
+      window.setAgentPopupMode('off');
+    }
+    
     // Teardown active popups and hotspots
     if (window.closeCatPopup) window.closeCatPopup();
     if (window.teardownHideAndSeek) window.teardownHideAndSeek();
@@ -1197,6 +1231,11 @@ function setPersonaMode(mode) {
     
     if (window.personaManager) {
       personaManager.setPersona('agent');
+    }
+    
+    // Sync agent popup mode for slide-in popups
+    if (window.setAgentPopupMode) {
+      window.setAgentPopupMode('business'); // Use business style for agents
     }
     
     // Enable hide and seek for agents
@@ -1225,6 +1264,11 @@ function setPersonaMode(mode) {
     
     // Set persona (business or casual only) - this will trigger personaChanged event
     personaManager.setPersona(mode);
+    
+    // Sync agent popup mode for slide-in popups
+    if (window.setAgentPopupMode) {
+      window.setAgentPopupMode(mode);
+    }
     
     // Enable commentary mode
     if (window.setCryptoCatMode) {
