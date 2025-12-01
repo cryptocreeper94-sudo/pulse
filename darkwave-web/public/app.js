@@ -6733,29 +6733,8 @@ function showSocialsPopup() {
 }
 
 function updateV2Countdown() {
-  const launchDate = new Date('2025-12-25').getTime();
-  const now = new Date().getTime();
-  const distance = launchDate - now;
-  
-  if (distance > 0) {
-    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    
-    const display = document.getElementById('v2CountdownDisplay');
-    if (display) {
-      if (days > 0) {
-        display.textContent = `${days}d ${hours}h`;
-      } else {
-        display.textContent = `${hours}h remaining`;
-      }
-    }
-    
-    const countdown = document.getElementById('v2Countdown');
-    if (countdown) {
-      countdown.textContent = `${days} days, ${hours} hours remaining`;
-    }
-  }
-  
+  // Founders Launch - static display, no countdown needed
+  // This function now just updates checklist progress
   updateV2ChecklistProgress();
 }
 

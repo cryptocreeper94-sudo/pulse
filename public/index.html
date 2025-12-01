@@ -38,7 +38,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="DarkWave">
-  <link rel="apple-touch-icon" href="/assets/darkwave-coin-B_SY1GJM.png">
+  <link rel="apple-touch-icon" href="/darkwave-coin.png">
   
   <title>DarkWave Pulse</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -47,7 +47,7 @@
   <link rel="stylesheet" href="/styles.css?v=1120b">
   <link rel="stylesheet" href="/themes.css?v=1120">
   <link rel="stylesheet" href="/trading-carousel.css?v=1120">
-  <link rel="icon" type="image/png" href="/assets/darkwave-coin-B_SY1GJM.png">
+  <link rel="icon" type="image/png" href="/darkwave-coin.png">
   
   <!-- Auto Version Checker - Forces reload if old cached version -->
   <script>
@@ -107,6 +107,7 @@
   <!-- Sentry Browser Error Tracking -->
   <script
     src="https://browser.sentry-cdn.com/8.45.1/bundle.min.js"
+    integrity="sha384-KFw9+VcBqJCZGEfJlWFGt6JCn4dvfMrLs5AZlCw/EvFGt0rn06NnqhcKN7h0s2Yo"
     crossorigin="anonymous"
   ></script>
   <script>
@@ -140,32 +141,25 @@
   <div id="app"></div>
 
   <!-- Unified Info Banner - Three Equal Buttons -->
-  <div id="infoBannerBar" class="info-banner-mobile" style="background: linear-gradient(90deg, rgba(176,224,230,0.08), rgba(139,92,246,0.08), rgba(220,38,38,0.08)); padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; gap: 8px; align-items: center; justify-content: space-between;">
-    <!-- BETA V1 Button -->
-    <button id="betaBtn" class="info-btn" onclick="switchTab('staking')" style="flex: 1; background: linear-gradient(135deg, rgba(176,224,230,0.15), rgba(176,224,230,0.08)); border: 1px solid rgba(176,224,230,0.3); border-radius: 6px; padding: 10px 12px; cursor: pointer; color: rgba(255,255,255,0.9); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s; white-space: nowrap; text-align: center; min-height: 36px; display: flex; align-items: center; justify-content: center;">
+  <div id="infoBannerBar" class="info-banner-bar">
+    <button id="betaBtn" class="info-btn info-btn--beta" onclick="switchTab('staking')">
       <span class="info-btn-text" data-emoji="🧪">🧪 BETA V1 - V2 Dec 25</span>
     </button>
-    
-    <!-- LEGACY FOUNDER Button -->
-    <button id="founderBtn" class="info-btn" onclick="switchTab('staking')" style="flex: 1; background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(139,92,246,0.08)); border: 1px solid rgba(139,92,246,0.3); border-radius: 6px; padding: 10px 12px; cursor: pointer; color: rgba(255,255,255,0.9); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s; white-space: nowrap; text-align: center; min-height: 36px; display: flex; align-items: center; justify-content: center;">
+    <button id="founderBtn" class="info-btn info-btn--founder" onclick="switchTab('staking')">
       <span class="info-btn-text" data-emoji="💎">💎 LEGACY FOUNDER - <span id="founderCountdown">37 DAYS</span></span>
     </button>
-    
-    <!-- NEW HERE Button -->
-    <button id="newHereBtn" class="info-btn" onclick="switchTab('truth')" style="flex: 1; background: linear-gradient(135deg, rgba(220,38,38,0.15), rgba(220,38,38,0.08)); border: 1px solid rgba(220,38,38,0.3); border-radius: 6px; padding: 10px 12px; cursor: pointer; color: rgba(255,255,255,0.9); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s; white-space: nowrap; text-align: center; min-height: 36px; display: flex; align-items: center; justify-content: center;">
+    <button id="newHereBtn" class="info-btn info-btn--new" onclick="switchTab('truth')">
       <span class="info-btn-text" data-emoji="💊">💊 NEW HERE? READ FIRST</span>
     </button>
-    
   </div>
 
-    <!-- Top Navigation Menu - 7 tabs -->
+    <!-- Top Navigation Menu - Simplified to 6 tabs for mobile fit -->
     <nav class="top-nav">
-      <button class="nav-btn active" data-tab="crypto">📊 Crypto</button>
-      <button class="nav-btn" data-tab="stocks">📈 Stocks</button>
+      <button class="nav-btn active" data-tab="crypto">📊 Markets</button>
       <button class="nav-btn" data-tab="projects">🚀 Projects</button>
       <button class="nav-btn" data-tab="truth">💡 Learn</button>
-      <button class="nav-btn" data-tab="portfolio">💼 Portfolio</button>
-      <button class="nav-btn" data-tab="staking">💰 Staking</button>
+      <button class="nav-btn" data-tab="portfolio">📈 Portfolio</button>
+      <button class="nav-btn" data-tab="community">💬 Community</button>
       <button class="nav-btn" data-tab="settings">⚙️ Settings</button>
       
       <!-- Search Counter (Base/Trial users only) -->
@@ -228,7 +222,7 @@
         <div class="metric-box-wide fear-greed-box" onclick="showMetricExplanation('feargreed')" style="cursor: pointer;">
           <div class="metric-label metric-label-mobile">F&G</div>
           <div class="metric-label metric-label-desktop">FEAR & GREED</div>
-          <div class="gauge-value-display" id="fearGreedValue">—</div>
+          <div class="gauge-value-display" id="fearGreedValue">Loading...</div>
           <div class="gauge-container">
             <canvas id="fearGreedGauge" width="600" height="300"></canvas>
           </div>
@@ -236,7 +230,7 @@
         <div class="metric-box-wide" onclick="showMetricExplanation('altseason')" style="cursor: pointer;">
           <div class="metric-label metric-label-mobile">ALT</div>
           <div class="metric-label metric-label-desktop">ALTCOIN SEASON</div>
-          <div class="gauge-value-display" id="altSeasonValue">—</div>
+          <div class="gauge-value-display" id="altSeasonValue">Loading...</div>
           <div class="gauge-container">
             <canvas id="altSeasonGauge" width="600" height="300"></canvas>
           </div>
@@ -244,16 +238,16 @@
         <div class="metric-box-wide" onclick="showMetricExplanation('marketcap')" style="cursor: pointer;">
           <div class="metric-label metric-label-mobile">CAP</div>
           <div class="metric-label metric-label-desktop">MARKET CAP</div>
-          <div class="gauge-value-display" id="marketCapDisplay">$3.07T</div>
-          <div class="metric-change" id="marketCapChange">+1.5%</div>
+          <div class="gauge-value-display" id="marketCapDisplay">Loading...</div>
+          <div class="metric-change" id="marketCapChange">—</div>
         </div>
         <div class="metric-box-wide" onclick="showMetricExplanation('volume24h')" style="cursor: pointer;">
           <div class="metric-label metric-label-mobile">VOL</div>
           <div class="metric-label metric-label-desktop">VOLUME</div>
-          <div class="gauge-value-display" id="volumeDisplay">$136.5B</div>
+          <div class="gauge-value-display" id="volumeDisplay">Loading...</div>
           <div style="display: flex; flex-direction: column; align-items: center; gap: 2px; width: 100%; padding: 0 2px;">
-            <div class="metric-change" id="volumeChange">+1.5%</div>
-            <div class="volume-flow-indicator" id="volumeFlowIndicator">↑ Inflow</div>
+            <div class="metric-change" id="volumeChange">—</div>
+            <div class="volume-flow-indicator" id="volumeFlowIndicator">—</div>
           </div>
         </div>
       </div>
@@ -384,17 +378,17 @@
       <div class="macro-metrics-grid">
         <div class="macro-metric" onclick="showMetricExplanation('marketcap')" style="cursor: pointer;">
           <span class="metric-label">MARKET CAP</span>
-          <span class="metric-value" id="totalMarketCap">$2.45T</span>
+          <span class="metric-value" id="totalMarketCap">Loading...</span>
           <span id="marketCapChange" class="metric-change">—</span>
         </div>
         <div class="macro-metric" onclick="showMetricExplanation('volume')" style="cursor: pointer;">
           <span class="metric-label">24H VOLUME</span>
-          <span class="metric-value" id="totalVolume">$98.5B</span>
+          <span class="metric-value" id="totalVolume">Loading...</span>
           <span id="volumeFlow" class="volume-flow-indicator" onclick="event.stopPropagation(); showVolumeFlowExplanation();">—</span>
         </div>
         <div class="macro-metric" onclick="showMetricExplanation('btcdom')" style="cursor: pointer;">
           <span class="metric-label">BTC DOMINANCE</span>
-          <span class="metric-value" id="btcDominance">52.3%</span>
+          <span class="metric-value" id="btcDominance">Loading...</span>
         </div>
       </div>
       
@@ -684,21 +678,21 @@
         <!-- DUAL SPOTLIGHT BOXES - FEATURED & COMING SOON -->
         <div class="spotlight-dual-container">
           
-          <!-- FEATURED COIN: SolDump -->
+          <!-- FEATURED COIN: United ($LOVE) -->
           <div class="section-box featured-spotlight-box">
             <div class="featured-spotlight-header">
               <span class="spotlight-badge spotlight-badge-live">⭐ FEATURED</span>
-              <h2 class="spotlight-title">SolDump</h2>
+              <h2 class="spotlight-title">United ($LOVE)</h2>
             </div>
             
             <div class="spotlight-content">
               <div class="spotlight-logo">
-                <img src="/coin-images/soldump.jpg" alt="SolDump cryptocurrency token logo - meme coin calling out crypto scams and market manipulation on Solana blockchain" id="soldumpLogo" />
+                <img src="/coins/love-united.jpg" alt="United LOVE token - community unity and love on Solana blockchain" id="featuredCoinLogo" />
               </div>
               
               <div class="spotlight-info">
                 <p class="spotlight-description">
-                  🪙 The Coin That Calls It Out. SolDump isn't here to pump. It's here to expose. This coin exists to warn everyone about the risks and realities of meme coins. Released yesterday on pump.fun. A brutally honest take on crypto culture. 🚨
+                  💜 United in Love & Community. A token built on the foundation of unity, compassion, and collective growth. Join a movement that believes in the power of coming together. Live on Solana. 🌍
                 </p>
                 
                 <div class="spotlight-stats">
@@ -708,13 +702,18 @@
                   </div>
                   <div class="spotlight-stat">
                     <span class="stat-label">TYPE</span>
-                    <span class="stat-value">Reality Check</span>
+                    <span class="stat-value">Community</span>
                   </div>
                 </div>
                 
-                <button class="spotlight-buy-btn" onclick="window.open('https://jup.ag/swap/SOL-5z3U8zvXUpggTLxyNMfEmpvKC24F2gjw37gpVtV8pump', '_blank')">
-                  🚀 BUY SolDump NOW
-                </button>
+                <div class="spotlight-buy-buttons" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                  <button class="spotlight-buy-btn" onclick="window.open('https://jup.ag/swap/SOL-Gvt8zjmMrUXKgvckQzJMobsegF373M6ALYtmCq6qpump', '_blank')" style="flex: 1; min-width: 120px;">
+                    🪐 Buy on Jupiter
+                  </button>
+                  <button class="spotlight-buy-btn" onclick="window.open('https://dexscreener.com/solana/Gvt8zjmMrUXKgvckQzJMobsegF373M6ALYtmCq6qpump', '_blank')" style="flex: 1; min-width: 120px; background: linear-gradient(135deg, #10B981, #059669);">
+                    📊 View on DEX
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -926,20 +925,179 @@
       <!-- TRUTH ABOUT CRYPTO Tab -->
       <div id="truth" class="tab-pane">
         
-        <!-- Compact Header with Close Button -->
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); border-bottom: 1px solid rgba(255,255,255,0.2);">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="font-size: 18px;">💊</span>
-            <span style="font-size: 14px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 1px;">The Truth About Crypto & Stocks</span>
-          </div>
-          <button onclick="switchTab('crypto')" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); border-radius: 50%; width: 32px; height: 32px; color: #fff; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
-        </div>
+        <button class="close-btn-circle" onclick="switchTab('crypto')">×</button>
 
-        <div style="max-width: 800px; margin: 0 auto; padding: 15px;">
-          <!-- Compact intro text -->
-          <p style="font-size: 12px; color: rgba(255,255,255,0.7); margin: 0 0 15px 0; text-align: center; font-style: italic;">
-            "You take the red pill - you stay in Wonderland and I show you how deep the rabbit hole goes." - Morpheus
-          </p>
+        <div style="max-width: 100%; margin: 0 auto; padding: 16px;">
+          
+          <!-- TRUTH HEADER -->
+          <div style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); padding: 20px 16px; border-radius: 12px; margin-bottom: 16px; border: 2px solid rgba(255,255,255,0.1); text-align: center;">
+            <h1 style="font-size: 20px; font-weight: 900; color: #fff; margin: 0 0 8px 0; text-transform: uppercase; letter-spacing: 1px;">THE TRUTH ABOUT CRYPTO</h1>
+            <p style="font-size: 12px; color: rgba(255,255,255,0.8); margin: 0; line-height: 1.5;">Know the risks. Learn from mistakes. Make smart decisions.</p>
+          </div>
+
+          <!-- TAB NAVIGATION -->
+          <div class="truth-tab-nav" style="display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 8px;">
+            <button onclick="showTruthSection('founder')" class="truth-tab-btn truth-tab-active" style="flex-shrink: 0; padding: 10px 14px; background: #3861FB; color: #fff; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;">👤 Founder</button>
+            <button onclick="showTruthSection('why')" class="truth-tab-btn" style="flex-shrink: 0; padding: 10px 14px; background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;">🎯 Why DarkWave</button>
+            <button onclick="showTruthSection('faqs')" class="truth-tab-btn" style="flex-shrink: 0; padding: 10px 14px; background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;">❓ FAQs</button>
+            <button onclick="showTruthSection('facts')" class="truth-tab-btn" style="flex-shrink: 0; padding: 10px 14px; background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;">📊 Facts</button>
+            <button onclick="showTruthSection('protect')" class="truth-tab-btn" style="flex-shrink: 0; padding: 10px 14px; background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;">🛡️ Protect</button>
+          </div>
+
+          <!-- FOUNDER SECTION -->
+          <div id="truth-section-founder" class="truth-section" style="display: block;">
+            <div style="background: #1e293b; padding: 20px; border-radius: 12px; margin-bottom: 16px; border-left: 4px solid #dc2626;">
+              <h2 style="font-size: 16px; font-weight: 700; color: #fff; margin: 0 0 12px 0;">WHY DARKWAVE PULSE EXISTS</h2>
+              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.6;">
+                Built by someone who lost <strong style="color: #dc2626;">$40,000</strong> to crypto scams in 2017.
+              </p>
+              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.6;">
+                That experience—and 7 years recovery—revealed the problem: most platforms prioritize hype over education.
+              </p>
+              <p style="font-size: 13px; color: #10b981; margin: 0 0 12px 0; line-height: 1.6; font-weight: 600;">
+                Mission: Help you make informed decisions. Learn from our losses. Don't repeat them.
+              </p>
+              <p style="font-size: 11px; color: #64748b; margin: 0;">- Jason, Founder & Fellow Trader</p>
+            </div>
+
+            <div style="background: #1e293b; padding: 20px; border-radius: 12px; border-left: 4px solid #f59e0b;">
+              <h3 style="font-size: 14px; font-weight: 700; color: #f59e0b; margin: 0 0 10px 0;">RECENT SCAM (2024)</h3>
+              <p style="font-size: 13px; color: #cbd5e1; margin: 0 0 8px 0; line-height: 1.6;">
+                $500 sent to presale. Money went to wrong wallet. Bought ETH instead—got 28¢. Then 15¢.
+              </p>
+              <p style="font-size: 13px; color: #dc2626; margin: 0; font-weight: 600;">
+                $500 gone in 60 seconds. This doesn't happen at a casino.
+              </p>
+            </div>
+          </div>
+
+          <!-- WHY DARKWAVE SECTION -->
+          <div id="truth-section-why" class="truth-section" style="display: none;">
+            <div style="background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%); padding: 20px; border-radius: 12px; margin-bottom: 16px; border: 2px solid rgba(255,255,255,0.2);">
+              <h2 style="font-size: 16px; font-weight: 700; color: #fff; margin: 0 0 12px 0; text-align: center;">WHY DARKWAVE IS DIFFERENT</h2>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div style="background: rgba(255,255,255,0.15); padding: 14px; border-radius: 8px;">
+                  <h3 style="font-size: 12px; font-weight: 700; color: #fff; margin: 0 0 6px 0;">TRANSPARENT</h3>
+                  <p style="font-size: 11px; color: rgba(255,255,255,0.9); margin: 0; line-height: 1.5;">Real founder, public plans, dated roadmap, cited sources.</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.15); padding: 14px; border-radius: 8px;">
+                  <h3 style="font-size: 12px; font-weight: 700; color: #fff; margin: 0 0 6px 0;">PROVEN BUILD</h3>
+                  <p style="font-size: 11px; color: rgba(255,255,255,0.9); margin: 0; line-height: 1.5;">30K+ lines of code. Real-time data. Live now.</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.15); padding: 14px; border-radius: 8px;">
+                  <h3 style="font-size: 12px; font-weight: 700; color: #fff; margin: 0 0 6px 0;">ACCOUNTABILITY</h3>
+                  <p style="font-size: 11px; color: rgba(255,255,255,0.9); margin: 0; line-height: 1.5;">Shows losses, not wins. Conservative projections.</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.15); padding: 14px; border-radius: 8px;">
+                  <h3 style="font-size: 12px; font-weight: 700; color: #fff; margin: 0 0 6px 0;">FAIR TOKENS</h3>
+                  <p style="font-size: 11px; color: rgba(255,255,255,0.9); margin: 0; line-height: 1.5;">1B PULSE, 32% Legacy Founders, all on Solana.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQs SECTION -->
+          <div id="truth-section-faqs" class="truth-section" style="display: none;">
+            <div style="background: #1e293b; padding: 20px; border-radius: 12px;">
+              <h2 style="font-size: 16px; font-weight: 700; color: #fff; margin: 0 0 14px 0;">TOUGH QUESTIONS</h2>
+              <div style="margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="font-size: 12px; font-weight: 700; color: #f59e0b; margin: 0 0 6px 0;">"Why buy something you can't hold?"</h3>
+                <p style="font-size: 12px; color: #cbd5e1; margin: 0; line-height: 1.5;">Hardware wallets (Ledger, Trezor) store crypto offline—like a safe deposit box. Online banking works the same way.</p>
+              </div>
+              <div style="margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="font-size: 12px; font-weight: 700; color: #f59e0b; margin: 0 0 6px 0;">"Why invest when it goes down?"</h3>
+                <p style="font-size: 12px; color: #cbd5e1; margin: 0; line-height: 1.5;">Bitcoin: $1 (2011) → $69K (2021). Crypto is volatile. DarkWave teaches dollar-cost averaging to manage risk.</p>
+              </div>
+              <div style="margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="font-size: 12px; font-weight: 700; color: #f59e0b; margin: 0 0 6px 0;">"Cash is real, crypto is fake"</h3>
+                <p style="font-size: 12px; color: #cbd5e1; margin: 0; line-height: 1.5;">Cash loses value yearly (inflation). El Salvador made Bitcoin legal tender. Major companies accept crypto.</p>
+              </div>
+              <div style="margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="font-size: 12px; font-weight: 700; color: #f59e0b; margin: 0 0 6px 0;">"What if the government bans it?"</h3>
+                <p style="font-size: 12px; color: #cbd5e1; margin: 0; line-height: 1.5;">They've tried. DarkWave covers stocks too—if crypto dies, you still have market analysis.</p>
+              </div>
+              <div>
+                <h3 style="font-size: 12px; font-weight: 700; color: #f59e0b; margin: 0 0 6px 0;">"Why should I trust you?"</h3>
+                <p style="font-size: 12px; color: #cbd5e1; margin: 0 0 6px 0; line-height: 1.5;">Don't blindly. Everything is documented:</p>
+                <ul style="margin: 0; padding: 0 0 0 14px; color: #cbd5e1; font-size: 11px; line-height: 1.8;">
+                  <li>This shows Jason's losses (not wins)</li>
+                  <li>Business plans = conservative projections</li>
+                  <li>10-phase roadmap = execution history</li>
+                  <li>All sources cited below</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- HARD FACTS SECTION -->
+          <div id="truth-section-facts" class="truth-section" style="display: none;">
+            <div style="background: #1e293b; padding: 20px; border-radius: 12px;">
+              <h2 style="font-size: 16px; font-weight: 700; color: #fff; margin: 0 0 14px 0;">5 HARD FACTS</h2>
+              <div style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="font-size: 12px; font-weight: 700; color: #10b981; margin: 0 0 4px 0;">1. CRYPTO IS NOT ANONYMOUS</h3>
+                <p style="font-size: 11px; color: #cbd5e1; margin: 0; line-height: 1.5;">Every transaction is public. KYC exchanges link wallets to real identity. Government can find you.</p>
+              </div>
+              <div style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="font-size: 12px; font-weight: 700; color: #10b981; margin: 0 0 4px 0;">2. MOST COINS ARE SCAMS</h3>
+                <p style="font-size: 11px; color: #cbd5e1; margin: 0; line-height: 1.5;">20,000+ cryptocurrencies. 99% have no use case. 10,000+ new tokens/day on Pump.fun—most rug within 24h.</p>
+              </div>
+              <div style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="font-size: 12px; font-weight: 700; color: #10b981; margin: 0 0 4px 0;">3. MARKET MANIPULATION IS RAMPANT</h3>
+                <p style="font-size: 11px; color: #cbd5e1; margin: 0; line-height: 1.5;">Paid shills, pump & dumps, wash trading. That influencer hyping a coin? They dumped before you bought.</p>
+              </div>
+              <div style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="font-size: 12px; font-weight: 700; color: #10b981; margin: 0 0 4px 0;">4. YOU'RE ON YOUR OWN</h3>
+                <p style="font-size: 11px; color: #cbd5e1; margin: 0; line-height: 1.5;">No FDIC insurance. No chargebacks. Wrong address? Lost forever. Exchange hacked? Your loss.</p>
+              </div>
+              <div>
+                <h3 style="font-size: 12px; font-weight: 700; color: #10b981; margin: 0 0 4px 0;">5. ISO 20022 = MARKETING HYPE</h3>
+                <p style="font-size: 11px; color: #cbd5e1; margin: 0; line-height: 1.5;">XRP/XLM claim ISO 20022 means survival. False. It's just a bank messaging standard, not regulation-proof.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- PROTECT SECTION -->
+          <div id="truth-section-protect" class="truth-section" style="display: none;">
+            <div style="background: #1e293b; padding: 20px; border-radius: 12px; margin-bottom: 14px;">
+              <h2 style="font-size: 16px; font-weight: 700; color: #fff; margin: 0 0 12px 0;">HOW TO PROTECT YOURSELF</h2>
+              <ul style="margin: 0; padding: 0 0 0 14px; color: #cbd5e1; font-size: 12px; line-height: 1.8;">
+                <li><strong>Use multiple wallets</strong> - Don't link everything to one address</li>
+                <li><strong>Never share seed phrases</strong> - Anyone asking is a scammer</li>
+                <li><strong>Research before buying</strong> - Contract address, audits, team doxxing</li>
+                <li><strong>Set stop losses</strong> - DarkWave price alerts (coming V1.1)</li>
+                <li><strong>Diversify</strong> - Don't go all-in on one coin</li>
+                <li><strong>Trust your gut</strong> - If too good to be true, it is</li>
+              </ul>
+            </div>
+
+            <div style="background: #1e293b; padding: 20px; border-radius: 12px; border-left: 4px solid #dc2626;">
+              <h2 style="font-size: 16px; font-weight: 700; color: #fff; margin: 0 0 12px 0;">WHAT IF CRYPTO GOES TO ZERO?</h2>
+              <p style="font-size: 12px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.6;">Have backup:</p>
+              <ul style="margin: 0; padding: 0 0 0 14px; color: #cbd5e1; font-size: 12px; line-height: 1.8;">
+                <li><strong>Traditional investments</strong> - Stocks, bonds, index funds</li>
+                <li><strong>Real assets</strong> - Real estate, precious metals</li>
+                <li><strong>Emergency fund</strong> - 3-6 months expenses in cash</li>
+                <li><strong>Exit strategy</strong> - Know when to cut losses</li>
+              </ul>
+              <p style="font-size: 12px; color: #f59e0b; margin: 12px 0 0 0; font-weight: 600;">Never invest more than you can afford to lose. Period.</p>
+            </div>
+          </div>
+
+          <!-- ACTION BUTTONS AT BOTTOM -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px;">
+            <button onclick="switchTab('crypto')" style="background: #10b981; color: #fff; padding: 14px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;">
+              ANALYZE CRYPTO →
+            </button>
+            <button onclick="switchTab('stocks')" style="background: #3861FB; color: #fff; padding: 14px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;">
+              ANALYZE STOCKS →
+            </button>
+          </div>
+
+          <button onclick="switchTab('settings')" style="width: 100%; background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%); color: #fff; padding: 14px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 10px;">
+            JOIN FOR $4/MONTH →
+          </button>
+        </div>
+      </div>
 
           <!-- Founder Story -->
           <div style="background: #1e293b; padding: 25px; border-radius: 12px; margin-bottom: 25px; border-left: 4px solid #dc2626;">
@@ -1034,179 +1192,203 @@
             </div>
           </div>
 
-          <!-- SKEPTIC'S CORNER -->
-          <div style="background: #1e293b; padding: 25px; border-radius: 12px; margin-bottom: 25px; border: 2px solid rgba(255,255,255,0.1);">
-            <h2 style="font-size: 20px; font-weight: 700; color: #fff; margin: 0 0 20px 0; text-transform: uppercase;">SKEPTIC'S CORNER</h2>
-            <p style="font-size: 13px; color: #94a3b8; margin: 0 0 25px 0; line-height: 1.6; font-style: italic;">
-              For those who are cautious or new to crypto, here are the tough questions answered honestly:
-            </p>
+          <!-- SKEPTIC'S CORNER - COLLAPSIBLE -->
+          <div class="collapsible-section" style="background: #1e293b; border-radius: 12px; margin-bottom: 25px; border: 2px solid rgba(255,255,255,0.1); overflow: hidden;">
+            <button class="collapsible-btn" onclick="toggleCollapsible(this);" style="width: 100%; padding: 25px; text-align: left; background: none; border: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+              <h2 style="font-size: 20px; font-weight: 700; color: #fff; margin: 0; text-transform: uppercase;">SKEPTIC'S CORNER</h2>
+              <span class="collapsible-icon" style="font-size: 24px; color: #3861FB;">▼</span>
+            </button>
+            <div class="collapsible-content" style="padding: 0 25px 25px 25px; max-height: 2000px; overflow: hidden; transition: max-height 0.3s ease-in-out;">
+              <p style="font-size: 13px; color: #94a3b8; margin: 0 0 25px 0; line-height: 1.6; font-style: italic;">
+                For those who are cautious or new to crypto, here are the tough questions answered honestly:
+              </p>
 
-            <!-- FAQ 1 -->
-            <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-              <h3 style="font-size: 15px; font-weight: 700; color: #f59e0b; margin: 0 0 10px 0;">"WHY BUY SOMETHING YOU CAN'T HOLD?"</h3>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
-                Fair question. You CAN hold crypto - just differently. Hardware wallets (like Ledger, Trezor) are physical devices that store your crypto offline. It's like a safe deposit box for digital money.
-              </p>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0; line-height: 1.7;">
-                <strong>Analogy:</strong> Remember when online banking started? You couldn't "hold" your bank balance either - but it's real money. Crypto is similar, just not controlled by banks.
-              </p>
+              <!-- FAQ 1 -->
+              <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="font-size: 15px; font-weight: 700; color: #f59e0b; margin: 0 0 10px 0;">"WHY BUY SOMETHING YOU CAN'T HOLD?"</h3>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
+                  Fair question. You CAN hold crypto - just differently. Hardware wallets (like Ledger, Trezor) are physical devices that store your crypto offline. It's like a safe deposit box for digital money.
+                </p>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0; line-height: 1.7;">
+                  <strong>Analogy:</strong> Remember when online banking started? You couldn't "hold" your bank balance either - but it's real money. Crypto is similar, just not controlled by banks.
+                </p>
+              </div>
+
+              <!-- FAQ 2 -->
+              <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="font-size: 15px; font-weight: 700; color: #f59e0b; margin: 0 0 10px 0;">"WHY INVEST IN SOMETHING THAT ALWAYS GOES DOWN?"</h3>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
+                  It doesn't always go down - that's just what you see in headlines. Bitcoin went from $1 (2011) to $69K (2021). Ethereum went from $10 (2016) to $4,800 (2021).
+                </p>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0; line-height: 1.7;">
+                  <strong>The truth:</strong> Crypto is volatile (big swings up AND down). That's why DarkWave has price alerts, stop-loss reminders, and AI signals to help you manage risk. We teach dollar-cost averaging (buy small amounts regularly) instead of gambling it all at once.
+                </p>
+              </div>
+
+              <!-- FAQ 3 -->
+              <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="font-size: 15px; font-weight: 700; color: #f59e0b; margin: 0 0 10px 0;">"CASH IS REAL. CRYPTO IS FAKE."</h3>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
+                  Cash loses value every year (inflation - your $100 today is worth $97 next year). Crypto can too, but some coins are designed to HOLD or GROW value instead.
+                </p>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0; line-height: 1.7;">
+                  <strong>Example:</strong> El Salvador made Bitcoin legal tender. You CAN spend it in stores there. Major companies (Microsoft, Starbucks, Whole Foods) accept crypto payments through third-party apps. It's becoming "real money" whether we like it or not.
+                </p>
+              </div>
+
+              <!-- FAQ 4 -->
+              <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="font-size: 15px; font-weight: 700; color: #f59e0b; margin: 0 0 10px 0;">"WHAT IF THE GOVERNMENT BANS IT?"</h3>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
+                  They've tried. China banned Bitcoin mining - Bitcoin is still here. The U.S. SEC is creating regulations instead of banning because they know they can't stop it.
+                </p>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0; line-height: 1.7;">
+                  <strong>Plan B:</strong> DarkWave covers STOCKS too. If crypto dies tomorrow, you still have access to traditional market analysis. You're not stuck in one world.
+                </p>
+              </div>
+
+              <!-- FAQ 5 -->
+              <div style="margin-bottom: 0;">
+                <h3 style="font-size: 15px; font-weight: 700; color: #f59e0b; margin: 0 0 10px 0;">"WHY SHOULD I TRUST YOU?"</h3>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
+                  You shouldn't - not blindly. That's why everything is documented:
+                </p>
+                <ul style="margin: 0; padding: 0 0 0 20px; color: #cbd5e1; font-size: 14px; line-height: 2;">
+                  <li>This TRUTH tab shows Jason's losses (not his wins)</li>
+                  <li>Business plans show conservative projections (not hype)</li>
+                  <li>10-phase roadmap shows execution history (not empty promises)</li>
+                  <li>All sources cited (scroll down to References section)</li>
+                </ul>
+                <p style="font-size: 14px; color: #10b981; margin: 12px 0 0 0; line-height: 1.7; font-weight: 600;">
+                  Don't trust blindly. Verify everything. That's literally why we built this tab.
+                </p>
+              </div>
             </div>
+          </div>
 
-            <!-- FAQ 2 -->
-            <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-              <h3 style="font-size: 15px; font-weight: 700; color: #f59e0b; margin: 0 0 10px 0;">"WHY INVEST IN SOMETHING THAT ALWAYS GOES DOWN?"</h3>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
-                It doesn't always go down - that's just what you see in headlines. Bitcoin went from $1 (2011) to $69K (2021). Ethereum went from $10 (2016) to $4,800 (2021).
-              </p>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0; line-height: 1.7;">
-                <strong>The truth:</strong> Crypto is volatile (big swings up AND down). That's why DarkWave has price alerts, stop-loss reminders, and AI signals to help you manage risk. We teach dollar-cost averaging (buy small amounts regularly) instead of gambling it all at once.
-              </p>
+          <!-- Hard Facts Section - COLLAPSIBLE -->
+          <div class="collapsible-section" style="background: #1e293b; border-radius: 12px; margin-bottom: 25px; overflow: hidden;">
+            <button class="collapsible-btn" onclick="toggleCollapsible(this);" style="width: 100%; padding: 25px; text-align: left; background: none; border: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+              <h2 style="font-size: 20px; font-weight: 700; color: #fff; margin: 0; text-transform: uppercase;">HARD FACTS (WITH SOURCES)</h2>
+              <span class="collapsible-icon" style="font-size: 24px; color: #3861FB;">▼</span>
+            </button>
+            <div class="collapsible-content" style="padding: 0 25px 25px 25px; max-height: 2000px; overflow: hidden; transition: max-height 0.3s ease-in-out;">
+              <!-- Fact 1 -->
+              <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="font-size: 16px; font-weight: 700; color: #10b981; margin: 0 0 10px 0;">1. CRYPTO IS NOT ANONYMOUS</h3>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
+                  Every blockchain transaction is <strong>permanent and public</strong>. Your wallet address is pseudonymous, not anonymous. KYC exchanges (Coinbase, Binance) link your wallet to your real identity. If the government wants to find you, they can.
+                </p>
+                <p style="font-size: 12px; color: #64748b; margin: 0;">
+                  <strong>Source:</strong> Chainalysis Crypto Crime Report 2024 - blockchain analysis tracks $24.2B in illicit transactions annually<sup>[1]</sup>
+                </p>
+              </div>
+
+              <!-- Fact 2 -->
+              <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="font-size: 16px; font-weight: 700; color: #10b981; margin: 0 0 10px 0;">2. MOST COINS ARE SCAMS</h3>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
+                  There are 20,000+ cryptocurrencies. 99% have no real use case. Pump.fun launches 10,000+ tokens per day - most are rug pulls within 24 hours. The average "moonshot" coin loses 90% of its value in 30 days.
+                </p>
+                <p style="font-size: 12px; color: #64748b; margin: 0;">
+                  <strong>Sources:</strong> FTC Report 2024 - $5.6B lost to crypto scams since 2021<sup>[2]</sup>; CoinGecko data shows 18,000+ dead coins<sup>[3]</sup>
+                </p>
+              </div>
+
+              <!-- Fact 3 -->
+              <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="font-size: 16px; font-weight: 700; color: #10b981; margin: 0 0 10px 0;">3. MARKET MANIPULATION IS RAMPANT</h3>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
+                  Paid shill campaigns, coordinated pump & dumps, wash trading, and whale manipulation happen daily. That Telegram group hyping a coin? They're getting paid. That influencer shilling a token? They dumped before you bought.
+                </p>
+                <p style="font-size: 12px; color: #64748b; margin: 0;">
+                  <strong>Source:</strong> University of Texas study - 87% of meme coins show signs of coordinated pump & dump schemes<sup>[4]</sup>
+                </p>
+              </div>
+
+              <!-- Fact 4 -->
+              <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="font-size: 16px; font-weight: 700; color: #10b981; margin: 0 0 10px 0;">4. YOU'RE ON YOUR OWN (NO SAFETY NET)</h3>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
+                  Crypto is unregulated. No FDIC insurance. No chargebacks. No customer support. Send money to wrong address? Gone forever. Exchange gets hacked? Your loss. Smart contract bug? Tough luck.
+                </p>
+                <p style="font-size: 12px; color: #64748b; margin: 0;">
+                  <strong>Source:</strong> SEC Commissioner Hester Peirce 2024 testimony - "Crypto investors have minimal regulatory protection"<sup>[5]</sup>
+                </p>
+              </div>
+
+              <!-- Fact 5 -->
+              <div style="margin-bottom: 0;">
+                <h3 style="font-size: 16px; font-weight: 700; color: #10b981; margin: 0 0 10px 0;">5. ISO 20022 IS MARKETING HYPE (NOT SURVIVAL)</h3>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
+                  XRP/XLM/XDC claim "ISO 20022 certification means you'll survive regulation." This is false. ISO 20022 is a bank messaging standard for financial institutions, not a crypto survival requirement. It helps banks talk to each other - it doesn't make a coin "regulation-proof."
+                </p>
+                <p style="font-size: 12px; color: #64748b; margin: 0;">
+                  <strong>Source:</strong> ISO.org official documentation - "ISO 20022 is a methodology for developing financial messaging standards"<sup>[6]</sup>
+                </p>
+              </div>
             </div>
+          </div>
 
-            <!-- FAQ 3 -->
-            <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-              <h3 style="font-size: 15px; font-weight: 700; color: #f59e0b; margin: 0 0 10px 0;">"CASH IS REAL. CRYPTO IS FAKE."</h3>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
-                Cash loses value every year (inflation - your $100 today is worth $97 next year). Crypto can too, but some coins are designed to HOLD or GROW value instead.
-              </p>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0; line-height: 1.7;">
-                <strong>Example:</strong> El Salvador made Bitcoin legal tender. You CAN spend it in stores there. Major companies (Microsoft, Starbucks, Whole Foods) accept crypto payments through third-party apps. It's becoming "real money" whether we like it or not.
-              </p>
+          <!-- How to Protect Yourself - COLLAPSIBLE -->
+          <div class="collapsible-section" style="background: #1e293b; border-radius: 12px; margin-bottom: 25px; overflow: hidden;">
+            <button class="collapsible-btn" onclick="toggleCollapsible(this);" style="width: 100%; padding: 25px; text-align: left; background: none; border: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+              <h2 style="font-size: 20px; font-weight: 700; color: #fff; margin: 0; text-transform: uppercase;">HOW TO PROTECT YOURSELF</h2>
+              <span class="collapsible-icon" style="font-size: 24px; color: #3861FB;">▼</span>
+            </button>
+            <div class="collapsible-content" style="padding: 0 25px 25px 25px; max-height: 2000px; overflow: hidden; transition: max-height 0.3s ease-in-out;">
+              <ul style="margin: 0; padding: 0 0 0 20px; color: #cbd5e1; font-size: 14px; line-height: 2;">
+                <li><strong>Use multiple wallets</strong> - Don't link everything to one address</li>
+                <li><strong>Never share seed phrases</strong> - Anyone asking is a scammer</li>
+                <li><strong>Research before buying</strong> - Check contract address, audit reports, team doxxing</li>
+                <li><strong>Set stop losses</strong> - DarkWave price alerts (coming V1.1) help with this</li>
+                <li><strong>Diversify</strong> - Don't go all-in on one coin</li>
+                <li><strong>Trust your gut</strong> - If it sounds too good to be true, it is</li>
+              </ul>
             </div>
+          </div>
 
-            <!-- FAQ 4 -->
-            <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-              <h3 style="font-size: 15px; font-weight: 700; color: #f59e0b; margin: 0 0 10px 0;">"WHAT IF THE GOVERNMENT BANS IT?"</h3>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
-                They've tried. China banned Bitcoin mining - Bitcoin is still here. The U.S. SEC is creating regulations instead of banning because they know they can't stop it.
-              </p>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0; line-height: 1.7;">
-                <strong>Plan B:</strong> DarkWave covers STOCKS too. If crypto dies tomorrow, you still have access to traditional market analysis. You're not stuck in one world.
-              </p>
-            </div>
-
-            <!-- FAQ 5 -->
-            <div style="margin-bottom: 0;">
-              <h3 style="font-size: 15px; font-weight: 700; color: #f59e0b; margin: 0 0 10px 0;">"WHY SHOULD I TRUST YOU?"</h3>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
-                You shouldn't - not blindly. That's why everything is documented:
+          <!-- What If Crypto Collapses - COLLAPSIBLE -->
+          <div class="collapsible-section" style="background: #1e293b; border-radius: 12px; margin-bottom: 25px; border-left: 4px solid #dc2626; overflow: hidden;">
+            <button class="collapsible-btn" onclick="toggleCollapsible(this);" style="width: 100%; padding: 25px; text-align: left; background: none; border: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+              <h2 style="font-size: 20px; font-weight: 700; color: #fff; margin: 0; text-transform: uppercase;">WHAT IF CRYPTO GOES TO ZERO?</h2>
+              <span class="collapsible-icon" style="font-size: 24px; color: #3861FB;">▼</span>
+            </button>
+            <div class="collapsible-content" style="padding: 0 25px 25px 25px; max-height: 2000px; overflow: hidden; transition: max-height 0.3s ease-in-out;">
+              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 12px 0; line-height: 1.7;">
+                It could happen. Here's what you should have as backup:
               </p>
               <ul style="margin: 0; padding: 0 0 0 20px; color: #cbd5e1; font-size: 14px; line-height: 2;">
-                <li>This TRUTH tab shows Jason's losses (not his wins)</li>
-                <li>Business plans show conservative projections (not hype)</li>
-                <li>10-phase roadmap shows execution history (not empty promises)</li>
-                <li>All sources cited (scroll down to References section)</li>
+                <li><strong>Traditional investments</strong> - Stocks, bonds, index funds (boring but safe)</li>
+                <li><strong>Real assets</strong> - Real estate, precious metals, tangible goods</li>
+                <li><strong>Emergency fund</strong> - 3-6 months expenses in cash (not crypto)</li>
+                <li><strong>Exit strategy</strong> - Know when to cut losses and walk away</li>
               </ul>
-              <p style="font-size: 14px; color: #10b981; margin: 12px 0 0 0; line-height: 1.7; font-weight: 600;">
-                Don't trust blindly. Verify everything. That's literally why we built this tab.
+              <p style="font-size: 14px; color: #f59e0b; margin: 15px 0 0 0; line-height: 1.7; font-weight: 600;">
+                Never invest more than you can afford to lose. Period.
               </p>
             </div>
           </div>
 
-          <!-- Hard Facts Section -->
-          <div style="background: #1e293b; padding: 25px; border-radius: 12px; margin-bottom: 25px;">
-            <h2 style="font-size: 20px; font-weight: 700; color: #fff; margin: 0 0 20px 0; text-transform: uppercase;">HARD FACTS (WITH SOURCES)</h2>
-
-            <!-- Fact 1 -->
-            <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-              <h3 style="font-size: 16px; font-weight: 700; color: #10b981; margin: 0 0 10px 0;">1. CRYPTO IS NOT ANONYMOUS</h3>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
-                Every blockchain transaction is <strong>permanent and public</strong>. Your wallet address is pseudonymous, not anonymous. KYC exchanges (Coinbase, Binance) link your wallet to your real identity. If the government wants to find you, they can.
-              </p>
-              <p style="font-size: 12px; color: #64748b; margin: 0;">
-                <strong>Source:</strong> Chainalysis Crypto Crime Report 2024 - blockchain analysis tracks $24.2B in illicit transactions annually<sup>[1]</sup>
-              </p>
-            </div>
-
-            <!-- Fact 2 -->
-            <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-              <h3 style="font-size: 16px; font-weight: 700; color: #10b981; margin: 0 0 10px 0;">2. MOST COINS ARE SCAMS</h3>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
-                There are 20,000+ cryptocurrencies. 99% have no real use case. Pump.fun launches 10,000+ tokens per day - most are rug pulls within 24 hours. The average "moonshot" coin loses 90% of its value in 30 days.
-              </p>
-              <p style="font-size: 12px; color: #64748b; margin: 0;">
-                <strong>Sources:</strong> FTC Report 2024 - $5.6B lost to crypto scams since 2021<sup>[2]</sup>; CoinGecko data shows 18,000+ dead coins<sup>[3]</sup>
+          <!-- Sources/References - COLLAPSIBLE -->
+          <div class="collapsible-section" style="background: #0f172a; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); overflow: hidden;">
+            <button class="collapsible-btn" onclick="toggleCollapsible(this);" style="width: 100%; padding: 25px; text-align: left; background: none; border: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+              <h2 style="font-size: 18px; font-weight: 700; color: #fff; margin: 0; text-transform: uppercase;">SOURCES & REFERENCES</h2>
+              <span class="collapsible-icon" style="font-size: 24px; color: #3861FB;">▼</span>
+            </button>
+            <div class="collapsible-content" style="padding: 0 25px 25px 25px; max-height: 2000px; overflow: hidden; transition: max-height 0.3s ease-in-out;">
+              <div style="font-size: 12px; color: #94a3b8; line-height: 2;">
+                <p style="margin: 0 0 8px 0;"><sup>[1]</sup> Chainalysis. (2024). "Crypto Crime Report 2024." Available at: chainalysis.com/reports</p>
+                <p style="margin: 0 0 8px 0;"><sup>[2]</sup> Federal Trade Commission. (2024). "Consumer Sentinel Network Data Book 2023." Available at: ftc.gov/reports</p>
+                <p style="margin: 0 0 8px 0;"><sup>[3]</sup> CoinGecko. (2024). "Cryptocurrency Market Data." Available at: coingecko.com</p>
+                <p style="margin: 0 0 8px 0;"><sup>[4]</sup> University of Texas at Austin. (2023). "Price Manipulation in the Cryptocurrency Market." Journal of Financial Economics.</p>
+                <p style="margin: 0 0 8px 0;"><sup>[5]</sup> U.S. Securities and Exchange Commission. (2024). "Commissioner Hester Peirce Testimony on Digital Assets."</p>
+                <p style="margin: 0 0 8px 0;"><sup>[6]</sup> International Organization for Standardization. (2024). "ISO 20022 Financial Services - Universal Financial Industry Message Scheme." Available at: iso20022.org</p>
+              </div>
+              <p style="font-size: 11px; color: #64748b; margin: 15px 0 0 0; line-height: 1.6;">
+                <strong>Note:</strong> DarkWave Pulse is committed to factual accuracy. All claims are backed by credible sources. Last updated: November 19, 2024.
               </p>
             </div>
-
-            <!-- Fact 3 -->
-            <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-              <h3 style="font-size: 16px; font-weight: 700; color: #10b981; margin: 0 0 10px 0;">3. MARKET MANIPULATION IS RAMPANT</h3>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
-                Paid shill campaigns, coordinated pump & dumps, wash trading, and whale manipulation happen daily. That Telegram group hyping a coin? They're getting paid. That influencer shilling a token? They dumped before you bought.
-              </p>
-              <p style="font-size: 12px; color: #64748b; margin: 0;">
-                <strong>Source:</strong> University of Texas study - 87% of meme coins show signs of coordinated pump & dump schemes<sup>[4]</sup>
-              </p>
-            </div>
-
-            <!-- Fact 4 -->
-            <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-              <h3 style="font-size: 16px; font-weight: 700; color: #10b981; margin: 0 0 10px 0;">4. YOU'RE ON YOUR OWN (NO SAFETY NET)</h3>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
-                Crypto is unregulated. No FDIC insurance. No chargebacks. No customer support. Send money to wrong address? Gone forever. Exchange gets hacked? Your loss. Smart contract bug? Tough luck.
-              </p>
-              <p style="font-size: 12px; color: #64748b; margin: 0;">
-                <strong>Source:</strong> SEC Commissioner Hester Peirce 2024 testimony - "Crypto investors have minimal regulatory protection"<sup>[5]</sup>
-              </p>
-            </div>
-
-            <!-- Fact 5 -->
-            <div style="margin-bottom: 0;">
-              <h3 style="font-size: 16px; font-weight: 700; color: #10b981; margin: 0 0 10px 0;">5. ISO 20022 IS MARKETING HYPE (NOT SURVIVAL)</h3>
-              <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 10px 0; line-height: 1.7;">
-                XRP/XLM/XDC claim "ISO 20022 certification means you'll survive regulation." This is false. ISO 20022 is a bank messaging standard for financial institutions, not a crypto survival requirement. It helps banks talk to each other - it doesn't make a coin "regulation-proof."
-              </p>
-              <p style="font-size: 12px; color: #64748b; margin: 0;">
-                <strong>Source:</strong> ISO.org official documentation - "ISO 20022 is a methodology for developing financial messaging standards"<sup>[6]</sup>
-              </p>
-            </div>
-          </div>
-
-          <!-- How to Protect Yourself -->
-          <div style="background: #1e293b; padding: 25px; border-radius: 12px; margin-bottom: 25px;">
-            <h2 style="font-size: 20px; font-weight: 700; color: #fff; margin: 0 0 20px 0; text-transform: uppercase;">HOW TO PROTECT YOURSELF</h2>
-            <ul style="margin: 0; padding: 0 0 0 20px; color: #cbd5e1; font-size: 14px; line-height: 2;">
-              <li><strong>Use multiple wallets</strong> - Don't link everything to one address</li>
-              <li><strong>Never share seed phrases</strong> - Anyone asking is a scammer</li>
-              <li><strong>Research before buying</strong> - Check contract address, audit reports, team doxxing</li>
-              <li><strong>Set stop losses</strong> - DarkWave price alerts (coming V1.1) help with this</li>
-              <li><strong>Diversify</strong> - Don't go all-in on one coin</li>
-              <li><strong>Trust your gut</strong> - If it sounds too good to be true, it is</li>
-            </ul>
-          </div>
-
-          <!-- What If Crypto Collapses -->
-          <div style="background: #1e293b; padding: 25px; border-radius: 12px; margin-bottom: 25px; border-left: 4px solid #dc2626;">
-            <h2 style="font-size: 20px; font-weight: 700; color: #fff; margin: 0 0 15px 0; text-transform: uppercase;">WHAT IF CRYPTO GOES TO ZERO?</h2>
-            <p style="font-size: 14px; color: #cbd5e1; margin: 0 0 12px 0; line-height: 1.7;">
-              It could happen. Here's what you should have as backup:
-            </p>
-            <ul style="margin: 0; padding: 0 0 0 20px; color: #cbd5e1; font-size: 14px; line-height: 2;">
-              <li><strong>Traditional investments</strong> - Stocks, bonds, index funds (boring but safe)</li>
-              <li><strong>Real assets</strong> - Real estate, precious metals, tangible goods</li>
-              <li><strong>Emergency fund</strong> - 3-6 months expenses in cash (not crypto)</li>
-              <li><strong>Exit strategy</strong> - Know when to cut losses and walk away</li>
-            </ul>
-            <p style="font-size: 14px; color: #f59e0b; margin: 15px 0 0 0; line-height: 1.7; font-weight: 600;">
-              Never invest more than you can afford to lose. Period.
-            </p>
-          </div>
-
-          <!-- Sources/References -->
-          <div style="background: #0f172a; padding: 25px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
-            <h2 style="font-size: 18px; font-weight: 700; color: #fff; margin: 0 0 20px 0; text-transform: uppercase;">SOURCES & REFERENCES</h2>
-            <div style="font-size: 12px; color: #94a3b8; line-height: 2;">
-              <p style="margin: 0 0 8px 0;"><sup>[1]</sup> Chainalysis. (2024). "Crypto Crime Report 2024." Available at: chainalysis.com/reports</p>
-              <p style="margin: 0 0 8px 0;"><sup>[2]</sup> Federal Trade Commission. (2024). "Consumer Sentinel Network Data Book 2023." Available at: ftc.gov/reports</p>
-              <p style="margin: 0 0 8px 0;"><sup>[3]</sup> CoinGecko. (2024). "Cryptocurrency Market Data." Available at: coingecko.com</p>
-              <p style="margin: 0 0 8px 0;"><sup>[4]</sup> University of Texas at Austin. (2023). "Price Manipulation in the Cryptocurrency Market." Journal of Financial Economics.</p>
-              <p style="margin: 0 0 8px 0;"><sup>[5]</sup> U.S. Securities and Exchange Commission. (2024). "Commissioner Hester Peirce Testimony on Digital Assets."</p>
-              <p style="margin: 0 0 8px 0;"><sup>[6]</sup> International Organization for Standardization. (2024). "ISO 20022 Financial Services - Universal Financial Industry Message Scheme." Available at: iso20022.org</p>
-            </div>
-            <p style="font-size: 11px; color: #64748b; margin: 15px 0 0 0; line-height: 1.6;">
-              <strong>Note:</strong> DarkWave Pulse is committed to factual accuracy. All claims are backed by credible sources. Last updated: November 19, 2024.
-            </p>
           </div>
 
           <!-- Product Experience CTA -->
@@ -1264,8 +1446,8 @@
             
             <!-- Cat banners with reduced opacity background -->
             <div class="glossary-banner-cats">
-              <img src="data:image/png;base64," alt="Casual orange tabby Crypto Cat mascot providing friendly crypto trading education and beginner-friendly market analysis" class="glossary-cat-img casual-cat" id="casualGlossaryCat" />
-              <img src="data:image/png;base64," alt="Business professional Crypto Cat mascot in suit delivering expert crypto market analysis and technical trading indicators" class="glossary-cat-img business-cat" id="businessGlossaryCat" style="display: none;" />
+              <img src="/casual-cat-banner.png" alt="Casual orange tabby Crypto Cat mascot providing friendly crypto trading education and beginner-friendly market analysis" class="glossary-cat-img casual-cat" id="casualGlossaryCat" />
+              <img src="/business-cat-banner.png" alt="Business professional Crypto Cat mascot in suit delivering expert crypto market analysis and technical trading indicators" class="glossary-cat-img business-cat" id="businessGlossaryCat" style="display: none;" />
             </div>
           </div>
 
@@ -1475,7 +1657,7 @@
           <!-- DarkWave Token Special Section (conditional) -->
           <div class="section-box darkwave-section" id="darkwaveSection" style="display: none;">
             <div class="darkwave-header">
-              <img src="data:image/png;base64," alt="PULSE token DarkWave ecosystem utility cryptocurrency with 1 billion fixed supply on Solana blockchain" class="darkwave-logo" />
+              <img src="/darkwave-coin.png" alt="PULSE token DarkWave ecosystem utility cryptocurrency with 1 billion fixed supply on Solana blockchain" class="darkwave-logo" />
               <div class="darkwave-title">
                 <h3>DARKWAVE TOKEN ACTIONS</h3>
                 <p class="darkwave-subtitle">Manage your PULSE holdings</p>
@@ -1598,8 +1780,8 @@
                 Revolutionary hourly compounding rewards. Stake PULSE, wake up richer. Solana-speed execution with near-zero fees.
               </p>
               
-              <button class="v2-upgrade-btn" onclick="switchTab('v2-details')" style="width: 100%; margin-bottom: 12px; font-size: 14px; font-weight: 900; padding: 14px; background: linear-gradient(135deg, #3861FB, #8338EC); box-shadow: 0 4px 20px rgba(56, 97, 251, 0.4); cursor: pointer;">
-                🚀 V2 UPDATES & FEATURES
+              <button class="v2-upgrade-btn" onclick="switchTab('settings')" style="width: 100%; margin-bottom: 12px; font-size: 14px; font-weight: 900; padding: 14px; background: linear-gradient(135deg, #3861FB, #8338EC); box-shadow: 0 4px 20px rgba(56, 97, 251, 0.4); cursor: pointer;">
+                🚀 UPGRADE FOR V2 ACCESS
               </button>
               
               <button class="v2-dev-preview-btn" onclick="unlockStakingPreview()" style="width: 100%; font-size: 13px; font-weight: 700; padding: 12px; background: linear-gradient(135deg, #00D9FF, #0099CC); cursor: pointer;">
@@ -1644,6 +1826,8 @@
               </div>
             </div>
 
+            </div>
+            </div>
           </div>
         </div>
 
@@ -1672,7 +1856,7 @@
 
             <div class="hero-cta-box">
               <p class="hero-cta-text">✨ <strong>EARLY ACCESS:</strong> Subscribe now to reserve your V2 founding spot</p>
-              <button class="hero-reserve-btn" onclick="switchTab('v2-details')">VIEW V2 FEATURES →</button>
+              <button class="hero-reserve-btn" onclick="switchTab('settings')">RESERVE MY V2 PASS →</button>
             </div>
           </div>
 
@@ -2425,91 +2609,145 @@
         
         <button class="close-btn-circle" onclick="switchTab('crypto')">×</button>
         <button class="admin-btn-circle" onclick="showAdminLogin()" title="Admin Dashboard">👑</button>
-        <div class="widget">
-          <h3>Settings</h3>
+        
+        <!-- Settings Title -->
+        <h3 style="font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 16px 0; color: #fff;">Settings</h3>
+        
+        <!-- Two Column Grid for Desktop -->
+        <div class="settings-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           
-          <!-- Username & Theme Customization -->
-          <div style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 8px; padding: 15px; margin-bottom: 20px;">
-            <div style="margin-bottom: 15px;">
-              <label style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888;">Your Display Name (for Community Chat)</label>
-              <div style="display: flex; gap: 8px; margin-top: 8px;">
-                <input type="text" id="usernameInput" placeholder="Enter your display name..." maxlength="30" style="flex: 1; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 13px;" />
-                <button onclick="saveUsername()" style="padding: 10px 15px; background: linear-gradient(135deg, #10B981, #059669); border: none; border-radius: 6px; color: white; font-weight: 700; cursor: pointer;">Save</button>
+          <!-- LEFT COLUMN -->
+          <div class="settings-column">
+            
+            <!-- Display Name -->
+            <div class="widget" style="margin-bottom: 12px; padding: 12px;">
+              <label style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 6px; display: block;">Display Name</label>
+              <div style="display: flex; gap: 6px;">
+                <input type="text" id="usernameInput" placeholder="Enter name..." maxlength="30" style="flex: 1; padding: 8px 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 12px;" />
+                <button onclick="saveUsername()" style="padding: 8px 12px; background: linear-gradient(135deg, #10B981, #059669); border: none; border-radius: 4px; color: white; font-weight: 600; cursor: pointer; font-size: 11px;">Save</button>
               </div>
-              <p style="font-size: 11px; color: #888; margin-top: 6px;">This is what other users will see in the community chat</p>
             </div>
+            
+            <!-- Commentary Mode -->
+            <div class="widget" style="margin-bottom: 12px; padding: 12px;">
+              <label style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 8px; display: block;">Commentary Mode</label>
+              <div class="persona-toggle" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                <button class="persona-btn active" id="agentBtn" onclick="setPersonaMode('agent')" style="padding: 8px; font-size: 11px; border-radius: 4px;">🕵️ Agent</button>
+                <button class="persona-btn" id="businessBtn" onclick="setPersonaMode('business')" style="padding: 8px; font-size: 11px; border-radius: 4px;">🐱 Business</button>
+                <button class="persona-btn" id="casualBtn" onclick="setPersonaMode('casual')" style="padding: 8px; font-size: 11px; border-radius: 4px;">😼 Casual</button>
+                <button class="persona-btn" id="offBtn" onclick="setPersonaMode('off')" style="padding: 8px; font-size: 11px; border-radius: 4px;">🔇 OFF</button>
+              </div>
+            </div>
+            
+            <!-- Quick Actions (2x2 Grid) -->
+            <div class="widget" style="margin-bottom: 12px; padding: 12px;">
+              <label style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 8px; display: block;">Quick Actions</label>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                <button onclick="openAddToHomeModal()" style="background: linear-gradient(135deg, #3861FB, #8338EC); border: none; border-radius: 4px; color: white; font-weight: 600; cursor: pointer; font-size: 10px; padding: 10px 6px; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                  📱 Add to Home
+                </button>
+                <button onclick="showOnboardingModal()" style="background: linear-gradient(135deg, #10B981, #059669); border: none; border-radius: 4px; color: white; font-weight: 600; cursor: pointer; font-size: 10px; padding: 10px 6px; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                  🚀 Guide
+                </button>
+                <select id="themeSelect" onchange="changeTheme(this.value)" style="padding: 10px 6px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; color: #fff; font-size: 10px; font-weight: 600; cursor: pointer;">
+                  <option value="dark">🌙 Dark</option>
+                  <option value="light">☀️ Light</option>
+                </select>
+                <button onclick="handleLogout()" style="background: linear-gradient(135deg, #DC2626, #B91C1C); border: none; border-radius: 4px; color: white; font-weight: 600; cursor: pointer; font-size: 10px; padding: 10px 6px; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                  🚪 Log Out
+                </button>
+              </div>
+            </div>
+            
+            <!-- Gift & Affiliate (Side by Side Compact) -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <!-- Gift -->
+              <div class="widget" style="margin: 0; padding: 10px;">
+                <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+                  <span style="font-size: 14px;">🎁</span>
+                  <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: #dc2626;">Gift</span>
+                </div>
+                <button onclick="openGiftModal()" style="width: 100%; background: linear-gradient(135deg, #dc2626, #991b1b); color: white; padding: 8px; border-radius: 4px; font-weight: 600; font-size: 10px; border: none; cursor: pointer;">
+                  Send Gift
+                </button>
+              </div>
+              <!-- Affiliate -->
+              <div class="widget" style="margin: 0; padding: 10px;">
+                <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+                  <span style="font-size: 14px;">💰</span>
+                  <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: #10B981;">Earn 20%</span>
+                </div>
+                <button onclick="copyAffiliateLink()" style="width: 100%; background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 8px; border-radius: 4px; font-weight: 600; font-size: 10px; border: none; cursor: pointer;">
+                  Copy Link
+                </button>
+              </div>
+            </div>
+            
           </div>
           
-          <!-- Add to Home Screen, Beginner Guide, Theme & Logout (4 Buttons Side by Side) -->
-          <div class="settings-buttons-row" style="display: flex; gap: 12px; margin-bottom: 20px; align-items: flex-start;">
-            <div style="flex: 1;">
-              <button class="logout-btn" onclick="openAddToHomeModal()" style="background: linear-gradient(135deg, #3861FB, #8338EC); font-weight: 700; width: 100%; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 11px; padding: 0 8px;">
-                📱 ADD TO HOME
+          <!-- RIGHT COLUMN -->
+          <div class="settings-column">
+            
+            <!-- Subscription Status -->
+            <div class="widget" style="margin-bottom: 12px; padding: 12px;">
+              <label style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 8px; display: block;">Your Plan</label>
+              <div id="subscriptionStatus" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 6px; padding: 10px;">
+                <div id="currentTierDisplay" style="font-size: 16px; font-weight: 700; color: white;">Loading...</div>
+                <div id="subscriptionDetails" style="font-size: 10px; color: #888; margin-top: 4px;"></div>
+              </div>
+              <button id="cancelSubButton" onclick="cancelSubscription()" style="margin-top: 8px; background: #dc2626; display: none; width: 100%; font-size: 10px; padding: 8px; border: none; border-radius: 4px; color: white; font-weight: 600; cursor: pointer;">
+                Cancel Subscription
               </button>
-              <p style="font-size: 11px; color: #888; margin-top: 8px; text-align: center; min-height: 32px;">
-                Install DarkWave Pulse as a mobile app for instant access
+            </div>
+            
+            <!-- Wallet Notice -->
+            <div class="widget" style="margin-bottom: 12px; padding: 12px; border: 1px solid rgba(171, 71, 188, 0.3); background: linear-gradient(135deg, rgba(171, 71, 188, 0.1), rgba(123, 31, 162, 0.05));">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <span style="font-size: 16px;">💎</span>
+                <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: #ab47bc;">Wallet Required</span>
+              </div>
+              <p style="font-size: 10px; color: rgba(255,255,255,0.8); line-height: 1.5; margin: 0 0 8px 0;">
+                To receive PULSE tokens, you need a Solana wallet.
               </p>
+              <a href="https://phantom.app/download" target="_blank" style="display: block; text-align: center; background: linear-gradient(135deg, #ab47bc, #7b1fa2); color: white; padding: 8px; border-radius: 4px; font-weight: 600; font-size: 10px; text-decoration: none;">
+                👻 Get Phantom Wallet
+              </a>
             </div>
-            <div style="flex: 1;">
-              <button class="logout-btn" onclick="showOnboardingModal()" style="background: linear-gradient(135deg, #10B981, #059669); font-weight: 700; width: 100%; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 11px; padding: 0 8px;">
-                🚀 BEGINNER GUIDE
-              </button>
-              <p style="font-size: 11px; color: #888; margin-top: 8px; text-align: center; min-height: 32px;">
-                Review the crypto basics and platform walkthrough
-              </p>
+            
+            <!-- Affiliate Stats (Compact) -->
+            <div class="widget" id="affiliateWidget" style="padding: 12px;">
+              <label style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 8px; display: block;">Affiliate Stats</label>
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;">
+                <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 4px; padding: 6px; text-align: center;">
+                  <div style="font-size: 14px; font-weight: 700; color: #3B82F6;" id="affiliateClicks">0</div>
+                  <div style="font-size: 8px; color: #888;">Clicks</div>
+                </div>
+                <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 4px; padding: 6px; text-align: center;">
+                  <div style="font-size: 14px; font-weight: 700; color: #10B981;" id="affiliateSignups">0</div>
+                  <div style="font-size: 8px; color: #888;">Signups</div>
+                </div>
+                <div style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 4px; padding: 6px; text-align: center;">
+                  <div style="font-size: 14px; font-weight: 700; color: #8B5CF6;" id="affiliateConversions">0</div>
+                  <div style="font-size: 8px; color: #888;">Subs</div>
+                </div>
+                <div style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.2); border-radius: 4px; padding: 6px; text-align: center;">
+                  <div style="font-size: 14px; font-weight: 700; color: #FBBF24;" id="affiliateEarnings">$0</div>
+                  <div style="font-size: 8px; color: #888;">Pending</div>
+                </div>
+              </div>
+              <div style="display: flex; gap: 6px; margin-top: 8px;">
+                <input type="text" id="affiliateUrlInput" readonly value="Loading..." style="flex: 1; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #10B981; font-size: 9px; padding: 6px; outline: none;">
+                <button onclick="shareAffiliateLink()" style="background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 6px 10px; border-radius: 4px; border: none; font-weight: 600; font-size: 9px; cursor: pointer;">Share</button>
+              </div>
             </div>
-            <div style="flex: 1;">
-              <select id="themeSelect" onchange="changeTheme(this.value)" style="width: 100%; height: 44px; padding: 0 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 11px; font-weight: 600; display: flex; align-items: center;">
-                <option value="dark">🌙 DARK</option>
-                <option value="light">☀️ LIGHT</option>
-              </select>
-              <p style="font-size: 11px; color: #888; margin-top: 8px; text-align: center; min-height: 32px;">
-                Choose your preferred visual theme
-              </p>
-            </div>
-            <div style="flex: 1;">
-              <button class="logout-btn" onclick="handleLogout()" style="background: linear-gradient(135deg, #DC2626, #B91C1C); font-weight: 700; width: 100%; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 11px; padding: 0 8px;">
-                🚪 LOG OUT
-              </button>
-              <p style="font-size: 11px; color: #888; margin-top: 8px; text-align: center; min-height: 32px;">
-                Logged in for 30 days. Click to end session.
-              </p>
-            </div>
-          </div>
-          <div class="setting-item">
-            <label>Commentary Mode</label>
-            <p style="font-size: 11px; color: #888; margin: 6px 0 10px 0; line-height: 1.5;">Choose your AI assistant style</p>
-            <div class="persona-toggle" style="display: flex; flex-wrap: wrap; gap: 6px;">
-              <button class="persona-btn active" id="agentBtn" onclick="setPersonaMode('agent')" style="flex: 1; min-width: 70px;">🕵️ Agent</button>
-              <button class="persona-btn" id="businessBtn" onclick="setPersonaMode('business')" style="flex: 1; min-width: 70px;">🐱 Business</button>
-              <button class="persona-btn" id="casualBtn" onclick="setPersonaMode('casual')" style="flex: 1; min-width: 70px;">😼 Casual</button>
-              <button class="persona-btn" id="offBtn" onclick="setPersonaMode('off')" style="flex: 1; min-width: 70px;">🔇 OFF</button>
-            </div>
-            <ul style="font-size: 11px; color: #888; margin-top: 8px; padding-left: 20px; line-height: 1.6;">
-              <li><strong>Agent:</strong> Professional agents with spy-themed intel (default)</li>
-              <li><strong>Business:</strong> Crypto Cat with professional analysis</li>
-              <li><strong>Casual:</strong> Crypto Cat with witty, sarcastic personality</li>
-              <li><strong>OFF:</strong> No characters, clean minimal interface</li>
-            </ul>
+            
           </div>
         </div>
-
-        <!-- Subscription Status & Billing -->
-        <div class="widget" style="margin-top: 12px;">
-          <h3 style="font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; color: #FFF;">YOUR SUBSCRIPTION</h3>
-          
-          <!-- Current Status Display -->
-          <div id="subscriptionStatus" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 15px;">
-            <div style="font-size: 12px; color: #60a5fa; font-weight: 600; margin-bottom: 4px;">CURRENT PLAN</div>
-            <div id="currentTierDisplay" style="font-size: 18px; font-weight: 700; color: white;">Loading...</div>
-            <div id="subscriptionDetails" style="font-size: 11px; color: #888; margin-top: 6px;"></div>
-            <button id="cancelSubButton" onclick="cancelSubscription()" class="logout-btn" style="margin-top: 12px; background: #dc2626; display: none; width: 100%; font-size: 12px; padding: 10px;">
-              Cancel Subscription
-            </button>
-          </div>
-          
-          <h3 style="font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; color: #FFF;">SUBSCRIPTION OPTIONS</h3>
-          <div class="subscription-tiers" style="display: flex; flex-wrap: wrap; gap: 12px;">
+        
+        <!-- Subscription Tiers (Full Width Below Grid) -->
+        <div class="widget" style="margin-top: 12px; padding: 12px;">
+          <label style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 10px; display: block;">Subscription Options</label>
+          <div class="subscription-tiers" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
             
             <!-- Base Subscription (Monthly Recurring) -->
             <div class="tier-card" style="max-width: 100%; margin: 0; border: 2px solid #8b5cf6; flex: 1; cursor: default;">
@@ -2587,75 +2825,12 @@
             </div>
           </div>
           
-          <p style="font-size: 11px; color: #10b981; text-align: center; margin-top: 12px; font-weight: 600; line-height: 1.5;">
-            🔥 Legacy Founder closes Dec 25, 2025 • After V2 launch: No token rewards + higher pricing
+          <p style="font-size: 10px; color: #10b981; text-align: center; margin-top: 10px; font-weight: 600;">
+            🔥 Legacy Founder closes Dec 25, 2025
           </p>
-
-          <!-- Wallet Notice for PULSE Airdrops -->
-          <div style="background: linear-gradient(135deg, rgba(171, 71, 188, 0.15) 0%, rgba(123, 31, 162, 0.05) 100%); border: 2px solid rgba(171, 71, 188, 0.4); border-radius: 8px; padding: 14px; margin-top: 16px; text-align: center;">
-            <div style="font-size: 12px; font-weight: 700; color: #ab47bc; margin-bottom: 8px;">💎 WALLET REQUIRED TO RECEIVE PULSE TOKENS</div>
-            <div style="font-size: 11px; color: rgba(255,255,255,0.9); line-height: 1.6; margin-bottom: 10px;">
-              To receive your PULSE airdrop (27K-35K tokens) on Dec 25, 2025, you must have a Solana wallet where YOU control the private keys. We recommend <strong style="color: #ab47bc;">Phantom Wallet</strong>.
-            </div>
-            <a href="https://phantom.app/download" target="_blank" style="display: inline-block; background: linear-gradient(135deg, #ab47bc 0%, #7b1fa2 100%); color: white; padding: 8px 16px; border-radius: 6px; font-weight: 700; font-size: 11px; text-decoration: none; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid rgba(255,255,255,0.2);">
-              👻 INSTALL PHANTOM WALLET →
-            </a>
-          </div>
-
-          <!-- Gift & Affiliate Side by Side -->
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
-            
-            <!-- Gift Subscription -->
-            <div class="widget" style="margin: 0; padding: 12px; border: 2px solid rgba(220, 38, 38, 0.3); background: linear-gradient(135deg, rgba(220, 38, 38, 0.05) 0%, rgba(153, 27, 27, 0.02) 100%);">
-              <h3 style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 10px 0; color: #dc2626;">🎁 GIFT</h3>
-              <button onclick="openGiftModal()" style="width: 100%; background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: white; padding: 10px; border-radius: 6px; font-weight: 700; font-size: 12px; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
-                SEND GIFT
-              </button>
-              <p style="font-size: 10px; color: #888; text-align: center; line-height: 1.4; margin: 0;">
-                3 tiers available<br>Email delivery
-              </p>
-            </div>
-
-            <!-- Affiliate Program -->
-            <div class="widget" id="affiliateWidget" style="margin: 0; padding: 12px; border: 2px solid rgba(16, 185, 129, 0.3); background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(16, 185, 129, 0.02) 100%);">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-                <h3 style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin: 0; color: #10B981;">💰 EARN</h3>
-                <div style="background: rgba(16, 185, 129, 0.2); padding: 2px 6px; border-radius: 12px; font-size: 9px; font-weight: 700; color: #10B981;">20%</div>
-              </div>
-              
-              <div id="affiliateCodeDisplay" style="display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; margin-bottom: 8px;">
-                <input type="text" id="affiliateUrlInput" readonly value="Loading..." style="flex: 1; background: transparent; border: none; color: #10B981; font-size: 10px; font-weight: 600; outline: none;">
-                <button onclick="copyAffiliateLink()" style="background: #10B981; color: #000; padding: 4px 8px; border-radius: 4px; border: none; font-weight: 700; font-size: 10px; cursor: pointer; white-space: nowrap;">COPY</button>
-              </div>
-              <div id="copySuccess" style="display: none; font-size: 9px; color: #10B981; text-align: center; font-weight: 600;">✓ Copied!</div>
-              
-              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 8px;">
-                <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 6px; padding: 6px; text-align: center;">
-                  <div style="font-size: 16px; font-weight: 700; color: #3B82F6;" id="affiliateClicks">0</div>
-                  <div style="font-size: 9px; color: #888;">Clicks</div>
-                </div>
-                <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 6px; text-align: center;">
-                  <div style="font-size: 16px; font-weight: 700; color: #10B981;" id="affiliateSignups">0</div>
-                  <div style="font-size: 9px; color: #888;">Signups</div>
-                </div>
-                <div style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 6px; padding: 6px; text-align: center;">
-                  <div style="font-size: 16px; font-weight: 700; color: #8B5CF6;" id="affiliateConversions">0</div>
-                  <div style="font-size: 9px; color: #888;">Subs</div>
-                </div>
-                <div style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 6px; padding: 6px; text-align: center;">
-                  <div style="font-size: 16px; font-weight: 700; color: #FBBF24;" id="affiliateEarnings">$0</div>
-                  <div style="font-size: 9px; color: #888;">Pending</div>
-                </div>
-              </div>
-              
-              <button onclick="shareAffiliateLink()" style="width: 100%; background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 10px; border-radius: 6px; font-weight: 700; font-size: 12px; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;">
-                SHARE LINK
-              </button>
-            </div>
-          </div>
         </div>
 
-        <!-- Feature List Marketing Box -->
+        <!-- Feature List Marketing Box (Compact) -->
         <div class="widget features-widget" style="margin-top: 12px;">
           <div class="features-header" style="display: flex; align-items: center; margin-bottom: 15px;">
             <img src="/crypto-cat-images/business-cat-pointing.jpg" alt="Business Crypto Cat mascot guiding users through DarkWave Pulse crypto stock analysis dashboard with real-time market data" style="width: 60px; height: 60px; border-radius: 50%; margin-right: 12px; border: 2px solid #1e90ff;">
@@ -3704,94 +3879,54 @@ Thanks for being here — let's build something powerful together!</textarea>
         <button class="close-btn-circle" onclick="switchTab('crypto')">×</button>
         
         <div class="widget">
-          <h3>V2 LAUNCH CHECKLIST</h3>
+          <h3>VERSION 2 DETAILS</h3>
           
           <!-- V2 Launch Date & Countdown -->
           <div style="background: linear-gradient(135deg, rgba(56, 97, 251, 0.15), rgba(131, 56, 236, 0.08)); border: 1px solid rgba(56, 97, 251, 0.3); border-radius: 8px; padding: 15px; margin-bottom: 20px; text-align: center;">
             <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 8px;">Official Launch</div>
             <div style="font-size: 24px; font-weight: 900; color: #3861FB; margin-bottom: 4px;">DECEMBER 25, 2025</div>
             <div id="v2Countdown" style="font-size: 12px; color: rgba(255,255,255,0.8); font-weight: 600;"></div>
-            <div id="v2ProgressBar" style="margin-top: 12px; background: rgba(0,0,0,0.3); border-radius: 4px; height: 8px; overflow: hidden;">
-              <div id="v2ProgressFill" style="background: linear-gradient(90deg, #10b981, #3861FB); height: 100%; width: 0%; transition: width 0.5s;"></div>
-            </div>
-            <div id="v2ProgressText" style="font-size: 10px; color: #888; margin-top: 4px;">0 of 0 tasks complete</div>
           </div>
 
-          <!-- Core Platform (Must Have) -->
-          <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-            <div style="font-size: 12px; font-weight: 700; color: #10b981; margin-bottom: 10px;">🏗️ CORE PLATFORM</div>
-            <div class="v2-checklist" style="font-size: 11px; line-height: 2;">
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="macro-charts" checked> Macro BTC/Market Charts</label>
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="candlestick"> Candlestick Chart Toggle</label>
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="timeframes"> All Timeframes Working</label>
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="volume-chart"> Volume Chart Mode</label>
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="fear-greed" checked> Fear & Greed Index</label>
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="altcoin-season" checked> Altcoin Season Gauge</label>
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="coin-table" checked> Coin Table & Filters</label>
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="dex-pairs" checked> DEX Pair Analysis</label>
+          <!-- Core V2 Features (2 Column) -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+            <!-- Column 1 -->
+            <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 12px;">
+              <div style="font-size: 11px; font-weight: 700; color: #10b981; margin-bottom: 8px;">✅ LIVE NOW</div>
+              <ul style="font-size: 11px; color: #e0e0e0; margin: 0; padding-left: 16px; line-height: 1.6;">
+                <li>18 AI Agents</li>
+                <li>20 NFT Cards</li>
+                <li>Crypto Analysis</li>
+                <li>Stock Charts</li>
+                <li>DEX Pairs</li>
+              </ul>
             </div>
-          </div>
-
-          <!-- AI & Agents -->
-          <div style="background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-            <div style="font-size: 12px; font-weight: 700; color: #8b5cf6; margin-bottom: 10px;">🤖 AI & AGENTS</div>
-            <div class="v2-checklist" style="font-size: 11px; line-height: 2;">
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="18-agents" checked> 18 AI Agent Personas</label>
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="agent-chat"> Agent Chat Interface</label>
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="agent-analysis"> Agent-Powered Analysis</label>
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="20-nfts" checked> 20 NFT Trading Cards</label>
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="card-carousel" checked> Trading Card Carousel</label>
+            
+            <!-- Column 2 -->
+            <div style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 8px; padding: 12px;">
+              <div style="font-size: 11px; font-weight: 700; color: #8b5cf6; margin-bottom: 8px;">🚀 V2 EXCLUSIVE</div>
+              <ul style="font-size: 11px; color: #e0e0e0; margin: 0; padding-left: 16px; line-height: 1.6;">
+                <li>Trading Orders</li>
+                <li>Wallet Sync</li>
+                <li>Sniper Mode</li>
+                <li>Portfolio Track</li>
+                <li>Staking Rewards</li>
+              </ul>
             </div>
           </div>
 
-          <!-- Trading Features (V2 Exclusive) -->
-          <div style="background: rgba(56, 97, 251, 0.08); border: 1px solid rgba(56, 97, 251, 0.25); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-            <div style="font-size: 12px; font-weight: 700; color: #3861FB; margin-bottom: 10px;">📈 TRADING FEATURES (V2)</div>
-            <div class="v2-checklist" style="font-size: 11px; line-height: 2;">
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="buy-sniper"> Buy Sniper Orders</label>
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="sell-sniper"> Sell Sniper Orders</label>
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="wallet-connect"> Wallet Connect</label>
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="portfolio-track"> Portfolio Tracking</label>
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="price-alerts"> Price Alerts</label>
+          <!-- Roadmap Phases (Compact) -->
+          <div style="background: rgba(255, 165, 0, 0.1); border: 1px solid rgba(255, 165, 0, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 20px;">
+            <div style="font-size: 11px; font-weight: 700; color: #ffa500; text-transform: uppercase; margin-bottom: 10px;">📅 2025-2028 ROADMAP</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 10px; color: #e0e0e0; line-height: 1.5;">
+              <div><strong style="color: #10b981;">Q4 2025:</strong> Wallet</div>
+              <div><strong style="color: #3861fb;">H1 2026:</strong> Marketplace</div>
+              <div><strong style="color: #8b5cf6;">Q2 2026:</strong> Launchpad</div>
+              <div><strong style="color: #ffa500;">2027:</strong> Debit Card</div>
             </div>
           </div>
 
-          <!-- Staking & Ecosystem -->
-          <div style="background: rgba(255, 165, 0, 0.08); border: 1px solid rgba(255, 165, 0, 0.25); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-            <div style="font-size: 12px; font-weight: 700; color: #ffa500; margin-bottom: 10px;">💰 STAKING & ECOSYSTEM</div>
-            <div class="v2-checklist" style="font-size: 11px; line-height: 2;">
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="staking-ui"> Staking Dashboard UI</label>
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="staking-contract"> Staking Smart Contract</label>
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="pulse-token"> PULSE Token Launch</label>
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="rewards-calc"> Rewards Calculator</label>
-            </div>
-          </div>
-
-          <!-- Mobile & Polish -->
-          <div style="background: rgba(236, 72, 153, 0.08); border: 1px solid rgba(236, 72, 153, 0.25); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-            <div style="font-size: 12px; font-weight: 700; color: #ec4899; margin-bottom: 10px;">📱 MOBILE & POLISH</div>
-            <div class="v2-checklist" style="font-size: 11px; line-height: 2;">
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="mobile-responsive" checked> Mobile Responsive Layout</label>
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="touch-gestures"> Touch Gesture Support</label>
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="expo-app"> Expo Mobile App Build</label>
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="play-store"> Google Play Store</label>
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" class="v2-check" data-task="app-store"> Apple App Store</label>
-            </div>
-          </div>
-
-          <!-- Roadmap Timeline -->
-          <div style="background: rgba(100, 100, 100, 0.1); border: 1px solid rgba(100, 100, 100, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-            <div style="font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 10px;">📅 ROADMAP</div>
-            <div style="font-size: 10px; line-height: 1.8; color: #ccc;">
-              <div style="display: flex; justify-content: space-between;"><span><strong style="color: #10b981;">Dec 25, 2025:</strong> V2 Launch</span><span style="color: #10b981;">●</span></div>
-              <div style="display: flex; justify-content: space-between;"><span><strong style="color: #3861fb;">Q1 2026:</strong> Wallet & Portfolio</span><span style="color: #888;">○</span></div>
-              <div style="display: flex; justify-content: space-between;"><span><strong style="color: #8b5cf6;">Q2 2026:</strong> NFT Marketplace</span><span style="color: #888;">○</span></div>
-              <div style="display: flex; justify-content: space-between;"><span><strong style="color: #ffa500;">H2 2026:</strong> Token Launchpad</span><span style="color: #888;">○</span></div>
-              <div style="display: flex; justify-content: space-between;"><span><strong style="color: #ec4899;">2027:</strong> DarkWave Debit Card</span><span style="color: #888;">○</span></div>
-            </div>
-          </div>
-
-          <!-- Legacy Founder -->
+          <!-- Legacy Founder Info -->
           <div style="background: rgba(220, 38, 38, 0.1); border: 1px solid rgba(220, 38, 38, 0.3); border-radius: 8px; padding: 12px;">
             <div style="font-size: 11px; font-weight: 700; color: #dc2626; text-transform: uppercase; margin-bottom: 8px;">💎 LEGACY FOUNDER ENDS</div>
             <div style="font-size: 12px; color: rgba(255,255,255,0.8); margin-bottom: 8px;"><span id="legacyDaysLeft">37 days</span> remaining</div>
@@ -3807,11 +3942,13 @@ Thanks for being here — let's build something powerful together!</textarea>
     <!-- Footer -->
     <footer class="app-footer">
       <div class="footer-content">
-        <img src="data:image/png;base64," alt="DarkWave Studios Logo" class="footer-logo" />
+        <img src="/darkwave-studios-logo.png" alt="DarkWave Studios Logo" class="footer-logo" />
         <p class="footer-brand">Powered by <a href="https://darkwavestudios.net" target="_blank" class="footer-website-link">DarkWaveStudios.net</a></p>
         <p class="footer-copyright">© 2025 DarkWave Studios. All rights reserved.</p>
       </div>
     </footer>
+
+  </div>
 
   <!-- Agent Popup Modal -->
   <div id="agentPopupModal" class="agent-popup-modal" style="display: none;">
@@ -4340,32 +4477,36 @@ Thanks for being here — let's build something powerful together!</textarea>
     </div>
   </div>
 
-  <script src="/persona.js?v=1119a"></script>
-  <script src="/guide-content.js?v=1119a"></script>
-  <script src="/guide-controller.js?v=1119a"></script>
-  <script src="/subscription-access.js?v=1119a"></script>
-  <script src="/glossary-data.js?v=1119a"></script>
-  <script src="/glossary-service.js?v=1119a"></script>
-  <script src="/glossary-linker.js?v=1119a"></script>
-  <script src="/popup-commentary-variations.js?v=1119a"></script>
-  <script src="/gauges-clean.js?v=1119a"></script>
+  <script src="/persona.js?v=1120a"></script>
+  <script src="/guide-content.js?v=1120a"></script>
+  <script src="/guide-controller.js?v=1120a"></script>
+  <script src="/subscription-access.js?v=1120a"></script>
+  <script src="/glossary-data.js?v=1120a"></script>
+  <script src="/glossary-service.js?v=1120a"></script>
+  <script src="/glossary-linker.js?v=1120a"></script>
+  <script src="/popup-commentary-variations.js?v=1120a"></script>
+  <script src="/gauges-clean.js?v=1120a"></script>
   <!-- <script src="/banner-chart.js"></script> --> <!-- Removed to declutter banner -->
   <script src="/crypto-cat-popup.js?v=1763866326"></script>
-  <script src="/agent-popup-system.js?v=1119a"></script>
-  <script src="/crypto-cat-hideseek.js?v=1119a"></script>
-  <script src="/news-loader.js?v=1119a"></script>
-  <script src="/analysisDataService.js?v=1119a"></script>
-  <script src="/analysisIndicators.js?v=1119a"></script>
-  <script src="/interactiveChartManager.js?v=1119a"></script>
-  <script src="/fullscreenChartController.js?v=1119a"></script>
+  <script src="/agent-popup-system.js?v=1120a"></script>
+  <script src="/slide-in-popup.js?v=1"></script>
+  <script src="/character-system.js?v=1"></script>
+  <script src="/crypto-cat-hideseek.js?v=1120a"></script>
+  <script src="/news-loader.js?v=1120a"></script>
+  <script src="/analysisDataService.js?v=1120a"></script>
+  <script src="/analysisIndicators.js?v=1120a"></script>
+  <script src="/interactiveChartManager.js?v=1120a"></script>
+  <script src="/fullscreenChartController.js?v=1120a"></script>
   <script src="/landscapeChartController.js?v=1119"></script>
-  <script src="/avatar-display-system.js?v=1119a"></script>
-  <script src="/analysisModalController.js?v=1119a"></script>
-  <script src="/upgrade-system.js?v=1119a"></script>
+  <script src="/avatar-display-system.js?v=1120a"></script>
+  <script src="/analysisModalController.js?v=1120a"></script>
+  <script src="/upgrade-system.js?v=1120a"></script>
   <script src="/theme-selector.js?v=1120"></script>
   <script src="/affiliate.js"></script>
-  <script src="/subscription.js?v=1119a"></script>
-  <script src="/app.js?v=1119a"></script>
+  <script src="/subscription.js?v=1120a"></script>
+  <script src="/blockchain-trail.js?v=1120a"></script>
+  <script src="/dev-page.js?v=1120a"></script>
+  <script src="/app.js?v=1120a"></script>
   <script>
     // Initialize Fear & Greed gauge on load
     document.addEventListener('DOMContentLoaded', function() {
@@ -4574,7 +4715,7 @@ Thanks for being here — let's build something powerful together!</textarea>
   <!-- Join Our Socials Popup - Enhanced with all features -->
   <div id="socialsPopup" class="modal-overlay" style="display: none; z-index: 10000;">
     <div class="socials-popup-content">
-      <button class="close-btn" onclick="closeSocialsPopup()" style="top: 8px; right: 8px;"></button>
+      <button class="close-btn" onclick="closeSocialsPopup()" style="top: 8px; right: 8px;">×</button>
       
       <div class="socials-popup-cat">
         <img id="socialsPopupCatImg" src="https://media.tenor.com/r5zJ0ChXACAAAAAd/cat-business.gif" alt="Cat waving" />
@@ -4583,10 +4724,10 @@ Thanks for being here — let's build something powerful together!</textarea>
       <div class="socials-popup-text">
         <h2 class="popup-title">Join Our Community</h2>
         
-        <!-- V2 Countdown Timer -->
+        <!-- Founders Launch Banner -->
         <div class="socials-countdown-banner">
-          <span style="font-size: 11px; color: #FFD700; font-weight: 700;">🎄 V2 LAUNCHES IN</span>
-          <div id="v2CountdownDisplay" style="font-size: 13px; font-weight: 700; color: #00FF41;">34 days</div>
+          <span style="font-size: 12px; color: #FFD700; font-weight: 700;">🎄 FOUNDERS LAUNCH</span>
+          <div style="font-size: 11px; font-weight: 600; color: #00FF41;">Lock in your Legacy Founder tier</div>
         </div>
 
         <p class="socials-popup-description">
@@ -4916,15 +5057,15 @@ Thanks for being here — let's build something powerful together!</textarea>
     </div>
   </div>
 
-  <!-- Floating Stacked Circular Buttons - Mode Aware -->
+  <!-- Floating Action Buttons -->
   <div class="floating-buttons-stack" id="floatingButtonsStack">
-    <button class="floating-btn floating-btn-community" id="floatingCommunityBtn" onclick="switchTab('community')" title="Community Chat">
-      <span class="floating-btn-emoji">💬</span>
-      <img class="floating-btn-character" id="floatingCommunityCharacter" src="" alt="" style="display: none;" />
-    </button>
     <button class="floating-btn floating-btn-ai" id="floatingAIBtn" onclick="openFloatingAI()" title="AI Analyst">
-      <span class="floating-btn-emoji">🤖</span>
-      <img class="floating-btn-character" id="floatingAICharacter" src="" alt="" style="display: none;" />
+      <span class="floating-btn-icon">🤖</span>
+      <span class="floating-btn-label">AI</span>
+    </button>
+    <button class="floating-btn floating-btn-community" id="floatingCommunityBtn" onclick="switchTab('community')" title="Community">
+      <span class="floating-btn-icon">💬</span>
+      <span class="floating-btn-label">Chat</span>
     </button>
   </div>
 
@@ -4933,7 +5074,7 @@ Thanks for being here — let's build something powerful together!</textarea>
     <div class="floating-ai-widget">
       <div class="floating-ai-header" onclick="closeFloatingAI()">
         <div style="display: flex; align-items: center; gap: 8px;">
-          <img src="/trading-cards/Grumpy_cat_neutral_pose_ba4a1b4d.png" alt="AI Analyst" id="floatingCatImage" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;" />
+          <span style="font-size: 20px;">🤖</span>
           <span style="font-size: 13px; font-weight: 700;">AI Analyst</span>
         </div>
         <button class="floating-ai-toggle" onclick="event.stopPropagation(); closeFloatingAI()" title="Close">×</button>
@@ -4994,124 +5135,60 @@ Thanks for being here — let's build something powerful together!</textarea>
     }
     
     .floating-btn {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      border: none;
-      background: rgba(56, 97, 251, 0.4);
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
       color: white;
       cursor: pointer;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      transition: all 0.3s ease;
+      gap: 2px;
+      transition: all 0.2s ease;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      opacity: 0.7;
-      position: relative;
-      overflow: hidden;
+      backdrop-filter: blur(8px);
     }
     
     .floating-btn:hover {
-      opacity: 1;
-      background: rgba(56, 97, 251, 0.6);
-      transform: scale(1.1);
-      box-shadow: 0 6px 16px rgba(56, 97, 251, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
     }
     
-    .floating-btn-community {
-      background: rgba(34, 197, 94, 0.4);
+    .floating-btn:active {
+      transform: translateY(0);
     }
     
-    .floating-btn-community:hover {
-      background: rgba(34, 197, 94, 0.6);
-      box-shadow: 0 6px 16px rgba(34, 197, 94, 0.4);
+    .floating-btn-icon {
+      font-size: 20px;
+      line-height: 1;
+    }
+    
+    .floating-btn-label {
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      opacity: 0.9;
     }
     
     .floating-btn-ai {
-      background: rgba(139, 92, 246, 0.4);
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.85), rgba(109, 40, 217, 0.85));
     }
     
     .floating-btn-ai:hover {
-      background: rgba(139, 92, 246, 0.6);
-      box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+      background: linear-gradient(135deg, rgba(139, 92, 246, 1), rgba(109, 40, 217, 1));
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
     }
     
-    /* ============================================
-       TRANSPARENT CUTOUT MODE - Agent/Cat Images
-       Images float directly on background with NO button visible
-       ============================================ */
-    
-    /* Agent Mode - Transparent cutout headshots */
-    .floating-btn.character-mode {
-      background: transparent !important;
-      box-shadow: none !important;
-      border: none !important;
-      opacity: 1 !important;
-      overflow: visible;
-      width: 65px;
-      height: 65px;
+    .floating-btn-community {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.85), rgba(22, 163, 74, 0.85));
     }
     
-    .floating-btn.character-mode:hover {
-      background: transparent !important;
-      transform: scale(1.15);
-    }
-    
-    /* The actual character image - floats with drop shadow */
-    .floating-btn-character {
-      width: 60px;
-      height: 60px;
-      object-fit: contain;
-      object-position: bottom center;
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      pointer-events: none;
-      filter: drop-shadow(2px 4px 8px rgba(0, 0, 0, 0.5));
-      display: none;
-    }
-    
-    /* Hide emoji when character is showing */
-    .floating-btn.character-mode .floating-btn-emoji {
-      display: none !important;
-    }
-    
-    /* Show character image in character mode */
-    .floating-btn.character-mode .floating-btn-character {
-      display: block !important;
-    }
-    
-    /* Cat mode - Same transparent cutout but smaller */
-    .floating-btn.cat-mode {
-      width: 60px;
-      height: 60px;
-    }
-    
-    .floating-btn.cat-mode .floating-btn-character {
-      width: 55px;
-      height: 55px;
-      object-fit: contain;
-      border-radius: 0;
-      filter: drop-shadow(2px 4px 8px rgba(0, 0, 0, 0.5));
-    }
-    
-    /* OFF Mode - Pastel transparent buttons with icons */
-    .floating-btn.off-mode {
-      background: rgba(100, 116, 139, 0.25) !important;
-      border: 1px solid rgba(148, 163, 184, 0.3) !important;
-      opacity: 0.5 !important;
-    }
-    
-    .floating-btn.off-mode:hover {
-      opacity: 0.8 !important;
-      background: rgba(100, 116, 139, 0.35) !important;
-      transform: scale(1.05);
-    }
-    
-    .floating-btn.off-mode .floating-btn-emoji {
-      font-size: 22px;
-      opacity: 0.7;
+    .floating-btn-community:hover {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 1), rgba(22, 163, 74, 1));
+      box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
     }
     
     .floating-ai-header {
