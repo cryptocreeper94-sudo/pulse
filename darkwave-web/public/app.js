@@ -642,7 +642,7 @@ const featureDetails = {
       
       <p><strong>Fixed 1 Billion supply means scarcity works in your favor.</strong> No infinite minting. No team dumps. 30% of subscription revenue funds the hourly reward pool, creating sustainable passive income for holders. Multi-tier benefits unlock as you stake more: exclusive avatars, priority support, governance voting power, and early access to partner token launches. This is what utility looks like—real benefits tied to real revenue.</p>
       
-      <p><strong>The bottom line:</strong> DWAV combines the viral appeal of meme coins with institutional-grade tokenomics. We're launching on Solana for lightning-fast transactions and pennies in fees, then expanding to Ethereum, Polygon, and BSC to capture every major chain. Join the revolution that treats holders like owners, not exit liquidity. December 25th, 2025. Be there.</p>
+      <p><strong>The bottom line:</strong> DWAV combines the viral appeal of meme coins with institutional-grade tokenomics. We're launching on Solana for lightning-fast transactions and pennies in fees, then expanding to Ethereum, Polygon, and BSC to capture every major chain. Join the revolution that treats holders like owners, not exit liquidity. Founders Launch: December 25th. Be there.</p>
     `
   },
   staking: {
@@ -655,20 +655,20 @@ const featureDetails = {
       
       <p><strong>Here's why this destroys the competition:</strong> Other tokens promise big APYs but pay monthly (or never). We pay hourly, so your rewards auto-compound 720 times per month instead of once. The math is insane—50% APY compounded hourly beats 50% compounded monthly by a landslide. Plus, we're backed by real platform revenue (30% of subscription fees), not thin-air token printing.</p>
       
-      <p><strong>Bonus perks for stakers:</strong> Lock 10k+ DWAV tokens and unlock exclusive community badges, priority customer support, early access to partner token pools, and governance voting rights. This isn't just yield farming—it's joining an elite club of holders who actually get rewarded for their loyalty. Launch day: December 25th, 2025. Founders' pools fill up fast.</p>
+      <p><strong>Bonus perks for stakers:</strong> Lock 10k+ DWAV tokens and unlock exclusive community badges, priority customer support, early access to partner token pools, and governance voting rights. This isn't just yield farming—it's joining an elite club of holders who actually get rewarded for their loyalty. Founders Launch: December 25th. Founders' pools fill up fast.</p>
     `
   },
   airdrops: {
     icon: '🎁',
     title: 'Subscriber Airdrops — Loyalty Pays Literally',
     content: `
-      <p><strong>Airdrops shouldn't be random giveaways to bots and farmers.</strong> DarkWave Pulse rewards REAL users—the subscribers who believed in us early and stuck around. If you're subscribed to Beta V1 Legacy Founder tier before December 25th, 2025, you're getting PULSE tokens for free. No hoops, no referral pyramids, just pure appreciation for being early.</p>
+      <p><strong>Airdrops shouldn't be random giveaways to bots and farmers.</strong> DarkWave Pulse rewards REAL users—the subscribers who believed in us early and stuck around. If you're subscribed to Legacy Founder tier before the December 25th deadline, you're getting PULSE tokens for free. No hoops, no referral pyramids, just pure appreciation for being early.</p>
       
       <p><strong>How it works:</strong> Every Legacy Founder ($4/month) receives 27,000-35,000 PULSE tokens after 6 months of subscription. That's instant equity in the ecosystem—tokens you can stake, hold for appreciation, or trade. At launch prices, that's thousands of dollars in free value for users who believed in us early.</p>
       
       <p><strong>Why this matters:</strong> Most projects airdrop to wallet addresses that vanish overnight. We're airdropping to engaged community members who actually use the platform. This creates a decentralized holder base of real people, not whales and bots. And because you're already using DarkWave Pulse for trading signals, you'll know exactly when to hold and when to take profits. It's insider info, legally.</p>
       
-      <p><strong>Future airdrops planned:</strong> Partner token launches will prioritize DarkWave subscribers. When we onboard the next Bonk or Pepe to our multi-token staking platform, subscribers get first dibs on their airdrops too. This is recurring value, not a one-time gimmick. Subscribe now, earn forever. Launch: December 25th, 2025. The clock is ticking.</p>
+      <p><strong>Future airdrops planned:</strong> Partner token launches will prioritize DarkWave subscribers. When we onboard the next Bonk or Pepe to our multi-token staking platform, subscribers get first dibs on their airdrops too. This is recurring value, not a one-time gimmick. Subscribe now, earn forever. Founders Launch deadline: December 25th. The clock is ticking.</p>
       
       <div style="margin-top: 24px; text-align: center;">
         <button onclick="closeFeatureDetail(); window.showPricingModal();" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 16px 32px; border-radius: 8px; font-weight: 700; font-size: 14px; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);">
@@ -698,7 +698,7 @@ const featureDetails = {
       
       <p><strong>DWAV Holder Perks:</strong> Stake 10k+ DWAV tokens and unlock advanced customization features like animated effects, holographic borders, and AR-enabled 3D renders. Stake 50k+ DWAV? Get priority access to our artist commission queue for fully custom 1-of-1 designs. Your avatar becomes a living status symbol that evolves with your commitment to the platform.</p>
       
-      <p><strong>Future Utility:</strong> Avatars will unlock token-gated Discord channels, priority support, early beta access, and exclusive partner platform perks. Think American Express Black Card benefits, but for crypto. Other platforms treat avatars as throwaway cosmetics. We're building a digital identity system that compounds value over time. Launch: December 25th, 2025. Upload yours on day one.</p>
+      <p><strong>Future Utility:</strong> Avatars will unlock token-gated Discord channels, priority support, early beta access, and exclusive partner platform perks. Think American Express Black Card benefits, but for crypto. Other platforms treat avatars as throwaway cosmetics. We're building a digital identity system that compounds value over time. Founders Launch: December 25th. Upload yours on day one.</p>
     `
   },
   platform: {
@@ -711,7 +711,7 @@ const featureDetails = {
       
       <p><strong>Revenue-backed sustainability:</strong> Unlike Ponzi staking platforms that print tokens out of thin air, our multi-token pools are funded by platform fees from DarkWave Pulse subscriptions AND staking fees from partner tokens. This creates a diversified revenue stream that doesn't rely on infinite new users. We're building for the long haul, not the pump-and-dump.</p>
       
-      <p><strong>Partner token benefits:</strong> New projects launching their tokens? They can apply to launch a staking pool on DarkWave, instantly accessing our community of engaged traders. We curate the best projects, reject the rugs, and give YOU access to early-stage opportunities with institutional-grade infrastructure. It's like Y Combinator for meme coins, and DWAV holders get first-class seats. Launch: December 25th, 2025. First 100 partner tokens will be absolute gems.</p>
+      <p><strong>Partner token benefits:</strong> New projects launching their tokens? They can apply to launch a staking pool on DarkWave, instantly accessing our community of engaged traders. We curate the best projects, reject the rugs, and give YOU access to early-stage opportunities with institutional-grade infrastructure. It's like Y Combinator for meme coins, and DWAV holders get first-class seats. Founders Launch: December 25th. First 100 partner tokens will be absolute gems.</p>
     `
   },
   multichain: {
@@ -724,7 +724,7 @@ const featureDetails = {
       
       <p><strong>Liquidity strategy:</strong> We're launching liquidity pools on all major DEXs—Raydium (Solana), Uniswap (Ethereum), QuickSwap (Polygon), PancakeSwap (BSC). This creates deep, fragmented liquidity that's harder for whales to manipulate. No single exchange can rug you. No single chain can kill the project. True decentralization through multi-chain presence.</p>
       
-      <p><strong>Future-proof tokenomics:</strong> As new Layer 1s and Layer 2s emerge (Sui, Aptos, Base, etc.), we'll expand there too. DarkWave isn't married to one blockchain—we go wherever the users are. This flexibility ensures longevity while other projects fade into irrelevance on dying chains. We're building the Coca-Cola of crypto: available everywhere, trusted by everyone. Launch: Solana first on December 25th, 2025. Other chains follow in Q1 2026.</p>
+      <p><strong>Future-proof tokenomics:</strong> As new Layer 1s and Layer 2s emerge (Sui, Aptos, Base, etc.), we'll expand there too. DarkWave isn't married to one blockchain—we go wherever the users are. This flexibility ensures longevity while other projects fade into irrelevance on dying chains. We're building the Coca-Cola of crypto: available everywhere, trusted by everyone. Founders Launch: Solana first on December 25th. Other chains follow in Q1 2026.</p>
     `
   },
   filters: {
@@ -737,7 +737,7 @@ const featureDetails = {
       
       <p><strong>Blockchain badge system:</strong> Each coin displays its chain (SOL/ETH/POLY/BSC/MULTI) with color-coded gradient badges. This instant visual clarity helps you spot cross-chain opportunities and avoid ecosystem confusion. We even pull live data from CoinGecko's API, so you're always seeing real-time rankings and price changes. No stale data. No guesswork.</p>
       
-      <p><strong>V2 exclusive access:</strong> Right now, only VIP beta testers can use this feature. On December 25th, 2025, it goes live for ALL subscribers (BASE and TOP tier). Trial users will see a subscription gate encouraging upgrade. This is how we reward early believers while keeping the platform financially sustainable. Try it today if you're a VIP beta tester. If not, subscribe now and lock in your V2 beta access before launch. The future of crypto research is already here.</p>
+      <p><strong>V2 exclusive access:</strong> Right now, only VIP beta testers can use this feature. At Founders Launch (December 25th), it goes live for ALL subscribers (BASE and TOP tier). Trial users will see a subscription gate encouraging upgrade. This is how we reward early believers while keeping the platform financially sustainable. Try it today if you're a VIP beta tester. If not, subscribe now and lock in your V2 beta access before launch. The future of crypto research is already here.</p>
     `
   },
   mobileapps: {
@@ -776,7 +776,7 @@ const featureDetails = {
       
       <p><strong>Save 50% vs V2 pricing, 70% vs future pricing:</strong> TradingView Pro costs $15/month. CoinMarketCap Diamond is $33/month. Crypto.com's advanced tier is $25/month. DarkWave Pulse at $4/month is absurdly underpriced—but only for the first 10,000 Legacy Founders who believed before V2 launch.</p>
       
-      <p><strong>Lifetime lock guarantee:</strong> Your $4 rate NEVER increases. Not when V3 launches. Not when mobile apps drop. Not when we hit 100,000 users paying $20/month. You're locked at $4 forever PLUS you go completely FREE after 6 months. This is how we reward our founding believers. Deadline: December 25th, 2025. Miss it, pay double (or more).</p>
+      <p><strong>Lifetime lock guarantee:</strong> Your $4 rate NEVER increases. Not when V3 launches. Not when mobile apps drop. Not when we hit 100,000 users paying $20/month. You're locked at $4 forever PLUS you go completely FREE after 6 months. This is how we reward our founding believers. Legacy Founder deadline: December 25th. Miss it, pay double (or more).</p>
     `
   }
 };
@@ -1324,12 +1324,14 @@ function updateFloatingButtons(mode) {
     const iconSpan = communityBtn.querySelector('.floating-btn-icon');
     if (charImage && mode !== 'off') {
       if (iconSpan) {
-        iconSpan.innerHTML = `<img src="${charImage}" alt="Chat" style="width: 32px; height: 32px; object-fit: cover; object-position: top; border-radius: 50%;">`;
+        iconSpan.innerHTML = `<img src="${charImage}" alt="Chat" onerror="this.parentElement.innerHTML='💬'">`;
       }
       communityBtn.style.opacity = '1';
+      communityBtn.classList.add('has-cutout');
     } else {
       if (iconSpan) iconSpan.innerHTML = '💬';
       communityBtn.style.opacity = '0.5';
+      communityBtn.classList.remove('has-cutout');
     }
   }
   
@@ -1339,12 +1341,14 @@ function updateFloatingButtons(mode) {
     const iconSpan = aiBtn.querySelector('.floating-btn-icon');
     if (charImage && mode !== 'off') {
       if (iconSpan) {
-        iconSpan.innerHTML = `<img src="${charImage}" alt="AI" style="width: 32px; height: 32px; object-fit: cover; object-position: top; border-radius: 50%;">`;
+        iconSpan.innerHTML = `<img src="${charImage}" alt="AI" onerror="this.parentElement.innerHTML='🤖'">`;
       }
       aiBtn.style.opacity = '1';
+      aiBtn.classList.add('has-cutout');
     } else {
       if (iconSpan) iconSpan.innerHTML = '🤖';
       aiBtn.style.opacity = '0.5';
+      aiBtn.classList.remove('has-cutout');
     }
   }
   
@@ -5301,7 +5305,7 @@ function showV2FeatureLock(featureName, description) {
       </div>
       
       <div class="v2-lock-launch">
-        <p class="v2-lock-date">🎄 LAUNCHING DECEMBER 25TH, 2025 🎄</p>
+        <p class="v2-lock-date">🎄 FOUNDERS LAUNCH - DEC 25 🎄</p>
         <p class="v2-lock-upgrade-text">Subscribe now to unlock V2 features on launch day!</p>
       </div>
       
@@ -5661,7 +5665,7 @@ function displayDarkWaveSection(dwavToken) {
 
 // Show coming soon modal for V2 features
 function showComingSoon(featureName) {
-  alert(`${featureName} is coming in Version 2!\n\nThis feature will be available after the DarkWave Coin launch on December 25th, 2025.`);
+  alert(`${featureName} is coming in Version 2!\n\nThis feature will be available at the Founders Launch (December 25th).`);
 }
 
 // Initialize Portfolio and Educational tabs when switching to them

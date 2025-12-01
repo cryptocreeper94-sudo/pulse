@@ -68,7 +68,7 @@ function showV2LockModal(featureId) {
           <div class="countdown-number">${daysLeft}</div>
           <div class="countdown-label">days until launch</div>
         </div>
-        <p class="v2-launch-date">December 25, 2025</p>
+        <p class="v2-launch-date">Founders Launch - Dec 25</p>
       </div>
       <div class="v2-lock-footer">
         <p style="font-size: 12px; color: rgba(255,255,255,0.6); margin: 0;">V2 features will be fully accessible to all users</p>
