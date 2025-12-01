@@ -125,6 +125,11 @@
 
 </head>
 <body class="theme-dark">
+  <!-- Premium Animated Background -->
+  <div class="animated-bg"></div>
+  <div class="glow-overlay"></div>
+  <div class="particles-overlay" id="particlesOverlay"></div>
+  
   <!-- Banner Section -->
   <div class="app-banner">
     <div class="banner-scroll"></div>
@@ -5522,6 +5527,28 @@ Thanks for being here — let's build something powerful together!</textarea>
       }
     }
   </style>
+
+  <!-- Premium Particle System -->
+  <script>
+    (function initParticles() {
+      const container = document.getElementById('particlesOverlay');
+      if (!container) return;
+      
+      const particleCount = 20;
+      
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDuration = (10 + Math.random() * 15) + 's';
+        particle.style.animationDelay = Math.random() * 10 + 's';
+        particle.style.width = (2 + Math.random() * 2) + 'px';
+        particle.style.height = particle.style.width;
+        container.appendChild(particle);
+      }
+      console.log('✅ Premium particles initialized');
+    })();
+  </script>
 
 </body>
 </html>

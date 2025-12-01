@@ -6,6 +6,101 @@
   box-sizing: border-box;
 }
 
+/* ============================================ */
+/* PREMIUM ANIMATED GRADIENT BACKGROUND        */
+/* ============================================ */
+
+.animated-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  background: linear-gradient(
+    135deg,
+    #000000 0%,
+    #0D0D18 15%,
+    #1a1a2e 25%,
+    #16213e 35%,
+    #0f3460 45%,
+    #1a1a2e 55%,
+    #2d1b4e 65%,
+    #1a1a2e 75%,
+    #0D0D18 85%,
+    #000000 100%
+  );
+  background-size: 400% 400%;
+  animation: premiumGradientShift 20s ease-in-out infinite;
+}
+
+@keyframes premiumGradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 50% 100%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  75% {
+    background-position: 50% 0%;
+  }
+}
+
+/* Floating Particles Overlay */
+.particles-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: -9;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  animation: floatUp 15s linear infinite;
+}
+
+.particle:nth-child(odd) {
+  background: rgba(0, 255, 255, 0.1);
+}
+
+.particle:nth-child(3n) {
+  background: rgba(131, 56, 236, 0.1);
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(100vh) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.3;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(-100vh) translateX(20px);
+    opacity: 0;
+  }
+}
+
+/* Subtle glow overlay */
+.glow-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: -8;
+  pointer-events: none;
+  background: 
+    radial-gradient(ellipse at 20% 20%, rgba(56, 97, 251, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(131, 56, 236, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(0, 255, 255, 0.04) 0%, transparent 60%);
+}
+
 html, body {
   width: 100%;
   max-width: 100vw;
@@ -870,7 +965,7 @@ body.theme-light .banner-title {
   padding: 2px 1px 1px 1px;
   text-align: center;
   box-shadow: var(--shadow-card);
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -882,6 +977,17 @@ body.theme-light .banner-title {
   overflow: visible;
   min-height: 80px;
   z-index: 1;
+}
+
+/* Premium hover effect for metric boxes */
+@media (hover: hover) {
+  .metric-box-wide:hover {
+    transform: translateY(-3px);
+    border-color: rgba(56, 97, 251, 0.4);
+    box-shadow: 
+      0 8px 25px rgba(0, 0, 0, 0.3),
+      0 0 20px rgba(56, 97, 251, 0.15);
+  }
 }
 
 /* Mobile: Tight compact boxes */
