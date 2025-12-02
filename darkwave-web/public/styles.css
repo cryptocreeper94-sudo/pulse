@@ -14918,3 +14918,50 @@ select {
   background: rgba(15, 45, 80, 0.4) !important;
   border: 1px solid rgba(143, 233, 255, 0.3) !important;
 }
+
+/* =================================================== */
+/* FINAL OVERRIDE - FORCE CORE CONTAINERS TRANSPARENT  */
+/* Must be at very end to win specificity wars         */
+/* =================================================== */
+html {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+body {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+#app {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+.app-container {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Ensure animated gradient remains visible at lowest layer */
+.animated-bg {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: -10 !important;
+  background: linear-gradient(
+    135deg,
+    #0a0a1a 0%,
+    #0d2847 12%,
+    #0a3d62 22%,
+    #00667a 32%,
+    #008b8b 42%,
+    #5b2c6f 52%,
+    #7d3c98 62%,
+    #5b2c6f 72%,
+    #0a3d62 82%,
+    #0d2847 92%,
+    #0a0a1a 100%
+  ) !important;
+  background-size: 400% 400% !important;
+  animation: premiumGradientShift 12s ease-in-out infinite !important;
+}
