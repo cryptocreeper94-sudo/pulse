@@ -14392,7 +14392,7 @@ h3 {
   border: none !important;
 }
 
-/* === METRIC BOXES - Transparent internals === */
+/* === METRIC BOXES - Transparent internals + NO DIVIDER LINES === */
 .metric-box,
 .metric-box-wide,
 .metrics-stack,
@@ -14409,6 +14409,30 @@ h3 {
   background: transparent !important;
   background-color: transparent !important;
   box-shadow: none !important;
+  border-top: none !important;
+  border-bottom: none !important;
+}
+
+/* Remove ALL internal borders/dividers from metric boxes */
+.metric-box-wide *,
+.metric-box *,
+.metrics-stack *,
+.gauge-value-display,
+.gauge-value-under-title,
+.metric-label,
+.metric-value,
+.metric-change,
+.volume-flow-indicator {
+  border-top: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+/* Keep only the outer container border for metric boxes */
+.metric-box-wide,
+.metric-box {
+  border: 1px solid rgba(143, 233, 255, 0.2) !important;
+  border-radius: 8px !important;
 }
 
 /* === SEARCH SECTION - Transparent === */
@@ -14710,8 +14734,26 @@ a span,
 }
 
 /* === FORCE TRANSPARENT ON INLINE STYLES === */
-[style*="background"]:not(.animated-bg):not(.particles-overlay):not(.glow-overlay):not([style*="gradient"]):not([style*="url("]) {
-  background: transparent !important;
+/* DISABLED - was breaking animated-bg */
+
+/* === PROTECT ESSENTIAL BACKGROUND ELEMENTS === */
+.animated-bg {
+  background: linear-gradient(
+    135deg,
+    #0a0a1a 0%,
+    #0d2847 12%,
+    #0a3d62 22%,
+    #00667a 32%,
+    #008b8b 42%,
+    #5b2c6f 52%,
+    #7d3c98 62%,
+    #5b2c6f 72%,
+    #0a3d62 82%,
+    #0d2847 92%,
+    #0a0a1a 100%
+  ) !important;
+  background-size: 400% 400% !important;
+  animation: premiumGradientShift 12s ease-in-out infinite !important;
 }
 
 /* === BUTTONS - ONLY KEEP TEXT/EMOJI VISIBLE === */
