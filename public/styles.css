@@ -14149,20 +14149,47 @@ section,
   background: var(--btn-primary-hover, rgba(143, 233, 255, 0.35)) !important;
 }
 
-/* Banners and alerts */
-.banner,
+/* Banners and alerts - EXCEPT app-banner which has wave/candle image */
 .alert,
 .notification,
 .toast,
 .info-banner,
 .promo-banner,
-[class*="banner"],
 [class*="alert"],
 [class*="notification"] {
   background: var(--glass-bg, rgba(15, 45, 80, 0.5)) !important;
   backdrop-filter: blur(10px) !important;
   -webkit-backdrop-filter: blur(10px) !important;
   border: 1px solid var(--glass-border, rgba(143, 233, 255, 0.25)) !important;
+}
+
+/* === BANNER FIX: Preserve wave/candles image with gradient blend === */
+.app-banner {
+  background: transparent !important;
+  border-bottom: 2px solid rgba(143, 233, 255, 0.3) !important;
+}
+
+.banner-scroll {
+  background: url('/banner-dark.png') !important;
+  background-size: 50% 100% !important;
+  background-position: 0 center !important;
+  background-repeat: repeat-x !important;
+  opacity: 0.85;
+}
+
+.banner-title {
+  color: #0a4a7a !important;
+  text-shadow: 
+    0 0 20px rgba(143, 233, 255, 0.8),
+    0 0 40px rgba(143, 233, 255, 0.5),
+    0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+.banner-subtitle {
+  color: #1a5a8a !important;
+  text-shadow: 
+    0 0 15px rgba(143, 233, 255, 0.6),
+    0 1px 3px rgba(0, 0, 0, 0.3) !important;
 }
 
 /* Carousels and sliders */
