@@ -13880,3 +13880,465 @@ body {
   border-color: rgba(255, 255, 255, 0.3);
   color: #fff;
 }
+
+/* ===========================================
+   GLOBAL GLASSMORPHISM OVERRIDES
+   Eliminates ALL black/gray backgrounds
+   Forces pastel translucent backgrounds site-wide
+   =========================================== */
+
+/* Main containers and sections */
+body,
+.app-container,
+.main-container,
+.content-area,
+.page-wrapper,
+#app,
+main {
+  background: transparent !important;
+}
+
+/* Navigation and headers */
+.nav,
+.navbar,
+.nav-bar,
+.header,
+.site-header,
+.top-bar,
+.navigation,
+nav,
+header,
+.nav-tabs-container,
+.nav-tabs,
+.main-nav,
+.header-container {
+  background: var(--glass-bg, rgba(15, 45, 80, 0.35)) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border-color: var(--glass-border, rgba(143, 233, 255, 0.2)) !important;
+}
+
+/* Tab buttons and navigation items */
+.nav-tab,
+.tab-btn,
+.nav-item,
+.nav-link,
+.nav-button,
+.tab-button,
+[class*="tab-btn"],
+[class*="nav-btn"] {
+  background: var(--btn-primary, rgba(143, 233, 255, 0.15)) !important;
+  border-color: var(--glass-border, rgba(143, 233, 255, 0.2)) !important;
+}
+
+.nav-tab:hover,
+.tab-btn:hover,
+.nav-item:hover,
+.nav-link:hover,
+.nav-button:hover,
+.tab-button:hover,
+[class*="tab-btn"]:hover,
+[class*="nav-btn"]:hover {
+  background: var(--btn-primary-hover, rgba(143, 233, 255, 0.3)) !important;
+}
+
+.nav-tab.active,
+.tab-btn.active,
+.nav-item.active,
+.nav-link.active,
+[class*="tab-btn"].active {
+  background: var(--btn-primary-hover, rgba(143, 233, 255, 0.35)) !important;
+  border-color: var(--accent-blue, #8FE9FF) !important;
+}
+
+/* Cards, panels, and boxes */
+.card,
+.panel,
+.box,
+.widget,
+.metric-box,
+.stat-box,
+.info-card,
+.data-card,
+.content-card,
+.feature-card,
+.price-card,
+.coin-card,
+.agent-card,
+.trading-card,
+[class*="-card"],
+[class*="-box"],
+[class*="-panel"],
+[class*="-widget"] {
+  background: var(--glass-bg, rgba(15, 45, 80, 0.35)) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid var(--glass-border, rgba(143, 233, 255, 0.2)) !important;
+}
+
+/* Modals and overlays */
+.modal,
+.modal-content,
+.modal-body,
+.modal-header,
+.modal-footer,
+.popup,
+.popup-content,
+.dialog,
+.dialog-content,
+.overlay-content,
+[class*="modal"],
+[class*="popup"],
+[class*="dialog"] {
+  background: var(--surface-overlay, rgba(15, 45, 80, 0.85)) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid var(--glass-border, rgba(143, 233, 255, 0.25)) !important;
+}
+
+/* Dropdowns and menus */
+.dropdown,
+.dropdown-menu,
+.dropdown-content,
+.menu,
+.submenu,
+.context-menu,
+.select-dropdown,
+[class*="dropdown"],
+[class*="-menu"] {
+  background: var(--surface-elevated, rgba(20, 50, 90, 0.9)) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  border: 1px solid var(--glass-border, rgba(143, 233, 255, 0.25)) !important;
+}
+
+/* Tables */
+.table,
+.coin-table,
+.data-table,
+table,
+thead,
+tbody,
+th,
+td,
+tr {
+  background: transparent !important;
+}
+
+.coin-table thead,
+.data-table thead,
+table thead,
+thead {
+  background: var(--surface-elevated, rgba(20, 50, 90, 0.5)) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+.coin-table tbody tr:hover,
+.data-table tbody tr:hover,
+table tbody tr:hover,
+tbody tr:hover {
+  background: var(--glass-bg, rgba(15, 45, 80, 0.4)) !important;
+}
+
+/* Buttons - Standard */
+button,
+.btn,
+.button,
+[class*="-btn"],
+[class*="-button"],
+input[type="submit"],
+input[type="button"] {
+  background: var(--btn-primary, rgba(143, 233, 255, 0.2)) !important;
+  border: 1px solid var(--glass-border, rgba(143, 233, 255, 0.25)) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+}
+
+button:hover,
+.btn:hover,
+.button:hover,
+[class*="-btn"]:hover,
+[class*="-button"]:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover {
+  background: var(--btn-primary-hover, rgba(143, 233, 255, 0.35)) !important;
+}
+
+/* Primary/accent buttons - keep their gradient but make translucent */
+.btn-primary,
+.btn-accent,
+.primary-btn,
+.accent-btn,
+[class*="primary-btn"],
+[class*="accent-btn"] {
+  background: linear-gradient(135deg, var(--accent-blue, #8FE9FF), var(--accent-purple, #B9A7FF)) !important;
+  border: none !important;
+}
+
+/* Form inputs */
+input,
+textarea,
+select,
+.input,
+.form-control,
+.search-input,
+.text-input,
+[class*="-input"] {
+  background: var(--glass-bg, rgba(15, 45, 80, 0.4)) !important;
+  border: 1px solid var(--glass-border, rgba(143, 233, 255, 0.25)) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+.input:focus,
+.form-control:focus {
+  border-color: var(--accent-blue, #8FE9FF) !important;
+  box-shadow: 0 0 15px var(--accent-glow, rgba(143, 233, 255, 0.3)) !important;
+}
+
+/* Sections and content areas */
+section,
+.section,
+.content-section,
+.tab-content,
+.tab-pane,
+.tab-panel,
+[class*="-section"],
+[class*="-content"] {
+  background: transparent !important;
+}
+
+/* Accordions */
+.accordion,
+.accordion-item,
+.accordion-header,
+.accordion-body,
+.accordion-content,
+.accordion-panel,
+.collapse,
+.collapsible,
+[class*="accordion"] {
+  background: var(--glass-bg, rgba(15, 45, 80, 0.35)) !important;
+  border-color: var(--glass-border, rgba(143, 233, 255, 0.2)) !important;
+}
+
+/* Category filters and tags */
+.category-btn,
+.filter-btn,
+.tag,
+.chip,
+.badge,
+.label,
+.category-filter,
+[class*="category-"],
+[class*="filter-"],
+[class*="-tag"],
+[class*="-chip"] {
+  background: var(--btn-primary, rgba(143, 233, 255, 0.2)) !important;
+  border: 1px solid var(--glass-border, rgba(143, 233, 255, 0.25)) !important;
+}
+
+.category-btn:hover,
+.filter-btn:hover,
+.category-btn.active,
+.filter-btn.active {
+  background: var(--btn-primary-hover, rgba(143, 233, 255, 0.35)) !important;
+}
+
+/* Banners and alerts */
+.banner,
+.alert,
+.notification,
+.toast,
+.info-banner,
+.promo-banner,
+[class*="banner"],
+[class*="alert"],
+[class*="notification"] {
+  background: var(--glass-bg, rgba(15, 45, 80, 0.5)) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid var(--glass-border, rgba(143, 233, 255, 0.25)) !important;
+}
+
+/* Carousels and sliders */
+.carousel,
+.slider,
+.swiper,
+.carousel-item,
+.slide,
+[class*="carousel"],
+[class*="slider"] {
+  background: transparent !important;
+}
+
+/* Sidebars and aside elements */
+aside,
+.sidebar,
+.side-panel,
+.side-nav,
+[class*="sidebar"],
+[class*="side-panel"] {
+  background: var(--glass-bg, rgba(15, 45, 80, 0.4)) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+
+/* Footer */
+footer,
+.footer,
+.site-footer,
+[class*="footer"] {
+  background: var(--glass-bg, rgba(15, 45, 80, 0.4)) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border-color: var(--glass-border, rgba(143, 233, 255, 0.2)) !important;
+}
+
+/* Search containers */
+.search-container,
+.search-box,
+.search-wrapper,
+.search-section,
+[class*="search-"] {
+  background: var(--glass-bg, rgba(15, 45, 80, 0.35)) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+
+/* Gauge and chart containers */
+.gauge-container,
+.chart-container,
+.chart-wrapper,
+.graph-container,
+[class*="gauge"],
+[class*="chart"] {
+  background: var(--glass-bg, rgba(15, 45, 80, 0.35)) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border: 1px solid var(--glass-border, rgba(143, 233, 255, 0.15)) !important;
+}
+
+/* Live prices and data sections */
+.live-prices,
+.price-section,
+.data-section,
+.stats-section,
+.metrics-section,
+[class*="live-"],
+[class*="price-"] {
+  background: transparent !important;
+}
+
+/* Project coins and token displays */
+.project-coin,
+.token-card,
+.coin-display,
+[class*="project-coin"],
+[class*="token-"] {
+  background: var(--glass-bg, rgba(15, 45, 80, 0.35)) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid var(--glass-border, rgba(143, 233, 255, 0.2)) !important;
+}
+
+/* Agent and persona displays */
+.agent-display,
+.persona-card,
+.avatar-container,
+[class*="agent-"],
+[class*="persona-"],
+[class*="avatar-"] {
+  background: var(--glass-bg, rgba(15, 45, 80, 0.35)) !important;
+}
+
+/* Onboarding and wizard steps */
+.onboarding,
+.wizard,
+.step-container,
+.steps,
+[class*="onboarding"],
+[class*="wizard"],
+[class*="step-"] {
+  background: var(--surface-overlay, rgba(15, 45, 80, 0.85)) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+}
+
+/* Loading states */
+.loading,
+.skeleton,
+.placeholder,
+[class*="loading"],
+[class*="skeleton"] {
+  background: var(--glass-bg, rgba(15, 45, 80, 0.3)) !important;
+}
+
+/* Tooltips */
+.tooltip,
+.tippy,
+[class*="tooltip"] {
+  background: var(--surface-elevated, rgba(20, 50, 90, 0.95)) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+
+/* Specific component overrides for DarkWave */
+
+/* Info banner */
+.info-banner-content,
+.promo-content {
+  background: var(--glass-bg, rgba(15, 45, 80, 0.4)) !important;
+}
+
+/* Version banner */
+.version-banner,
+.v2-banner,
+[class*="version-"],
+[class*="v2-"] {
+  background: linear-gradient(135deg, var(--accent-blue, #8FE9FF), var(--accent-purple, #B9A7FF)) !important;
+}
+
+/* Refresh button */
+.refresh-btn,
+[class*="refresh"] {
+  background: var(--btn-primary, rgba(143, 233, 255, 0.2)) !important;
+}
+
+/* Section headers */
+.section-header,
+.section-title,
+h2,
+h3 {
+  background: transparent !important;
+}
+
+/* Specific black overrides - catch any remaining blacks */
+[style*="background: #000"],
+[style*="background:#000"],
+[style*="background-color: #000"],
+[style*="background-color:#000"],
+[style*="background: black"],
+[style*="background:black"],
+[style*="background-color: black"],
+[style*="background-color:black"],
+[style*="background: rgb(0, 0, 0)"],
+[style*="background-color: rgb(0, 0, 0)"] {
+  background: var(--glass-bg, rgba(15, 45, 80, 0.35)) !important;
+}
+
+/* Gray overrides */
+[style*="background: #1"],
+[style*="background:#1"],
+[style*="background-color: #1"],
+[style*="background-color:#1"],
+[style*="background: #2"],
+[style*="background:#2"],
+[style*="background-color: #2"],
+[style*="background-color:#2"] {
+  background: var(--glass-bg, rgba(15, 45, 80, 0.35)) !important;
+}
