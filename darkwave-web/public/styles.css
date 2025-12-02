@@ -14513,8 +14513,7 @@ h3 {
 }
 
 /* === FLOATING BUTTONS & ICONS === */
-.floating-btn,
-.floating-button,
+/* NOTE: Excluded .floating-btn-ai and .floating-btn-community to preserve their gradients */
 .floating-icon,
 .chat-btn,
 .chat-bubble,
@@ -14524,13 +14523,34 @@ h3 {
 .commentary-btn,
 .info-icon,
 .help-icon,
-[class*="floating-"],
 [class*="popup-"],
 [class*="bubble-"] {
   background: transparent !important;
   background-color: transparent !important;
   box-shadow: none !important;
   border: none !important;
+}
+
+/* Floating buttons with cutout images - fully transparent to show character */
+.floating-btn.has-cutout {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* Ensure cutout images display properly */
+.floating-btn-icon img {
+  width: 48px !important;
+  height: 48px !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  border-radius: 0 !important;
+}
+
+/* When in cutout mode, hide the label */
+.floating-btn.has-cutout .floating-btn-label {
+  display: none;
 }
 
 /* === BANNER & PROMO ELEMENTS === */
