@@ -14149,69 +14149,20 @@ section,
   background: var(--btn-primary-hover, rgba(143, 233, 255, 0.35)) !important;
 }
 
-/* Banners and alerts - EXCEPT app-banner which has wave/candle image */
+/* Banners and alerts */
+.banner,
 .alert,
 .notification,
 .toast,
 .info-banner,
 .promo-banner,
+[class*="banner"],
 [class*="alert"],
 [class*="notification"] {
   background: var(--glass-bg, rgba(15, 45, 80, 0.5)) !important;
   backdrop-filter: blur(10px) !important;
   -webkit-backdrop-filter: blur(10px) !important;
   border: 1px solid var(--glass-border, rgba(143, 233, 255, 0.25)) !important;
-}
-
-/* === SIMPLE GLASS HEADER === */
-.glass-header {
-  width: 100%;
-  padding: 20px 24px;
-  text-align: center;
-  background: var(--glass-bg, rgba(15, 45, 80, 0.3));
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--glass-border, rgba(143, 233, 255, 0.2));
-  position: relative;
-  z-index: 5;
-}
-
-.glass-header-title {
-  font-size: 2rem;
-  font-weight: 800;
-  margin: 0 0 6px 0;
-  color: #0a3d5c;
-  text-shadow: 
-    0 0 30px rgba(143, 233, 255, 0.9),
-    0 0 60px rgba(143, 233, 255, 0.6),
-    0 2px 4px rgba(255, 255, 255, 0.3);
-  font-family: 'Courier New', 'IBM Plex Mono', monospace;
-  text-transform: uppercase;
-  letter-spacing: 3px;
-}
-
-.glass-header-subtitle {
-  font-size: 0.85rem;
-  margin: 0;
-  color: #1a5a7a;
-  text-shadow: 
-    0 0 20px rgba(143, 233, 255, 0.7),
-    0 1px 2px rgba(255, 255, 255, 0.2);
-  font-weight: 500;
-  letter-spacing: 1px;
-}
-
-@media (max-width: 480px) {
-  .glass-header {
-    padding: 14px 16px;
-  }
-  .glass-header-title {
-    font-size: 1.4rem;
-    letter-spacing: 2px;
-  }
-  .glass-header-subtitle {
-    font-size: 0.75rem;
-  }
 }
 
 /* Carousels and sliders */
