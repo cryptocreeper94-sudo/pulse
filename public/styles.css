@@ -109,6 +109,104 @@
 }
 
 /* ============================================ */
+/* PASTEL COLOR PALETTE & TRANSPARENT UI       */
+/* Soft, premium look matching gradient bg     */
+/* ============================================ */
+
+:root {
+  --pastel-cyan: #8FE9FF;
+  --pastel-purple: #B9A7FF;
+  --pastel-blue: #A3C4FF;
+  --pastel-coral: #FFB8A9;
+  --pastel-mint: #A8F0C4;
+  --pastel-gold: #FFE8A3;
+  --pastel-pink: #FFB8D9;
+  --pastel-lavender: #D4C4FF;
+  --glass-bg: rgba(13, 40, 71, 0.4);
+  --glass-bg-hover: rgba(19, 55, 96, 0.5);
+  --glass-bg-focus: rgba(24, 70, 115, 0.6);
+  --glass-border: rgba(143, 233, 255, 0.35);
+  --glass-border-hover: rgba(185, 167, 255, 0.5);
+  --glass-border-focus: rgba(143, 233, 255, 0.7);
+  --glass-glow: rgba(143, 233, 255, 0.15);
+  --glass-glow-hover: rgba(185, 167, 255, 0.25);
+}
+
+/* Global Input Styles - Frosted Glass Effect (uses CSS vars for theme compatibility) */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+textarea,
+select {
+  background: var(--glass-bg, rgba(13, 40, 71, 0.4));
+  border: 1px solid var(--glass-border, rgba(143, 233, 255, 0.35));
+  color: var(--text-primary, rgba(255, 255, 255, 0.95));
+  border-radius: 8px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 0 12px var(--glass-glow, rgba(143, 233, 255, 0.15));
+  transition: all 0.25s ease;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):hover,
+textarea:hover,
+select:hover {
+  background: var(--glass-bg-hover, rgba(19, 55, 96, 0.5));
+  border-color: var(--glass-border-hover, rgba(185, 167, 255, 0.5));
+  box-shadow: 0 0 16px var(--glass-glow-hover, rgba(185, 167, 255, 0.25));
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  background: var(--glass-bg-focus, rgba(24, 70, 115, 0.6));
+  border-color: var(--glass-border-focus, rgba(143, 233, 255, 0.7));
+  box-shadow: 0 0 20px rgba(143, 233, 255, 0.4);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-dim, rgba(255, 255, 255, 0.5));
+}
+
+/* Global Button Styles - Transparent with Pastel Glow (theme-compatible) */
+button:not(.special-btn):not([class*="success"]):not([class*="danger"]):not([class*="warning"]),
+.btn:not(.special-btn):not([class*="success"]):not([class*="danger"]):not([class*="warning"]) {
+  background: var(--glass-bg, rgba(13, 40, 71, 0.35));
+  color: var(--text-primary, rgba(255, 255, 255, 0.95));
+  border: 1px solid var(--glass-border-hover, rgba(185, 167, 255, 0.4));
+  border-radius: 8px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 0 14px var(--glass-glow, rgba(143, 233, 255, 0.2));
+  transition: all 0.25s ease;
+}
+
+button:not(.special-btn):not([class*="success"]):not([class*="danger"]):not([class*="warning"]):hover,
+.btn:not(.special-btn):not([class*="success"]):not([class*="danger"]):not([class*="warning"]):hover {
+  background: var(--glass-bg-hover, rgba(19, 55, 96, 0.45));
+  border-color: var(--glass-border-focus, rgba(143, 233, 255, 0.6));
+  box-shadow: 0 0 20px var(--glass-glow-hover, rgba(143, 233, 255, 0.35));
+  transform: translateY(-1px);
+}
+
+button:not(.special-btn):focus-visible,
+.btn:not(.special-btn):focus-visible {
+  outline: 2px solid var(--pastel-cyan, #8FE9FF);
+  outline-offset: 2px;
+}
+
+/* Pastel Status Colors - Soft versions */
+.text-success, .status-success { color: var(--pastel-mint) !important; }
+.text-danger, .status-danger { color: var(--pastel-coral) !important; }
+.text-warning, .status-warning { color: var(--pastel-gold) !important; }
+.text-info, .status-info { color: var(--pastel-cyan) !important; }
+
+.bg-success { background: rgba(168, 240, 196, 0.25) !important; }
+.bg-danger { background: rgba(255, 184, 169, 0.25) !important; }
+.bg-warning { background: rgba(255, 232, 163, 0.25) !important; }
+.bg-info { background: rgba(143, 233, 255, 0.25) !important; }
+
+/* ============================================ */
 /* STAGGER ANIMATIONS FOR LIST ITEMS           */
 /* ============================================ */
 
@@ -478,14 +576,22 @@ body.theme-space::before {
 .span-3 { grid-column: span 3; }
 .span-4 { grid-column: span 4; }
 
-/* Grid Card */
+/* Grid Card - Glassmorphism (theme-compatible) */
 .grid-card {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
+  background: var(--glass-bg, var(--bg-secondary, rgba(13, 40, 71, 0.45)));
+  border: 1px solid var(--glass-border, var(--border-color, rgba(143, 233, 255, 0.25)));
   border-radius: 8px;
   padding: var(--spacing-md);
-  box-shadow: var(--shadow-card);
+  box-shadow: var(--shadow-card, 0 4px 20px rgba(0, 0, 0, 0.25)), 0 0 15px var(--glass-glow, rgba(143, 233, 255, 0.1));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   overflow: hidden;
+  transition: all 0.25s ease;
+}
+
+.grid-card:hover {
+  border-color: var(--glass-border-hover, rgba(185, 167, 255, 0.4));
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3), 0 0 20px var(--glass-glow-hover, rgba(185, 167, 255, 0.15));
 }
 
 .grid-card-title {
@@ -1019,16 +1125,18 @@ body.theme-light .banner-title {
   }
 }
 
-/* Compact Metric Boxes - 4 Horizontal Square Thumbnails on Mobile */
+/* Compact Metric Boxes - 4 Horizontal Square Thumbnails on Mobile - Glassmorphism (theme-compatible) */
 .metric-box-wide {
   width: 100%;
   aspect-ratio: 0.9 / 1;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
+  background: var(--glass-bg, var(--bg-secondary, rgba(13, 40, 71, 0.5)));
+  border: 1px solid var(--glass-border, var(--border-color, rgba(143, 233, 255, 0.25)));
   border-radius: 6px;
   padding: 2px 1px 1px 1px;
   text-align: center;
-  box-shadow: var(--shadow-card);
+  box-shadow: var(--shadow-card, 0 4px 15px rgba(0, 0, 0, 0.2)), 0 0 12px var(--glass-glow, rgba(143, 233, 255, 0.08));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
@@ -1043,14 +1151,14 @@ body.theme-light .banner-title {
   z-index: 1;
 }
 
-/* Premium hover effect for metric boxes */
+/* Premium hover effect for metric boxes - Pastel glow */
 @media (hover: hover) {
   .metric-box-wide:hover {
     transform: translateY(-3px);
-    border-color: rgba(56, 97, 251, 0.4);
+    border-color: rgba(185, 167, 255, 0.5);
     box-shadow: 
       0 8px 25px rgba(0, 0, 0, 0.3),
-      0 0 20px rgba(56, 97, 251, 0.15);
+      0 0 20px rgba(143, 233, 255, 0.2);
   }
 }
 

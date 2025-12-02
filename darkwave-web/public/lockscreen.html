@@ -225,44 +225,53 @@
     .auth-input {
       width: 100%;
       padding: 16px 20px;
-      background: #1A1A1A;
-      border: 2px solid #333;
+      background: rgba(13, 40, 71, 0.4);
+      border: 1px solid rgba(143, 233, 255, 0.35);
       border-radius: 8px;
-      color: #FFF;
+      color: rgba(255, 255, 255, 0.95);
       font-size: 16px;
       font-family: inherit;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 0 12px rgba(143, 233, 255, 0.15);
       transition: all 0.3s ease;
     }
 
     .auth-input:focus {
       outline: none;
-      border-color: #8B1538;
-      box-shadow: 0 0 0 3px rgba(139, 21, 56, 0.1);
+      background: rgba(24, 70, 115, 0.6);
+      border-color: rgba(143, 233, 255, 0.7);
+      box-shadow: 0 0 20px rgba(143, 233, 255, 0.4);
     }
 
     .auth-input::placeholder {
-      color: #666;
+      color: rgba(255, 255, 255, 0.5);
     }
 
     .auth-btn {
       width: 100%;
       padding: 18px;
-      background: linear-gradient(135deg, #8B1538 0%, #6B0F1A 100%);
-      border: none;
+      background: rgba(13, 40, 71, 0.35);
+      border: 1px solid rgba(185, 167, 255, 0.4);
       border-radius: 8px;
-      color: #FFF;
+      color: rgba(255, 255, 255, 0.95);
       font-size: 16px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 2px;
       cursor: pointer;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      box-shadow: 0 0 14px rgba(143, 233, 255, 0.2);
       transition: all 0.3s ease;
       font-family: 'Orbitron', sans-serif;
     }
 
     .auth-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(139, 21, 56, 0.4);
+      background: rgba(19, 55, 96, 0.45);
+      border-color: rgba(143, 233, 255, 0.6);
+      box-shadow: 0 0 20px rgba(143, 233, 255, 0.35);
     }
 
     .auth-btn:active {
