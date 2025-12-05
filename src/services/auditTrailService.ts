@@ -2,6 +2,10 @@ import { createHash, randomBytes } from 'crypto';
 import { db } from '../db/client.js';
 import { auditEvents, hallmarkProfiles, hallmarkMints, systemConfig } from '../db/schema.js';
 import { eq, desc, and, sql } from 'drizzle-orm';
+import { Connection, Keypair, Transaction, TransactionInstruction, PublicKey, sendAndConfirmTransaction } from '@solana/web3.js';
+import bs58 from 'bs58';
+
+const MEMO_PROGRAM_ID = new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr');
 
 // Event types that get hashed to Solana
 export const AUDIT_EVENT_TYPES = {
@@ -288,12 +292,55 @@ class AuditTrailService {
     payloadHash: string,
     eventId: string,
     heliusApiKey: string,
-    walletPublicKey: string
+    _walletPublicKey: string
   ): Promise<string | null> {
-    // This will be fully implemented when wallet is configured
-    // For now, return null to indicate pending
-    console.log(`🔗 [AuditTrail] Would post to Solana: ${payloadHash.substring(0, 16)}... for event ${eventId}`);
-    return null;
+    try {
+      // Get the audit wallet private key from environment
+      const walletPrivateKey = process.env.SOLANA_AUDIT_WALLET_KEY;
+      if (!walletPrivateKey) {
+        console.log('⚠️ [AuditTrail] SOLANA_AUDIT_WALLET_KEY not configured');
+        return null;
+      }
+      
+      // Decode the private key and create keypair
+      const secretKey = bs58.decode(walletPrivateKey);
+      const payer = Keypair.fromSecretKey(secretKey);
+      
+      // Create connection to Helius RPC
+      const connection = new Connection(
+        `https://mainnet.helius-rpc.com/?api-key=${heliusApiKey}`,
+        'confirmed'
+      );
+      
+      // Create memo content: eventId + hash (max 566 bytes for memo)
+      const memoContent = `DWP:${eventId}:${payloadHash}`;
+      
+      // Create memo instruction
+      const memoInstruction = new TransactionInstruction({
+        keys: [{ pubkey: payer.publicKey, isSigner: true, isWritable: false }],
+        programId: MEMO_PROGRAM_ID,
+        data: Buffer.from(memoContent, 'utf-8'),
+      });
+      
+      // Create and send transaction
+      const transaction = new Transaction().add(memoInstruction);
+      
+      console.log(`🔗 [AuditTrail] Posting to Solana: ${payloadHash.substring(0, 16)}... for event ${eventId}`);
+      
+      const signature = await sendAndConfirmTransaction(
+        connection,
+        transaction,
+        [payer],
+        { commitment: 'confirmed' }
+      );
+      
+      console.log(`✅ [AuditTrail] Solana tx confirmed: ${signature}`);
+      return signature;
+      
+    } catch (error: any) {
+      console.error(`❌ [AuditTrail] Solana memo failed: ${error.message}`);
+      return null;
+    }
   }
   
   /**
@@ -420,5 +467,38 @@ export async function logSecurityEvent(userId: string, eventType: AuditEventType
     eventType,
     category: EVENT_CATEGORIES.SECURITY,
     data,
+  });
+}
+
+export async function logSystemEvent(eventType: AuditEventType, data: Record<string, any>) {
+  return auditTrailService.logEvent({
+    userId: 'SYSTEM',
+    eventType,
+    category: EVENT_CATEGORIES.SYSTEM,
+    actor: 'system',
+    data,
+  });
+}
+
+/**
+ * Stamp a deployment/version to Solana
+ */
+export async function stampDeployment(version: string, description: string, deploymentType: 'release' | 'hotfix' | 'repair_replace' = 'release') {
+  const eventType = deploymentType === 'repair_replace' 
+    ? AUDIT_EVENT_TYPES.SYSTEM_REPAIR_REPLACE 
+    : AUDIT_EVENT_TYPES.SYSTEM_DEPLOYMENT;
+    
+  return auditTrailService.logEvent({
+    userId: 'SYSTEM',
+    eventType,
+    category: EVENT_CATEGORIES.SYSTEM,
+    actor: 'admin',
+    data: {
+      version,
+      description,
+      deploymentType,
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'production',
+    },
   });
 }
