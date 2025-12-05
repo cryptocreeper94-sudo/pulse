@@ -287,6 +287,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingTop: 8,
+    zIndex: 100,
+    elevation: 5,
   },
   hamburgerBtn: {
     width: 40,
@@ -343,12 +345,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 56,
     left: 0,
+    bottom: 0,
     width: 280,
-    height: '100%',
     backgroundColor: '#0f0f0f',
     borderRightWidth: 1,
     borderRightColor: '#222',
     zIndex: 99,
+    elevation: 4,
   },
   menuContent: {
     padding: 16,
