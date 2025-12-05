@@ -410,9 +410,11 @@ const styles = StyleSheet.create({
 
   mainScroll: {
     flex: 1,
+    marginTop: 56,
   },
   scrollContent: {
-    paddingBottom: 20
+    paddingBottom: 20,
+    paddingTop: 8,
   },
 
   metricsGrid: {
