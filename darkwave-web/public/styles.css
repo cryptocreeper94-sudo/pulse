@@ -946,7 +946,7 @@ body.theme-light .banner-title {
   flex: 0 1 auto;
   min-width: 0;
   padding: 6px 8px;
-  background: transparent;
+  background: transparent !important;
   border: none;
   border-bottom: 2px solid transparent;
   color: #8FE9FF;
@@ -957,7 +957,17 @@ body.theme-light .banner-title {
   pointer-events: auto;
   user-select: none;
   transition: all 0.2s ease;
-  filter: drop-shadow(0 0 4px rgba(143, 233, 255, 0.3));
+  filter: drop-shadow(0 0 6px rgba(143, 233, 255, 0.5));
+  text-shadow: 0 0 8px rgba(143, 233, 255, 0.6);
+}
+
+/* Emoji glow effect - remove square backgrounds */
+.nav-btn::first-letter,
+.logout-icon-btn,
+.disclaimer-icon-btn {
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.6), 0 0 20px currentColor;
+  filter: drop-shadow(0 0 8px currentColor);
 }
 
 @media (max-width: 768px) {
