@@ -15240,28 +15240,11 @@ footer,
   background: rgba(143, 233, 255, 0.5) !important;
 }
 
-/* Override any inline styles or gradient buttons that might be blocking */
-[style*="background"],
-[style*="background-color"] {
-  background: transparent !important;
-}
-
-/* Exceptions - keep these elements with backgrounds for usability */
+/* Keep buttons and inputs usable with subtle backgrounds */
 input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
-textarea,
-button:not(.nav-btn):not(.info-btn):not(.icon-btn),
-.btn,
-.btn-primary,
-.btn-secondary,
-.submit-btn,
-.action-btn {
-  background: rgba(56, 97, 251, 0.3) !important;
-  border: 1px solid rgba(56, 97, 251, 0.5) !important;
-}
-
-button:hover,
-.btn:hover {
-  background: rgba(56, 97, 251, 0.5) !important;
+textarea {
+  background: rgba(15, 45, 80, 0.5) !important;
+  border: 1px solid rgba(143, 233, 255, 0.3) !important;
 }
 
 /* Loading states */
@@ -15307,15 +15290,6 @@ button:hover,
   -webkit-backdrop-filter: blur(20px) !important;
 }
 
-/* Force override inline style backgrounds */
-[style*="background: linear-gradient"],
-[style*="background:linear-gradient"],
-[style*="background-color:"],
-[style*="background-color: "] {
-  background: rgba(10, 30, 60, 0.75) !important;
-  background-color: rgba(10, 30, 60, 0.75) !important;
-  background-image: none !important;
-}
 
 /* PROTECTED ELEMENTS - Never make transparent */
 .animated-bg,
