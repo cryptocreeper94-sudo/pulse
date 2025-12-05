@@ -197,8 +197,86 @@ class AuditTrailService {
       return;
     }
     
-    // Process the event (will be implemented with Helius)
+    // Process the event (fire and forget for normal events)
     this.processOnChain(eventId);
+  }
+  
+  /**
+   * Post an event on-chain and wait for confirmation
+   */
+  async postOnChainAndWait(eventId: string): Promise<string | null> {
+    const walletConfigured = await this.isWalletConfigured();
+    if (!walletConfigured) {
+      console.log(`⚠️ [AuditTrail] Wallet not configured for on-chain posting`);
+      return null;
+    }
+    
+    return await this.processOnChainWithSignature(eventId);
+  }
+  
+  /**
+   * Process on-chain and return the signature
+   */
+  private async processOnChainWithSignature(eventId: string): Promise<string | null> {
+    try {
+      const [event] = await db.select()
+        .from(auditEvents)
+        .where(eq(auditEvents.id, eventId))
+        .limit(1);
+      
+      if (!event) {
+        console.error(`❌ [AuditTrail] Event not found: ${eventId}`);
+        return null;
+      }
+      
+      const heliusApiKey = process.env.HELIUS_API_KEY;
+      if (!heliusApiKey) {
+        console.log('⚠️ [AuditTrail] HELIUS_API_KEY not configured');
+        return null;
+      }
+      
+      const [walletConfig] = await db.select()
+        .from(systemConfig)
+        .where(eq(systemConfig.key, 'solana_audit_wallet'))
+        .limit(1);
+      
+      if (!walletConfig?.value) {
+        console.log('⚠️ [AuditTrail] Solana wallet not configured');
+        return null;
+      }
+      
+      const txSignature = await this.postToSolanaMemo(
+        event.payloadHash,
+        eventId,
+        heliusApiKey,
+        walletConfig.value
+      );
+      
+      if (txSignature) {
+        await db.update(auditEvents)
+          .set({
+            status: 'confirmed',
+            onchainSignature: txSignature,
+            processedAt: new Date(),
+            confirmedAt: new Date(),
+          })
+          .where(eq(auditEvents.id, eventId));
+        
+        console.log(`✅ [AuditTrail] Event ${eventId} posted on-chain: ${txSignature}`);
+        return txSignature;
+      }
+      
+      return null;
+    } catch (error: any) {
+      console.error(`❌ [AuditTrail] Failed to process on-chain: ${error.message}`);
+      await db.update(auditEvents)
+        .set({
+          status: 'failed',
+          processedAt: new Date(),
+        })
+        .where(eq(auditEvents.id, eventId));
+      return null;
+    }
   }
   
   /**
@@ -296,9 +374,9 @@ class AuditTrailService {
   ): Promise<string | null> {
     try {
       // Get the audit wallet private key from environment
-      const walletPrivateKey = process.env.SOLANA_AUDIT_WALLET_KEY;
+      const walletPrivateKey = process.env.PHANTOM_WALLET_KEY;
       if (!walletPrivateKey) {
-        console.log('⚠️ [AuditTrail] SOLANA_AUDIT_WALLET_KEY not configured');
+        console.log('⚠️ [AuditTrail] PHANTOM_WALLET_KEY not configured');
         return null;
       }
       
