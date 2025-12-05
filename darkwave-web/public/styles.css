@@ -502,10 +502,12 @@ body.theme-space::before {
 }
 
 #app {
-  width: 100vw;
+  width: 100%;
+  max-width: 100%;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 /* Dashboard Grid - Jigsaw Puzzle Layout */
@@ -13867,17 +13869,17 @@ header,
   border-color: #333333 !important;
 }
 
-/* Tab buttons and navigation items */
+/* Tab buttons and navigation items - transparent with glow */
 .nav-tab,
 .tab-btn,
 .nav-item,
 .nav-link,
 .nav-button,
-.tab-button,
-[class*="tab-btn"],
-[class*="nav-btn"] {
-  background: #1a1a1a !important;
-  border-color: #333333 !important;
+.tab-button {
+  background: transparent !important;
+  border-color: transparent !important;
+  color: #8FE9FF !important;
+  filter: drop-shadow(0 0 4px rgba(143, 233, 255, 0.3));
 }
 
 .nav-tab:hover,
@@ -13885,19 +13887,20 @@ header,
 .nav-item:hover,
 .nav-link:hover,
 .nav-button:hover,
-.tab-button:hover,
-[class*="tab-btn"]:hover,
-[class*="nav-btn"]:hover {
-  background: #2a2a2a !important;
+.tab-button:hover {
+  background: transparent !important;
+  color: #ffffff !important;
+  filter: drop-shadow(0 0 8px rgba(143, 233, 255, 0.6));
 }
 
 .nav-tab.active,
 .tab-btn.active,
 .nav-item.active,
-.nav-link.active,
-[class*="tab-btn"].active {
-  background: #2a2a2a !important;
-  border-color: #3861FB !important;
+.nav-link.active {
+  background: transparent !important;
+  border-bottom-color: #3861FB !important;
+  color: #3861FB !important;
+  filter: drop-shadow(0 0 10px rgba(56, 97, 251, 0.8));
 }
 
 /* Cards, panels, and boxes */
