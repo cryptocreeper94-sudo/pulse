@@ -32,16 +32,14 @@ function showFloatingUpgradeBanner() {
   
   const banner = document.createElement('div');
   banner.id = 'floatingUpgradeBanner';
+  banner.className = 'floating-upgrade-banner';
   banner.style.cssText = `
     position: fixed;
     top: 80px;
     right: 20px;
     max-width: 320px;
-    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
-    border: 2px solid #60a5fa;
     border-radius: 12px;
     padding: 16px;
-    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.4);
     z-index: 9999;
     animation: slideInRight 0.5s ease-out;
   `;

@@ -15007,3 +15007,331 @@ body[class*="theme-"]::before {
   background-size: 400% 400% !important;
   animation: premiumGradientShift 12s ease-in-out infinite !important;
 }
+
+/* ================================================================== */
+/* NUCLEAR TRANSPARENCY - ALL DASHBOARD ELEMENTS                      */
+/* Forces pastel glassmorphism so gradient shows through EVERYTHING   */
+/* ================================================================== */
+
+/* Theme variable overrides */
+.theme-dark,
+.theme-light,
+.theme-jupiter,
+.theme-pink-blossom,
+.theme-sunny-field,
+.theme-space,
+[class*="theme-"] {
+  --bg-primary: transparent !important;
+  --bg-secondary: transparent !important;
+  --bg-tertiary: transparent !important;
+  --glass-bg: transparent !important;
+  --glass-bg-hover: rgba(255,255,255,0.05) !important;
+  --glass-bg-focus: rgba(255,255,255,0.08) !important;
+  --card-bg: transparent !important;
+  --surface-bg: transparent !important;
+}
+
+/* All navigation, banners, and header elements */
+.app-banner,
+.banner-scroll,
+.banner-title-overlay,
+.banner-title-section,
+.info-banner-bar,
+.info-btn,
+.info-btn span,
+.info-btn--beta,
+.info-btn--founder,
+.info-btn--new,
+.top-nav,
+.nav-container,
+.nav-tabs,
+.icon-buttons {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+/* Navigation buttons - transparent with pastel borders */
+.nav-btn,
+.nav-btn.active,
+.truth-tab-btn,
+.truth-tab-active,
+.search-btn,
+.clear-btn,
+.logout-icon-btn,
+.icon-btn {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 1px solid rgba(143, 233, 255, 0.25) !important;
+}
+
+.nav-btn.active,
+.truth-tab-active {
+  background: rgba(143, 233, 255, 0.1) !important;
+  border-color: rgba(143, 233, 255, 0.4) !important;
+}
+
+/* All boxes, cards, panels, sections */
+.section-box,
+.web3-search-section,
+.search-box,
+.search-container,
+.tab-pane,
+.metric-box,
+.metric-box-wide,
+.metrics-stack,
+.metrics-stack > div,
+.gauge-card,
+.gauge-container,
+.card,
+.panel,
+.popup-card,
+.content-section,
+.main-content,
+.dashboard-content,
+.crypto-section,
+.stocks-section,
+.projects-section,
+.learn-section,
+.portfolio-section,
+.staking-section,
+.settings-section,
+.coin-row,
+.table-container,
+.data-table {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 1px solid rgba(143, 233, 255, 0.2) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1), 0 0 15px rgba(143, 233, 255, 0.1) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+/* Modal overrides - Legacy Founder popup and all modals */
+.modal,
+.modal-content,
+.modal-overlay,
+.modal-backdrop,
+.modal-dialog,
+.pricing-modal,
+.upgrade-modal,
+.founder-modal,
+.onboarding-modal,
+.socials-modal,
+#founderModal,
+#onboardingModal,
+#socialsModal,
+#upgradeModal,
+#pricingModal,
+.modal-body,
+.modal-header,
+.modal-footer,
+[class*="modal"],
+[id*="Modal"],
+[id*="modal"] {
+  background: rgba(10, 30, 60, 0.75) !important;
+  background-color: rgba(10, 30, 60, 0.75) !important;
+  background-image: none !important;
+  border: 1px solid rgba(143, 233, 255, 0.3) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+}
+
+/* Modal backdrop/overlay - semi-transparent dark */
+.modal::backdrop,
+.modal-backdrop,
+.modal-overlay {
+  background: rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Pricing cards inside modals */
+.pricing-card,
+.plan-card,
+.upgrade-card,
+.founder-card {
+  background: rgba(15, 45, 80, 0.5) !important;
+  border: 1px solid rgba(143, 233, 255, 0.25) !important;
+  backdrop-filter: blur(15px) !important;
+}
+
+/* Charts and gauge backgrounds */
+.chart-container,
+.sparkline-container,
+.candlestick-container,
+.gauge-wrapper,
+.gauge-bg,
+[class*="chart"],
+[class*="gauge"] {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Table rows */
+table,
+thead,
+tbody,
+tr,
+th,
+td,
+.coin-row,
+.stock-row,
+.project-row {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Alternating row colors - very subtle */
+tr:nth-child(even),
+.coin-row:nth-child(even) {
+  background: rgba(143, 233, 255, 0.03) !important;
+}
+
+tr:hover,
+.coin-row:hover {
+  background: rgba(143, 233, 255, 0.08) !important;
+}
+
+/* Dropdown menus */
+.dropdown,
+.dropdown-menu,
+.dropdown-content,
+select,
+.select-wrapper {
+  background: rgba(10, 30, 60, 0.85) !important;
+  border: 1px solid rgba(143, 233, 255, 0.3) !important;
+  backdrop-filter: blur(15px) !important;
+}
+
+/* Tooltips */
+.tooltip,
+.tippy-box,
+[data-tooltip] {
+  background: rgba(10, 30, 60, 0.9) !important;
+  border: 1px solid rgba(143, 233, 255, 0.3) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+/* Footer */
+footer,
+.footer,
+.app-footer {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Scrollbar styling - transparent track */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(143, 233, 255, 0.3) !important;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(143, 233, 255, 0.5) !important;
+}
+
+/* Override any inline styles or gradient buttons that might be blocking */
+[style*="background"],
+[style*="background-color"] {
+  background: transparent !important;
+}
+
+/* Exceptions - keep these elements with backgrounds for usability */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+textarea,
+button:not(.nav-btn):not(.info-btn):not(.icon-btn),
+.btn,
+.btn-primary,
+.btn-secondary,
+.submit-btn,
+.action-btn {
+  background: rgba(56, 97, 251, 0.3) !important;
+  border: 1px solid rgba(56, 97, 251, 0.5) !important;
+}
+
+button:hover,
+.btn:hover {
+  background: rgba(56, 97, 251, 0.5) !important;
+}
+
+/* Loading states */
+.loading,
+.skeleton,
+.placeholder {
+  background: rgba(143, 233, 255, 0.1) !important;
+}
+
+/* Floating upgrade banner - glassmorphism style */
+.floating-upgrade-banner,
+#floatingUpgradeBanner {
+  background: rgba(10, 30, 60, 0.85) !important;
+  border: 1px solid rgba(143, 233, 255, 0.4) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 20px rgba(143, 233, 255, 0.2) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+}
+
+/* SPECIFIC POPUP OVERRIDES - Elements with inline styles */
+#floatingUpgradeBanner,
+#founderModal,
+#onboardingModal,
+#socialsModal,
+#upgradeModal,
+#searchWarningToast,
+.upgrade-popup,
+.founder-popup,
+.toast,
+.toast-message,
+.notification,
+[id*="Banner"],
+[id*="banner"],
+[id*="Toast"],
+[id*="toast"],
+[id*="Popup"],
+[id*="popup"] {
+  background: rgba(10, 30, 60, 0.85) !important;
+  background-color: rgba(10, 30, 60, 0.85) !important;
+  background-image: none !important;
+  border: 1px solid rgba(143, 233, 255, 0.4) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+}
+
+/* Force override inline style backgrounds */
+[style*="background: linear-gradient"],
+[style*="background:linear-gradient"],
+[style*="background-color:"],
+[style*="background-color: "] {
+  background: rgba(10, 30, 60, 0.75) !important;
+  background-color: rgba(10, 30, 60, 0.75) !important;
+  background-image: none !important;
+}
+
+/* PROTECTED ELEMENTS - Never make transparent */
+.animated-bg,
+.particles,
+.glow-overlay,
+.floating-btn-ai.has-cutout,
+.floating-btn-community.has-cutout,
+img,
+video,
+canvas,
+svg {
+  /* These should NOT be overridden */
+}
+
+/* Ensure floating buttons with cutouts keep their styling */
+.floating-btn-ai:not(.has-cutout),
+.floating-btn-community:not(.has-cutout) {
+  background: linear-gradient(135deg, rgba(56, 97, 251, 0.4), rgba(131, 56, 236, 0.4)) !important;
+}
