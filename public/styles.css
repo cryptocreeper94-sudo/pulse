@@ -918,26 +918,24 @@ body.theme-light .banner-title {
 .top-nav {
   position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
   z-index: 100;
   display: flex;
-  gap: 0;
-  padding: 0;
+  gap: 4px;
+  padding: 4px 8px;
   background: #0f0f0f;
   border-bottom: 1px solid #333333;
-  overflow-x: auto;
+  overflow-x: scroll;
   overflow-y: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  -ms-overflow-style: none;
   width: 100%;
-  max-width: 100vw;
+  max-width: 100%;
   box-sizing: border-box;
   pointer-events: auto;
   flex-wrap: nowrap;
   align-items: center;
-  contain: inline-size;
 }
 
 .top-nav::-webkit-scrollbar {
@@ -945,9 +943,9 @@ body.theme-light .banner-title {
 }
 
 .nav-btn, .disclaimer-icon-btn {
-  flex: 0 0 auto;
-  min-width: fit-content;
-  padding: 8px 10px;
+  flex: 0 1 auto;
+  min-width: 0;
+  padding: 6px 8px;
   background: transparent;
   border: none;
   border-bottom: 2px solid transparent;
@@ -986,9 +984,9 @@ body.theme-light .banner-title {
 
 /* Disclaimer Icon Button - Yellow Glow */
 .disclaimer-icon-btn {
-  flex: 0 0 auto;
-  min-width: auto;
-  padding: 8px 10px;
+  flex: 0 1 auto;
+  min-width: 0;
+  padding: 6px 8px;
   font-size: 16px;
   color: #FFD700;
   border: none;
@@ -1008,9 +1006,9 @@ body.theme-light .banner-title {
 
 /* Logout Icon Button - Base Styling */
 .logout-icon-btn {
-  flex: 0 0 auto;
-  min-width: auto;
-  padding: 8px 10px;
+  flex: 0 1 auto;
+  min-width: 0;
+  padding: 6px 8px;
   font-size: 16px;
   border: none;
   background: transparent;
