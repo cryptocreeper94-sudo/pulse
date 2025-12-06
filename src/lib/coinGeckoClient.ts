@@ -1,18 +1,20 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 
 const COINGECKO_API_KEY = process.env.COINGECKO_API_KEY || '';
-const USE_PRO_API = process.env.COINGECKO_PRO === 'true';
+const USE_PRO_API = COINGECKO_API_KEY.startsWith('CG-') || process.env.COINGECKO_PRO === 'true';
 
 const BASE_URL = USE_PRO_API 
   ? 'https://pro-api.coingecko.com/api/v3'
   : 'https://api.coingecko.com/api/v3';
+
+console.log(`[CoinGecko] Using ${USE_PRO_API ? 'PRO' : 'Demo'} API at ${BASE_URL}`);
 
 class CoinGeckoClient {
   private client: AxiosInstance;
   private requestQueue: Array<() => Promise<any>> = [];
   private isProcessingQueue = false;
   private lastRequestTime = 0;
-  private minRequestInterval = 2100; // ~28 requests per minute (safe for 30/min limit)
+  private minRequestInterval = USE_PRO_API ? 250 : 2100; // Pro: 240/min, Demo: ~28/min
 
   constructor() {
     this.client = axios.create({
