@@ -12132,20 +12132,21 @@ body {
 }
 
 .agent-collectible-card {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
+  background: #141414;
+  border: 1px solid #333333;
   border-radius: 8px;
   overflow: hidden;
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
   height: 100%;
+  transform-style: preserve-3d;
 }
 
 .agent-collectible-card:hover {
-  border-color: var(--accent-blue);
-  transform: translateY(-6px);
-  box-shadow: 0 12px 24px rgba(56, 97, 251, 0.25);
+  border-color: rgba(0, 212, 255, 0.4);
+  transform: translateY(-8px) rotateX(2deg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 212, 255, 0.2);
 }
 
 .agent-card-header {
@@ -12170,7 +12171,7 @@ body {
   position: absolute;
   top: 8px;
   right: 8px;
-  background: var(--accent-blue);
+  background: #00D4FF;
   color: #000;
   padding: 4px 8px;
   border-radius: 4px;
@@ -12178,6 +12179,7 @@ body {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
 }
 
 .agent-card-body {
@@ -12194,7 +12196,7 @@ body {
 
 .agent-card-title {
   font-size: 10px;
-  color: var(--accent-blue);
+  color: #00D4FF;
   margin: 0 0 8px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -12210,10 +12212,10 @@ body {
 .agent-card-stat {
   font-size: 9px;
   color: var(--text-secondary);
-  background: rgba(56, 97, 251, 0.1);
+  background: rgba(0, 212, 255, 0.1);
   padding: 3px 6px;
   border-radius: 3px;
-  border: 1px solid rgba(56, 97, 251, 0.2);
+  border: 1px solid rgba(0, 212, 255, 0.2);
 }
 
 .agent-card-footer {
@@ -12232,7 +12234,7 @@ body {
 
 .agent-card-label {
   font-weight: 700;
-  color: var(--accent-blue);
+  color: #00D4FF;
   display: block;
   margin-bottom: 4px;
   font-size: 8px;
@@ -12255,9 +12257,9 @@ body {
 .agent-card-btn {
   width: 100%;
   padding: 8px;
-  background: var(--accent-blue);
-  color: #000;
-  border: none;
+  background: rgba(0, 212, 255, 0.6);
+  color: #fff;
+  border: 1px solid rgba(0, 212, 255, 0.8);
   border-radius: 4px;
   font-weight: 600;
   font-size: 11px;
@@ -12268,8 +12270,10 @@ body {
 }
 
 .agent-card-btn:hover {
-  background: var(--accent-blue-hover);
+  background: rgba(0, 212, 255, 0.8);
+  border-color: #00D4FF;
   transform: scale(1.02);
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
 }
 
 @media (max-width: 600px) {
