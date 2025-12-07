@@ -10,8 +10,16 @@ const APP_NAME = 'DarkWave Pulse';
 class EcosystemService {
   private client: EcosystemClient | null = null;
   private isConfigured = false;
+  private initAttempted = false;
+
+  private ensureInitialized(): void {
+    if (this.initAttempted) return;
+    this.initialize();
+  }
 
   initialize(): boolean {
+    this.initAttempted = true;
+    
     if (!ORBIT_HUB_URL || !ORBIT_API_KEY || !ORBIT_API_SECRET) {
       console.log('[Ecosystem] Not configured - missing ORBIT credentials');
       return false;
@@ -24,12 +32,14 @@ class EcosystemService {
   }
 
   isConnected(): boolean {
+    this.ensureInitialized();
     return this.isConfigured && this.client !== null;
   }
 
   async getHubStatus(): Promise<any> {
+    this.ensureInitialized();
     if (!this.client) {
-      return { connected: false, message: 'Ecosystem client not configured' };
+      return { connected: false, message: 'Ecosystem client not configured. Set ORBIT_HUB_URL, ORBIT_API_KEY, ORBIT_API_SECRET.' };
     }
 
     try {
@@ -41,6 +51,7 @@ class EcosystemService {
   }
 
   async logAppActivity(action: string, details: any = {}): Promise<boolean> {
+    this.ensureInitialized();
     if (!this.client) return false;
 
     try {
@@ -81,22 +92,25 @@ class EcosystemService {
   }
 
   async pushCodeSnippet(name: string, code: string, language: string, category: string, tags?: string[]): Promise<any> {
+    this.ensureInitialized();
     if (!this.client) {
-      throw new Error('Ecosystem client not configured');
+      throw new Error('Ecosystem client not configured. Set ORBIT_HUB_URL, ORBIT_API_KEY, ORBIT_API_SECRET.');
     }
 
     return this.client.pushSnippet(name, code, language, category, tags);
   }
 
   async getCodeSnippet(snippetId: string): Promise<any> {
+    this.ensureInitialized();
     if (!this.client) {
-      throw new Error('Ecosystem client not configured');
+      throw new Error('Ecosystem client not configured. Set ORBIT_HUB_URL, ORBIT_API_KEY, ORBIT_API_SECRET.');
     }
 
     return this.client.getSnippet(snippetId);
   }
 
   async getActivityLogs(limit = 50, offset = 0): Promise<any> {
+    this.ensureInitialized();
     if (!this.client) {
       return { logs: [], total: 0 };
     }

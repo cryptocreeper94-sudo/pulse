@@ -11,8 +11,8 @@ export class EcosystemClient {
     this.apiSecret = apiSecret;
   }
 
-  private generateSignature(body: string, timestamp: string): string {
-    const message = `${body}${timestamp}`;
+  private generateSignature(method: string, path: string, body: string, timestamp: string): string {
+    const message = `${method}:${path}:${body}:${timestamp}`;
     return crypto
       .createHmac('sha256', this.apiSecret)
       .update(message)
@@ -26,11 +26,10 @@ export class EcosystemClient {
   ): Promise<any> {
     const timestamp = Date.now().toString();
     const bodyStr = body ? JSON.stringify(body) : '';
-    const signature = this.generateSignature(bodyStr, timestamp);
+    const signature = this.generateSignature(method, endpoint, bodyStr, timestamp);
 
     const headers: any = {
       'X-Api-Key': this.apiKey,
-      'X-Api-Secret': this.apiSecret,
       'X-Timestamp': timestamp,
       'X-Signature': signature,
       'Content-Type': 'application/json',
