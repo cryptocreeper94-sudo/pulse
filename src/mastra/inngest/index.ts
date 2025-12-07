@@ -3,6 +3,7 @@ import { init, serve as originalInngestServe } from "@mastra/inngest";
 import { registerApiRoute as originalRegisterApiRoute } from "@mastra/core/server";
 import { type Mastra } from "@mastra/core";
 import { type Inngest, InngestFunction, NonRetriableError } from "inngest";
+import { predictionWorkerFunctions } from "./predictionWorker.js";
 
 // Initialize Inngest with Mastra to get Inngest-compatible workflow helpers
 const {
@@ -112,7 +113,7 @@ export function inngestServe({
   return originalInngestServe({
     mastra,
     inngest,
-    functions: inngestFunctions,
+    functions: [...inngestFunctions, ...predictionWorkerFunctions],
     registerOptions: { serveHost },
   });
 }

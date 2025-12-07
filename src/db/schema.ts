@@ -292,3 +292,102 @@ export const systemConfig = pgTable('system_config', {
   isSecret: boolean('is_secret').default(false),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
+
+// ============================================
+// PREDICTION TRACKING & ACCURACY SYSTEM
+// Logs every signal, tracks outcomes, calculates accuracy
+// ============================================
+
+// Prediction Events - Every BUY/SELL/HOLD signal with full indicator snapshot
+export const predictionEvents = pgTable('prediction_events', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }), // null for system-generated predictions
+  
+  // Asset Information
+  ticker: varchar('ticker', { length: 50 }).notNull(),
+  assetType: varchar('asset_type', { length: 20 }).notNull().default('crypto'), // 'crypto' | 'stock'
+  priceAtPrediction: varchar('price_at_prediction', { length: 50 }).notNull(),
+  
+  // The Prediction
+  signal: varchar('signal', { length: 20 }).notNull(), // 'BUY' | 'SELL' | 'HOLD' | 'STRONG_BUY' | 'STRONG_SELL'
+  confidence: varchar('confidence', { length: 20 }), // 'HIGH' | 'MEDIUM' | 'LOW'
+  
+  // Full Indicator Snapshot (JSON)
+  indicators: text('indicators').notNull(), // JSON: { rsi, macd, ema9, ema21, ema50, ema200, sma50, sma200, bollingerBands, support, resistance, volumeDelta, spikeScore, volatility }
+  
+  // Signal Details
+  bullishSignals: integer('bullish_signals').notNull().default(0),
+  bearishSignals: integer('bearish_signals').notNull().default(0),
+  signalsList: text('signals_list'), // JSON array of individual signals
+  
+  // Blockchain Stamp
+  payloadHash: varchar('payload_hash', { length: 128 }).notNull(),
+  auditEventId: varchar('audit_event_id', { length: 255 }), // Reference to audit_events
+  onchainSignature: varchar('onchain_signature', { length: 128 }),
+  
+  // Status
+  status: varchar('status', { length: 50 }).notNull().default('pending'), // 'pending' | 'stamped' | 'evaluated'
+  
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  stampedAt: timestamp('stamped_at'),
+});
+
+// Prediction Outcomes - Actual results at different time horizons
+export const predictionOutcomes = pgTable('prediction_outcomes', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  predictionId: varchar('prediction_id', { length: 255 }).notNull(),
+  
+  // Time Horizon
+  horizon: varchar('horizon', { length: 20 }).notNull(), // '1h' | '4h' | '24h' | '7d'
+  
+  // Actual Results
+  priceAtCheck: varchar('price_at_check', { length: 50 }).notNull(),
+  priceChange: varchar('price_change', { length: 50 }).notNull(), // Dollar change
+  priceChangePercent: varchar('price_change_percent', { length: 20 }).notNull(), // Percentage
+  
+  // Outcome Classification
+  outcome: varchar('outcome', { length: 20 }).notNull(), // 'WIN' | 'LOSS' | 'NEUTRAL'
+  isCorrect: boolean('is_correct').notNull(), // Did signal direction match price movement?
+  
+  // Additional Metrics
+  volatilityDuring: varchar('volatility_during', { length: 20 }), // Volatility during the period
+  maxDrawdown: varchar('max_drawdown', { length: 20 }), // Worst point during period
+  maxGain: varchar('max_gain', { length: 20 }), // Best point during period
+  
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  evaluatedAt: timestamp('evaluated_at').defaultNow().notNull(),
+});
+
+// Prediction Accuracy Stats - Aggregated accuracy metrics
+export const predictionAccuracyStats = pgTable('prediction_accuracy_stats', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  
+  // Grouping (can be null for global stats)
+  ticker: varchar('ticker', { length: 50 }), // null = all tickers
+  signal: varchar('signal', { length: 20 }), // null = all signals
+  horizon: varchar('horizon', { length: 20 }), // null = all horizons
+  
+  // Accuracy Metrics
+  totalPredictions: integer('total_predictions').notNull().default(0),
+  correctPredictions: integer('correct_predictions').notNull().default(0),
+  winRate: varchar('win_rate', { length: 10 }).notNull().default('0'), // Percentage
+  
+  // Performance Metrics
+  avgReturn: varchar('avg_return', { length: 20 }), // Average % return when signal followed
+  avgWinReturn: varchar('avg_win_return', { length: 20 }), // Avg return on wins
+  avgLossReturn: varchar('avg_loss_return', { length: 20 }), // Avg return on losses
+  bestReturn: varchar('best_return', { length: 20 }),
+  worstReturn: varchar('worst_return', { length: 20 }),
+  
+  // Streaks
+  currentStreak: integer('current_streak').default(0), // Positive = wins, negative = losses
+  longestWinStreak: integer('longest_win_streak').default(0),
+  longestLossStreak: integer('longest_loss_streak').default(0),
+  
+  // Time-weighted metrics (more recent predictions weighted higher)
+  weightedWinRate: varchar('weighted_win_rate', { length: 10 }),
+  
+  // Last updated
+  lastPredictionAt: timestamp('last_prediction_at'),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});

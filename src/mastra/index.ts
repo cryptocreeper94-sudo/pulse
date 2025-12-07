@@ -39,6 +39,8 @@ import { nftTool } from "./tools/nftTool";
 import { subscriptionTool } from "./tools/subscriptionTool";
 import { botDetectionTool } from "./tools/botDetectionTool";
 import { sentimentTool } from "./tools/sentimentTool";
+import { predictionTrackingService } from "../services/predictionTrackingService.js";
+import { inngest as inngestClient } from "./inngest/client";
 
 class ProductionPinoLogger extends MastraLogger {
   protected logger: pino.Logger;
@@ -1886,6 +1888,54 @@ export const mastra = new Mastra({
               return c.json({ error: 'Technical analysis failed' }, 500);
             }
             
+            // Log prediction for tracking system (async, don't block response)
+            try {
+              const predictionResult = await predictionTrackingService.logPrediction({
+                ticker: ticker.toUpperCase(),
+                assetType: marketData.type === 'crypto' ? 'crypto' : 'stock',
+                priceAtPrediction: analysis.currentPrice || marketData.currentPrice,
+                signal: analysis.recommendation || 'HOLD',
+                indicators: {
+                  rsi: analysis.rsi || 50,
+                  macd: analysis.macd || { value: 0, signal: 0, histogram: 0 },
+                  ema9: analysis.ema9 || 0,
+                  ema21: analysis.ema21 || 0,
+                  ema50: analysis.ema50 || 0,
+                  ema200: analysis.ema200 || 0,
+                  sma50: analysis.sma50 || 0,
+                  sma200: analysis.sma200 || 0,
+                  bollingerBands: analysis.bollingerBands || { upper: 0, middle: 0, lower: 0, bandwidth: 0 },
+                  support: analysis.support || 0,
+                  resistance: analysis.resistance || 0,
+                  volumeDelta: analysis.volumeDelta || { buyVolume: 0, sellVolume: 0, delta: 0, buySellRatio: 1 },
+                  spikeScore: analysis.spikeScore || { score: 0, signal: 'NO_SIGNAL', prediction: '' },
+                  volatility: analysis.volatility || 0,
+                },
+                bullishSignals: analysis.signalCount?.bullish || 0,
+                bearishSignals: analysis.signalCount?.bearish || 0,
+                signalsList: analysis.signals || [],
+                userId: userId || undefined,
+              });
+              
+              if (predictionResult.success) {
+                logger?.info('📊 [Prediction] Logged prediction', { 
+                  predictionId: predictionResult.id,
+                  ticker: ticker.toUpperCase(),
+                  signal: analysis.recommendation
+                });
+                
+                // Trigger Inngest workflow for outcome tracking (fire and forget)
+                inngestClient.send({
+                  name: 'prediction/created',
+                  data: { predictionId: predictionResult.id },
+                }).catch(err => {
+                  logger?.warn('⚠️ [Prediction] Failed to trigger outcome workflow', { error: err.message });
+                });
+              }
+            } catch (predictionError: any) {
+              logger?.warn('⚠️ [Prediction] Failed to log prediction (non-critical)', { error: predictionError.message });
+            }
+            
             // Calculate high/low from recent price data
             const recentPrices = marketData.prices.slice(-24); // Last 24 data points
             const high24h = Math.max(...recentPrices.map((p: any) => p.high));
@@ -1991,6 +2041,56 @@ export const mastra = new Mastra({
           } catch (error: any) {
             logger?.error('❌ [Mini App] Analysis error', { error: error.message });
             return c.json({ error: 'Analysis failed: ' + error.message }, 500);
+          }
+        },
+      },
+      // Prediction Accuracy API
+      {
+        path: "/api/prediction-accuracy",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          
+          try {
+            const ticker = c.req.query('ticker');
+            const signal = c.req.query('signal');
+            const horizon = c.req.query('horizon');
+            
+            logger?.info('📊 [Accuracy] Stats request', { ticker, signal, horizon });
+            
+            // Get global accuracy first
+            const globalStats = await predictionTrackingService.getGlobalAccuracy();
+            
+            // Get filtered stats if parameters provided
+            let filteredStats = null;
+            if (ticker || signal || horizon) {
+              filteredStats = await predictionTrackingService.getAccuracyStats({
+                ticker: ticker || undefined,
+                signal: signal || undefined,
+                horizon: horizon || undefined,
+              });
+            }
+            
+            return c.json({
+              success: true,
+              global: {
+                totalPredictions: globalStats.totalPredictions,
+                winRate: globalStats.winRate,
+                avgReturn: globalStats.avgReturn,
+                lastUpdated: globalStats.lastUpdated,
+              },
+              filtered: filteredStats,
+              message: globalStats.totalPredictions === 0 
+                ? 'Prediction tracking just started. Check back soon for accuracy data!'
+                : `Based on ${globalStats.totalPredictions} tracked predictions`,
+            });
+          } catch (error: any) {
+            logger?.error('❌ [Accuracy] Stats error', { error: error.message });
+            return c.json({ 
+              success: false, 
+              error: 'Failed to retrieve accuracy stats',
+              global: { totalPredictions: 0, winRate: '0', avgReturn: '0', lastUpdated: null },
+            }, 500);
           }
         },
       },
