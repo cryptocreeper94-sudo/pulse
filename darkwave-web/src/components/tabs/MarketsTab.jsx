@@ -45,8 +45,12 @@ function NewsCard({ source, title, time, url }) {
 function CoinRow({ coin, onClick }) {
   const isPositive = parseFloat(coin.change) > 0
   
+  const handleClick = () => {
+    if (onClick) onClick(coin)
+  }
+  
   return (
-    <tr className="clickable-row" onClick={onClick}>
+    <tr className="clickable-row" onClick={handleClick}>
       <td>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <img 
@@ -219,8 +223,9 @@ export default function MarketsTab() {
                   <CoinRow 
                     key={coin.symbol} 
                     coin={coin}
-                    onClick={() => {
-                      setSelectedCoin(coin)
+                    onClick={(clickedCoin) => {
+                      console.log('Opening modal for:', clickedCoin.symbol)
+                      setSelectedCoin(clickedCoin)
                       setIsModalOpen(true)
                     }}
                   />

@@ -686,20 +686,85 @@ export default function BitcoinChart() {
         }
 
         @media (max-width: 600px) {
+          .bitcoin-chart-container {
+            padding: 12px;
+          }
+
           .chart-header {
             flex-direction: column;
-            align-items: flex-start;
+            align-items: stretch;
+            gap: 10px;
+          }
+
+          .chart-title-section {
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+          }
+
+          .chart-title {
+            font-size: 16px;
+          }
+
+          .btc-icon {
+            font-size: 20px;
+          }
+
+          .current-price {
+            font-size: 16px;
           }
 
           .chart-controls {
             width: 100%;
-            justify-content: flex-start;
+            flex-wrap: wrap;
+            gap: 8px;
           }
 
-          .chart-title-section {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 8px;
+          .chart-type-toggle {
+            flex-shrink: 0;
+          }
+
+          .timeframe-buttons {
+            overflow-x: auto;
+            max-width: 100%;
+            -webkit-overflow-scrolling: touch;
+            flex-shrink: 1;
+          }
+
+          .tf-btn {
+            padding: 6px 10px;
+            font-size: 11px;
+            flex-shrink: 0;
+          }
+
+          .chart-actions {
+            margin-left: auto;
+          }
+
+          .color-picker-wrapper {
+            position: static;
+          }
+
+          .color-picker-dropdown {
+            position: fixed;
+            top: auto;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            margin-top: 0;
+            min-width: auto;
+            z-index: 1000;
+          }
+
+          .action-btn {
+            width: 32px;
+            height: 32px;
+            font-size: 14px;
+          }
+
+          .chart-wrapper {
+            height: 250px;
           }
         }
       `}</style>
