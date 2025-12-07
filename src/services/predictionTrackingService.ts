@@ -3,6 +3,7 @@ import { db } from '../db/client.js';
 import { predictionEvents, predictionOutcomes, predictionAccuracyStats } from '../db/schema.js';
 import { eq, desc, and, sql, isNull } from 'drizzle-orm';
 import { auditTrailService, AUDIT_EVENT_TYPES, EVENT_CATEGORIES } from './auditTrailService.js';
+import { predictionLearningService } from './predictionLearningService.js';
 
 /**
  * Prediction Tracking Service
@@ -230,6 +231,18 @@ class PredictionTrackingService {
       });
 
       console.log(`📈 [PredictionTracking] Outcome recorded for ${input.predictionId} @ ${input.horizon}: ${outcome} (${priceChangePercent.toFixed(2)}%)`);
+
+      // Extract features for ML training
+      try {
+        await predictionLearningService.extractFeatures(
+          input.predictionId,
+          input.horizon as '1h' | '4h' | '24h' | '7d',
+          priceChangePercent,
+          isCorrect
+        );
+      } catch (featureError) {
+        console.error('⚠️ [PredictionTracking] Feature extraction failed:', featureError);
+      }
 
       // Update accuracy stats
       await this.updateAccuracyStats(prediction.ticker, prediction.signal, input.horizon, isCorrect, priceChangePercent);

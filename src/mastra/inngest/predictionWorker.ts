@@ -1,5 +1,6 @@
 import { inngest } from "./client";
 import { predictionTrackingService } from "../../services/predictionTrackingService.js";
+import { predictionLearningService } from "../../services/predictionLearningService.js";
 import axios from "axios";
 
 /**
@@ -207,7 +208,63 @@ export const predictionCreatedHandler = inngest.createFunction(
   }
 );
 
+/**
+ * Model Training Worker
+ * Runs weekly to retrain ML models on accumulated prediction data
+ * Uses logistic regression to learn which indicator combinations predict price movements
+ */
+export const modelTrainingWorker = inngest.createFunction(
+  {
+    id: "model-training-worker",
+    name: "Train Prediction Models",
+  },
+  [
+    { cron: "0 3 * * 0" }, // Run every Sunday at 3 AM
+    { event: "model/train" }, // Can be triggered manually
+  ],
+  async ({ event, step }) => {
+    console.log("🧠 [ModelTraining] Starting weekly model training...");
+    
+    // Check if we have enough data
+    const status = await step.run("check-status", async () => {
+      return await predictionLearningService.getModelStatus();
+    });
+
+    console.log(`📊 [ModelTraining] Total features: ${status.totalFeatures}`);
+    
+    const results: Record<string, any> = {};
+    const horizons: Array<'1h' | '4h' | '24h' | '7d'> = ['1h', '4h', '24h', '7d'];
+
+    for (const horizon of horizons) {
+      if (status.readyToTrain[horizon]) {
+        const result = await step.run(`train-${horizon}`, async () => {
+          console.log(`🎯 [ModelTraining] Training model for ${horizon} horizon...`);
+          return await predictionLearningService.trainModel(horizon);
+        });
+        
+        results[horizon] = result;
+        
+        if (result.success) {
+          console.log(`✅ [ModelTraining] ${horizon} model trained - Accuracy: ${((result.metrics?.accuracy || 0) * 100).toFixed(1)}%`);
+        } else {
+          console.log(`⚠️ [ModelTraining] ${horizon} model failed: ${result.error}`);
+        }
+      } else {
+        console.log(`⏳ [ModelTraining] ${horizon} horizon not ready - insufficient data`);
+        results[horizon] = { success: false, error: 'Insufficient training data' };
+      }
+    }
+
+    return {
+      timestamp: new Date().toISOString(),
+      totalFeatures: status.totalFeatures,
+      results,
+    };
+  }
+);
+
 export const predictionWorkerFunctions = [
   predictionOutcomeWorker,
   predictionCreatedHandler,
+  modelTrainingWorker,
 ];
