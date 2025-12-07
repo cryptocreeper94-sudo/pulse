@@ -391,3 +391,105 @@ export const predictionAccuracyStats = pgTable('prediction_accuracy_stats', {
   lastPredictionAt: timestamp('last_prediction_at'),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
+
+// ============================================
+// PREDICTION LEARNING SYSTEM
+// ML model training, versioning, and inference
+// ============================================
+
+// Prediction Features - Normalized feature vectors for ML training
+export const predictionFeatures = pgTable('prediction_features', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  predictionId: varchar('prediction_id', { length: 255 }).notNull(),
+  horizon: varchar('horizon', { length: 20 }).notNull(), // '1h' | '4h' | '24h' | '7d'
+  
+  // Normalized Features (all scaled 0-1 or -1 to 1)
+  rsiNormalized: varchar('rsi_normalized', { length: 20 }), // RSI / 100
+  macdSignal: varchar('macd_signal', { length: 20 }), // MACD histogram direction (-1, 0, 1)
+  macdStrength: varchar('macd_strength', { length: 20 }), // Normalized MACD distance
+  
+  // EMA Spreads (price position relative to EMAs)
+  ema9Spread: varchar('ema9_spread', { length: 20 }), // (price - EMA9) / price * 100
+  ema21Spread: varchar('ema21_spread', { length: 20 }),
+  ema50Spread: varchar('ema50_spread', { length: 20 }),
+  ema200Spread: varchar('ema200_spread', { length: 20 }),
+  
+  // EMA Crossovers
+  ema9Over21: boolean('ema9_over_21'), // Golden cross indicator
+  ema50Over200: boolean('ema50_over_200'), // Major trend indicator
+  
+  // Bollinger Band Position
+  bbPosition: varchar('bb_position', { length: 20 }), // -1 (below lower) to 1 (above upper)
+  bbWidth: varchar('bb_width', { length: 20 }), // Band width as % of price
+  
+  // Volume & Momentum
+  volumeDeltaNorm: varchar('volume_delta_norm', { length: 20 }), // Normalized volume delta
+  spikeScoreNorm: varchar('spike_score_norm', { length: 20 }), // Normalized spike score
+  volatilityNorm: varchar('volatility_norm', { length: 20 }), // Normalized volatility
+  
+  // Support/Resistance
+  distanceToSupport: varchar('distance_to_support', { length: 20 }), // % distance to support
+  distanceToResistance: varchar('distance_to_resistance', { length: 20 }), // % distance to resistance
+  
+  // Labels (from outcomes)
+  priceChangePercent: varchar('price_change_percent', { length: 20 }),
+  isWin: boolean('is_win'), // Target label for classification
+  
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// Prediction Model Versions - Trained model coefficients and metadata
+export const predictionModelVersions = pgTable('prediction_model_versions', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  
+  // Model Identity
+  modelName: varchar('model_name', { length: 100 }).notNull().default('logistic_v1'),
+  horizon: varchar('horizon', { length: 20 }).notNull(), // '1h' | '4h' | '24h' | '7d'
+  version: integer('version').notNull(),
+  
+  // Model Coefficients (JSON)
+  coefficients: text('coefficients').notNull(), // JSON: { intercept, weights: { rsi: 0.5, macd: -0.3, ... } }
+  featureNames: text('feature_names').notNull(), // JSON array of feature names in order
+  
+  // Training Metadata
+  trainingSamples: integer('training_samples').notNull(),
+  validationSamples: integer('validation_samples').notNull(),
+  trainingDateRange: text('training_date_range'), // JSON: { start, end }
+  
+  // Performance Metrics
+  accuracy: varchar('accuracy', { length: 10 }).notNull(), // Validation accuracy
+  precision: varchar('precision', { length: 10 }), // Precision for WIN class
+  recall: varchar('recall', { length: 10 }), // Recall for WIN class
+  f1Score: varchar('f1_score', { length: 10 }),
+  auroc: varchar('auroc', { length: 10 }), // Area under ROC curve
+  
+  // Status
+  status: varchar('status', { length: 20 }).notNull().default('training'), // 'training' | 'validated' | 'active' | 'retired'
+  isActive: boolean('is_active').notNull().default(false), // Only one active per horizon
+  
+  // Timestamps
+  trainedAt: timestamp('trained_at').defaultNow().notNull(),
+  activatedAt: timestamp('activated_at'),
+  retiredAt: timestamp('retired_at'),
+});
+
+// Prediction Model Metrics - Rolling performance tracking for deployed models
+export const predictionModelMetrics = pgTable('prediction_model_metrics', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  modelVersionId: varchar('model_version_id', { length: 255 }).notNull(),
+  
+  // Time Window
+  periodStart: timestamp('period_start').notNull(),
+  periodEnd: timestamp('period_end').notNull(),
+  
+  // Performance
+  predictionsCount: integer('predictions_count').notNull().default(0),
+  correctCount: integer('correct_count').notNull().default(0),
+  rollingAccuracy: varchar('rolling_accuracy', { length: 10 }),
+  
+  // Drift Detection
+  featureDrift: varchar('feature_drift', { length: 20 }), // KL divergence or similar
+  performanceDrift: boolean('performance_drift').default(false), // Flag if accuracy drops significantly
+  
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
