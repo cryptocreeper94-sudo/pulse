@@ -176,6 +176,24 @@ Pulse (powered by DarkWave Studios, LLC) is a predictive trading platform built 
 - `darkwave-mobile/app/index.tsx` - Main mobile entry point
 - `darkwave-mobile/app/_layout.tsx` - Navigation layout
 
+### ORBIT Ecosystem Integration (NEW)
+- **Service**: `src/services/ecosystemService.ts` - Central hub communication
+- **Client**: `src/services/ecosystemClient.ts` - HMAC-signed API client
+- **Purpose**: Cross-app communication with ORBIT Developer Hub
+- **Features**:
+  - Activity logging to central dashboard
+  - Code snippet sharing between apps
+  - Metrics reporting (users, predictions, revenue)
+  - Alert system for critical events
+- **API Endpoints**:
+  - `GET /api/ecosystem/status` - Connection status to ORBIT Hub
+  - `GET /api/ecosystem/logs` - Fetch activity logs
+  - `POST /api/ecosystem/log` - Log activity (admin only)
+  - `POST /api/ecosystem/snippets` - Push code snippet (admin only)
+  - `GET /api/ecosystem/snippets/:id` - Get code snippet
+  - `POST /api/ecosystem/metrics` - Report app metrics (admin only)
+- **Required Secrets**: `ORBIT_HUB_URL`, `ORBIT_API_KEY`, `ORBIT_API_SECRET`
+
 ---
 
 ## External Dependencies
