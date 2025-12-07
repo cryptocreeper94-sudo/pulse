@@ -5,13 +5,13 @@ console.log('✅ V2 Feature Lock system loaded');
 const V2_FEATURES = {
   'avatar-king': {
     name: 'Agent Builder',
-    launchDate: '2025-12-25',
+    launchDate: '2026-02-14',
     icon: '👤',
     description: 'Choose your AI agent'
   },
   'nft-collection': {
     name: 'NFT Collection',
-    launchDate: '2025-12-25',
+    launchDate: '2026-02-14',
     icon: '🎨',
     description: 'Build your own NFT avatar'
   }

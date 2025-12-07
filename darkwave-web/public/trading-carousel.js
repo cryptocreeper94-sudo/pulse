@@ -15,7 +15,7 @@ class TradingCardCarousel {
       return !isV2Unlocked('NFT Trading Cards');
     }
     // Default: check date
-    const releaseDate = new Date('2025-12-25');
+    const releaseDate = new Date('2026-02-14');
     const now = new Date();
     return now < releaseDate;
   }

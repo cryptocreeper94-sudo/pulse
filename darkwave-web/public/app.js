@@ -6518,7 +6518,7 @@ window.showVolumeFlowExplanation = showVolumeFlowExplanation;
 // LEGACY FOUNDER COUNTDOWN TIMER
 // ========================================
 function updateFounderCountdown() {
-  const launchDate = new Date('2025-12-25T00:00:00');
+  const launchDate = new Date('2026-02-14T00:00:00');
   const now = new Date();
   const diff = launchDate - now;
   
@@ -7300,7 +7300,7 @@ window.loadUsername = loadUsername;
 function initV2Countdown() {
   const updateCountdown = () => {
     const now = new Date();
-    const v2Launch = new Date('2025-12-25T00:00:00Z');
+    const v2Launch = new Date('2026-02-14T00:00:00Z');
     const diff = v2Launch - now;
     
     if (diff <= 0) {
