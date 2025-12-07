@@ -5313,6 +5313,351 @@ export const mastra = new Mastra({
         }
       },
       
+      // ============================================
+      // USER FAVORITES API ENDPOINTS
+      // ============================================
+      
+      // GET /api/users/:userId/favorites - Get user's favorites
+      {
+        path: "/api/users/:userId/favorites",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          const userId = c.req.param('userId');
+          
+          logger?.info('⭐ [Favorites] GET request', { userId });
+          
+          if (!userId) {
+            return c.json({ error: 'User ID is required' }, 400);
+          }
+          
+          try {
+            const { db } = await import('../db/client.js');
+            const { userFavorites } = await import('../db/schema.js');
+            const { eq, asc } = await import('drizzle-orm');
+            
+            const favorites = await db
+              .select()
+              .from(userFavorites)
+              .where(eq(userFavorites.userId, userId))
+              .orderBy(asc(userFavorites.displayOrder));
+            
+            logger?.info('✅ [Favorites] Retrieved', { userId, count: favorites.length });
+            return c.json({ favorites, count: favorites.length });
+          } catch (error: any) {
+            logger?.error('❌ [Favorites] Error', { error: error.message });
+            return c.json({ error: 'Failed to fetch favorites' }, 500);
+          }
+        }
+      },
+      
+      // POST /api/users/:userId/favorites - Add a favorite
+      {
+        path: "/api/users/:userId/favorites",
+        method: "POST",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          const userId = c.req.param('userId');
+          
+          logger?.info('⭐ [Favorites] POST request', { userId });
+          
+          if (!userId) {
+            return c.json({ error: 'User ID is required' }, 400);
+          }
+          
+          try {
+            const body = await c.req.json();
+            const { assetId, assetType, symbol, name, notes } = body;
+            
+            if (!assetId || !symbol || !name) {
+              return c.json({ error: 'assetId, symbol, and name are required' }, 400);
+            }
+            
+            const { db } = await import('../db/client.js');
+            const { userFavorites } = await import('../db/schema.js');
+            const { eq, max } = await import('drizzle-orm');
+            const crypto = await import('crypto');
+            
+            // Get max displayOrder for this user
+            const maxOrderResult = await db
+              .select({ maxOrder: max(userFavorites.displayOrder) })
+              .from(userFavorites)
+              .where(eq(userFavorites.userId, userId));
+            
+            const nextOrder = (maxOrderResult[0]?.maxOrder || 0) + 1;
+            
+            const id = crypto.randomUUID();
+            const now = new Date();
+            
+            await db.insert(userFavorites).values({
+              id,
+              userId,
+              assetId,
+              assetType: assetType || 'crypto',
+              symbol,
+              name,
+              displayOrder: nextOrder,
+              notes: notes || null,
+              alertsEnabled: false,
+              createdAt: now,
+              updatedAt: now,
+            });
+            
+            logger?.info('✅ [Favorites] Created', { userId, assetId, id });
+            return c.json({ success: true, id, displayOrder: nextOrder });
+          } catch (error: any) {
+            logger?.error('❌ [Favorites] Error creating', { error: error.message });
+            return c.json({ error: 'Failed to add favorite' }, 500);
+          }
+        }
+      },
+      
+      // DELETE /api/users/:userId/favorites/:id - Remove a favorite
+      {
+        path: "/api/users/:userId/favorites/:id",
+        method: "DELETE",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          const userId = c.req.param('userId');
+          const favoriteId = c.req.param('id');
+          
+          logger?.info('⭐ [Favorites] DELETE request', { userId, favoriteId });
+          
+          if (!userId || !favoriteId) {
+            return c.json({ error: 'User ID and favorite ID are required' }, 400);
+          }
+          
+          try {
+            const { db } = await import('../db/client.js');
+            const { userFavorites } = await import('../db/schema.js');
+            const { eq, and } = await import('drizzle-orm');
+            
+            const result = await db
+              .delete(userFavorites)
+              .where(and(
+                eq(userFavorites.id, favoriteId),
+                eq(userFavorites.userId, userId)
+              ));
+            
+            logger?.info('✅ [Favorites] Deleted', { userId, favoriteId });
+            return c.json({ success: true });
+          } catch (error: any) {
+            logger?.error('❌ [Favorites] Error deleting', { error: error.message });
+            return c.json({ error: 'Failed to delete favorite' }, 500);
+          }
+        }
+      },
+      
+      // PUT /api/users/:userId/favorites/:id - Update favorite (order, notes)
+      {
+        path: "/api/users/:userId/favorites/:id",
+        method: "PUT",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          const userId = c.req.param('userId');
+          const favoriteId = c.req.param('id');
+          
+          logger?.info('⭐ [Favorites] PUT request', { userId, favoriteId });
+          
+          if (!userId || !favoriteId) {
+            return c.json({ error: 'User ID and favorite ID are required' }, 400);
+          }
+          
+          try {
+            const body = await c.req.json();
+            const { displayOrder, notes, alertsEnabled } = body;
+            
+            const { db } = await import('../db/client.js');
+            const { userFavorites } = await import('../db/schema.js');
+            const { eq, and } = await import('drizzle-orm');
+            
+            const updateData: any = { updatedAt: new Date() };
+            if (displayOrder !== undefined) updateData.displayOrder = displayOrder;
+            if (notes !== undefined) updateData.notes = notes;
+            if (alertsEnabled !== undefined) updateData.alertsEnabled = alertsEnabled;
+            
+            await db
+              .update(userFavorites)
+              .set(updateData)
+              .where(and(
+                eq(userFavorites.id, favoriteId),
+                eq(userFavorites.userId, userId)
+              ));
+            
+            logger?.info('✅ [Favorites] Updated', { userId, favoriteId });
+            return c.json({ success: true });
+          } catch (error: any) {
+            logger?.error('❌ [Favorites] Error updating', { error: error.message });
+            return c.json({ error: 'Failed to update favorite' }, 500);
+          }
+        }
+      },
+      
+      // ============================================
+      // USER DASHBOARD CONFIG API ENDPOINTS
+      // ============================================
+      
+      // GET /api/users/:userId/dashboard - Get dashboard config
+      {
+        path: "/api/users/:userId/dashboard",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          const userId = c.req.param('userId');
+          
+          logger?.info('📊 [Dashboard] GET request', { userId });
+          
+          if (!userId) {
+            return c.json({ error: 'User ID is required' }, 400);
+          }
+          
+          try {
+            const { db } = await import('../db/client.js');
+            const { userDashboardConfigs } = await import('../db/schema.js');
+            const { eq } = await import('drizzle-orm');
+            
+            const configs = await db
+              .select()
+              .from(userDashboardConfigs)
+              .where(eq(userDashboardConfigs.userId, userId));
+            
+            if (configs.length === 0) {
+              // Return default config if none exists
+              logger?.info('📊 [Dashboard] No config found, returning defaults', { userId });
+              return c.json({
+                userId,
+                hallmarkId: null,
+                defaultLandingTab: 'dashboard',
+                layout: null,
+                showFavoritesOnly: false,
+                defaultChart: 'bitcoin',
+                chartTimeframe: '7D',
+                theme: 'dark',
+                emailNotifications: true,
+                pushNotifications: true,
+                avatarConfig: null,
+                avatarMode: 'custom',
+              });
+            }
+            
+            logger?.info('✅ [Dashboard] Retrieved', { userId });
+            return c.json(configs[0]);
+          } catch (error: any) {
+            logger?.error('❌ [Dashboard] Error', { error: error.message });
+            return c.json({ error: 'Failed to fetch dashboard config' }, 500);
+          }
+        }
+      },
+      
+      // PUT /api/users/:userId/dashboard - Update dashboard config
+      {
+        path: "/api/users/:userId/dashboard",
+        method: "PUT",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          const userId = c.req.param('userId');
+          
+          logger?.info('📊 [Dashboard] PUT request', { userId });
+          
+          if (!userId) {
+            return c.json({ error: 'User ID is required' }, 400);
+          }
+          
+          try {
+            const body = await c.req.json();
+            const { db } = await import('../db/client.js');
+            const { userDashboardConfigs } = await import('../db/schema.js');
+            
+            const now = new Date();
+            const validFields = [
+              'defaultLandingTab', 'layout', 'showFavoritesOnly', 
+              'defaultChart', 'chartTimeframe', 'theme',
+              'emailNotifications', 'pushNotifications', 
+              'avatarConfig', 'avatarMode'
+            ];
+            
+            const updateData: any = { updatedAt: now };
+            for (const field of validFields) {
+              if (body[field] !== undefined) {
+                updateData[field] = body[field];
+              }
+            }
+            
+            await db.insert(userDashboardConfigs).values({
+              userId,
+              ...updateData,
+              createdAt: now,
+            }).onConflictDoUpdate({
+              target: userDashboardConfigs.userId,
+              set: updateData,
+            });
+            
+            logger?.info('✅ [Dashboard] Updated', { userId });
+            return c.json({ success: true });
+          } catch (error: any) {
+            logger?.error('❌ [Dashboard] Error updating', { error: error.message });
+            return c.json({ error: 'Failed to update dashboard config' }, 500);
+          }
+        }
+      },
+      
+      // POST /api/users/:userId/hallmark - Generate hallmark ID if not exists
+      {
+        path: "/api/users/:userId/hallmark",
+        method: "POST",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          const userId = c.req.param('userId');
+          
+          logger?.info('🎖️ [Hallmark] POST request', { userId });
+          
+          if (!userId) {
+            return c.json({ error: 'User ID is required' }, 400);
+          }
+          
+          try {
+            const { db } = await import('../db/client.js');
+            const { userDashboardConfigs } = await import('../db/schema.js');
+            const { eq } = await import('drizzle-orm');
+            
+            // Check if user already has a hallmark ID
+            const existing = await db
+              .select()
+              .from(userDashboardConfigs)
+              .where(eq(userDashboardConfigs.userId, userId));
+            
+            if (existing.length > 0 && existing[0].hallmarkId) {
+              logger?.info('🎖️ [Hallmark] Already exists', { userId, hallmarkId: existing[0].hallmarkId });
+              return c.json({ hallmarkId: existing[0].hallmarkId, isNew: false });
+            }
+            
+            // Generate unique hallmark ID: PULSE-XXXX-2026
+            const crypto = await import('crypto');
+            const randomPart = crypto.randomBytes(2).toString('hex').toUpperCase();
+            const year = new Date().getFullYear();
+            const hallmarkId = `PULSE-${randomPart}-${year}`;
+            
+            const now = new Date();
+            
+            await db.insert(userDashboardConfigs).values({
+              userId,
+              hallmarkId,
+              createdAt: now,
+              updatedAt: now,
+            }).onConflictDoUpdate({
+              target: userDashboardConfigs.userId,
+              set: { hallmarkId, updatedAt: now },
+            });
+            
+            logger?.info('✅ [Hallmark] Generated', { userId, hallmarkId });
+            return c.json({ hallmarkId, isNew: true });
+          } catch (error: any) {
+            logger?.error('❌ [Hallmark] Error', { error: error.message });
+            return c.json({ error: 'Failed to generate hallmark ID' }, 500);
+          }
+        }
+      },
+      
       // Catch-all static file handler (MUST BE LAST) - serves all assets from public/
       {
         path: "/*",

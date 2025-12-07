@@ -493,3 +493,58 @@ export const predictionModelMetrics = pgTable('prediction_model_metrics', {
   
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
+
+// ============================================
+// USER FAVORITES & DASHBOARD CONFIGURATION
+// ============================================
+
+// User Favorites - Saved coins/tokens for quick access
+export const userFavorites = pgTable('user_favorites', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  
+  // Asset Information
+  assetId: varchar('asset_id', { length: 255 }).notNull(), // CoinGecko ID or stock ticker
+  assetType: varchar('asset_type', { length: 20 }).notNull().default('crypto'), // 'crypto' | 'stock'
+  symbol: varchar('symbol', { length: 50 }).notNull(), // BTC, ETH, XRP, etc.
+  name: varchar('name', { length: 255 }).notNull(), // Bitcoin, Ethereum, etc.
+  
+  // User preferences for this favorite
+  displayOrder: integer('display_order').default(0), // For custom sorting
+  notes: text('notes'), // User notes about this asset
+  alertsEnabled: boolean('alerts_enabled').default(false),
+  
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// User Dashboard Config - Personal dashboard settings
+export const userDashboardConfigs = pgTable('user_dashboard_configs', {
+  userId: varchar('user_id', { length: 255 }).primaryKey(),
+  
+  // Hallmark Identity
+  hallmarkId: varchar('hallmark_id', { length: 100 }).unique(), // PULSE-XXXX-2026
+  
+  // Landing Page Preference
+  defaultLandingTab: varchar('default_landing_tab', { length: 50 }).default('dashboard'), // 'dashboard' | 'markets' | 'portfolio' | 'stocks'
+  
+  // Dashboard Layout (JSON)
+  layout: text('layout'), // JSON: widget positions, sizes, visibility
+  
+  // Display Preferences
+  showFavoritesOnly: boolean('show_favorites_only').default(false),
+  defaultChart: varchar('default_chart', { length: 50 }).default('bitcoin'), // Which coin to show by default
+  chartTimeframe: varchar('chart_timeframe', { length: 20 }).default('7D'), // 1D, 7D, 30D, 1Y, ALL
+  theme: varchar('theme', { length: 50 }).default('dark'),
+  
+  // Notification Preferences
+  emailNotifications: boolean('email_notifications').default(true),
+  pushNotifications: boolean('push_notifications').default(true),
+  
+  // Avatar Config (can override or reference AvatarContext)
+  avatarConfig: text('avatar_config'), // JSON: full avatar configuration
+  avatarMode: varchar('avatar_mode', { length: 20 }).default('custom'), // 'custom' | 'agent'
+  
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
