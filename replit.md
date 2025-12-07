@@ -23,10 +23,13 @@ Pulse (powered by DarkWave Studios, LLC) is a predictive trading platform built 
 
 ## STATUS SUMMARY (December 7, 2025)
 
+**Current Version**: v2.0.6
+
 ### WORKING
 - Core platform operational on Vite + Express backend
 - User authentication system (email whitelist + access codes)
 - Slim 50px header with hamburger menu navigation
+- Slim single-line footer: "Powered by DarkWave Studios, LLC © 2025 | v2.0.6"
 - Redesigned metric cards (Fear & Greed, Altcoin Season, Market Cap, Volume)
 - Live candlestick charts with 30-second refresh
 - Bitcoin and crypto price tracking via CoinGecko API
