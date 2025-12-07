@@ -45,6 +45,7 @@ Pulse (powered by DarkWave Studios, LLC) is a predictive trading platform built 
 - 18 AI Agent personas with NFT Trading Cards
 - Knowledge Base (8 chapters, 143-term glossary)
 - **Prediction Tracking System** - Logs every signal, tracks outcomes at 1hr/4hr/24hr/7d, calculates accuracy stats
+- **Custom Avatar Creator** - Full character customization with 17 hairstyles (including bald, afro, dreads, cornrows), 8 skin tones, 6 eye colors, facial hair options (beard, mustache, goatee), 13 clothing styles, 13 accessories, face shapes, backgrounds. Avatar appears in header and replaces agents when in custom mode.
 
 ### NEEDS ATTENTION
 - CoinGecko API rate limiting (429 errors) - using Pro API now
