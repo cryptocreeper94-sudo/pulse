@@ -2,6 +2,7 @@ import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
 import { RSI, MACD, EMA, SMA, BollingerBands } from "technicalindicators";
 import { checkSubscriptionLimit } from "../middleware/subscriptionCheck.js";
+import { predictionLearningService } from "../../services/predictionLearningService.js";
 
 /**
  * Technical Analysis Tool - Calculates all technical indicators and generates buy/sell signals
@@ -267,25 +268,104 @@ export const technicalAnalysisTool = createTool({
       bearishCount++;
     }
 
-    // Determine recommendation
+    // Determine recommendation - blend rule-based with ML model when available
     let recommendation: 'BUY' | 'SELL' | 'HOLD' | 'STRONG_BUY' | 'STRONG_SELL';
     const netSignal = bullishCount - bearishCount;
 
+    // Rule-based recommendation
+    let ruleBasedRec: 'BUY' | 'SELL' | 'HOLD' | 'STRONG_BUY' | 'STRONG_SELL';
     if (netSignal >= 3) {
-      recommendation = 'STRONG_BUY';
+      ruleBasedRec = 'STRONG_BUY';
     } else if (netSignal >= 1) {
-      recommendation = 'BUY';
+      ruleBasedRec = 'BUY';
     } else if (netSignal <= -3) {
-      recommendation = 'STRONG_SELL';
+      ruleBasedRec = 'STRONG_SELL';
     } else if (netSignal <= -1) {
-      recommendation = 'SELL';
+      ruleBasedRec = 'SELL';
     } else {
-      recommendation = 'HOLD';
+      ruleBasedRec = 'HOLD';
+    }
+
+    // Try ML model prediction (24h horizon by default)
+    let isModelBased = false;
+    let modelProbability = 0.5;
+    try {
+      const indicators = {
+        rsi: currentRSI,
+        macd: { macdLine: currentMACD.MACD, signalLine: currentMACD.signal, histogram: currentMACD.histogram },
+        ema9: currentEMA9,
+        ema21: currentEMA21,
+        ema50: currentEMA50,
+        ema200: currentEMA200,
+        bollingerBands: { upper: currentBB.upper, middle: currentBB.middle, lower: currentBB.lower },
+        support,
+        resistance,
+        volumeDelta: volumeDelta.delta,
+        spikeScore: spikeScore.score,
+        volatility,
+      };
+      
+      const mlPrediction = await predictionLearningService.predictWithModel(indicators, context.currentPrice, '24h');
+      
+      if (mlPrediction.isModelBased) {
+        isModelBased = true;
+        modelProbability = mlPrediction.probability;
+        
+        // Blend ML with rule-based: ML confidence affects final recommendation
+        // If both agree, strengthen the signal; if they disagree, use ML confidence to moderate
+        const mlSignal = mlPrediction.signal;
+        const mlConfidence = mlPrediction.confidence;
+        
+        if (mlConfidence === 'HIGH') {
+          // High confidence ML - weight ML prediction more heavily
+          if (mlSignal === 'BUY' && (ruleBasedRec === 'BUY' || ruleBasedRec === 'STRONG_BUY')) {
+            recommendation = modelProbability >= 0.75 ? 'STRONG_BUY' : 'BUY';
+            signals.push(`ML model: ${(modelProbability * 100).toFixed(0)}% bullish probability (HIGH confidence)`);
+          } else if (mlSignal === 'SELL' && (ruleBasedRec === 'SELL' || ruleBasedRec === 'STRONG_SELL')) {
+            recommendation = modelProbability <= 0.25 ? 'STRONG_SELL' : 'SELL';
+            signals.push(`ML model: ${((1 - modelProbability) * 100).toFixed(0)}% bearish probability (HIGH confidence)`);
+          } else if (mlSignal !== ruleBasedRec && mlConfidence === 'HIGH') {
+            // ML disagrees with high confidence - trust ML more
+            recommendation = mlSignal;
+            signals.push(`ML model override: ${mlSignal} (${(mlPrediction.probability * 100).toFixed(0)}% probability)`);
+          } else {
+            recommendation = ruleBasedRec;
+          }
+        } else if (mlConfidence === 'MEDIUM') {
+          // Medium confidence - blend signals
+          if (mlSignal === ruleBasedRec || (mlSignal === 'BUY' && ruleBasedRec === 'STRONG_BUY') || (mlSignal === 'SELL' && ruleBasedRec === 'STRONG_SELL')) {
+            recommendation = ruleBasedRec;
+            signals.push(`ML model confirms: ${(modelProbability * 100).toFixed(0)}% probability`);
+          } else {
+            // Disagreement with medium confidence - stay cautious
+            recommendation = 'HOLD';
+            signals.push(`ML model uncertain: ${(modelProbability * 100).toFixed(0)}% probability vs rule-based ${ruleBasedRec}`);
+          }
+        } else {
+          // Low confidence ML - use rule-based
+          recommendation = ruleBasedRec;
+        }
+        
+        logger?.info('🧠 [TechnicalAnalysisTool] ML prediction used', { 
+          mlSignal, 
+          mlConfidence, 
+          probability: modelProbability,
+          ruleBasedRec,
+          finalRec: recommendation 
+        });
+      } else {
+        recommendation = ruleBasedRec;
+      }
+    } catch (mlError) {
+      // ML prediction failed - fall back to rule-based
+      logger?.warn('⚠️ [TechnicalAnalysisTool] ML prediction failed, using rule-based', { error: mlError });
+      recommendation = ruleBasedRec;
     }
 
     logger?.info('✅ [TechnicalAnalysisTool] Analysis complete', { 
       ticker: context.ticker,
       recommendation,
+      isModelBased,
       signals: signals.length 
     });
 
