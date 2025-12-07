@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { CategoryPills, Accordion, AccordionItem } from '../ui'
+import { CategoryPills, Accordion, AccordionItem, GlossaryTerm } from '../ui'
+import { searchGlossary, categories as glossaryCategories } from '../../data/glossary'
 
 const learnCategories = [
   { id: 'founder', icon: '👤', label: 'Founder' },
@@ -31,16 +32,14 @@ const faqs = [
   },
 ]
 
-const glossaryTerms = [
-  { term: 'RSI', definition: 'Relative Strength Index - A momentum indicator measuring speed and magnitude of price changes.' },
-  { term: 'MACD', definition: 'Moving Average Convergence Divergence - Shows relationship between two moving averages.' },
-  { term: 'Fear & Greed Index', definition: 'Market sentiment indicator from 0 (Extreme Fear) to 100 (Extreme Greed).' },
-  { term: 'Altcoin Season', definition: 'Period when altcoins outperform Bitcoin in terms of price gains.' },
-  { term: 'DeFi', definition: 'Decentralized Finance - Financial services built on blockchain without intermediaries.' },
-]
-
 export default function LearnTab() {
   const [activeSection, setActiveSection] = useState('founder')
+  const [glossaryFilter, setGlossaryFilter] = useState('All')
+  const [searchQuery, setSearchQuery] = useState('')
+  
+  const filteredTerms = searchGlossary(searchQuery).filter(term => 
+    glossaryFilter === 'All' || term.category === glossaryFilter
+  )
   
   const renderContent = () => {
     switch (activeSection) {
@@ -113,24 +112,77 @@ export default function LearnTab() {
         return (
           <div className="section-box">
             <div style={{ padding: 16 }}>
-              <h3 style={{ marginBottom: 16 }}>Trading Glossary</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {glossaryTerms.map((item, i) => (
-                  <div key={i} style={{ 
-                    padding: 12, 
-                    background: '#1a1a1a', 
-                    borderRadius: 8,
-                    borderLeft: '3px solid #00D4FF'
-                  }}>
-                    <div style={{ fontWeight: 700, color: '#00D4FF', marginBottom: 4 }}>
-                      {item.term}
-                    </div>
-                    <div style={{ fontSize: 12, color: '#888' }}>
-                      {item.definition}
-                    </div>
-                  </div>
+              <h3 style={{ marginBottom: 12 }}>Trading Glossary</h3>
+              <p style={{ fontSize: 11, color: '#888', marginBottom: 12 }}>
+                Tap any term to see the full definition
+              </p>
+              
+              <input
+                type="text"
+                placeholder="Search terms..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  background: '#1a1a1a',
+                  border: '1px solid #333',
+                  borderRadius: 8,
+                  color: '#fff',
+                  fontSize: 13,
+                  marginBottom: 12
+                }}
+              />
+              
+              <div style={{ 
+                display: 'flex', 
+                gap: 6, 
+                flexWrap: 'wrap',
+                marginBottom: 16
+              }}>
+                {glossaryCategories.map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setGlossaryFilter(cat)}
+                    style={{
+                      padding: '4px 10px',
+                      background: glossaryFilter === cat 
+                        ? 'linear-gradient(135deg, #00D4FF, #9D4EDD)'
+                        : 'rgba(255,255,255,0.05)',
+                      border: glossaryFilter === cat 
+                        ? 'none'
+                        : '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: 16,
+                      color: glossaryFilter === cat ? '#000' : '#fff',
+                      fontSize: 10,
+                      fontWeight: 600,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {cat}
+                  </button>
                 ))}
               </div>
+              
+              <div style={{ 
+                display: 'flex', 
+                flexWrap: 'wrap', 
+                gap: 8,
+                maxHeight: 400,
+                overflowY: 'auto'
+              }}>
+                {filteredTerms.map((item, i) => (
+                  <GlossaryTerm key={i} term={item.term}>
+                    {item.term}
+                  </GlossaryTerm>
+                ))}
+              </div>
+              
+              {filteredTerms.length === 0 && (
+                <p style={{ color: '#666', textAlign: 'center', marginTop: 20 }}>
+                  No terms found matching "{searchQuery}"
+                </p>
+              )}
             </div>
           </div>
         )

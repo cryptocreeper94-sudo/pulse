@@ -9,6 +9,8 @@ import {
   SettingsTab,
   V2DetailsTab
 } from './components/tabs'
+import { GlossaryPopup } from './components/ui'
+import { GlossaryProvider } from './context/GlossaryContext'
 import './styles/components.css'
 
 function App() {
@@ -36,11 +38,14 @@ function App() {
   }
   
   return (
-    <Layout activeTab={activeTab} onTabChange={setActiveTab}>
-      <div style={{ padding: '0 12px' }}>
-        {renderTab()}
-      </div>
-    </Layout>
+    <GlossaryProvider>
+      <Layout activeTab={activeTab} onTabChange={setActiveTab}>
+        <div style={{ padding: '0 12px' }}>
+          {renderTab()}
+        </div>
+      </Layout>
+      <GlossaryPopup />
+    </GlossaryProvider>
   )
 }
 
