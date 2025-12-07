@@ -40,6 +40,7 @@ import { subscriptionTool } from "./tools/subscriptionTool";
 import { botDetectionTool } from "./tools/botDetectionTool";
 import { sentimentTool } from "./tools/sentimentTool";
 import { predictionTrackingService } from "../services/predictionTrackingService.js";
+import { predictionLearningService } from "../services/predictionLearningService.js";
 import { inngest as inngestClient } from "./inngest/client";
 
 class ProductionPinoLogger extends MastraLogger {
@@ -2090,6 +2091,71 @@ export const mastra = new Mastra({
               success: false, 
               error: 'Failed to retrieve accuracy stats',
               global: { totalPredictions: 0, winRate: '0', avgReturn: '0', lastUpdated: null },
+            }, 500);
+          }
+        },
+      },
+      // ML Model Status API
+      {
+        path: "/api/model-status",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          
+          try {
+            logger?.info('🧠 [ModelStatus] Status request');
+            
+            const status = await predictionLearningService.getModelStatus();
+            
+            return c.json({
+              success: true,
+              ...status,
+              message: status.totalFeatures < 50 
+                ? `Collecting training data (${status.totalFeatures}/50 samples needed)`
+                : 'ML models ready for training',
+            });
+          } catch (error: any) {
+            logger?.error('❌ [ModelStatus] Status error', { error: error.message });
+            return c.json({ 
+              success: false, 
+              error: 'Failed to retrieve model status',
+            }, 500);
+          }
+        },
+      },
+      // ML Model Training Trigger API (Admin only)
+      {
+        path: "/api/train-models",
+        method: "POST",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          
+          try {
+            // Check admin access
+            const { checkAccessSession } = await import('./middleware/accessControl.js');
+            const sessionCheck = await checkAccessSession(c) as any;
+            if (!sessionCheck.valid || !['admin', 'owner'].includes(sessionCheck.accessLevel || '')) {
+              logger?.warn('🚫 [TrainModels] Unauthorized request');
+              return c.json({ error: 'Admin access required' }, 403);
+            }
+            
+            logger?.info('🧠 [TrainModels] Training trigger received');
+            
+            // Trigger training via Inngest event
+            await inngestClient.send({
+              name: 'model/train',
+              data: { triggeredBy: 'api', timestamp: new Date().toISOString() }
+            });
+            
+            return c.json({
+              success: true,
+              message: 'Model training triggered. Check logs for progress.',
+            });
+          } catch (error: any) {
+            logger?.error('❌ [TrainModels] Training error', { error: error.message });
+            return c.json({ 
+              success: false, 
+              error: 'Failed to trigger model training',
             }, 500);
           }
         },

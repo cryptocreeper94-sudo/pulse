@@ -160,6 +160,18 @@ Pulse (powered by DarkWave Studios, LLC) is a predictive trading platform built 
 - **Inngest Workers**: Hourly cron job + per-prediction scheduled checks
 - **Evaluation Logic**: BUY correct if price rises, SELL correct if price drops, HOLD correct if stable
 
+### ML Learning System (NEW)
+- **Database Tables**: `prediction_features`, `prediction_model_versions`, `prediction_model_metrics`
+- **Service**: `src/services/predictionLearningService.ts` - Feature extraction, training, inference
+- **Algorithm**: Logistic regression per time horizon (1h, 4h, 24h, 7d)
+- **Training**: Automated weekly via Inngest `modelTrainingWorker`
+- **Features**: RSI, MACD, EMA spreads, Bollinger position, volume delta, spike score, volatility
+- **Integration**: technicalAnalysisTool blends ML predictions with rule-based signals
+- **API Endpoints**:
+  - `GET /api/model-status` - Returns model training status and metrics
+  - `POST /api/train-models` - Trigger manual training (admin only)
+- **Min Training Samples**: 50 predictions per horizon before training starts
+
 ### Mobile App
 - `darkwave-mobile/app/index.tsx` - Main mobile entry point
 - `darkwave-mobile/app/_layout.tsx` - Navigation layout

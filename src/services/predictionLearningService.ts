@@ -115,45 +115,60 @@ class PredictionLearningService {
   }
 
   private normalizeIndicators(indicators: any, price: number): FeatureVector {
-    const rsi = indicators.rsi || 50;
-    const macdHistogram = indicators.macd?.histogram || 0;
-    const macdLine = indicators.macd?.macdLine || 0;
-    const signalLine = indicators.macd?.signalLine || 0;
+    const rsi = this.safeNumber(indicators.rsi, 50);
     
-    const ema9 = indicators.ema9 || price;
-    const ema21 = indicators.ema21 || price;
-    const ema50 = indicators.ema50 || price;
-    const ema200 = indicators.ema200 || price;
+    const macdHistogram = this.safeNumber(indicators.macd?.histogram, 0);
+    const macdValue = this.safeNumber(indicators.macd?.value, 0);
+    const macdSignalLine = this.safeNumber(indicators.macd?.signal, 0);
     
-    const bbUpper = indicators.bollingerBands?.upper || price * 1.02;
-    const bbLower = indicators.bollingerBands?.lower || price * 0.98;
-    const bbMiddle = indicators.bollingerBands?.middle || price;
+    const ema9 = this.safeNumber(indicators.ema9, price);
+    const ema21 = this.safeNumber(indicators.ema21, price);
+    const ema50 = this.safeNumber(indicators.ema50, price);
+    const ema200 = this.safeNumber(indicators.ema200, price);
     
-    const volumeDelta = indicators.volumeDelta || 0;
-    const spikeScore = indicators.spikeScore || 0;
-    const volatility = indicators.volatility || 0;
+    const bbUpper = this.safeNumber(indicators.bollingerBands?.upper, price * 1.02);
+    const bbLower = this.safeNumber(indicators.bollingerBands?.lower, price * 0.98);
+    const bbMiddle = this.safeNumber(indicators.bollingerBands?.middle, price);
     
-    const support = indicators.support || price * 0.95;
-    const resistance = indicators.resistance || price * 1.05;
+    const volumeDeltaValue = typeof indicators.volumeDelta === 'object' 
+      ? this.safeNumber(indicators.volumeDelta?.delta, 0)
+      : this.safeNumber(indicators.volumeDelta, 0);
+    
+    const spikeScoreValue = typeof indicators.spikeScore === 'object'
+      ? this.safeNumber(indicators.spikeScore?.score, 0)
+      : this.safeNumber(indicators.spikeScore, 0);
+    
+    const volatility = this.safeNumber(indicators.volatility, 0);
+    
+    const support = this.safeNumber(indicators.support, price * 0.95);
+    const resistance = this.safeNumber(indicators.resistance, price * 1.05);
+
+    const bbRange = bbUpper - bbLower;
+    const bbPositionRaw = bbRange > 0 ? (price - bbMiddle) / (bbRange / 2) : 0;
 
     return {
-      rsiNormalized: rsi / 100,
+      rsiNormalized: this.safeNumber(rsi / 100, 0.5),
       macdSignal: macdHistogram > 0 ? 1 : macdHistogram < 0 ? -1 : 0,
-      macdStrength: Math.min(Math.abs(macdLine - signalLine) / price * 100, 1),
-      ema9Spread: this.clamp((price - ema9) / price * 100, -10, 10) / 10,
-      ema21Spread: this.clamp((price - ema21) / price * 100, -10, 10) / 10,
-      ema50Spread: this.clamp((price - ema50) / price * 100, -20, 20) / 20,
-      ema200Spread: this.clamp((price - ema200) / price * 100, -50, 50) / 50,
+      macdStrength: price > 0 ? Math.min(Math.abs(macdValue - macdSignalLine) / price * 100, 1) : 0,
+      ema9Spread: this.clamp((price - ema9) / (price || 1) * 100, -10, 10) / 10,
+      ema21Spread: this.clamp((price - ema21) / (price || 1) * 100, -10, 10) / 10,
+      ema50Spread: this.clamp((price - ema50) / (price || 1) * 100, -20, 20) / 20,
+      ema200Spread: this.clamp((price - ema200) / (price || 1) * 100, -50, 50) / 50,
       ema9Over21: ema9 > ema21 ? 1 : 0,
       ema50Over200: ema50 > ema200 ? 1 : 0,
-      bbPosition: this.clamp((price - bbMiddle) / ((bbUpper - bbLower) / 2), -1, 1),
-      bbWidth: Math.min((bbUpper - bbLower) / bbMiddle, 0.2) / 0.2,
-      volumeDeltaNorm: this.clamp(volumeDelta / 100, -1, 1),
-      spikeScoreNorm: Math.min(spikeScore / 100, 1),
-      volatilityNorm: Math.min(volatility / 10, 1),
-      distanceToSupport: this.clamp((price - support) / price * 100, 0, 20) / 20,
-      distanceToResistance: this.clamp((resistance - price) / price * 100, 0, 20) / 20,
+      bbPosition: this.clamp(bbPositionRaw, -1, 1),
+      bbWidth: bbMiddle > 0 ? Math.min(bbRange / bbMiddle, 0.2) / 0.2 : 0,
+      volumeDeltaNorm: this.clamp(volumeDeltaValue / 100, -1, 1),
+      spikeScoreNorm: Math.min(Math.max(spikeScoreValue / 100, 0), 1),
+      volatilityNorm: Math.min(Math.max(volatility / 10, 0), 1),
+      distanceToSupport: this.clamp((price - support) / (price || 1) * 100, 0, 20) / 20,
+      distanceToResistance: this.clamp((resistance - price) / (price || 1) * 100, 0, 20) / 20,
     };
+  }
+
+  private safeNumber(value: any, defaultValue: number): number {
+    const num = Number(value);
+    return isNaN(num) ? defaultValue : num;
   }
 
   private clamp(value: number, min: number, max: number): number {
