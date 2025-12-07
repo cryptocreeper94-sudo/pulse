@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useGlossary } from '../../context/GlossaryContext'
+import { useAvatar } from '../../context/AvatarContext'
+import MiniAvatar from '../ui/MiniAvatar'
 
 const SASS_MODE_KEY = 'pulse-sass-mode'
 
@@ -32,6 +34,7 @@ export default function CryptoCatPopup({ enabled = true, interval = 120000 }) {
   const [visible, setVisible] = useState(false)
   const [message, setMessage] = useState(null)
   const { sassMode, onTermShow } = useGlossary()
+  const { avatar, isCustomMode } = useAvatar()
   
   const timerRef = useRef(null)
   const intervalRef = useRef(null)
@@ -113,6 +116,11 @@ export default function CryptoCatPopup({ enabled = true, interval = 120000 }) {
   
   if (!visible || !message) return null
   
+  const displayName = isCustomMode ? (avatar.name || 'Your Avatar') : 'CryptoCat'
+  const displayLabel = isCustomMode 
+    ? `👤 ${displayName} says...` 
+    : (sassMode ? '😾 CryptoCat says...' : '😺 CryptoCat says...')
+  
   return (
     <div style={{
       position: 'fixed',
@@ -127,11 +135,13 @@ export default function CryptoCatPopup({ enabled = true, interval = 120000 }) {
     }}>
       <div style={{
         background: 'linear-gradient(135deg, #1a1a1a, #0f0f0f)',
-        border: '1px solid rgba(255, 165, 0, 0.4)',
+        border: isCustomMode ? '1px solid rgba(0, 212, 255, 0.4)' : '1px solid rgba(255, 165, 0, 0.4)',
         borderRadius: 16,
         padding: 16,
         maxWidth: 260,
-        boxShadow: '0 8px 32px rgba(0,0,0,0.6), 0 0 20px rgba(255, 165, 0, 0.2)'
+        boxShadow: isCustomMode 
+          ? '0 8px 32px rgba(0,0,0,0.6), 0 0 20px rgba(0, 212, 255, 0.2)'
+          : '0 8px 32px rgba(0,0,0,0.6), 0 0 20px rgba(255, 165, 0, 0.2)'
       }}>
         <div style={{ 
           display: 'flex', 
@@ -141,11 +151,11 @@ export default function CryptoCatPopup({ enabled = true, interval = 120000 }) {
         }}>
           <div style={{ 
             fontSize: 10, 
-            color: '#FFA500', 
+            color: isCustomMode ? '#00D4FF' : '#FFA500', 
             fontWeight: 700,
             textTransform: 'uppercase'
           }}>
-            {sassMode ? '😾 CryptoCat says...' : '😺 CryptoCat says...'}
+            {displayLabel}
           </div>
           <button
             onClick={handleClose}
@@ -172,19 +182,23 @@ export default function CryptoCatPopup({ enabled = true, interval = 120000 }) {
         </div>
       </div>
       
-      <img 
-        src={catPoses[message.pose] || catPoses.neutral}
-        alt="CryptoCat"
-        style={{
-          width: 60,
-          height: 60,
-          objectFit: 'contain',
-          filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.5))'
-        }}
-        onError={(e) => {
-          e.target.style.display = 'none'
-        }}
-      />
+      {isCustomMode ? (
+        <MiniAvatar size={60} showFallback={false} />
+      ) : (
+        <img 
+          src={catPoses[message.pose] || catPoses.neutral}
+          alt="CryptoCat"
+          style={{
+            width: 60,
+            height: 60,
+            objectFit: 'contain',
+            filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.5))'
+          }}
+          onError={(e) => {
+            e.target.style.display = 'none'
+          }}
+        />
+      )}
       
       <style>{`
         @keyframes catSlideIn {

@@ -1,24 +1,22 @@
+import { useState } from 'react'
 import { Accordion, AccordionItem } from '../ui'
+import { useAvatar } from '../../context/AvatarContext'
+import MiniAvatar from '../ui/MiniAvatar'
+import AvatarCreator from '../ui/AvatarCreator'
 
 export default function SettingsTab() {
+  const { avatar, mode, isCustomMode, toggleMode, setAvatarMode } = useAvatar()
+  const [showAvatarCreator, setShowAvatarCreator] = useState(false)
+  
   return (
     <div className="settings-tab">
       <div className="section-box mb-md">
         <div style={{ padding: 16, display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div style={{ 
-            width: 60, 
-            height: 60, 
-            borderRadius: '50%', 
-            background: 'linear-gradient(135deg, #00D4FF, #9D4EDD)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 24
-          }}>
-            👤
-          </div>
+          <MiniAvatar size={60} onClick={() => setShowAvatarCreator(true)} />
           <div>
-            <div style={{ fontWeight: 700, marginBottom: 4 }}>Founder Account</div>
+            <div style={{ fontWeight: 700, marginBottom: 4 }}>
+              {isCustomMode ? avatar.name || 'My Avatar' : 'Founder Account'}
+            </div>
             <div style={{ fontSize: 12, color: '#39FF14' }}>✓ Beta V1 Access</div>
             <div style={{ fontSize: 11, color: '#888' }}>Member since 2025</div>
           </div>
@@ -26,6 +24,105 @@ export default function SettingsTab() {
       </div>
       
       <Accordion singleOpen={false}>
+        <AccordionItem title="Avatar Settings" icon="🎭" defaultOpen={true}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'center',
+              padding: 16,
+              background: 'rgba(0, 0, 0, 0.2)',
+              borderRadius: 12
+            }}>
+              <MiniAvatar size={80} />
+            </div>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <div style={{ fontWeight: 600, marginBottom: 2 }}>Avatar Mode</div>
+                <div style={{ fontSize: 11, color: '#888' }}>
+                  {isCustomMode ? 'Using custom avatar' : 'Using AI agent (CryptoCat)'}
+                </div>
+              </div>
+              <button
+                onClick={toggleMode}
+                style={{ 
+                  width: 52, 
+                  height: 28, 
+                  background: isCustomMode ? '#00D4FF' : '#FFA500', 
+                  borderRadius: 14,
+                  position: 'relative',
+                  cursor: 'pointer',
+                  border: 'none',
+                  transition: 'background 0.3s ease'
+                }}
+              >
+                <span style={{
+                  position: 'absolute',
+                  left: isCustomMode ? 26 : 4,
+                  top: 4,
+                  width: 20,
+                  height: 20,
+                  background: '#fff',
+                  borderRadius: '50%',
+                  transition: 'left 0.3s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 12
+                }}>
+                  {isCustomMode ? '👤' : '🐱'}
+                </span>
+              </button>
+            </div>
+            
+            <div style={{ 
+              display: 'flex', 
+              gap: 8 
+            }}>
+              <button 
+                onClick={() => setAvatarMode('custom')}
+                style={{
+                  flex: 1,
+                  padding: '10px 12px',
+                  background: isCustomMode ? 'rgba(0, 212, 255, 0.2)' : 'rgba(255, 255, 255, 0.05)',
+                  border: isCustomMode ? '1px solid #00D4FF' : '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: 8,
+                  color: isCustomMode ? '#00D4FF' : '#888',
+                  cursor: 'pointer',
+                  fontSize: 12,
+                  fontWeight: 600
+                }}
+              >
+                👤 Custom Avatar
+              </button>
+              <button 
+                onClick={() => setAvatarMode('agent')}
+                style={{
+                  flex: 1,
+                  padding: '10px 12px',
+                  background: !isCustomMode ? 'rgba(255, 165, 0, 0.2)' : 'rgba(255, 255, 255, 0.05)',
+                  border: !isCustomMode ? '1px solid #FFA500' : '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: 8,
+                  color: !isCustomMode ? '#FFA500' : '#888',
+                  cursor: 'pointer',
+                  fontSize: 12,
+                  fontWeight: 600
+                }}
+              >
+                🐱 AI Agents
+              </button>
+            </div>
+            
+            <button 
+              className="btn btn-primary"
+              onClick={() => setShowAvatarCreator(true)}
+              style={{ width: '100%' }}
+            >
+              ✏️ Edit Avatar
+            </button>
+          </div>
+        </AccordionItem>
+        
         <AccordionItem title="Account Settings" icon="👤">
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -123,6 +220,13 @@ export default function SettingsTab() {
           </div>
         </AccordionItem>
       </Accordion>
+      
+      {showAvatarCreator && (
+        <AvatarCreator 
+          isOpen={showAvatarCreator}
+          onClose={() => setShowAvatarCreator(false)}
+        />
+      )}
     </div>
   )
 }
