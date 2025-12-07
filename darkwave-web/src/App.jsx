@@ -11,6 +11,7 @@ import {
 } from './components/tabs'
 import { GlossaryPopup } from './components/ui'
 import { GlossaryProvider } from './context/GlossaryContext'
+import { AvatarProvider } from './context/AvatarContext'
 import CryptoCatPopup from './components/engagement/CryptoCatPopup'
 import './styles/components.css'
 
@@ -39,15 +40,17 @@ function App() {
   }
   
   return (
-    <GlossaryProvider>
-      <Layout activeTab={activeTab} onTabChange={setActiveTab}>
-        <div style={{ padding: '0 12px' }}>
-          {renderTab()}
-        </div>
-      </Layout>
-      <GlossaryPopup />
-      <CryptoCatPopup enabled={true} interval={90000} />
-    </GlossaryProvider>
+    <AvatarProvider>
+      <GlossaryProvider>
+        <Layout activeTab={activeTab} onTabChange={setActiveTab}>
+          <div style={{ padding: '0 12px' }}>
+            {renderTab()}
+          </div>
+        </Layout>
+        <GlossaryPopup />
+        <CryptoCatPopup enabled={true} interval={90000} />
+      </GlossaryProvider>
+    </AvatarProvider>
   )
 }
 

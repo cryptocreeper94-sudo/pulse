@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 
 const avatarOptions = {
   skinTone: [
@@ -11,16 +11,30 @@ const avatarOptions = {
     { id: 'dark-brown', label: 'Dark Brown', color: '#5C3D2E' },
     { id: 'dark', label: 'Dark', color: '#3B2219' },
   ],
+  faceShape: [
+    { id: 'oval', label: 'Oval', icon: '🥚' },
+    { id: 'round', label: 'Round', icon: '⭕' },
+    { id: 'square', label: 'Square', icon: '⬜' },
+    { id: 'heart', label: 'Heart', icon: '💜' },
+  ],
   hairStyle: [
     { id: 'short', label: 'Short', icon: '💇' },
     { id: 'medium', label: 'Medium', icon: '💇‍♀️' },
     { id: 'long', label: 'Long', icon: '👩‍🦱' },
-    { id: 'curly', label: 'Curly', icon: '👩‍🦱' },
+    { id: 'curly', label: 'Curly', icon: '🌀' },
     { id: 'wavy', label: 'Wavy', icon: '🌊' },
     { id: 'braids', label: 'Braids', icon: '🪢' },
     { id: 'afro', label: 'Afro', icon: '🔴' },
     { id: 'bald', label: 'Bald', icon: '👴' },
     { id: 'buzzcut', label: 'Buzz Cut', icon: '✂️' },
+    { id: 'ponytail', label: 'Ponytail', icon: '🎀' },
+    { id: 'pigtails', label: 'Pigtails', icon: '🎀🎀' },
+    { id: 'mohawk', label: 'Mohawk', icon: '🦔' },
+    { id: 'dreads', label: 'Dreads', icon: '🔗' },
+    { id: 'cornrows', label: 'Cornrows', icon: '〰️' },
+    { id: 'man-bun', label: 'Man Bun', icon: '🔵' },
+    { id: 'pixie', label: 'Pixie Cut', icon: '✨' },
+    { id: 'bob', label: 'Bob', icon: '💁' },
   ],
   hairColor: [
     { id: 'black', label: 'Black', color: '#1a1a1a' },
@@ -37,6 +51,20 @@ const avatarOptions = {
     { id: 'purple', label: 'Purple', color: '#9b59b6' },
     { id: 'pink', label: 'Pink', color: '#e91e8c' },
     { id: 'green', label: 'Green', color: '#27ae60' },
+  ],
+  eyeColor: [
+    { id: 'brown', label: 'Brown', color: '#5D4037' },
+    { id: 'blue', label: 'Blue', color: '#1976D2' },
+    { id: 'green', label: 'Green', color: '#388E3C' },
+    { id: 'hazel', label: 'Hazel', color: '#8D6E63' },
+    { id: 'gray', label: 'Gray', color: '#607D8B' },
+    { id: 'amber', label: 'Amber', color: '#FF8F00' },
+  ],
+  eyebrowStyle: [
+    { id: 'thin', label: 'Thin', icon: '―' },
+    { id: 'thick', label: 'Thick', icon: '━' },
+    { id: 'arched', label: 'Arched', icon: '⌒' },
+    { id: 'straight', label: 'Straight', icon: '—' },
   ],
   facialHair: [
     { id: 'none', label: 'None', icon: '😊' },
@@ -61,6 +89,12 @@ const avatarOptions = {
     { id: 'dress', label: 'Dress', icon: '👗', color: '#9b59b6' },
     { id: 'blazer', label: 'Blazer', icon: '🧥', color: '#1abc9c' },
     { id: 'crypto', label: 'Crypto Merch', icon: '₿', color: '#f39c12' },
+    { id: 'tank-top', label: 'Tank Top', icon: '🎽', color: '#e67e22' },
+    { id: 'jacket', label: 'Jacket', icon: '🧥', color: '#2c3e50' },
+    { id: 'vest', label: 'Vest', icon: '🦺', color: '#7f8c8d' },
+    { id: 'polo', label: 'Polo', icon: '👕', color: '#16a085' },
+    { id: 'sweater', label: 'Sweater', icon: '🧶', color: '#8e44ad' },
+    { id: 'crop-top', label: 'Crop Top', icon: '👚', color: '#e91e63' },
   ],
   accessories: [
     { id: 'none', label: 'None', icon: '✖️' },
@@ -70,6 +104,12 @@ const avatarOptions = {
     { id: 'necklace', label: 'Necklace', icon: '📿' },
     { id: 'headphones', label: 'Headphones', icon: '🎧' },
     { id: 'hat', label: 'Hat', icon: '🧢' },
+    { id: 'bandana', label: 'Bandana', icon: '🎀' },
+    { id: 'beanie', label: 'Beanie', icon: '🧢' },
+    { id: 'cap-backwards', label: 'Cap Backwards', icon: '🔄' },
+    { id: 'chain-necklace', label: 'Chain', icon: '⛓️' },
+    { id: 'watch', label: 'Watch', icon: '⌚' },
+    { id: 'rings', label: 'Rings', icon: '💍' },
   ],
   background: [
     { id: 'dark', label: 'Dark', color: 'linear-gradient(135deg, #0f0f0f, #1a1a1a)' },
@@ -84,8 +124,11 @@ const avatarOptions = {
 
 const defaultAvatar = {
   skinTone: 'medium',
+  faceShape: 'oval',
   hairStyle: 'short',
   hairColor: 'black',
+  eyeColor: 'brown',
+  eyebrowStyle: 'thick',
   facialHair: 'none',
   bodyType: 'average',
   clothing: 'casual',
@@ -99,8 +142,38 @@ function AvatarPreview({ avatar }) {
   const hair = avatarOptions.hairColor.find(h => h.id === avatar.hairColor) || avatarOptions.hairColor[0]
   const bg = avatarOptions.background.find(b => b.id === avatar.background) || avatarOptions.background[0]
   const clothing = avatarOptions.clothing.find(c => c.id === avatar.clothing) || avatarOptions.clothing[1]
-  const hairStyle = avatarOptions.hairStyle.find(h => h.id === avatar.hairStyle)
+  const eyeColorOpt = avatarOptions.eyeColor.find(e => e.id === avatar.eyeColor) || avatarOptions.eyeColor[0]
   const isBald = avatar.hairStyle === 'bald' || avatar.hairStyle === 'buzzcut'
+  
+  const getFaceShapeParams = () => {
+    switch (avatar.faceShape) {
+      case 'round':
+        return { rx: 30, ry: 30, cy: 47 }
+      case 'square':
+        return { rx: 26, ry: 30, cy: 45 }
+      case 'heart':
+        return { rx: 28, ry: 34, cy: 44 }
+      default:
+        return { rx: 28, ry: 32, cy: 45 }
+    }
+  }
+  
+  const faceParams = getFaceShapeParams()
+  
+  const getEyebrowPath = () => {
+    switch (avatar.eyebrowStyle) {
+      case 'thin':
+        return { strokeWidth: 1, d1: 'M30 38 Q38 36 46 38', d2: 'M54 38 Q62 36 70 38' }
+      case 'thick':
+        return { strokeWidth: 3, d1: 'M30 38 Q38 35 46 38', d2: 'M54 38 Q62 35 70 38' }
+      case 'arched':
+        return { strokeWidth: 2, d1: 'M30 40 Q38 32 46 38', d2: 'M54 38 Q62 32 70 40' }
+      default:
+        return { strokeWidth: 2, d1: 'M30 38 L46 38', d2: 'M54 38 L70 38' }
+    }
+  }
+  
+  const eyebrowParams = getEyebrowPath()
   
   return (
     <div style={{
@@ -120,14 +193,44 @@ function AvatarPreview({ avatar }) {
       <svg viewBox="0 0 100 140" style={{ width: '100%', height: 'auto' }}>
         <defs>
           <clipPath id="headClip">
-            <ellipse cx="50" cy="45" rx="28" ry="32" />
+            <ellipse cx="50" cy={faceParams.cy} rx={faceParams.rx} ry={faceParams.ry} />
           </clipPath>
         </defs>
         
         <ellipse cx="50" cy="120" rx="35" ry="25" fill={clothing.color} />
         <rect x="15" y="95" width="70" height="45" rx="10" fill={clothing.color} />
         
-        <ellipse cx="50" cy="45" rx="28" ry="32" fill={skin.color} />
+        {(avatar.clothing === 'tank-top' || avatar.clothing === 'crop-top') && (
+          <>
+            <ellipse cx="35" cy="95" rx="8" ry="5" fill={skin.color} />
+            <ellipse cx="65" cy="95" rx="8" ry="5" fill={skin.color} />
+          </>
+        )}
+        
+        {avatar.clothing === 'vest' && (
+          <rect x="35" y="95" width="30" height="35" fill="#ecf0f1" />
+        )}
+        
+        {avatar.clothing === 'jacket' && (
+          <>
+            <rect x="15" y="95" width="15" height="45" rx="5" fill="#1a252f" />
+            <rect x="70" y="95" width="15" height="45" rx="5" fill="#1a252f" />
+          </>
+        )}
+        
+        {avatar.accessories === 'watch' && (
+          <rect x="8" y="115" width="8" height="10" rx="2" fill="#c0c0c0" stroke="#888" strokeWidth="1" />
+        )}
+        
+        {avatar.accessories === 'chain-necklace' && (
+          <path d="M30 92 Q50 100 70 92" stroke="#FFD700" strokeWidth="2" fill="none" />
+        )}
+        
+        <ellipse cx="50" cy={faceParams.cy} rx={faceParams.rx} ry={faceParams.ry} fill={skin.color} />
+        
+        {avatar.faceShape === 'heart' && (
+          <path d={`M50 ${faceParams.cy + faceParams.ry - 5} L42 ${faceParams.cy + faceParams.ry - 12} L58 ${faceParams.cy + faceParams.ry - 12} Z`} fill={skin.color} />
+        )}
         
         {!isBald && (
           <g>
@@ -163,16 +266,68 @@ function AvatarPreview({ avatar }) {
             {avatar.hairStyle === 'wavy' && (
               <path d="M20 35 Q35 10 50 15 Q65 10 80 35 Q85 50 80 65 Q70 45 50 20 Q30 45 20 65 Q15 50 20 35" fill={hair.color} />
             )}
+            {avatar.hairStyle === 'ponytail' && (
+              <>
+                <path d="M22 35 Q50 5 78 35 Q78 20 50 15 Q22 20 22 35" fill={hair.color} />
+                <ellipse cx="50" cy="8" rx="8" ry="6" fill={hair.color} />
+                <path d="M50 14 L50 -5" stroke={hair.color} strokeWidth="6" />
+              </>
+            )}
+            {avatar.hairStyle === 'pigtails' && (
+              <>
+                <path d="M22 35 Q50 5 78 35 Q78 20 50 15 Q22 20 22 35" fill={hair.color} />
+                <circle cx="18" cy="45" r="8" fill={hair.color} />
+                <circle cx="82" cy="45" r="8" fill={hair.color} />
+                <path d="M18 53 L15 80" stroke={hair.color} strokeWidth="5" />
+                <path d="M82 53 L85 80" stroke={hair.color} strokeWidth="5" />
+              </>
+            )}
+            {avatar.hairStyle === 'mohawk' && (
+              <path d="M45 35 L50 0 L55 35 Q55 25 50 20 Q45 25 45 35" fill={hair.color} />
+            )}
+            {avatar.hairStyle === 'dreads' && (
+              <>
+                <path d="M22 30 Q50 5 78 30" fill={hair.color} />
+                {[20, 30, 40, 50, 60, 70, 80].map((x, i) => (
+                  <path key={i} d={`M${x} 30 L${x + (i % 2 === 0 ? 3 : -3)} 75`} stroke={hair.color} strokeWidth="4" />
+                ))}
+              </>
+            )}
+            {avatar.hairStyle === 'cornrows' && (
+              <>
+                <path d="M22 30 Q50 5 78 30" fill={hair.color} />
+                {[30, 40, 50, 60, 70].map((x, i) => (
+                  <path key={i} d={`M${x} 15 L${x} 35`} stroke={hair.color} strokeWidth="2" strokeDasharray="2,2" />
+                ))}
+              </>
+            )}
+            {avatar.hairStyle === 'man-bun' && (
+              <>
+                <path d="M22 35 Q50 10 78 35 Q78 25 50 20 Q22 25 22 35" fill={hair.color} />
+                <circle cx="50" cy="10" r="10" fill={hair.color} />
+              </>
+            )}
+            {avatar.hairStyle === 'pixie' && (
+              <path d="M22 38 Q40 15 60 20 Q75 25 78 40 Q70 30 50 25 Q30 30 22 38" fill={hair.color} />
+            )}
+            {avatar.hairStyle === 'bob' && (
+              <path d="M18 40 Q50 5 82 40 Q85 60 80 70 L75 55 Q50 10 25 55 L20 70 Q15 60 18 40" fill={hair.color} />
+            )}
           </g>
         )}
         {avatar.hairStyle === 'buzzcut' && (
           <ellipse cx="50" cy="30" rx="26" ry="18" fill={hair.color} opacity="0.5" />
         )}
         
-        <ellipse cx="38" cy="45" rx="4" ry="3" fill="#2c1810" />
-        <ellipse cx="62" cy="45" rx="4" ry="3" fill="#2c1810" />
-        <ellipse cx="38" cy="44" rx="1.5" ry="1" fill="white" />
-        <ellipse cx="62" cy="44" rx="1.5" ry="1" fill="white" />
+        <path d={eyebrowParams.d1} stroke={hair.color} strokeWidth={eyebrowParams.strokeWidth} fill="none" strokeLinecap="round" />
+        <path d={eyebrowParams.d2} stroke={hair.color} strokeWidth={eyebrowParams.strokeWidth} fill="none" strokeLinecap="round" />
+        
+        <ellipse cx="38" cy="45" rx="4" ry="3" fill={eyeColorOpt.color} />
+        <ellipse cx="62" cy="45" rx="4" ry="3" fill={eyeColorOpt.color} />
+        <ellipse cx="38" cy="45" rx="2" ry="2" fill="#1a1a1a" />
+        <ellipse cx="62" cy="45" rx="2" ry="2" fill="#1a1a1a" />
+        <ellipse cx="39" cy="44" rx="1" ry="1" fill="white" />
+        <ellipse cx="63" cy="44" rx="1" ry="1" fill="white" />
         
         <ellipse cx="50" cy="55" rx="3" ry="2" fill={`color-mix(in srgb, ${skin.color} 70%, #8b4513)`} />
         
@@ -232,11 +387,38 @@ function AvatarPreview({ avatar }) {
             <rect x="25" y="8" width="50" height="12" rx="4" fill="#2c3e50" />
           </g>
         )}
+        {avatar.accessories === 'bandana' && (
+          <g>
+            <path d="M20 30 Q50 20 80 30 L78 38 Q50 28 22 38 Z" fill="#e74c3c" />
+            <path d="M78 30 L85 40" stroke="#e74c3c" strokeWidth="3" />
+          </g>
+        )}
+        {avatar.accessories === 'beanie' && (
+          <g>
+            <path d="M18 40 Q50 10 82 40 L80 32 Q50 5 20 32 Z" fill="#34495e" />
+            <ellipse cx="50" cy="10" rx="5" ry="5" fill="#34495e" />
+          </g>
+        )}
+        {avatar.accessories === 'cap-backwards' && (
+          <g>
+            <path d="M22 35 Q50 15 78 35 L75 28 Q50 10 25 28 Z" fill="#2c3e50" />
+            <rect x="20" y="30" width="15" height="8" rx="2" fill="#2c3e50" />
+          </g>
+        )}
         {avatar.accessories === 'earrings' && (
           <g>
             <circle cx="20" cy="55" r="3" fill="#f1c40f" />
             <circle cx="80" cy="55" r="3" fill="#f1c40f" />
           </g>
+        )}
+        {avatar.accessories === 'necklace' && (
+          <path d="M35 88 Q50 95 65 88" stroke="#f1c40f" strokeWidth="2" fill="none" />
+        )}
+        {avatar.accessories === 'rings' && (
+          <>
+            <circle cx="25" cy="125" r="2" fill="#f1c40f" stroke="#c0392b" strokeWidth="0.5" />
+            <circle cx="75" cy="125" r="2" fill="#c0c0c0" stroke="#3498db" strokeWidth="0.5" />
+          </>
         )}
       </svg>
       
@@ -306,9 +488,11 @@ function OptionSection({ title, options, selected, onSelect, type = 'icon' }) {
   )
 }
 
+export { avatarOptions, defaultAvatar, AvatarPreview }
+
 export default function AvatarCreator({ isOpen, onClose, onSave, isPremium = false }) {
   const [avatar, setAvatar] = useState(() => {
-    const saved = localStorage.getItem('pulse-custom-avatar')
+    const saved = localStorage.getItem('pulse-user-avatar')
     return saved ? JSON.parse(saved) : defaultAvatar
   })
   const [activeTab, setActiveTab] = useState('appearance')
@@ -318,7 +502,7 @@ export default function AvatarCreator({ isOpen, onClose, onSave, isPremium = fal
   }, [])
   
   const handleSave = useCallback(() => {
-    localStorage.setItem('pulse-custom-avatar', JSON.stringify(avatar))
+    localStorage.setItem('pulse-user-avatar', JSON.stringify(avatar))
     onSave?.(avatar)
     onClose?.()
   }, [avatar, onSave, onClose])
@@ -326,8 +510,11 @@ export default function AvatarCreator({ isOpen, onClose, onSave, isPremium = fal
   const handleRandomize = useCallback(() => {
     const random = {
       skinTone: avatarOptions.skinTone[Math.floor(Math.random() * avatarOptions.skinTone.length)].id,
+      faceShape: avatarOptions.faceShape[Math.floor(Math.random() * avatarOptions.faceShape.length)].id,
       hairStyle: avatarOptions.hairStyle[Math.floor(Math.random() * avatarOptions.hairStyle.length)].id,
       hairColor: avatarOptions.hairColor[Math.floor(Math.random() * avatarOptions.hairColor.length)].id,
+      eyeColor: avatarOptions.eyeColor[Math.floor(Math.random() * avatarOptions.eyeColor.length)].id,
+      eyebrowStyle: avatarOptions.eyebrowStyle[Math.floor(Math.random() * avatarOptions.eyebrowStyle.length)].id,
       facialHair: avatarOptions.facialHair[Math.floor(Math.random() * avatarOptions.facialHair.length)].id,
       bodyType: avatarOptions.bodyType[Math.floor(Math.random() * avatarOptions.bodyType.length)].id,
       clothing: avatarOptions.clothing[Math.floor(Math.random() * avatarOptions.clothing.length)].id,
@@ -342,6 +529,7 @@ export default function AvatarCreator({ isOpen, onClose, onSave, isPremium = fal
   
   const tabs = [
     { id: 'appearance', label: 'Appearance' },
+    { id: 'features', label: 'Features' },
     { id: 'style', label: 'Style' },
     { id: 'extras', label: 'Extras' }
   ]
@@ -492,6 +680,12 @@ export default function AvatarCreator({ isOpen, onClose, onSave, isPremium = fal
                     type="color"
                   />
                   <OptionSection
+                    title="Face Shape"
+                    options={avatarOptions.faceShape}
+                    selected={avatar.faceShape}
+                    onSelect={v => updateAvatar('faceShape', v)}
+                  />
+                  <OptionSection
                     title="Hair Style"
                     options={avatarOptions.hairStyle}
                     selected={avatar.hairStyle}
@@ -503,6 +697,24 @@ export default function AvatarCreator({ isOpen, onClose, onSave, isPremium = fal
                     selected={avatar.hairColor}
                     onSelect={v => updateAvatar('hairColor', v)}
                     type="color"
+                  />
+                </>
+              )}
+              
+              {activeTab === 'features' && (
+                <>
+                  <OptionSection
+                    title="Eye Color"
+                    options={avatarOptions.eyeColor}
+                    selected={avatar.eyeColor}
+                    onSelect={v => updateAvatar('eyeColor', v)}
+                    type="color"
+                  />
+                  <OptionSection
+                    title="Eyebrow Style"
+                    options={avatarOptions.eyebrowStyle}
+                    selected={avatar.eyebrowStyle}
+                    onSelect={v => updateAvatar('eyebrowStyle', v)}
                   />
                   <OptionSection
                     title="Facial Hair"
