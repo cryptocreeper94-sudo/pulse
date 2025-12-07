@@ -194,7 +194,7 @@ export default function HomeScreen() {
 
         {/* Featured Coin */}
         <LinearGradient
-          colors={['#FF006E', '#FFB703']}
+          colors={['#FF006E', '#9D4EDD']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.featuredContainer}
@@ -376,8 +376,13 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   menuItemActive: {
-    backgroundColor: '#1a2a4a',
-    borderColor: '#3861FB',
+    backgroundColor: '#0a1a2a',
+    borderColor: '#00D4FF',
+    shadowColor: '#00D4FF',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 4,
   },
   menuItemLogout: {
     borderColor: '#442222',
@@ -432,6 +437,11 @@ const styles = StyleSheet.create({
     padding: 12,
     alignItems: 'center',
     minHeight: 120,
+    shadowColor: '#00D4FF',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 3,
   },
   metricTitle: {
     fontSize: 11,
@@ -452,7 +462,7 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
   metricValueGreen: {
-    color: '#00FF41',
+    color: '#39FF14',
   },
   metricChange: {
     fontSize: 14,
@@ -460,7 +470,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   changePositive: {
-    color: '#00FF41',
+    color: '#39FF14',
   },
   changeNegative: {
     color: '#ff4444',
@@ -492,7 +502,12 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#FFB703'
+    borderColor: '#9D4EDD',
+    shadowColor: '#9D4EDD',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 15,
+    elevation: 8,
   },
   featuredLabel: {
     fontSize: 12,
@@ -561,6 +576,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#2a2a2a',
     borderRadius: 12,
+    shadowColor: '#00D4FF',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 5,
+    elevation: 2,
   },
   coinImage: {
     width: 100,

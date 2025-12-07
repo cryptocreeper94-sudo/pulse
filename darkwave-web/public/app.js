@@ -279,30 +279,30 @@ function unlockStakingPreview() {
     dashboard.style.display = 'block';
     
     // Populate with mock data
-    document.getElementById('dashTotalStaked').textContent = '25,000 PULSE';
+    document.getElementById('dashTotalStaked').textContent = '25,000 DWAV';
     document.getElementById('dashTotalStakedUSD').textContent = '$12,500.00';
     document.getElementById('dashActiveSince').textContent = 'Feb 14, 2026';
     document.getElementById('dashDaysActive').textContent = '45 days';
     document.getElementById('dashLockPeriod').textContent = '60 Days';
     document.getElementById('dashTimeRemaining').textContent = '15 days left';
-    document.getElementById('dashPendingRewards').textContent = '342.8 PULSE';
+    document.getElementById('dashPendingRewards').textContent = '342.8 DWAV';
     document.getElementById('dashPendingRewardsUSD').textContent = '$171.40';
     document.getElementById('dashCurrentAPY').textContent = '25%';
     document.getElementById('dashEffectiveAPY').textContent = '27.5% with bonuses';
-    document.getElementById('dashLifetimeEarnings').textContent = '1,847 PULSE';
+    document.getElementById('dashLifetimeEarnings').textContent = '1,847 DWAV';
     document.getElementById('dashLifetimeEarningsUSD').textContent = '$923.50';
-    document.getElementById('dashHourlyRate').textContent = '1.14 PULSE/hour';
+    document.getElementById('dashHourlyRate').textContent = '1.14 DWAV/hour';
     document.getElementById('dashNextReward').textContent = '00:42:18';
     document.getElementById('dashPoolUtilization').textContent = '67.3% Full';
     document.getElementById('dashUtilizationFill').style.width = '67%';
     document.getElementById('dashPoolShare').textContent = '0.082%';
-    document.getElementById('dashGlobalStaked').textContent = '30.5M PULSE';
+    document.getElementById('dashGlobalStaked').textContent = '30.5M DWAV';
     document.getElementById('dashTotalStakers').textContent = '1,247';
-    document.getElementById('calcWithout').textContent = '625 PULSE';
-    document.getElementById('calcWith').textContent = '658.2 PULSE';
-    document.getElementById('calcDiff').textContent = '+33.2 PULSE';
-    document.getElementById('chartPeriodTotal').textContent = '164.8 PULSE';
-    document.getElementById('chartAvgDaily').textContent = '23.5 PULSE';
+    document.getElementById('calcWithout').textContent = '625 DWAV';
+    document.getElementById('calcWith').textContent = '658.2 DWAV';
+    document.getElementById('calcDiff').textContent = '+33.2 DWAV';
+    document.getElementById('chartPeriodTotal').textContent = '164.8 DWAV';
+    document.getElementById('chartAvgDaily').textContent = '23.5 DWAV';
     
     // Set Gold pool tier
     const tierBadge = document.getElementById('activePoolTier');
@@ -333,7 +333,7 @@ function openStakingFeaturePopup(feature) {
             <li><strong>Cash Out Anytime:</strong> Claim hourly without waiting weeks</li>
           </ul>
         </div>
-        <p style="font-size: 13px; color: #888;">Example: 10,000 PULSE at 25% APY = ~2.85 PULSE earned every hour while you sleep.</p>
+        <p style="font-size: 13px; color: #888;">Example: 10,000 DWAV at 25% APY = ~2.85 DWAV earned every hour while you sleep.</p>
       `
     },
     apy: {
@@ -450,7 +450,7 @@ const POOL_APY = {
   platinum: 0.50   // 50%
 };
 
-const PULSE_PRICE_USD = 0.50; // $0.50 per PULSE (placeholder, will be live later)
+const DWAV_PRICE_USD = 0.50; // $0.50 per DWAV (placeholder, will be live later)
 
 function updateStakingCalculator() {
   const amount = parseFloat(document.getElementById('calcStakeAmount')?.value || 0);
@@ -459,10 +459,10 @@ function updateStakingCalculator() {
   
   if (!amount || amount <= 0) {
     // Reset to zeros if invalid amount
-    document.getElementById('calcHourlyEarn').textContent = '0 PULSE';
-    document.getElementById('calcDailyEarn').textContent = '0 PULSE';
-    document.getElementById('calcMonthlyEarn').textContent = '0 PULSE';
-    document.getElementById('calcTotalEarn').textContent = '0 PULSE';
+    document.getElementById('calcHourlyEarn').textContent = '0 DWAV';
+    document.getElementById('calcDailyEarn').textContent = '0 DWAV';
+    document.getElementById('calcMonthlyEarn').textContent = '0 DWAV';
+    document.getElementById('calcTotalEarn').textContent = '0 DWAV';
     document.getElementById('calcTotalUSD').textContent = '$0.00';
     return;
   }
@@ -482,11 +482,11 @@ function updateStakingCalculator() {
   const monthlyRate = hourlyRate * 24 * 30;
   
   // Format and display
-  document.getElementById('calcHourlyEarn').textContent = `${hourlyRate.toFixed(4)} PULSE`;
-  document.getElementById('calcDailyEarn').textContent = `${dailyRate.toFixed(2)} PULSE`;
-  document.getElementById('calcMonthlyEarn').textContent = `${monthlyRate.toFixed(2)} PULSE`;
-  document.getElementById('calcTotalEarn').textContent = `${totalEarned.toFixed(2)} PULSE`;
-  document.getElementById('calcTotalUSD').textContent = `$${(totalEarned * PULSE_PRICE_USD).toFixed(2)}`;
+  document.getElementById('calcHourlyEarn').textContent = `${hourlyRate.toFixed(4)} DWAV`;
+  document.getElementById('calcDailyEarn').textContent = `${dailyRate.toFixed(2)} DWAV`;
+  document.getElementById('calcMonthlyEarn').textContent = `${monthlyRate.toFixed(2)} DWAV`;
+  document.getElementById('calcTotalEarn').textContent = `${totalEarned.toFixed(2)} DWAV`;
+  document.getElementById('calcTotalUSD').textContent = `$${(totalEarned * DWAV_PRICE_USD).toFixed(2)}`;
 }
 
 function updateCompoundingCalc() {
