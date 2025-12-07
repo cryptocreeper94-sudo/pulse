@@ -1,4 +1,5 @@
 const menuItems = [
+  { id: 'dashboard', icon: '🏠', label: 'My Dashboard' },
   { id: 'markets', icon: '📊', label: 'Markets' },
   { id: 'projects', icon: '🚀', label: 'Projects' },
   { id: 'learn', icon: '💡', label: 'Learn' },
@@ -29,7 +30,7 @@ export default function HamburgerMenu({ isOpen, activeTab, onTabChange, onClose,
           <button
             className="menu-home-btn"
             onClick={() => {
-              onTabChange('markets')
+              onTabChange('dashboard')
               onClose()
             }}
           >

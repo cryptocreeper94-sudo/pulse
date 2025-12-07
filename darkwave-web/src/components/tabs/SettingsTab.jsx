@@ -4,9 +4,35 @@ import { useAvatar } from '../../context/AvatarContext'
 import MiniAvatar from '../ui/MiniAvatar'
 import AvatarCreator from '../ui/AvatarCreator'
 
-export default function SettingsTab() {
+export default function SettingsTab({ userId, userConfig, setUserConfig }) {
   const { avatar, mode, isCustomMode, toggleMode, setAvatarMode } = useAvatar()
   const [showAvatarCreator, setShowAvatarCreator] = useState(false)
+  const [landingTab, setLandingTab] = useState(userConfig?.defaultLandingTab || 'dashboard')
+  const [saving, setSaving] = useState(false)
+  
+  const handleLandingTabChange = async (newTab) => {
+    setLandingTab(newTab)
+    if (!userId) return
+    
+    setSaving(true)
+    try {
+      const response = await fetch(`/api/users/${userId}/dashboard`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ defaultLandingTab: newTab })
+      })
+      if (response.ok) {
+        const data = await response.json()
+        if (setUserConfig) {
+          setUserConfig(prev => ({ ...prev, defaultLandingTab: newTab }))
+        }
+      }
+    } catch (err) {
+      console.error('Failed to save landing tab:', err)
+    } finally {
+      setSaving(false)
+    }
+  }
   
   return (
     <div className="settings-tab">
@@ -17,6 +43,11 @@ export default function SettingsTab() {
             <div style={{ fontWeight: 700, marginBottom: 4 }}>
               {isCustomMode ? avatar.name || 'My Avatar' : 'Founder Account'}
             </div>
+            {userConfig?.hallmarkId && (
+              <div style={{ fontSize: 11, color: '#00D4FF', marginBottom: 2 }}>
+                {userConfig.hallmarkId}
+              </div>
+            )}
             <div style={{ fontSize: 12, color: '#39FF14' }}>✓ Beta V1 Access</div>
             <div style={{ fontSize: 11, color: '#888' }}>Member since 2025</div>
           </div>
@@ -166,6 +197,55 @@ export default function SettingsTab() {
                   borderRadius: '50%'
                 }} />
               </label>
+            </div>
+          </div>
+        </AccordionItem>
+        
+        <AccordionItem title="Dashboard Settings" icon="🏠" defaultOpen={true}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div>
+              <div style={{ fontWeight: 600, marginBottom: 8 }}>Default Landing Page</div>
+              <div style={{ fontSize: 11, color: '#888', marginBottom: 12 }}>
+                Choose which page to show when you open the app
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {[
+                  { id: 'dashboard', icon: '🏠', label: 'My Dashboard' },
+                  { id: 'markets', icon: '📊', label: 'Crypto Markets' },
+                  { id: 'portfolio', icon: '💼', label: 'Portfolio' },
+                  { id: 'projects', icon: '🚀', label: 'Projects' },
+                ].map(option => (
+                  <button
+                    key={option.id}
+                    onClick={() => handleLandingTabChange(option.id)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 10,
+                      padding: '12px 14px',
+                      background: landingTab === option.id ? 'rgba(0, 212, 255, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+                      border: landingTab === option.id ? '1px solid #00D4FF' : '1px solid rgba(255, 255, 255, 0.1)',
+                      borderRadius: 8,
+                      color: landingTab === option.id ? '#00D4FF' : '#ccc',
+                      cursor: 'pointer',
+                      fontSize: 13,
+                      fontWeight: landingTab === option.id ? 600 : 400,
+                      textAlign: 'left',
+                    }}
+                  >
+                    <span style={{ fontSize: 16 }}>{option.icon}</span>
+                    <span>{option.label}</span>
+                    {landingTab === option.id && (
+                      <span style={{ marginLeft: 'auto', fontSize: 14 }}>✓</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+              {saving && (
+                <div style={{ fontSize: 11, color: '#00D4FF', marginTop: 8 }}>
+                  Saving...
+                </div>
+              )}
             </div>
           </div>
         </AccordionItem>

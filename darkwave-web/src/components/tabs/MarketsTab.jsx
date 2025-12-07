@@ -3,8 +3,10 @@ import { Carousel, BentoGrid, BentoItem, CategoryPills, GaugeCard } from '../ui'
 import BitcoinChart from '../charts/BitcoinChart'
 import CoinAnalysisModal from '../modals/CoinAnalysisModal'
 import { fetchTopPredictions } from '../../services/api'
+import { useFavorites } from '../../context/FavoritesContext'
 
 const coinCategories = [
+  { id: 'favorites', icon: '⭐', label: 'Favorites' },
   { id: 'top', label: 'Top 10' },
   { id: 'meme', icon: '🎪', label: 'Memes' },
   { id: 'defi', icon: '💎', label: 'DeFi' },
@@ -42,17 +44,37 @@ function NewsCard({ source, title, time, url }) {
   )
 }
 
-function CoinRow({ coin, onClick }) {
+function CoinRow({ coin, onClick, isFavorite, onToggleFavorite }) {
   const isPositive = parseFloat(coin.change) > 0
   
   const handleClick = () => {
     if (onClick) onClick(coin)
   }
   
+  const handleFavoriteClick = (e) => {
+    e.stopPropagation()
+    if (onToggleFavorite) onToggleFavorite(coin)
+  }
+  
   return (
     <tr className="clickable-row" onClick={handleClick}>
       <td>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <button 
+            onClick={handleFavoriteClick}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: 16,
+              padding: 0,
+              color: isFavorite ? '#FFD700' : '#555',
+              transition: 'color 0.2s',
+            }}
+            title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          >
+            {isFavorite ? '★' : '☆'}
+          </button>
           <img 
             src={coin.logo} 
             alt={coin.name}
@@ -106,6 +128,7 @@ export default function MarketsTab() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [predictions, setPredictions] = useState([])
   const [predictionsLoading, setPredictionsLoading] = useState(true)
+  const { favorites, isFavorite, toggleFavorite, loading: favoritesLoading } = useFavorites()
   const [marketData, setMarketData] = useState({
     fearGreed: 65,
     altcoinSeason: 75,
@@ -116,11 +139,24 @@ export default function MarketsTab() {
     volumeFlow: 'inflow',
   })
   const [coins, setCoins] = useState([
-    { symbol: 'BTC', name: 'Bitcoin', logo: 'https://assets.coingecko.com/coins/images/1/large/bitcoin.png', price: '$97,234', change: '+2.3%', volume: '$28.5B' },
-    { symbol: 'ETH', name: 'Ethereum', logo: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png', price: '$3,845', change: '+1.8%', volume: '$12.1B' },
-    { symbol: 'SOL', name: 'Solana', logo: 'https://assets.coingecko.com/coins/images/4128/large/solana.png', price: '$242.50', change: '-0.5%', volume: '$2.3B' },
-    { symbol: 'BNB', name: 'BNB', logo: 'https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png', price: '$698.20', change: '+3.1%', volume: '$1.8B' },
+    { symbol: 'BTC', name: 'Bitcoin', id: 'bitcoin', logo: 'https://assets.coingecko.com/coins/images/1/large/bitcoin.png', price: '$97,234', change: '+2.3%', volume: '$28.5B' },
+    { symbol: 'ETH', name: 'Ethereum', id: 'ethereum', logo: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png', price: '$3,845', change: '+1.8%', volume: '$12.1B' },
+    { symbol: 'SOL', name: 'Solana', id: 'solana', logo: 'https://assets.coingecko.com/coins/images/4128/large/solana.png', price: '$242.50', change: '-0.5%', volume: '$2.3B' },
+    { symbol: 'BNB', name: 'BNB', id: 'binancecoin', logo: 'https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png', price: '$698.20', change: '+3.1%', volume: '$1.8B' },
+    { symbol: 'XRP', name: 'XRP', id: 'ripple', logo: 'https://assets.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png', price: '$2.35', change: '+5.2%', volume: '$4.2B' },
+    { symbol: 'ADA', name: 'Cardano', id: 'cardano', logo: 'https://assets.coingecko.com/coins/images/975/large/cardano.png', price: '$1.05', change: '+3.8%', volume: '$1.5B' },
+    { symbol: 'DOGE', name: 'Dogecoin', id: 'dogecoin', logo: 'https://assets.coingecko.com/coins/images/5/large/dogecoin.png', price: '$0.42', change: '+2.1%', volume: '$2.8B' },
+    { symbol: 'DOT', name: 'Polkadot', id: 'polkadot', logo: 'https://assets.coingecko.com/coins/images/12171/large/polkadot.png', price: '$8.45', change: '+1.9%', volume: '$890M' },
   ])
+  
+  const getDisplayedCoins = () => {
+    if (activeCategory === 'favorites') {
+      return coins.filter(coin => isFavorite(coin.symbol))
+    }
+    return coins
+  }
+  
+  const displayedCoins = getDisplayedCoins()
   const [news, setNews] = useState([
     { source: 'CoinDesk', title: 'Bitcoin Surges Past $97K as Institutional Demand Grows', time: '2h ago' },
     { source: 'Bloomberg', title: 'Ethereum ETF Sees Record Inflows', time: '4h ago' },
@@ -219,17 +255,27 @@ export default function MarketsTab() {
                 </tr>
               </thead>
               <tbody>
-                {coins.map(coin => (
-                  <CoinRow 
-                    key={coin.symbol} 
-                    coin={coin}
-                    onClick={(clickedCoin) => {
-                      console.log('Opening modal for:', clickedCoin.symbol)
-                      setSelectedCoin(clickedCoin)
-                      setIsModalOpen(true)
-                    }}
-                  />
-                ))}
+                {displayedCoins.length === 0 && activeCategory === 'favorites' ? (
+                  <tr>
+                    <td colSpan={4} style={{ textAlign: 'center', padding: '20px', color: '#888' }}>
+                      No favorites yet. Tap the ☆ on any coin to add it to your favorites!
+                    </td>
+                  </tr>
+                ) : (
+                  displayedCoins.map(coin => (
+                    <CoinRow 
+                      key={coin.symbol} 
+                      coin={coin}
+                      isFavorite={isFavorite(coin.symbol)}
+                      onToggleFavorite={toggleFavorite}
+                      onClick={(clickedCoin) => {
+                        console.log('Opening modal for:', clickedCoin.symbol)
+                        setSelectedCoin(clickedCoin)
+                        setIsModalOpen(true)
+                      }}
+                    />
+                  ))
+                )}
               </tbody>
             </table>
           </div>

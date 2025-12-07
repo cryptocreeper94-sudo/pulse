@@ -44,7 +44,7 @@ export default function Layout({ children, activeTab, onTabChange }) {
   }
 
   const handleHomeClick = () => {
-    onTabChange('markets')
+    onTabChange('dashboard')
   }
   
   return (
@@ -67,7 +67,7 @@ export default function Layout({ children, activeTab, onTabChange }) {
         {children}
       </main>
 
-      {activeTab !== 'markets' && (
+      {activeTab !== 'dashboard' && (
         <button 
           className="floating-home-btn"
           onClick={handleHomeClick}
