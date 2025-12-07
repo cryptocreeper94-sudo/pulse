@@ -5,22 +5,25 @@ let currentCatMode = 'normal';
 
 // ============================================
 // METRICS CAROUSEL - Mobile Navigation
+// Shows 2 cards at a time (pairs)
+// Pair 0: Fear & Greed + Altcoin Season
+// Pair 1: Market Cap + Volume
 // ============================================
-let currentMetricIndex = 0;
-const totalMetrics = 4;
+let currentMetricPair = 0;
+const totalPairs = 2;
 
 function navigateMetrics(direction) {
-  currentMetricIndex += direction;
+  currentMetricPair += direction;
   
   // Wrap around
-  if (currentMetricIndex < 0) currentMetricIndex = totalMetrics - 1;
-  if (currentMetricIndex >= totalMetrics) currentMetricIndex = 0;
+  if (currentMetricPair < 0) currentMetricPair = totalPairs - 1;
+  if (currentMetricPair >= totalPairs) currentMetricPair = 0;
   
   updateMetricsCarousel();
 }
 
 function goToMetric(index) {
-  currentMetricIndex = index;
+  currentMetricPair = index;
   updateMetricsCarousel();
 }
 
@@ -32,18 +35,17 @@ function updateMetricsCarousel() {
   
   // Only apply carousel on mobile
   if (window.innerWidth <= 768) {
-    const cardWidth = track.querySelector('.metric-card')?.offsetWidth || 0;
-    const containerWidth = track.parentElement?.offsetWidth || 0;
-    const offset = currentMetricIndex * containerWidth;
-    
-    track.style.transform = `translateX(-${offset}px)`;
+    // Each pair is 50% of the track (which is 200% wide)
+    // So we move 50% per pair
+    const offset = currentMetricPair * 50;
+    track.style.transform = `translateX(-${offset}%)`;
   } else {
     track.style.transform = 'none';
   }
   
   // Update dots
   dots.forEach((dot, i) => {
-    dot.classList.toggle('active', i === currentMetricIndex);
+    dot.classList.toggle('active', i === currentMetricPair);
   });
 }
 

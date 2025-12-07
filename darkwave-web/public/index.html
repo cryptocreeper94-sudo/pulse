@@ -44,7 +44,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/styles.css?v=1207a">
+  <link rel="stylesheet" href="/styles.css?v=1207b">
   <link rel="stylesheet" href="/design-system.css?v=1206a">
   <link rel="stylesheet" href="/themes.css?v=1206a">
   <link rel="stylesheet" href="/trading-carousel.css?v=1206a">
@@ -350,12 +350,10 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
       </button>
       
-      <!-- Pagination Dots -->
+      <!-- Pagination Dots (2 pairs) -->
       <div class="metrics-dots">
-        <span class="metrics-dot active" onclick="goToMetric(0)"></span>
-        <span class="metrics-dot" onclick="goToMetric(1)"></span>
-        <span class="metrics-dot" onclick="goToMetric(2)"></span>
-        <span class="metrics-dot" onclick="goToMetric(3)"></span>
+        <span class="metrics-dot active" onclick="goToMetric(0)" title="Fear & Greed + Altcoin Season"></span>
+        <span class="metrics-dot" onclick="goToMetric(1)" title="Market Cap + Volume"></span>
       </div>
     </div>
     </div><!-- End bento-item metrics-carousel -->
@@ -4652,7 +4650,7 @@ Thanks for being here — let's build something powerful together!</textarea>
   <script src="/subscription.js?v=1122"></script>
   <script src="/blockchain-trail.js?v=1122"></script>
   <script src="/dev-page.js?v=1122"></script>
-  <script src="/app.js?v=1207a"></script>
+  <script src="/app.js?v=1207b"></script>
   <script>
     // Initialize Fear & Greed gauge on load
     document.addEventListener('DOMContentLoaded', function() {

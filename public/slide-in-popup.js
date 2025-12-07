@@ -80,6 +80,26 @@ function showSlideInPopup(options) {
   `;
   
   speechBubble.innerHTML = `
+    <button id="slideInCloseBtn" style="
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #FF006E;
+      border: 2px solid #1a1a2e;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 2px 2px 0 #1a1a2e;
+      z-index: 10;
+      transition: transform 0.2s, background 0.2s;
+    " onmouseover="this.style.transform='scale(1.1)'; this.style.background='#FF4081'" onmouseout="this.style.transform='scale(1)'; this.style.background='#FF006E'">×</button>
     ${title ? `<div style="
       font-size: 16px;
       font-weight: 900;
@@ -119,12 +139,15 @@ function showSlideInPopup(options) {
   `;
   
   const characterImg = document.createElement('img');
-  characterImg.src = image;
+  // Try to use cutout version (transparent background) from trading-cards-cutouts folder
+  const cutoutPath = image.replace('/trading-cards/', '/trading-cards-cutouts/');
+  characterImg.src = cutoutPath;
   characterImg.alt = name || 'Character';
   characterImg.style.cssText = `
     height: 180px;
     width: auto;
     object-fit: contain;
+    background: transparent;
     filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 15px rgba(0, 212, 255, 0.3));
     cursor: pointer;
     transition: transform 0.3s ease;
@@ -137,8 +160,15 @@ function showSlideInPopup(options) {
     characterImg.style.transform = 'scale(1)';
   };
   
+  // If cutout doesn't exist, try original image, then fallback to Grumpy cat
   characterImg.onerror = () => {
-    characterImg.src = '/trading-cards-cutouts/Grumpy_cat_neutral_pose_ba4a1b4d.png';
+    if (characterImg.src.includes('/trading-cards-cutouts/')) {
+      // Try original image
+      characterImg.src = image;
+    } else {
+      // Final fallback
+      characterImg.src = '/trading-cards-cutouts/Grumpy_cat_neutral_pose_ba4a1b4d.png';
+    }
   };
   
   characterContainer.appendChild(characterImg);
@@ -220,6 +250,16 @@ function showSlideInPopup(options) {
   
   document.body.appendChild(container);
   
+  // Close button click handler
+  const closeBtn = document.getElementById('slideInCloseBtn');
+  if (closeBtn) {
+    closeBtn.onclick = (e) => {
+      e.stopPropagation();
+      closeSlideInPopup(direction);
+    };
+  }
+  
+  // Click anywhere on container also closes
   container.onclick = () => closeSlideInPopup(direction);
   
   slideInTimeout = setTimeout(() => closeSlideInPopup(direction), duration);

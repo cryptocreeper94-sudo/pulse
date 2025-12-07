@@ -1695,6 +1695,7 @@ body.theme-light .banner-title {
 
 /* ============================================ */
 /* MOBILE CAROUSEL - Arrow Navigation          */
+/* Shows 2 cards at a time (pairs)             */
 /* ============================================ */
 @media (max-width: 768px) {
   .metrics-carousel-container {
@@ -1706,21 +1707,23 @@ body.theme-light .banner-title {
     overflow: hidden;
   }
   
-  /* Track becomes horizontal scrolling */
+  /* Track becomes horizontal scrolling - 2 cards visible at a time */
   .metrics-carousel-track {
     display: flex;
-    gap: 0;
-    padding: 8px 0;
+    flex-wrap: nowrap;
+    gap: 8px;
+    padding: 8px 16px;
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 200%; /* 2 pages of 2 cards each */
   }
   
-  /* Each card takes full width on mobile */
+  /* Each card takes ~half width (2 visible at a time) */
   .metric-card {
-    flex: 0 0 calc(100% - 80px);
-    margin: 0 40px;
-    aspect-ratio: 5 / 4;
+    flex: 0 0 calc(50% - 44px);
+    margin: 0 4px;
+    aspect-ratio: 1;
     min-height: auto;
-    padding: 24px 20px;
+    padding: 16px 12px;
   }
   
   .metric-card-title {
