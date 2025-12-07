@@ -6,7 +6,8 @@ import {
   LearnTab, 
   PortfolioTab, 
   StakingTab, 
-  SettingsTab 
+  SettingsTab,
+  V2DetailsTab
 } from './components/tabs'
 import './styles/components.css'
 
@@ -27,6 +28,8 @@ function App() {
         return <StakingTab />
       case 'settings':
         return <SettingsTab />
+      case 'v2-details':
+        return <V2DetailsTab />
       default:
         return <MarketsTab />
     }

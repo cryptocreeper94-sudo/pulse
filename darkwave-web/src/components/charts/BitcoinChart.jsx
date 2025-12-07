@@ -62,6 +62,8 @@ export default function BitcoinChart() {
   const chartContainerRef = useRef(null)
   const chartRef = useRef(null)
   const seriesRef = useRef(null)
+  const basePriceRef = useRef(null)
+  const dataRef = useRef([])
   
   const [chartType, setChartType] = useState('candlestick')
   const [timeframe, setTimeframe] = useState('7D')
@@ -92,6 +94,8 @@ export default function BitcoinChart() {
             }
             
             if (prev.length === 0) {
+              basePriceRef.current = price
+              dataRef.current = [newPoint]
               return [newPoint]
             }
             
@@ -107,13 +111,13 @@ export default function BitcoinChart() {
               if (updated.length > 120) updated.shift()
             }
             
+            dataRef.current = updated
             return updated
           })
           
           setLastPrice(price)
-          if (data.length > 0) {
-            const firstPrice = data[0].open
-            const change = ((price - firstPrice) / firstPrice) * 100
+          if (basePriceRef.current) {
+            const change = ((price - basePriceRef.current) / basePriceRef.current) * 100
             setPriceChange(change.toFixed(2))
           }
         }
@@ -121,10 +125,13 @@ export default function BitcoinChart() {
     } catch (err) {
       console.log('Live price fetch error')
     }
-  }, [data])
+  }, [])
 
   const fetchData = useCallback(async () => {
     const selectedTimeframe = TIMEFRAMES.find(t => t.id === timeframe)
+    
+    basePriceRef.current = null
+    dataRef.current = []
     
     if (selectedTimeframe.isLive) {
       setData([])
@@ -137,6 +144,8 @@ export default function BitcoinChart() {
         const apiData = await response.json()
         if (apiData && apiData.length > 0) {
           setData(apiData)
+          dataRef.current = apiData
+          if (apiData[0]) basePriceRef.current = apiData[0].open
           return
         }
       }
@@ -145,7 +154,10 @@ export default function BitcoinChart() {
     }
     
     const numDays = selectedTimeframe.days === 'max' ? 1825 : selectedTimeframe.days
-    setData(generateSampleData(numDays))
+    const sampleData = generateSampleData(numDays)
+    setData(sampleData)
+    dataRef.current = sampleData
+    if (sampleData[0]) basePriceRef.current = sampleData[0].open
   }, [timeframe])
 
   useEffect(() => {
@@ -164,8 +176,9 @@ export default function BitcoinChart() {
     }
   }, [fetchData, fetchLivePrice, timeframe])
 
+  // Initialize chart only when chartType or colors change (not on every data update)
   useEffect(() => {
-    if (!chartContainerRef.current || data.length === 0) return
+    if (!chartContainerRef.current) return
 
     let chart = null
     let isActive = true
@@ -176,6 +189,7 @@ export default function BitcoinChart() {
           chartRef.current.remove()
         } catch (e) {}
         chartRef.current = null
+        seriesRef.current = null
       }
 
       chart = createChart(chartContainerRef.current, {
@@ -209,7 +223,7 @@ export default function BitcoinChart() {
         timeScale: {
           borderColor: 'rgba(255, 255, 255, 0.1)',
           timeVisible: true,
-          secondsVisible: false,
+          secondsVisible: true,
         },
         handleScale: { mouseWheel: true, pinch: true },
         handleScroll: { mouseWheel: true, pressedMouseMove: true },
@@ -243,22 +257,6 @@ export default function BitcoinChart() {
 
       seriesRef.current = series
 
-      if (chartType === 'candlestick') {
-        series.setData(data)
-      } else {
-        series.setData(data.map(d => ({ time: d.time, value: d.close })))
-      }
-
-      if (data.length > 0) {
-        const latest = data[data.length - 1]
-        const first = data[0]
-        setLastPrice(latest.close)
-        const change = ((latest.close - first.open) / first.open) * 100
-        setPriceChange(change.toFixed(2))
-      }
-
-      chart.timeScale().fitContent()
-
       const handleResize = () => {
         if (chartContainerRef.current && chartRef.current) {
           try {
@@ -282,11 +280,37 @@ export default function BitcoinChart() {
           } catch (e) {}
         }
         chartRef.current = null
+        seriesRef.current = null
       }
     } catch (err) {
       console.log('Chart initialization error:', err)
     }
-  }, [data, chartType, colors])
+  }, [chartType, colors])
+
+  // Update data without recreating chart - prevents 1S flashing
+  useEffect(() => {
+    if (!seriesRef.current || data.length === 0) return
+
+    try {
+      if (chartType === 'candlestick') {
+        seriesRef.current.setData(data)
+      } else {
+        seriesRef.current.setData(data.map(d => ({ time: d.time, value: d.close })))
+      }
+
+      const latest = data[data.length - 1]
+      const first = data[0]
+      setLastPrice(latest.close)
+      const change = ((latest.close - first.open) / first.open) * 100
+      setPriceChange(change.toFixed(2))
+
+      if (chartRef.current) {
+        chartRef.current.timeScale().fitContent()
+      }
+    } catch (err) {
+      console.log('Chart data update error:', err)
+    }
+  }, [data, chartType])
 
   const toggleFullscreen = () => {
     setIsFullscreen(!isFullscreen)

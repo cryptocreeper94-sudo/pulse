@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Carousel, CategoryPills, Accordion, AccordionItem } from '../ui'
 
 const coinCategories = [
@@ -33,6 +33,41 @@ const projectCoins = {
   ],
 }
 
+const agentStyles = [
+  { id: 'pixar', label: 'Friendly', icon: '😊' },
+  { id: 'serious', label: 'Professional', icon: '🕶️' },
+  { id: 'anime', label: 'Anime', icon: '✨' },
+  { id: 'headshot', label: 'Headshots', icon: '👤' },
+]
+
+const agents = [
+  { id: 1, name: 'Devon', specialty: 'Market Analysis', slug: 'devon', fallback: '/trading-cards-cutouts/caucasian_brown-haired_male.png' },
+  { id: 2, name: 'Claire', specialty: 'Technical Trading', slug: 'claire', fallback: '/trading-cards-cutouts/caucasian_blonde_female.png' },
+  { id: 3, name: 'Marcus', specialty: 'Risk Management', slug: 'marcus', fallback: '/trading-cards-cutouts/african_american_bald_male.png' },
+  { id: 4, name: 'Aria', specialty: 'DeFi Expert', slug: 'aria', fallback: '/trading-cards-cutouts/asian_female_agent.png' },
+  { id: 5, name: 'Jin', specialty: 'Altcoin Hunter', slug: 'jin', fallback: '/trading-cards-cutouts/asian_male_agent_headshot.png' },
+  { id: 6, name: 'Sophia', specialty: 'Macro Analysis', slug: 'sophia', fallback: '/trading-cards-cutouts/latina_female_agent.png' },
+  { id: 7, name: 'Rafael', specialty: 'Whale Tracker', slug: 'rafael', fallback: '/trading-cards-cutouts/latino_male_agent.png' },
+  { id: 8, name: 'Zara', specialty: 'NFT Analytics', slug: 'zara', fallback: '/trading-cards-cutouts/african_american_female_agent.png' },
+  { id: 9, name: 'Blake', specialty: 'Meme Coin Expert', slug: 'blake', fallback: '/trading-cards-cutouts/caucasian_redhead_male_agent.png' },
+  { id: 10, name: 'Luna', specialty: 'Sentiment Analysis', slug: 'luna', fallback: '/trading-cards-cutouts/mixed_asian-caucasian_female.png' },
+  { id: 11, name: 'Kai', specialty: 'Derivatives', slug: 'kai', fallback: '/trading-cards-cutouts/mixed_asian-caucasian_male.png' },
+  { id: 12, name: 'Maya', specialty: 'Yield Farming', slug: 'maya', fallback: '/trading-cards-cutouts/mixed_black-caucasian_female.png' },
+  { id: 13, name: 'Jasper', specialty: 'Layer 2 Expert', slug: 'jasper', fallback: '/trading-cards-cutouts/mixed_black-caucasian_male.png' },
+  { id: 14, name: 'Nina', specialty: 'Stablecoin Strategy', slug: 'nina', fallback: '/trading-cards-cutouts/mixed_black-latina_female.png' },
+  { id: 15, name: 'Carlos', specialty: 'Exchange Arbitrage', slug: 'carlos', fallback: '/trading-cards-cutouts/mixed_black-latino_male.png' },
+  { id: 16, name: 'Jade', specialty: 'Airdrop Hunter', slug: 'jade', fallback: '/trading-cards-cutouts/mixed_latina-asian_female.png' },
+  { id: 17, name: 'Eli', specialty: 'Smart Money Flow', slug: 'eli', fallback: '/trading-cards-cutouts/mixed_latino-asian_male.png' },
+  { id: 18, name: 'CryptoCat', specialty: 'Head Analyst', slug: 'cryptocat', fallback: '/trading-cards-cutouts/Grumpy_orange_Crypto_Cat_ac1ff7e8.png' },
+]
+
+function getAgentImage(agent, style) {
+  if (style === 'headshot') {
+    return agent.fallback
+  }
+  return `/agents/${style}/${agent.slug}.png`
+}
+
 function CoinCard({ coin, onClick }) {
   return (
     <div className="coin-card" onClick={() => onClick?.(coin)}>
@@ -48,39 +83,107 @@ function CoinCard({ coin, onClick }) {
   )
 }
 
-function AgentCard({ agent }) {
+function AgentCard({ agent, style }) {
+  const imageSrc = getAgentImage(agent, style)
+  const isFullBody = style !== 'headshot'
+  
   return (
-    <div className="card" style={{ width: 140, textAlign: 'center' }}>
+    <div className="agent-card" style={{ 
+      width: isFullBody ? 160 : 140, 
+      textAlign: 'center',
+      background: 'linear-gradient(145deg, #1a1a1a, #0f0f0f)',
+      borderRadius: 12,
+      padding: '12px 8px',
+      border: '1px solid rgba(255,255,255,0.1)',
+      transition: 'all 0.3s ease',
+      cursor: 'pointer'
+    }}>
       <div style={{ 
-        width: 60, 
-        height: 60, 
-        borderRadius: '50%', 
+        width: isFullBody ? 120 : 80, 
+        height: isFullBody ? 160 : 80, 
+        borderRadius: isFullBody ? 12 : '50%', 
         background: 'linear-gradient(135deg, #00D4FF, #9D4EDD)',
-        margin: '0 auto 8px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontSize: 24
+        margin: '0 auto 10px',
+        overflow: 'hidden',
+        border: '2px solid rgba(0, 212, 255, 0.5)',
+        boxShadow: '0 0 20px rgba(0, 212, 255, 0.3)'
       }}>
-        👤
+        <img 
+          src={imageSrc} 
+          alt={agent.name}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: 'top center'
+          }}
+          onError={(e) => {
+            if (e.target.dataset.triedFallback !== 'true') {
+              e.target.dataset.triedFallback = 'true'
+              e.target.src = agent.fallback
+            } else {
+              e.target.style.display = 'none'
+              e.target.parentElement.innerHTML = '<span style="font-size:32px;display:flex;align-items:center;justify-content:center;height:100%;">👤</span>'
+            }
+          }}
+        />
       </div>
-      <div style={{ fontSize: 12, fontWeight: 700 }}>{agent.name}</div>
-      <div style={{ fontSize: 10, color: '#888' }}>{agent.specialty}</div>
+      <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', marginBottom: 2 }}>{agent.name}</div>
+      <div style={{ fontSize: 10, color: '#00D4FF', fontWeight: 600 }}>{agent.specialty}</div>
+    </div>
+  )
+}
+
+function StylePicker({ activeStyle, onSelect }) {
+  return (
+    <div style={{ 
+      display: 'flex', 
+      gap: 6, 
+      marginBottom: 12,
+      overflowX: 'auto',
+      paddingBottom: 4
+    }}>
+      {agentStyles.map(style => (
+        <button
+          key={style.id}
+          onClick={() => onSelect(style.id)}
+          style={{
+            padding: '6px 12px',
+            background: activeStyle === style.id 
+              ? 'linear-gradient(135deg, #00D4FF, #9D4EDD)'
+              : 'rgba(255,255,255,0.05)',
+            border: activeStyle === style.id 
+              ? 'none'
+              : '1px solid rgba(255,255,255,0.1)',
+            borderRadius: 20,
+            color: activeStyle === style.id ? '#000' : '#fff',
+            fontSize: 11,
+            fontWeight: 600,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+            whiteSpace: 'nowrap',
+            transition: 'all 0.2s ease'
+          }}
+        >
+          <span>{style.icon}</span>
+          <span>{style.label}</span>
+        </button>
+      ))}
     </div>
   )
 }
 
 export default function ProjectsTab() {
   const [activeCategory, setActiveCategory] = useState('cryptocat')
+  const [agentStyle, setAgentStyle] = useState(() => {
+    return localStorage.getItem('pulse-agent-style') || 'pixar'
+  })
   
-  const agents = [
-    { id: 1, name: 'Devon', specialty: 'Market Analysis' },
-    { id: 2, name: 'Claire', specialty: 'Technical Trading' },
-    { id: 3, name: 'Marcus', specialty: 'Risk Management' },
-    { id: 4, name: 'Aria', specialty: 'DeFi Expert' },
-    { id: 5, name: 'Jin', specialty: 'Altcoin Hunter' },
-    { id: 6, name: 'Sophia', specialty: 'Macro Analysis' },
-  ]
+  useEffect(() => {
+    localStorage.setItem('pulse-agent-style', agentStyle)
+  }, [agentStyle])
   
   const handleCoinClick = (coin) => {
     console.log('Open coin details for', coin.name)
@@ -110,13 +213,15 @@ export default function ProjectsTab() {
       </div>
       
       <div className="section-box mb-md">
-        <div className="section-header">
+        <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
           <h3 className="section-title">🕵️ Agent Series</h3>
+          <div style={{ fontSize: 10, color: '#888' }}>Choose your style</div>
         </div>
         <div className="section-content">
-          <Carousel itemWidth={140}>
+          <StylePicker activeStyle={agentStyle} onSelect={setAgentStyle} />
+          <Carousel itemWidth={agentStyle === 'headshot' ? 140 : 160}>
             {agents.map(agent => (
-              <AgentCard key={agent.id} agent={agent} />
+              <AgentCard key={agent.id} agent={agent} style={agentStyle} />
             ))}
           </Carousel>
         </div>

@@ -5,6 +5,7 @@ const menuItems = [
   { id: 'portfolio', icon: '📈', label: 'Portfolio' },
   { id: 'staking', icon: '💎', label: 'Staking' },
   { id: 'settings', icon: '⚙️', label: 'Settings' },
+  { id: 'v2-details', icon: '📅', label: 'V2 Details', highlight: true },
 ]
 
 const quickActions = [
