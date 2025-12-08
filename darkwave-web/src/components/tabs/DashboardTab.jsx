@@ -478,12 +478,16 @@ function Footer() {
   return (
     <div style={{
       textAlign: 'center',
-      padding: '16px 12px',
+      padding: '10px 12px',
       borderTop: '1px solid #222',
       marginTop: 8,
-      color: '#555',
-      fontSize: 10,
-      fontWeight: 500
+      color: '#888',
+      fontSize: 12,
+      fontWeight: 500,
+      height: 36,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
     }}>
       Powered by DarkWave Studios, LLC © 2025 | v2.0.6
     </div>
