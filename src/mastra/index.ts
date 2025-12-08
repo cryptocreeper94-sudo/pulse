@@ -43,6 +43,7 @@ import { predictionTrackingService } from "../services/predictionTrackingService
 import { predictionLearningService } from "../services/predictionLearningService.js";
 import { ecosystemService } from "../services/ecosystemService.js";
 import { inngest as inngestClient } from "./inngest/client";
+import { sniperBotRoutes } from "./routes/sniperBotRoutes";
 
 class ProductionPinoLogger extends MastraLogger {
   protected logger: pino.Logger;
@@ -5730,6 +5731,8 @@ export const mastra = new Mastra({
           return c.text('File not found', 404);
         }
       },
+      // Sniper Bot API Routes
+      ...sniperBotRoutes,
     ],
   },
   logger:

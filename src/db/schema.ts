@@ -548,3 +548,217 @@ export const userDashboardConfigs = pgTable('user_dashboard_configs', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
+
+// ============================================
+// AI SNIPER BOT SYSTEM
+// Token discovery, safety analysis, trade execution
+// ============================================
+
+// User Wallets - Connected wallets for trading
+export const userWallets = pgTable('user_wallets', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  
+  // Wallet Details
+  address: varchar('address', { length: 255 }).notNull(),
+  chain: varchar('chain', { length: 50 }).notNull().default('solana'), // 'solana' | 'ethereum' | etc.
+  nickname: varchar('nickname', { length: 100 }), // Optional friendly name
+  
+  // Connection Status
+  isConnected: boolean('is_connected').default(false),
+  isPrimary: boolean('is_primary').default(false), // Primary trading wallet
+  lastConnectedAt: timestamp('last_connected_at'),
+  
+  // Balance Cache (updated periodically)
+  solBalance: varchar('sol_balance', { length: 50 }), // SOL balance
+  lastBalanceUpdate: timestamp('last_balance_update'),
+  
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// Snipe Presets - Saved filter configurations
+export const snipePresets = pgTable('snipe_presets', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  
+  // Preset Identity
+  name: varchar('name', { length: 100 }).notNull(),
+  description: text('description'),
+  isDefault: boolean('is_default').default(false),
+  
+  // Mode
+  mode: varchar('mode', { length: 20 }).notNull().default('simple'), // 'simple' | 'advanced'
+  
+  // === TOKEN SAFETY FILTERS (What to AVOID) ===
+  maxBotPercent: integer('max_bot_percent').default(80), // Skip if bot % > this
+  maxBundlePercent: integer('max_bundle_percent').default(50), // Bundle detection threshold
+  maxTop10HoldersPercent: integer('max_top10_holders_percent').default(80), // Concentration limit
+  minLiquidityUsd: integer('min_liquidity_usd').default(5000), // Minimum liquidity depth
+  checkCreatorWallet: boolean('check_creator_wallet').default(true), // Check creator history
+  
+  // === TOKEN DISCOVERY FILTERS (What to LOOK FOR) ===
+  minTokenAgeMinutes: integer('min_token_age_minutes').default(5), // Minimum age
+  maxTokenAgeMinutes: integer('max_token_age_minutes').default(1440), // Maximum age (24hrs default)
+  minHolders: integer('min_holders').default(50), // Minimum holder count
+  minWatchers: integer('min_watchers').default(10), // Minimum real people watching
+  
+  // === MOVEMENT FILTERS (Critical for finding momentum) ===
+  minPriceChangePercent: varchar('min_price_change_percent', { length: 20 }).default('1.5'), // Min % move in timeframe
+  movementTimeframeMinutes: integer('movement_timeframe_minutes').default(5), // Timeframe for movement check
+  minVolumeMultiplier: varchar('min_volume_multiplier', { length: 20 }).default('2'), // Volume spike threshold (2x, 5x, 10x)
+  minTradesPerMinute: integer('min_trades_per_minute').default(5), // Trade frequency
+  minBuySellRatio: varchar('min_buy_sell_ratio', { length: 20 }).default('1.2'), // More buyers than sellers
+  minHolderGrowthPercent: varchar('min_holder_growth_percent', { length: 20 }).default('5'), // Holder growth rate
+  
+  // === DEX PREFERENCES ===
+  enabledDexes: text('enabled_dexes'), // JSON array: ['raydium', 'pumpfun', 'jupiter', 'orca', 'meteora']
+  preferredDex: varchar('preferred_dex', { length: 50 }).default('jupiter'), // Primary DEX for swaps
+  
+  // === TRADE EXECUTION CONTROLS ===
+  buyAmountSol: varchar('buy_amount_sol', { length: 50 }).default('0.5'), // Default buy amount
+  slippagePercent: varchar('slippage_percent', { length: 20 }).default('5'), // Slippage tolerance
+  priorityFee: varchar('priority_fee', { length: 20 }).default('auto'), // 'low' | 'medium' | 'high' | 'auto'
+  takeProfitPercent: varchar('take_profit_percent', { length: 20 }).default('50'), // Exit at +X%
+  stopLossPercent: varchar('stop_loss_percent', { length: 20 }).default('20'), // Exit at -X%
+  trailingStopPercent: varchar('trailing_stop_percent', { length: 20 }), // Optional trailing stop
+  
+  // === SMART AUTO MODE SETTINGS ===
+  maxTradesPerSession: integer('max_trades_per_session').default(10),
+  maxSolPerSession: varchar('max_sol_per_session', { length: 50 }).default('5'), // Max SOL to spend
+  cooldownSeconds: integer('cooldown_seconds').default(60), // Wait between trades
+  maxConsecutiveLosses: integer('max_consecutive_losses').default(3), // Auto-stop trigger
+  
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// Snipe Orders - Active/pending order configurations
+export const snipeOrders = pgTable('snipe_orders', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  walletId: varchar('wallet_id', { length: 255 }).notNull(), // Reference to userWallets
+  presetId: varchar('preset_id', { length: 255 }), // Optional preset used
+  
+  // Order Type
+  orderType: varchar('order_type', { length: 50 }).notNull(), // 'snipe' | 'limit' | 'auto'
+  
+  // Target Token (for specific snipes, null for discovery mode)
+  targetTokenAddress: varchar('target_token_address', { length: 255 }),
+  targetTokenSymbol: varchar('target_token_symbol', { length: 50 }),
+  targetTokenName: varchar('target_token_name', { length: 255 }),
+  
+  // Filter Snapshot (copy of active filters at order creation)
+  filterSnapshot: text('filter_snapshot').notNull(), // JSON of all filter settings
+  
+  // Trade Parameters
+  buyAmountSol: varchar('buy_amount_sol', { length: 50 }).notNull(),
+  slippagePercent: varchar('slippage_percent', { length: 20 }).notNull(),
+  priorityFee: varchar('priority_fee', { length: 20 }).notNull(),
+  takeProfitPercent: varchar('take_profit_percent', { length: 20 }),
+  stopLossPercent: varchar('stop_loss_percent', { length: 20 }),
+  
+  // Smart Auto Mode
+  isAutoMode: boolean('is_auto_mode').default(false),
+  maxTradesRemaining: integer('max_trades_remaining'),
+  maxSolRemaining: varchar('max_sol_remaining', { length: 50 }),
+  tradesExecuted: integer('trades_executed').default(0),
+  consecutiveLosses: integer('consecutive_losses').default(0),
+  
+  // Status
+  status: varchar('status', { length: 50 }).notNull().default('active'), // 'active' | 'paused' | 'completed' | 'cancelled' | 'expired'
+  statusReason: text('status_reason'), // Why it was stopped
+  
+  // Scheduling
+  expiresAt: timestamp('expires_at'), // Optional expiration
+  
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  completedAt: timestamp('completed_at'),
+});
+
+// Snipe Executions - Individual trade outcomes
+export const snipeExecutions = pgTable('snipe_executions', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  orderId: varchar('order_id', { length: 255 }).notNull(), // Reference to snipeOrders
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  
+  // Token Details
+  tokenAddress: varchar('token_address', { length: 255 }).notNull(),
+  tokenSymbol: varchar('token_symbol', { length: 50 }).notNull(),
+  tokenName: varchar('token_name', { length: 255 }),
+  
+  // Trade Execution
+  dex: varchar('dex', { length: 50 }).notNull(), // Which DEX was used
+  txSignature: varchar('tx_signature', { length: 128 }), // Solana transaction signature
+  
+  // Entry Details
+  entryPriceUsd: varchar('entry_price_usd', { length: 50 }),
+  entryPriceSol: varchar('entry_price_sol', { length: 50 }),
+  amountSolSpent: varchar('amount_sol_spent', { length: 50 }).notNull(),
+  tokensReceived: varchar('tokens_received', { length: 100 }),
+  actualSlippage: varchar('actual_slippage', { length: 20 }),
+  
+  // Exit Details (null until position closed)
+  exitPriceUsd: varchar('exit_price_usd', { length: 50 }),
+  exitPriceSol: varchar('exit_price_sol', { length: 50 }),
+  exitTxSignature: varchar('exit_tx_signature', { length: 128 }),
+  exitReason: varchar('exit_reason', { length: 50 }), // 'take_profit' | 'stop_loss' | 'manual' | 'trailing_stop'
+  
+  // Performance
+  pnlSol: varchar('pnl_sol', { length: 50 }), // Profit/loss in SOL
+  pnlUsd: varchar('pnl_usd', { length: 50 }), // Profit/loss in USD
+  pnlPercent: varchar('pnl_percent', { length: 20 }), // % change
+  holdDurationSeconds: integer('hold_duration_seconds'),
+  
+  // Token Safety Metrics at Entry (for learning)
+  safetyMetrics: text('safety_metrics'), // JSON: { botPercent, bundlePercent, top10Percent, liquidity, holderCount }
+  movementMetrics: text('movement_metrics'), // JSON: { priceChange, volumeMultiplier, tradesPerMin, buySellRatio }
+  
+  // AI Analysis
+  aiRecommendation: varchar('ai_recommendation', { length: 50 }), // What AI suggested
+  aiConfidence: varchar('ai_confidence', { length: 20 }),
+  aiReasoning: text('ai_reasoning'),
+  
+  // Status
+  status: varchar('status', { length: 50 }).notNull().default('pending'), // 'pending' | 'executed' | 'failed' | 'holding' | 'closed'
+  errorMessage: text('error_message'),
+  
+  // Timestamps
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  executedAt: timestamp('executed_at'),
+  closedAt: timestamp('closed_at'),
+});
+
+// Sniper Bot Session Stats - Aggregated performance metrics
+export const sniperSessionStats = pgTable('sniper_session_stats', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  
+  // Session Window
+  sessionDate: timestamp('session_date').notNull(), // Date of session
+  
+  // Trade Counts
+  totalTrades: integer('total_trades').notNull().default(0),
+  winningTrades: integer('winning_trades').notNull().default(0),
+  losingTrades: integer('losing_trades').notNull().default(0),
+  
+  // Performance
+  winRate: varchar('win_rate', { length: 20 }),
+  totalPnlSol: varchar('total_pnl_sol', { length: 50 }),
+  totalPnlUsd: varchar('total_pnl_usd', { length: 50 }),
+  avgPnlPercent: varchar('avg_pnl_percent', { length: 20 }),
+  bestTradePnl: varchar('best_trade_pnl', { length: 50 }),
+  worstTradePnl: varchar('worst_trade_pnl', { length: 50 }),
+  
+  // Volume
+  totalSolSpent: varchar('total_sol_spent', { length: 50 }),
+  totalSolReturned: varchar('total_sol_returned', { length: 50 }),
+  
+  // Learning Metrics
+  avgHoldDuration: integer('avg_hold_duration'), // Seconds
+  mostProfitableDex: varchar('most_profitable_dex', { length: 50 }),
+  
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});

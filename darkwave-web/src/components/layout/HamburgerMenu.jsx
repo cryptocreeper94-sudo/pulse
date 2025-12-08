@@ -1,6 +1,7 @@
 const menuItems = [
   { id: 'dashboard', icon: '🏠', label: 'My Dashboard' },
   { id: 'markets', icon: '📊', label: 'Markets' },
+  { id: 'sniper', icon: '🎯', label: 'Sniper Bot', highlight: true },
   { id: 'projects', icon: '🚀', label: 'Projects' },
   { id: 'learn', icon: '💡', label: 'Learn' },
   { id: 'portfolio', icon: '📈', label: 'Portfolio' },
