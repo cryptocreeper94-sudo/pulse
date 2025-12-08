@@ -312,6 +312,13 @@ function ChartWidget() {
   )
 }
 
+const NEWS_IMAGES = [
+  '/assets/news/bitcoin_cryptocurren_e03615e0.jpg',
+  '/assets/news/bitcoin_cryptocurren_49ee9303.jpg',
+  '/assets/news/bitcoin_cryptocurren_56c58d38.jpg',
+  '/assets/news/bitcoin_cryptocurren_766043e0.jpg',
+]
+
 function NewsCarousel({ news, currentIndex, onNext, onPrev }) {
   if (!news || news.length === 0) {
     return (
@@ -331,6 +338,7 @@ function NewsCarousel({ news, currentIndex, onNext, onPrev }) {
   }
 
   const currentNews = news[currentIndex]
+  const newsImage = currentNews.image || NEWS_IMAGES[currentIndex % NEWS_IMAGES.length]
 
   return (
     <div style={{ 
@@ -350,42 +358,52 @@ function NewsCarousel({ news, currentIndex, onNext, onPrev }) {
         <span style={{ fontSize: 12, fontWeight: 700, color: '#fff' }}>Crypto News</span>
         <span style={{ fontSize: 10, color: '#666' }}>{currentIndex + 1} / {news.length}</span>
       </div>
-      <div style={{ position: 'relative' }}>
+      <div style={{ position: 'relative', display: 'flex', minHeight: 140 }}>
         <div 
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            padding: 16,
-            minHeight: 100,
-            background: currentNews.image 
-              ? `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url(${currentNews.image})` 
-              : '#0f0f0f',
+            width: '45%',
+            backgroundImage: `url(${newsImage})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
+            borderRight: '1px solid #222',
+          }}
+        />
+        <div 
+          style={{
+            width: '55%',
+            display: 'flex',
+            flexDirection: 'column',
+            padding: 14,
+            justifyContent: 'center',
           }}
         >
           <div style={{ 
-            fontSize: 10, 
+            fontSize: 9, 
             color: '#00D4FF', 
             fontWeight: 600, 
             marginBottom: 6,
-            textTransform: 'uppercase'
+            textTransform: 'uppercase',
+            letterSpacing: 0.5
           }}>
             {currentNews.source}
           </div>
           <div style={{ 
-            fontSize: 14, 
+            fontSize: 13, 
             fontWeight: 700, 
             color: '#fff', 
             marginBottom: 8,
-            lineHeight: 1.4
+            lineHeight: 1.35,
+            display: '-webkit-box',
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden'
           }}>
             {currentNews.title}
           </div>
           <div style={{ 
-            fontSize: 11, 
-            color: 'rgba(255,255,255,0.6)', 
-            marginBottom: 12 
+            fontSize: 10, 
+            color: 'rgba(255,255,255,0.5)', 
+            marginBottom: 10 
           }}>
             {currentNews.time}
           </div>
@@ -395,7 +413,7 @@ function NewsCarousel({ news, currentIndex, onNext, onPrev }) {
               target="_blank" 
               rel="noopener noreferrer"
               style={{
-                fontSize: 11,
+                fontSize: 10,
                 color: '#00D4FF',
                 textDecoration: 'none',
                 fontWeight: 600,
@@ -407,20 +425,16 @@ function NewsCarousel({ news, currentIndex, onNext, onPrev }) {
         </div>
         <div style={{
           position: 'absolute',
-          top: '50%',
-          left: 0,
-          right: 0,
+          bottom: 8,
+          left: 8,
           display: 'flex',
-          justifyContent: 'space-between',
-          transform: 'translateY(-50%)',
-          padding: '0 8px',
-          pointerEvents: 'none'
+          gap: 6,
         }}>
           <button
             onClick={onPrev}
             style={{
-              width: 32,
-              height: 32,
+              width: 28,
+              height: 28,
               borderRadius: '50%',
               background: 'rgba(0,0,0,0.6)',
               border: '1px solid #333',
@@ -438,8 +452,8 @@ function NewsCarousel({ news, currentIndex, onNext, onPrev }) {
           <button
             onClick={onNext}
             style={{
-              width: 32,
-              height: 32,
+              width: 28,
+              height: 28,
               borderRadius: '50%',
               background: 'rgba(0,0,0,0.6)',
               border: '1px solid #333',
@@ -526,29 +540,30 @@ export default function DashboardTab({ userId, userConfig, onNavigate }) {
   }, [])
 
   useEffect(() => {
+    const defaultNews = [
+      { source: 'CoinDesk', title: 'Bitcoin Holds Above $90K as Market Awaits Fed Decision', time: '2 hours ago', url: 'https://coindesk.com' },
+      { source: 'CoinTelegraph', title: 'Ethereum Layer-2 Solutions See Record Growth in Q4', time: '4 hours ago', url: 'https://cointelegraph.com' },
+      { source: 'The Block', title: 'Solana DeFi TVL Surges Past $5 Billion Milestone', time: '6 hours ago', url: 'https://theblock.co' },
+      { source: 'Decrypt', title: 'AI Tokens Lead Altcoin Rally as Sector Gains Momentum', time: '8 hours ago', url: 'https://decrypt.co' },
+    ]
+    
     const fetchNews = async () => {
       try {
         const response = await fetch('/api/crypto/news')
         if (response.ok) {
           const data = await response.json()
-          setNews(data.news || data || [])
+          setNews(data.news || data || defaultNews)
         } else {
-          setNews([
-            { source: 'CoinDesk', title: 'Bitcoin Holds Above $90K as Market Awaits Fed Decision', time: '2 hours ago', url: 'https://coindesk.com' },
-            { source: 'CoinTelegraph', title: 'Ethereum Layer-2 Solutions See Record Growth in Q4', time: '4 hours ago', url: 'https://cointelegraph.com' },
-            { source: 'The Block', title: 'Solana DeFi TVL Surges Past $5 Billion Milestone', time: '6 hours ago', url: 'https://theblock.co' },
-            { source: 'Decrypt', title: 'AI Tokens Lead Altcoin Rally as Sector Gains Momentum', time: '8 hours ago', url: 'https://decrypt.co' },
-          ])
+          setNews(defaultNews)
         }
       } catch (err) {
-        setNews([
-          { source: 'CoinDesk', title: 'Bitcoin Holds Above $90K as Market Awaits Fed Decision', time: '2 hours ago', url: 'https://coindesk.com' },
-          { source: 'CoinTelegraph', title: 'Ethereum Layer-2 Solutions See Record Growth in Q4', time: '4 hours ago', url: 'https://cointelegraph.com' },
-          { source: 'The Block', title: 'Solana DeFi TVL Surges Past $5 Billion Milestone', time: '6 hours ago', url: 'https://theblock.co' },
-        ])
+        setNews(defaultNews)
       }
     }
+    
     fetchNews()
+    const interval = setInterval(fetchNews, 5 * 60 * 1000)
+    return () => clearInterval(interval)
   }, [])
 
   const handleCoinClick = (coin) => {
