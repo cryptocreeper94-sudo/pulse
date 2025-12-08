@@ -208,18 +208,20 @@ function CoinTableWidget({ coins, favorites, onCoinClick, activeView, setActiveV
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center', 
-        padding: '10px 12px', 
+        padding: '8px 10px', 
         borderBottom: '1px solid #222',
+        overflowX: 'auto',
+        gap: 8,
       }}>
-        <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 3, alignItems: 'center', flexShrink: 0 }}>
           {tabs.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveView(tab.id)}
               style={{
-                padding: '6px 12px',
-                fontSize: 11,
-                height: 28,
+                padding: '5px 8px',
+                fontSize: 10,
+                height: 26,
                 background: activeView === tab.id ? '#00D4FF' : '#1a1a1a',
                 color: activeView === tab.id ? '#000' : '#888',
                 border: activeView === tab.id ? '1px solid #00D4FF' : '1px solid #333',
@@ -233,15 +235,15 @@ function CoinTableWidget({ coins, favorites, onCoinClick, activeView, setActiveV
             </button>
           ))}
         </div>
-        <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 3, alignItems: 'center', flexShrink: 0 }}>
           {['1H', '24H'].map(tf => (
             <button
               key={tf}
               onClick={() => setTimeframe(tf.toLowerCase())}
               style={{
-                padding: '6px 10px',
+                padding: '5px 8px',
                 fontSize: 10,
-                height: 28,
+                height: 26,
                 background: timeframe === tf.toLowerCase() ? '#1a1a1a' : 'transparent',
                 color: timeframe === tf.toLowerCase() ? '#00D4FF' : '#555',
                 border: timeframe === tf.toLowerCase() ? '1px solid #00D4FF' : '1px solid #333',
