@@ -527,7 +527,8 @@ export default function DashboardTab({ userId, userConfig, onNavigate }) {
         const response = await fetch('/api/market-overview?category=top')
         if (response.ok) {
           const data = await response.json()
-          setCoins(data.coins || data || [])
+          const coinList = Array.isArray(data) ? data : (data.coins || [])
+          setCoins(coinList)
         }
       } catch (err) {
         console.log('Failed to fetch coins')
@@ -536,6 +537,8 @@ export default function DashboardTab({ userId, userConfig, onNavigate }) {
       }
     }
     fetchCoins()
+    const interval = setInterval(fetchCoins, 60000)
+    return () => clearInterval(interval)
   }, [])
 
   useEffect(() => {
