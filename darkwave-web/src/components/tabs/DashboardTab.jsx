@@ -5,6 +5,47 @@ import BitcoinChart from '../charts/BitcoinChart'
 import CoinAnalysisModal from '../modals/CoinAnalysisModal'
 import Gauge from '../ui/Gauge'
 
+function formatMarketCap(value) {
+  if (!value) return '—'
+  if (value >= 1e12) return `$${(value / 1e12).toFixed(2)}T`
+  if (value >= 1e9) return `$${(value / 1e9).toFixed(2)}B`
+  if (value >= 1e6) return `$${(value / 1e6).toFixed(2)}M`
+  if (value >= 1e3) return `$${(value / 1e3).toFixed(1)}K`
+  return `$${value.toFixed(0)}`
+}
+
+function MiniSparkline({ data, positive }) {
+  if (!data || data.length < 2) return null
+  
+  const samples = data.length > 20 ? data.filter((_, i) => i % Math.floor(data.length / 20) === 0) : data
+  const min = Math.min(...samples)
+  const max = Math.max(...samples)
+  const range = max - min || 1
+  
+  const width = 60
+  const height = 24
+  const points = samples.map((val, i) => {
+    const x = (i / (samples.length - 1)) * width
+    const y = height - ((val - min) / range) * height
+    return `${x},${y}`
+  }).join(' ')
+  
+  const color = positive ? '#39FF14' : '#FF4444'
+  
+  return (
+    <svg width={width} height={height} style={{ display: 'block' }}>
+      <polyline
+        points={points}
+        fill="none"
+        stroke={color}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 function PromoBanner({ onNavigate }) {
   return (
     <div style={{
@@ -235,10 +276,13 @@ function CoinTableWidget({ coins, favorites, onCoinClick, activeView, setActiveV
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
             <thead>
               <tr style={{ borderBottom: '1px solid #222' }}>
-                <th style={{ padding: '10px 12px', textAlign: 'left', color: '#555', fontWeight: 600, fontSize: 10 }}>#</th>
-                <th style={{ padding: '10px 12px', textAlign: 'left', color: '#555', fontWeight: 600, fontSize: 10 }}>Coin</th>
-                <th style={{ padding: '10px 12px', textAlign: 'right', color: '#555', fontWeight: 600, fontSize: 10 }}>Price</th>
-                <th style={{ padding: '10px 12px', textAlign: 'right', color: '#555', fontWeight: 600, fontSize: 10 }}>{timeframe.toUpperCase()}</th>
+                <th style={{ padding: '10px 8px', textAlign: 'left', color: '#555', fontWeight: 600, fontSize: 10 }}>#</th>
+                <th style={{ padding: '10px 8px', textAlign: 'left', color: '#555', fontWeight: 600, fontSize: 10 }}>Coin</th>
+                <th style={{ padding: '10px 8px', textAlign: 'right', color: '#555', fontWeight: 600, fontSize: 10 }}>Price</th>
+                <th style={{ padding: '10px 8px', textAlign: 'right', color: '#555', fontWeight: 600, fontSize: 10 }}>{timeframe.toUpperCase()}</th>
+                <th style={{ padding: '10px 8px', textAlign: 'right', color: '#555', fontWeight: 600, fontSize: 10 }}>Market Cap</th>
+                <th style={{ padding: '10px 8px', textAlign: 'right', color: '#555', fontWeight: 600, fontSize: 10 }}>Volume (24h)</th>
+                <th style={{ padding: '10px 8px', textAlign: 'center', color: '#555', fontWeight: 600, fontSize: 10 }}>7D</th>
               </tr>
             </thead>
             <tbody>
@@ -246,36 +290,54 @@ function CoinTableWidget({ coins, favorites, onCoinClick, activeView, setActiveV
                 const change = timeframe === '1h' 
                   ? (coin.price_change_percentage_1h_in_currency || coin.priceChange1h)
                   : (coin.price_change_percentage_24h || coin.priceChange24h)
+                const sparkline = coin.sparkline_in_7d?.price || []
+                const sparklinePositive = sparkline.length > 1 ? sparkline[sparkline.length - 1] > sparkline[0] : true
                 return (
                   <tr 
                     key={coin.id || coin.symbol} 
                     onClick={() => onCoinClick(coin)}
-                    style={{ borderBottom: '1px solid #1a1a1a', cursor: 'pointer' }}
+                    style={{ borderBottom: '1px solid #1a1a1a', cursor: 'pointer', transition: 'background 0.15s' }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = '#1a1a1a'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                   >
-                    <td style={{ padding: '10px 12px', color: '#444' }}>{index + 1}</td>
-                    <td style={{ padding: '10px 12px' }}>
+                    <td style={{ padding: '10px 8px', color: '#444' }}>{index + 1}</td>
+                    <td style={{ padding: '10px 8px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         {coin.image && (
                           <img 
                             src={coin.image} 
                             alt="" 
-                            style={{ width: 22, height: 22, borderRadius: '50%' }}
+                            style={{ width: 24, height: 24, borderRadius: '50%' }}
                             onError={(e) => e.target.style.display = 'none'}
                           />
                         )}
                         <div>
-                          <div style={{ fontWeight: 600, fontSize: 11 }}>
+                          <div style={{ fontWeight: 600, fontSize: 12, color: '#fff' }}>
                             {coin.symbol?.toUpperCase()}
                             {isFavorite(coin.symbol) && <span style={{ color: '#FFD700', marginLeft: 4 }}>★</span>}
                           </div>
+                          <div style={{ fontSize: 10, color: '#666' }}>{coin.name}</div>
                         </div>
                       </div>
                     </td>
-                    <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 600, color: '#fff', fontSize: 11 }}>
+                    <td style={{ padding: '10px 8px', textAlign: 'right', fontWeight: 600, color: '#fff', fontSize: 12 }}>
                       {formatPrice(coin.current_price || coin.price)}
                     </td>
-                    <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 600, fontSize: 11 }}>
+                    <td style={{ padding: '10px 8px', textAlign: 'right', fontWeight: 600, fontSize: 11 }}>
                       {formatChange(change)}
+                    </td>
+                    <td style={{ padding: '10px 8px', textAlign: 'right', color: '#999', fontSize: 11 }}>
+                      {formatMarketCap(coin.market_cap)}
+                    </td>
+                    <td style={{ padding: '10px 8px', textAlign: 'right', color: '#888', fontSize: 11 }}>
+                      {formatMarketCap(coin.total_volume)}
+                    </td>
+                    <td style={{ padding: '10px 8px', textAlign: 'center' }}>
+                      {sparkline.length > 0 ? (
+                        <MiniSparkline data={sparkline} positive={sparklinePositive} />
+                      ) : (
+                        <span style={{ color: '#444', fontSize: 10 }}>—</span>
+                      )}
                     </td>
                   </tr>
                 )
