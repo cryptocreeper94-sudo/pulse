@@ -3,112 +3,111 @@ import { useFavorites } from '../../context/FavoritesContext'
 import { useAvatar } from '../../context/AvatarContext'
 import BitcoinChart from '../charts/BitcoinChart'
 import CoinAnalysisModal from '../modals/CoinAnalysisModal'
-import { GaugeCard } from '../ui'
+import Gauge from '../ui/Gauge'
 
-function WelcomeCard({ hallmarkId, avatarSvg }) {
+function PromoBanner({ onNavigate }) {
   return (
-    <div className="dashboard-welcome-card">
-      <div className="welcome-avatar">
-        {avatarSvg ? (
-          <div 
-            className="avatar-preview-small"
-            dangerouslySetInnerHTML={{ __html: avatarSvg }}
-            style={{ width: 60, height: 60, borderRadius: '50%', overflow: 'hidden' }}
-          />
-        ) : (
-          <div className="avatar-placeholder" style={{ width: 60, height: 60, borderRadius: '50%', background: '#333', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontSize: 24 }}>👤</span>
-          </div>
-        )}
+    <div style={{
+      background: 'linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(157, 78, 221, 0.1) 100%)',
+      border: '1px solid rgba(0, 212, 255, 0.3)',
+      borderRadius: 12,
+      padding: 16,
+      marginBottom: 16,
+    }}>
+      <div style={{ 
+        display: 'inline-block',
+        background: '#39FF14',
+        color: '#000',
+        padding: '3px 8px',
+        borderRadius: 3,
+        fontSize: 9,
+        fontWeight: 800,
+        textTransform: 'uppercase',
+        letterSpacing: 1,
+        marginBottom: 8,
+      }}>
+        Coming Soon
       </div>
-      <div className="welcome-text">
-        <h2 style={{ margin: 0, fontSize: 18 }}>Welcome back!</h2>
-        {hallmarkId && (
-          <div className="hallmark-badge" style={{ fontSize: 12, color: '#00D4FF', marginTop: 4 }}>
-            {hallmarkId}
-          </div>
-        )}
-      </div>
+      <h3 style={{ margin: '0 0 6px', fontSize: 16, fontWeight: 800, color: '#fff' }}>
+        AI Sniper Bot
+      </h3>
+      <p style={{ margin: '0 0 12px', fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>
+        Set parameters, let AI find opportunities.
+      </p>
+      <button
+        onClick={() => onNavigate && onNavigate('trading')}
+        style={{
+          background: 'linear-gradient(135deg, #00D4FF 0%, #0099cc 100%)',
+          color: '#000',
+          border: 'none',
+          padding: '8px 16px',
+          borderRadius: 6,
+          fontWeight: 700,
+          fontSize: 11,
+          cursor: 'pointer',
+        }}
+      >
+        Learn More
+      </button>
     </div>
   )
 }
 
-function FeatureCard({ title, subtitle, tag, image, onClick, size = 'medium' }) {
-  const sizeStyles = {
-    large: { gridColumn: 'span 2', minHeight: 200 },
-    medium: { gridColumn: 'span 1', minHeight: 160 },
-    small: { gridColumn: 'span 1', minHeight: 120 }
-  }
-
+function GaugeSection({ marketData }) {
   return (
-    <div 
-      className="feature-card"
-      onClick={onClick}
-      style={{
-        ...sizeStyles[size],
-        background: `linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 100%), url(${image})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        borderRadius: 16,
-        padding: 20,
-        cursor: onClick ? 'pointer' : 'default',
+    <div style={{ 
+      display: 'grid', 
+      gridTemplateColumns: 'repeat(2, 1fr)', 
+      gap: 12, 
+      marginBottom: 16 
+    }}>
+      <div style={{
+        background: '#0f0f0f',
+        borderRadius: 12,
+        padding: 12,
+        border: '1px solid #222',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'flex-end',
-        position: 'relative',
+        alignItems: 'center',
         overflow: 'hidden',
-        border: '1px solid rgba(0, 212, 255, 0.2)',
-        transition: 'all 0.3s ease',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translateY(-4px)'
-        e.currentTarget.style.boxShadow = '0 8px 30px rgba(0, 212, 255, 0.2)'
-        e.currentTarget.style.borderColor = 'rgba(0, 212, 255, 0.5)'
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'translateY(0)'
-        e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.3)'
-        e.currentTarget.style.borderColor = 'rgba(0, 212, 255, 0.2)'
-      }}
-    >
-      {tag && (
-        <div style={{
-          position: 'absolute',
-          top: 12,
-          left: 12,
-          background: '#00D4FF',
-          color: '#000',
-          padding: '4px 10px',
-          borderRadius: 4,
-          fontSize: 10,
-          fontWeight: 700,
-          textTransform: 'uppercase',
+      }}>
+        <div style={{ 
+          color: '#FF006E', 
+          fontSize: 10, 
+          fontWeight: 700, 
+          textTransform: 'uppercase', 
           letterSpacing: 1,
+          marginBottom: 4,
         }}>
-          {tag}
+          Fear & Greed
         </div>
-      )}
-      <div>
-        <h3 style={{ 
-          margin: 0, 
-          fontSize: size === 'large' ? 22 : 16, 
-          fontWeight: 700,
-          color: '#fff',
-          textShadow: '0 2px 10px rgba(0,0,0,0.8)'
+        <div style={{ width: '100%', maxWidth: 120, margin: '0 auto' }}>
+          <Gauge value={marketData.fearGreed} type="fearGreed" size={120} showLabels={false} />
+        </div>
+      </div>
+      <div style={{
+        background: '#0f0f0f',
+        borderRadius: 12,
+        padding: 12,
+        border: '1px solid #222',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        overflow: 'hidden',
+      }}>
+        <div style={{ 
+          color: '#00D4FF', 
+          fontSize: 10, 
+          fontWeight: 700, 
+          textTransform: 'uppercase', 
+          letterSpacing: 1,
+          marginBottom: 4,
         }}>
-          {title}
-        </h3>
-        {subtitle && (
-          <p style={{ 
-            margin: '6px 0 0', 
-            fontSize: 13, 
-            color: 'rgba(255,255,255,0.7)',
-            textShadow: '0 1px 5px rgba(0,0,0,0.8)'
-          }}>
-            {subtitle}
-          </p>
-        )}
+          Altcoin Season
+        </div>
+        <div style={{ width: '100%', maxWidth: 120, margin: '0 auto' }}>
+          <Gauge value={marketData.altcoinSeason} type="altcoinSeason" size={120} showLabels={false} />
+        </div>
       </div>
     </div>
   )
@@ -152,55 +151,52 @@ function CoinTableWidget({ coins, favorites, onCoinClick, activeView, setActiveV
     if (change === null || change === undefined) return '-'
     const color = change >= 0 ? '#39FF14' : '#ff4444'
     const arrow = change >= 0 ? '▲' : '▼'
-    return <span style={{ color }}>{arrow} {Math.abs(change).toFixed(2)}%</span>
+    return <span style={{ color }}>{arrow} {Math.abs(change).toFixed(1)}%</span>
   }
 
   const formatMarketCap = (cap) => {
     if (!cap) return '-'
-    if (cap >= 1e12) return `$${(cap / 1e12).toFixed(2)}T`
-    if (cap >= 1e9) return `$${(cap / 1e9).toFixed(2)}B`
-    if (cap >= 1e6) return `$${(cap / 1e6).toFixed(2)}M`
+    if (cap >= 1e12) return `$${(cap / 1e12).toFixed(1)}T`
+    if (cap >= 1e9) return `$${(cap / 1e9).toFixed(1)}B`
+    if (cap >= 1e6) return `$${(cap / 1e6).toFixed(1)}M`
     return `$${cap.toLocaleString()}`
   }
 
-  const buttonIcons = {
-    top10: '/assets/dashboard/trading_dashboard_neon_glow.png',
-    favorites: '/assets/dashboard/neon_star_favorites_icon.png',
-    gainers: '/assets/dashboard/green_neon_gainers_arrow.png',
-    losers: '/assets/dashboard/red_neon_losers_arrow.png'
-  }
+  const tabs = [
+    { id: 'top10', label: 'Top 10' },
+    { id: 'favorites', label: 'Favs' },
+    { id: 'gainers', label: 'Gainers' },
+    { id: 'losers', label: 'Losers' }
+  ]
 
   return (
-    <div className="section-box mb-md" style={{ background: '#0f0f0f', border: '1px solid #222', borderRadius: 12 }}>
-      <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8, padding: '12px 16px', borderBottom: '1px solid #222' }}>
-        <div style={{ display: 'flex', gap: 6 }}>
-          {['top10', 'favorites', 'gainers', 'losers'].map(view => (
+    <div style={{ background: '#0f0f0f', border: '1px solid #222', borderRadius: 12, marginBottom: 16 }}>
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        padding: '10px 12px', 
+        borderBottom: '1px solid #222',
+        flexWrap: 'wrap',
+        gap: 8
+      }}>
+        <div style={{ display: 'flex', gap: 4 }}>
+          {tabs.map(tab => (
             <button
-              key={view}
-              onClick={() => setActiveView(view)}
+              key={tab.id}
+              onClick={() => setActiveView(tab.id)}
               style={{
-                padding: '8px 14px',
-                fontSize: 12,
-                background: activeView === view ? 'linear-gradient(135deg, #00D4FF 0%, #0099cc 100%)' : '#1a1a1a',
-                color: activeView === view ? '#000' : '#fff',
-                border: activeView === view ? 'none' : '1px solid #333',
-                borderRadius: 6,
+                padding: '5px 10px',
+                fontSize: 11,
+                background: activeView === tab.id ? '#00D4FF' : '#1a1a1a',
+                color: activeView === tab.id ? '#000' : '#888',
+                border: activeView === tab.id ? 'none' : '1px solid #333',
+                borderRadius: 4,
                 cursor: 'pointer',
-                fontWeight: activeView === view ? 700 : 500,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                transition: 'all 0.2s ease',
-                boxShadow: activeView === view ? '0 0 15px rgba(0, 212, 255, 0.3)' : 'none',
+                fontWeight: activeView === tab.id ? 700 : 500,
               }}
             >
-              <img 
-                src={buttonIcons[view]} 
-                alt="" 
-                style={{ width: 16, height: 16, borderRadius: 3 }}
-                onError={(e) => e.target.style.display = 'none'}
-              />
-              {view === 'top10' ? 'Top 10' : view === 'favorites' ? 'Favorites' : view === 'gainers' ? 'Gainers' : 'Losers'}
+              {tab.label}
             </button>
           ))}
         </div>
@@ -210,12 +206,12 @@ function CoinTableWidget({ coins, favorites, onCoinClick, activeView, setActiveV
               key={tf}
               onClick={() => setTimeframe(tf)}
               style={{
-                padding: '6px 12px',
-                fontSize: 11,
+                padding: '4px 8px',
+                fontSize: 10,
                 background: timeframe === tf ? '#1a1a1a' : 'transparent',
-                color: timeframe === tf ? '#00D4FF' : '#666',
+                color: timeframe === tf ? '#00D4FF' : '#555',
                 border: timeframe === tf ? '1px solid #00D4FF' : '1px solid #333',
-                borderRadius: 4,
+                borderRadius: 3,
                 cursor: 'pointer',
                 fontWeight: 600,
               }}
@@ -225,33 +221,32 @@ function CoinTableWidget({ coins, favorites, onCoinClick, activeView, setActiveV
           ))}
         </div>
       </div>
-      <div className="section-content" style={{ padding: 0, overflowX: 'auto' }}>
+      <div style={{ overflowX: 'auto' }}>
         {loading ? (
-          <div style={{ padding: 30, textAlign: 'center', color: '#888' }}>
+          <div style={{ padding: 24, textAlign: 'center', color: '#888' }}>
             <div style={{ 
-              width: 30, 
-              height: 30, 
-              border: '3px solid #333', 
-              borderTop: '3px solid #00D4FF', 
+              width: 24, 
+              height: 24, 
+              border: '2px solid #333', 
+              borderTop: '2px solid #00D4FF', 
               borderRadius: '50%', 
               animation: 'spin 1s linear infinite',
-              margin: '0 auto 10px'
+              margin: '0 auto 8px'
             }}></div>
-            Loading coins...
+            Loading...
           </div>
         ) : displayCoins.length === 0 ? (
-          <div style={{ padding: 30, textAlign: 'center', color: '#888' }}>
-            {activeView === 'favorites' ? 'No favorites yet. Go to Markets to add some!' : 'No coins found'}
+          <div style={{ padding: 24, textAlign: 'center', color: '#888', fontSize: 12 }}>
+            {activeView === 'favorites' ? 'No favorites yet' : 'No coins found'}
           </div>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
             <thead>
               <tr style={{ borderBottom: '1px solid #222' }}>
-                <th style={{ padding: '12px 16px', textAlign: 'left', color: '#666', fontWeight: 600, fontSize: 11, textTransform: 'uppercase' }}>#</th>
-                <th style={{ padding: '12px 16px', textAlign: 'left', color: '#666', fontWeight: 600, fontSize: 11, textTransform: 'uppercase' }}>Coin</th>
-                <th style={{ padding: '12px 16px', textAlign: 'right', color: '#666', fontWeight: 600, fontSize: 11, textTransform: 'uppercase' }}>Price</th>
-                <th style={{ padding: '12px 16px', textAlign: 'right', color: '#666', fontWeight: 600, fontSize: 11, textTransform: 'uppercase' }}>{timeframe.toUpperCase()}</th>
-                <th style={{ padding: '12px 16px', textAlign: 'right', color: '#666', fontWeight: 600, fontSize: 11, textTransform: 'uppercase' }}>Market Cap</th>
+                <th style={{ padding: '10px 12px', textAlign: 'left', color: '#555', fontWeight: 600, fontSize: 10 }}>#</th>
+                <th style={{ padding: '10px 12px', textAlign: 'left', color: '#555', fontWeight: 600, fontSize: 10 }}>Coin</th>
+                <th style={{ padding: '10px 12px', textAlign: 'right', color: '#555', fontWeight: 600, fontSize: 10 }}>Price</th>
+                <th style={{ padding: '10px 12px', textAlign: 'right', color: '#555', fontWeight: 600, fontSize: 10 }}>{timeframe.toUpperCase()}</th>
               </tr>
             </thead>
             <tbody>
@@ -263,42 +258,32 @@ function CoinTableWidget({ coins, favorites, onCoinClick, activeView, setActiveV
                   <tr 
                     key={coin.id || coin.symbol} 
                     onClick={() => onCoinClick(coin)}
-                    style={{ 
-                      borderBottom: '1px solid #1a1a1a', 
-                      cursor: 'pointer',
-                      transition: 'background 0.2s',
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = '#1a1a1a'}
-                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                    style={{ borderBottom: '1px solid #1a1a1a', cursor: 'pointer' }}
                   >
-                    <td style={{ padding: '14px 16px', color: '#555', fontWeight: 600 }}>{index + 1}</td>
-                    <td style={{ padding: '14px 16px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <td style={{ padding: '10px 12px', color: '#444' }}>{index + 1}</td>
+                    <td style={{ padding: '10px 12px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         {coin.image && (
                           <img 
                             src={coin.image} 
-                            alt={coin.symbol} 
-                            style={{ width: 28, height: 28, borderRadius: '50%' }}
+                            alt="" 
+                            style={{ width: 22, height: 22, borderRadius: '50%' }}
                             onError={(e) => e.target.style.display = 'none'}
                           />
                         )}
                         <div>
-                          <div style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <div style={{ fontWeight: 600, fontSize: 11 }}>
                             {coin.symbol?.toUpperCase()}
-                            {isFavorite(coin.symbol) && <span style={{ color: '#FFD700', fontSize: 14 }}>★</span>}
+                            {isFavorite(coin.symbol) && <span style={{ color: '#FFD700', marginLeft: 4 }}>★</span>}
                           </div>
-                          <div style={{ fontSize: 11, color: '#666' }}>{coin.name}</div>
                         </div>
                       </div>
                     </td>
-                    <td style={{ padding: '14px 16px', textAlign: 'right', fontWeight: 600, color: '#fff' }}>
+                    <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 600, color: '#fff', fontSize: 11 }}>
                       {formatPrice(coin.current_price || coin.price)}
                     </td>
-                    <td style={{ padding: '14px 16px', textAlign: 'right', fontWeight: 600 }}>
+                    <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 600, fontSize: 11 }}>
                       {formatChange(change)}
-                    </td>
-                    <td style={{ padding: '14px 16px', textAlign: 'right', color: '#888' }}>
-                      {formatMarketCap(coin.market_cap || coin.marketCap)}
                     </td>
                   </tr>
                 )
@@ -311,152 +296,26 @@ function CoinTableWidget({ coins, favorites, onCoinClick, activeView, setActiveV
   )
 }
 
-function QuickStatsWidget({ marketData }) {
+function ChartWidget() {
   return (
-    <div className="gauge-row" style={{ 
-      display: 'grid', 
-      gridTemplateColumns: 'repeat(2, 1fr)', 
-      gap: 16, 
-      marginBottom: 20 
-    }}>
-      <div style={{
-        background: 'linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%)',
-        borderRadius: 16,
-        padding: 20,
-        border: '1px solid #222',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-      }}>
-        <div style={{ 
-          color: '#FF006E', 
-          fontSize: 12, 
-          fontWeight: 700, 
-          textTransform: 'uppercase', 
-          letterSpacing: 1,
-          marginBottom: 8,
-          textAlign: 'center'
-        }}>
-          Fear & Greed
-        </div>
-        <GaugeCard 
-          value={marketData.fearGreed}
-          type="fearGreed"
-        />
-      </div>
-      <div style={{
-        background: 'linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%)',
-        borderRadius: 16,
-        padding: 20,
-        border: '1px solid #222',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-      }}>
-        <div style={{ 
-          color: '#00D4FF', 
-          fontSize: 12, 
-          fontWeight: 700, 
-          textTransform: 'uppercase', 
-          letterSpacing: 1,
-          marginBottom: 8,
-          textAlign: 'center'
-        }}>
-          Altcoin Season
-        </div>
-        <GaugeCard 
-          value={marketData.altcoinSeason}
-          type="altcoinSeason"
-        />
-      </div>
-    </div>
-  )
-}
-
-function PromoBanner({ onNavigate }) {
-  return (
-    <div style={{
-      background: 'linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(157, 78, 221, 0.1) 100%)',
-      border: '1px solid rgba(0, 212, 255, 0.3)',
-      borderRadius: 16,
-      padding: 24,
-      marginBottom: 20,
-      position: 'relative',
-      overflow: 'hidden',
-    }}>
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        width: 200,
-        height: 200,
-        background: 'radial-gradient(circle, rgba(0, 212, 255, 0.2) 0%, transparent 70%)',
-        pointerEvents: 'none',
-      }}></div>
-      <div style={{ position: 'relative', zIndex: 1 }}>
-        <div style={{ 
-          display: 'inline-block',
-          background: '#39FF14',
-          color: '#000',
-          padding: '4px 12px',
-          borderRadius: 4,
-          fontSize: 10,
-          fontWeight: 800,
-          textTransform: 'uppercase',
-          letterSpacing: 1,
-          marginBottom: 12,
-        }}>
-          Coming Soon
-        </div>
-        <h3 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 800, color: '#fff' }}>
-          AI Sniper Bot
-        </h3>
-        <p style={{ margin: '0 0 16px', fontSize: 14, color: 'rgba(255,255,255,0.7)', maxWidth: 400 }}>
-          Set your parameters, let AI find opportunities. Smart limit orders with predictive intelligence.
-        </p>
-        <button
-          onClick={() => onNavigate && onNavigate('trading')}
-          style={{
-            background: 'linear-gradient(135deg, #00D4FF 0%, #0099cc 100%)',
-            color: '#000',
-            border: 'none',
-            padding: '10px 24px',
-            borderRadius: 8,
-            fontWeight: 700,
-            fontSize: 13,
-            cursor: 'pointer',
-            boxShadow: '0 0 20px rgba(0, 212, 255, 0.3)',
-          }}
-        >
-          Learn More
-        </button>
-      </div>
-    </div>
-  )
-}
-
-function MainChartWidget() {
-  return (
-    <div className="section-box mb-md" style={{ 
+    <div style={{ 
       background: '#0f0f0f', 
       border: '1px solid #222', 
       borderRadius: 12,
-      overflow: 'hidden'
+      overflow: 'hidden',
+      marginBottom: 16
     }}>
-      <div className="section-header" style={{ 
-        padding: '12px 16px', 
+      <div style={{ 
+        padding: '10px 12px', 
         borderBottom: '1px solid #222',
         display: 'flex',
         alignItems: 'center',
         gap: 8
       }}>
-        <img 
-          src="/assets/dashboard/trading_dashboard_neon_glow.png" 
-          alt="" 
-          style={{ width: 20, height: 20, borderRadius: 4 }}
-          onError={(e) => e.target.style.display = 'none'}
-        />
-        <h3 style={{ margin: 0, fontSize: 14, fontWeight: 700, color: '#fff' }}>Bitcoin Chart</h3>
+        <span style={{ fontSize: 14 }}>📈</span>
+        <span style={{ fontSize: 12, fontWeight: 700, color: '#fff' }}>Bitcoin Chart</span>
       </div>
-      <div className="section-content" style={{ padding: 0 }}>
-        <BitcoinChart />
-      </div>
+      <BitcoinChart />
     </div>
   )
 }
@@ -466,7 +325,6 @@ export default function DashboardTab({ userId, userConfig, onNavigate }) {
   const { avatarSvg } = useAvatar()
   const [selectedCoin, setSelectedCoin] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [hallmarkId, setHallmarkId] = useState(userConfig?.hallmarkId || null)
   const [coins, setCoins] = useState([])
   const [coinsLoading, setCoinsLoading] = useState(true)
   const [activeView, setActiveView] = useState('top10')
@@ -475,21 +333,6 @@ export default function DashboardTab({ userId, userConfig, onNavigate }) {
     fearGreed: 65,
     altcoinSeason: 75,
   })
-
-  useEffect(() => {
-    if (userConfig?.hallmarkId) {
-      setHallmarkId(userConfig.hallmarkId)
-    } else if (userId && !hallmarkId) {
-      fetch(`/api/users/${userId}/hallmark`, { method: 'POST' })
-        .then(res => res.json())
-        .then(data => {
-          if (data.hallmarkId) {
-            setHallmarkId(data.hallmarkId)
-          }
-        })
-        .catch(err => console.log('Failed to generate hallmark'))
-    }
-  }, [userId, userConfig, hallmarkId])
 
   useEffect(() => {
     const fetchMarketData = async () => {
@@ -530,7 +373,7 @@ export default function DashboardTab({ userId, userConfig, onNavigate }) {
   }
 
   return (
-    <div className="dashboard-tab" style={{ padding: '0 16px' }}>
+    <div style={{ padding: '12px' }}>
       <style>{`
         @keyframes spin {
           0% { transform: rotate(0deg); }
@@ -538,11 +381,9 @@ export default function DashboardTab({ userId, userConfig, onNavigate }) {
         }
       `}</style>
       
-      <WelcomeCard hallmarkId={hallmarkId} avatarSvg={avatarSvg} />
-      
       <PromoBanner onNavigate={onNavigate} />
       
-      <QuickStatsWidget marketData={marketData} />
+      <GaugeSection marketData={marketData} />
       
       <CoinTableWidget 
         coins={coins}
@@ -555,7 +396,7 @@ export default function DashboardTab({ userId, userConfig, onNavigate }) {
         loading={coinsLoading}
       />
       
-      <MainChartWidget />
+      <ChartWidget />
       
       <CoinAnalysisModal 
         coin={selectedCoin}
