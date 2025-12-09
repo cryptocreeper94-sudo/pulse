@@ -5659,6 +5659,9 @@ export const mastra = new Mastra({
         }
       },
       
+      // Sniper Bot API Routes (MUST be before catch-all)
+      ...sniperBotRoutes,
+      
       // Catch-all static file handler (MUST BE LAST) - serves all assets from public/
       {
         path: "/*",
@@ -5731,8 +5734,6 @@ export const mastra = new Mastra({
           return c.text('File not found', 404);
         }
       },
-      // Sniper Bot API Routes
-      ...sniperBotRoutes,
     ],
   },
   logger:
