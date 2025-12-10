@@ -58,6 +58,13 @@ Pulse (powered by DarkWave Studios, LLC) is a predictive trading platform built 
   - Favorites persist to database per user
   - Quick access to analysis modal from favorites
   - FavoritesContext for app-wide state management
+- **Manual Token Watchlist / Limit Orders (NEW)** - Set-and-forget limit order system:
+  - 4 token slots with entry/exit/stop-loss fields
+  - Backend monitors prices every minute via Inngest cron
+  - Flag-based execution: orders flagged READY_TO_EXECUTE/EXIT/STOP when targets hit
+  - User signs transaction on frontend (wallet security preserved)
+  - Status lifecycle: PENDING → WATCHING → READY_TO_EXECUTE → FILLED_ENTRY → READY_TO_EXIT/STOP → FILLED_EXIT/STOPPED_OUT
+  - Wallet connect button in header for Phantom/Solflare integration
 
 ### NEEDS ATTENTION
 - CoinGecko API rate limiting (429 errors) - using Pro API now
