@@ -11,121 +11,97 @@ const SOLANA_MAINNET_RPC = clusterApiUrl('mainnet-beta')
 const WalletStateContext = createContext(null)
 
 function isMobile() {
+  if (typeof navigator === 'undefined') return false
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 }
 
 function isPhantomInstalled() {
-  return typeof window !== 'undefined' && window.solana?.isPhantom
+  if (typeof window === 'undefined') return false
+  return window.phantom?.solana?.isPhantom || window.solana?.isPhantom
 }
 
 function isSolflareInstalled() {
-  return typeof window !== 'undefined' && window.solflare?.isSolflare
+  if (typeof window === 'undefined') return false
+  return window.solflare?.isSolflare
 }
 
-function MobileWalletButton({ walletName = 'phantom' }) {
-  const handleConnect = useCallback(() => {
-    const currentUrl = window.location.href
-    const encodedUrl = encodeURIComponent(currentUrl)
-    
-    if (walletName === 'phantom') {
-      const phantomUrl = `https://phantom.app/ul/browse/${encodedUrl}?ref=${encodedUrl}`
-      window.location.href = phantomUrl
-    } else if (walletName === 'solflare') {
-      const solflareUrl = `https://solflare.com/ul/v1/browse/${encodedUrl}?ref=${encodedUrl}`
-      window.location.href = solflareUrl
-    }
-  }, [walletName])
-
-  return (
-    <button 
-      className="mobile-wallet-btn"
-      onClick={handleConnect}
-      style={{
-        background: 'linear-gradient(145deg, #512da8, #7c4dff)',
-        border: 'none',
-        borderRadius: '12px',
-        color: '#fff',
-        padding: '12px 24px',
-        fontSize: '14px',
-        fontWeight: '600',
-        cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px',
-      }}
-    >
-      <span>Open in {walletName === 'phantom' ? 'Phantom' : 'Solflare'}</span>
-    </button>
-  )
-}
-
-function CustomWalletButton() {
-  const { publicKey, connected, connecting, disconnect } = useWallet()
+function SimpleWalletButton() {
+  const { publicKey, connected, connecting, disconnect, select, wallets, connect } = useWallet()
   const { setVisible } = useWalletModal()
-  const [showMobileOptions, setShowMobileOptions] = useState(false)
   const walletState = useContext(WalletStateContext)
+  const [error, setError] = useState(null)
 
-  const handleClick = useCallback(() => {
+  const handleClick = useCallback(async () => {
+    setError(null)
+    
     if (connected) {
-      disconnect()
-    } else if (isMobile() && !isPhantomInstalled() && !isSolflareInstalled()) {
-      setShowMobileOptions(true)
-    } else {
+      try {
+        await disconnect()
+      } catch (err) {
+        console.error('Disconnect error:', err)
+      }
+      return
+    }
+
+    try {
+      if (isPhantomInstalled()) {
+        const phantomWallet = wallets.find(w => w.adapter.name === 'Phantom')
+        if (phantomWallet) {
+          select(phantomWallet.adapter.name)
+          await new Promise(resolve => setTimeout(resolve, 100))
+          try {
+            await connect()
+          } catch (e) {
+            console.log('Auto-connect attempted')
+          }
+        }
+      } else if (isSolflareInstalled()) {
+        const solflareWallet = wallets.find(w => w.adapter.name === 'Solflare')
+        if (solflareWallet) {
+          select(solflareWallet.adapter.name)
+          await new Promise(resolve => setTimeout(resolve, 100))
+          try {
+            await connect()
+          } catch (e) {
+            console.log('Auto-connect attempted')
+          }
+        }
+      } else if (isMobile()) {
+        const currentUrl = encodeURIComponent(window.location.href)
+        window.location.href = `https://phantom.app/ul/browse/${currentUrl}?ref=${currentUrl}`
+      } else {
+        setVisible(true)
+      }
+    } catch (err) {
+      console.error('Wallet connection error:', err)
+      setError('Connection failed')
       setVisible(true)
     }
-  }, [connected, disconnect, setVisible])
+  }, [connected, disconnect, wallets, select, connect, setVisible])
 
-  if (showMobileOptions) {
-    return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
-        <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>
-          Open app to connect:
-        </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <MobileWalletButton walletName="phantom" />
-          <MobileWalletButton walletName="solflare" />
-        </div>
-        <button 
-          onClick={() => setShowMobileOptions(false)}
-          style={{
-            background: 'transparent',
-            border: '1px solid #444',
-            borderRadius: '8px',
-            color: '#888',
-            padding: '8px 16px',
-            fontSize: '12px',
-            cursor: 'pointer',
-            marginTop: '4px',
-          }}
-        >
-          Cancel
-        </button>
-      </div>
-    )
+  const buttonStyle = {
+    background: connected 
+      ? 'linear-gradient(145deg, rgba(57, 255, 20, 0.2), rgba(57, 255, 20, 0.1))'
+      : 'linear-gradient(145deg, #512da8, #7c4dff)',
+    border: connected ? '1px solid #39FF14' : 'none',
+    borderRadius: '12px',
+    color: connected ? '#39FF14' : '#fff',
+    padding: '10px 16px',
+    fontSize: '13px',
+    fontWeight: '600',
+    cursor: connecting ? 'wait' : 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    minWidth: '120px',
+    justifyContent: 'center',
   }
 
   return (
     <button 
-      className="custom-wallet-btn"
       onClick={handleClick}
       disabled={connecting}
-      style={{
-        background: connected 
-          ? 'linear-gradient(145deg, rgba(57, 255, 20, 0.2), rgba(57, 255, 20, 0.1))'
-          : 'linear-gradient(145deg, #512da8, #7c4dff)',
-        border: connected ? '1px solid #39FF14' : 'none',
-        borderRadius: '12px',
-        color: connected ? '#39FF14' : '#fff',
-        padding: '10px 16px',
-        fontSize: '13px',
-        fontWeight: '600',
-        cursor: connecting ? 'wait' : 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px',
-        minWidth: '140px',
-        justifyContent: 'center',
-      }}
+      style={buttonStyle}
     >
       {connecting ? (
         <span>Connecting...</span>
@@ -139,7 +115,7 @@ function CustomWalletButton() {
             boxShadow: '0 0 8px #39FF14',
           }}></span>
           <span>{walletState?.shortAddress || 'Connected'}</span>
-          {walletState?.balance !== null && walletState?.balance !== undefined && (
+          {walletState?.balance && (
             <span style={{ color: '#888', fontSize: '11px' }}>
               ({walletState.balance} SOL)
             </span>
@@ -147,12 +123,11 @@ function CustomWalletButton() {
         </>
       ) : (
         <>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M21 18v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v1"/>
-            <polyline points="15 10 20 10 20 14 15 14"/>
-            <line x1="20" y1="12" x2="9" y2="12"/>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="2" y="4" width="20" height="16" rx="2"/>
+            <path d="M16 12h4"/>
           </svg>
-          <span>Connect Wallet</span>
+          <span>{error || 'Connect Wallet'}</span>
         </>
       )}
     </button>
@@ -181,28 +156,27 @@ function WalletStateProvider({ children }) {
         
         if (response.ok) {
           const data = await response.json()
-          if (mounted) {
+          if (mounted && data.balance) {
             setBalance(data.balance)
           }
-        } else {
-          console.error('Balance API error:', response.status)
-          if (mounted) setBalance(null)
         }
       } catch (err) {
-        console.error('Failed to fetch balance:', err)
-        if (mounted) setBalance(null)
+        console.error('Balance fetch failed:', err)
       } finally {
         if (mounted) setBalanceLoading(false)
       }
     }
 
-    fetchBalance()
-    const interval = setInterval(fetchBalance, 15000)
-
-    return () => {
-      mounted = false
-      clearInterval(interval)
+    if (connected && publicKey) {
+      fetchBalance()
+      const interval = setInterval(fetchBalance, 15000)
+      return () => {
+        mounted = false
+        clearInterval(interval)
+      }
     }
+
+    return () => { mounted = false }
   }, [publicKey, connected])
 
   const value = useMemo(() => ({
@@ -217,9 +191,6 @@ function WalletStateProvider({ children }) {
     balance,
     balanceLoading,
     connection,
-    isMobile: isMobile(),
-    isPhantomInstalled: isPhantomInstalled(),
-    isSolflareInstalled: isSolflareInstalled(),
   }), [publicKey, connected, connecting, disconnecting, wallet, balance, balanceLoading, connection])
 
   return (
@@ -227,6 +198,37 @@ function WalletStateProvider({ children }) {
       {children}
     </WalletStateContext.Provider>
   )
+}
+
+function WalletErrorBoundary({ children }) {
+  const [hasError, setHasError] = useState(false)
+
+  useEffect(() => {
+    const handleError = (event) => {
+      if (event.message?.includes('wallet') || event.message?.includes('Wallet')) {
+        console.error('Wallet error caught:', event)
+        setHasError(true)
+      }
+    }
+    window.addEventListener('error', handleError)
+    return () => window.removeEventListener('error', handleError)
+  }, [])
+
+  if (hasError) {
+    return (
+      <div style={{ padding: '20px', textAlign: 'center' }}>
+        <p style={{ color: '#ff6b6b' }}>Wallet connection error</p>
+        <button 
+          onClick={() => { setHasError(false); window.location.reload() }}
+          style={{ marginTop: '10px', padding: '8px 16px', background: '#333', border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer' }}
+        >
+          Retry
+        </button>
+      </div>
+    )
+  }
+
+  return children
 }
 
 export function WalletProvider({ children }) {
@@ -241,24 +243,38 @@ export function WalletProvider({ children }) {
   )
 
   return (
-    <ConnectionProvider endpoint={endpoint}>
-      <SolanaWalletProvider wallets={wallets} autoConnect>
-        <WalletModalProvider>
-          <WalletStateProvider>
-            {children}
-          </WalletStateProvider>
-        </WalletModalProvider>
-      </SolanaWalletProvider>
-    </ConnectionProvider>
+    <WalletErrorBoundary>
+      <ConnectionProvider endpoint={endpoint}>
+        <SolanaWalletProvider wallets={wallets} autoConnect>
+          <WalletModalProvider>
+            <WalletStateProvider>
+              {children}
+            </WalletStateProvider>
+          </WalletModalProvider>
+        </SolanaWalletProvider>
+      </ConnectionProvider>
+    </WalletErrorBoundary>
   )
 }
 
 export function useWalletState() {
   const context = useContext(WalletStateContext)
   if (!context) {
-    throw new Error('useWalletState must be used within a WalletProvider')
+    return {
+      publicKey: null,
+      address: null,
+      shortAddress: null,
+      connected: false,
+      connecting: false,
+      disconnecting: false,
+      wallet: null,
+      walletName: null,
+      balance: null,
+      balanceLoading: false,
+      connection: null,
+    }
   }
   return context
 }
 
-export { CustomWalletButton as WalletMultiButton }
+export { SimpleWalletButton as WalletMultiButton }
