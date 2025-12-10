@@ -570,6 +570,78 @@ export const mastra = new Mastra({
           }
         }
       },
+      // Authentication - Login endpoint
+      {
+        path: "/api/auth/login",
+        method: "POST",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          
+          try {
+            const { credential, rememberMe } = await c.req.json();
+            logger?.info('🔐 [Auth] Login attempt', { credential: credential?.substring(0, 3) + '***' });
+            
+            if (!credential) {
+              return c.json({ success: false, error: 'Credential is required' }, 400);
+            }
+            
+            // Check access codes
+            const userAccessCode = process.env.USER_ACCESS_CODE || '777';
+            const adminAccessCode = process.env.ADMIN_ACCESS_CODE || '888';
+            const ownerAccessCode = process.env.OWNER_ACCESS_CODE || '999';
+            
+            let accessLevel = '';
+            let userId = '';
+            
+            if (credential === userAccessCode) {
+              accessLevel = 'user';
+              userId = 'trial-user-' + Date.now();
+            } else if (credential === adminAccessCode) {
+              accessLevel = 'admin';
+              userId = 'admin-' + Date.now();
+            } else if (credential === ownerAccessCode) {
+              accessLevel = 'owner';
+              userId = 'owner-' + Date.now();
+            } else if (credential.includes('@')) {
+              // Email-based login - check whitelist
+              // For now, allow any email as a user
+              accessLevel = 'user';
+              userId = credential.replace(/[^a-zA-Z0-9]/g, '-');
+            } else {
+              logger?.warn('❌ [Auth] Invalid credentials');
+              return c.json({ success: false, error: 'Invalid access code or email' }, 401);
+            }
+            
+            const user = {
+              id: userId,
+              email: credential.includes('@') ? credential : null,
+              accessLevel,
+              uniqueCode: 'PULSE-' + Math.random().toString(36).substring(2, 6).toUpperCase() + '-' + new Date().getFullYear(),
+              createdAt: new Date().toISOString()
+            };
+            
+            logger?.info('✅ [Auth] Login successful', { userId, accessLevel });
+            
+            return c.json({ success: true, user });
+          } catch (error: any) {
+            logger?.error('❌ [Auth] Login error', { error: error.message });
+            return c.json({ success: false, error: 'Login failed' }, 500);
+          }
+        }
+      },
+      // Authentication - Session validation endpoint
+      {
+        path: "/api/auth/validate",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          logger?.info('🔍 [Auth] Session validation request');
+          
+          // For now, return invalid since we don't have server-side sessions
+          // The frontend uses localStorage for session persistence
+          return c.json({ valid: false, message: 'No server session' });
+        }
+      },
       // Serve frontend HTML at root
       {
         path: "/",
