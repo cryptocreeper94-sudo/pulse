@@ -6,7 +6,7 @@ import CoinAnalysisModal from '../modals/CoinAnalysisModal'
 import Gauge from '../ui/Gauge'
 import FlipCarousel from '../ui/FlipCarousel'
 import MobileCardCarousel from '../ui/MobileCardCarousel'
-import versionData from '/version.json'
+import versionData from '../../data/version.json'
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false)

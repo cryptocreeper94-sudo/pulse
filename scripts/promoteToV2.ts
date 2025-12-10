@@ -59,7 +59,7 @@ async function promoteToV2() {
   
   const files = [
     'src/system/version.json',
-    'darkwave-web/public/version.json',
+    'darkwave-web/src/data/version.json',
   ]
   
   for (const file of files) {

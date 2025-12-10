@@ -3,7 +3,7 @@ import * as path from 'path'
 
 const VERSION_FILES = [
   'src/system/version.json',
-  'darkwave-web/public/version.json',
+  'darkwave-web/src/data/version.json',
 ]
 
 interface VersionData {
