@@ -218,6 +218,34 @@ export const walletRoutes = [
   },
   
   {
+    path: "/api/wallet/send-signed",
+    method: "POST",
+    createHandler: async ({ mastra }: any) => async (c: any) => {
+      const logger = mastra.getLogger();
+      try {
+        const { chain, privateKey, to, amount } = await c.req.json();
+        
+        if (!chain || !privateKey || !to || !amount) {
+          return c.json({ error: 'Chain, privateKey, to, and amount required' }, 400);
+        }
+        
+        const result = await walletService.sendWithPrivateKey(chain, privateKey, to, amount);
+        
+        if (result.success) {
+          logger?.info('✅ [Wallet] Transaction sent', { chain, txHash: result.txHash });
+        } else {
+          logger?.error('❌ [Wallet] Transaction failed', { chain, error: result.error });
+        }
+        
+        return c.json(result);
+      } catch (error: any) {
+        logger?.error('❌ [Wallet] Send error', { error: error.message });
+        return c.json({ success: false, error: error.message }, 500);
+      }
+    }
+  },
+  
+  {
     path: "/api/wallet/validate",
     method: "POST",
     createHandler: async ({ mastra }: any) => async (c: any) => {

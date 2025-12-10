@@ -70,6 +70,7 @@ Pulse (powered by DarkWave Studios, LLC) is a predictive trading platform built 
   - BIP39 mnemonic generation (12/24 words)
   - Proper ed25519 derivation for Solana (SLIP-0010)
   - AES-256-GCM encrypted storage in localStorage
+  - **Client-side crypto operations** - Mnemonics/keys never leave the browser
   - Balance checking and transaction sending
   - Wallet tab with create/import/send UI
   - Integrated into Sniper Bot with wallet source toggle (external vs built-in)
@@ -78,7 +79,6 @@ Pulse (powered by DarkWave Studios, LLC) is a predictive trading platform built 
 ### NEEDS ATTENTION
 - CoinGecko API rate limiting (429 errors) - using Pro API now
 - Backend startup timing (API errors during cold start)
-- **Built-in Wallet Security**: Currently sends mnemonic to backend for operations. Before production, move all crypto operations to client-side using browser-compatible libraries (bip39-browser, ed25519-hd-key)
 
 ### NOT YET BUILT
 - DWAV token smart contract

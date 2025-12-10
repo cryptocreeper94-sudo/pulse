@@ -1,60 +1,79 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import clientWalletService from '../services/clientWalletService'
 
 const BuiltInWalletContext = createContext(null)
 
-const STORAGE_KEY = 'pulse_wallet_encrypted'
-
 export function BuiltInWalletProvider({ children }) {
+  const [hasWallet, setHasWallet] = useState(false)
   const [isUnlocked, setIsUnlocked] = useState(false)
-  const [wallet, setWallet] = useState(null)
+  const [addresses, setAddresses] = useState(null)
   const [balances, setBalances] = useState({})
   const [totalUsd, setTotalUsd] = useState(0)
   const [loading, setLoading] = useState(false)
   
-  const hasWallet = !!localStorage.getItem(STORAGE_KEY)
+  useEffect(() => {
+    setHasWallet(clientWalletService.hasWallet())
+  }, [])
   
-  const unlock = useCallback(async (password) => {
-    const encrypted = localStorage.getItem(STORAGE_KEY)
-    if (!encrypted) throw new Error('No wallet found')
-    
+  const createWallet = useCallback(async (password, wordCount = 12) => {
     setLoading(true)
     try {
-      const res = await fetch('/api/wallet/decrypt', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ encryptedMnemonic: encrypted, password }),
-      })
-      const data = await res.json()
-      if (!data.success) throw new Error(data.error || 'Invalid password')
-      
-      const deriveRes = await fetch('/api/wallet/derive', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mnemonic: data.mnemonic }),
-      })
-      const deriveData = await deriveRes.json()
-      if (!deriveData.success) throw new Error(deriveData.error)
-      
-      setWallet({ mnemonic: data.mnemonic, accounts: deriveData.accounts })
+      const result = await clientWalletService.createWallet(password, wordCount)
+      setHasWallet(true)
+      setAddresses(result.addresses)
       setIsUnlocked(true)
-      
-      fetchBalances(deriveData.accounts)
+      fetchBalances(result.addresses)
+      return result.mnemonic
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+  
+  const importWallet = useCallback(async (mnemonic, password) => {
+    setLoading(true)
+    try {
+      const result = await clientWalletService.importWallet(mnemonic, password)
+      setHasWallet(true)
+      setAddresses(result.addresses)
+      setIsUnlocked(true)
+      fetchBalances(result.addresses)
       return true
     } finally {
       setLoading(false)
     }
   }, [])
   
+  const unlock = useCallback(async (password) => {
+    setLoading(true)
+    try {
+      const result = await clientWalletService.unlock(password)
+      setAddresses(result.addresses)
+      setIsUnlocked(true)
+      fetchBalances(result.addresses)
+      return true
+    } catch (err) {
+      throw err
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+  
   const lock = useCallback(() => {
-    setWallet(null)
+    setAddresses(null)
     setBalances({})
     setTotalUsd(0)
     setIsUnlocked(false)
   }, [])
   
-  const fetchBalances = useCallback(async (accounts) => {
-    if (!accounts?.length) return
-    
+  const deleteWallet = useCallback(() => {
+    clientWalletService.deleteWallet()
+    setHasWallet(false)
+    lock()
+  }, [lock])
+  
+  const fetchBalances = useCallback(async (addrs) => {
+    if (!addrs) return
+    const accounts = Object.entries(addrs).map(([chain, address]) => ({ chain, address }))
     try {
       const res = await fetch('/api/wallet/balances', {
         method: 'POST',
@@ -72,60 +91,66 @@ export function BuiltInWalletProvider({ children }) {
   }, [])
   
   const refreshBalances = useCallback(() => {
-    if (wallet?.accounts) {
-      fetchBalances(wallet.accounts)
+    if (addresses) {
+      fetchBalances(addresses)
     }
-  }, [wallet, fetchBalances])
+  }, [addresses, fetchBalances])
   
   const getSolanaAddress = useCallback(() => {
-    return wallet?.accounts?.find(a => a.chain === 'solana')?.address || null
-  }, [wallet])
+    return addresses?.solana || null
+  }, [addresses])
   
   const getEvmAddress = useCallback(() => {
-    return wallet?.accounts?.find(a => a.chain === 'ethereum')?.address || null
-  }, [wallet])
+    return addresses?.ethereum || null
+  }, [addresses])
   
   const getSolanaBalance = useCallback(() => {
     return balances.solana?.balance || 0
   }, [balances])
   
-  const signAndSendSolana = useCallback(async (to, amount) => {
-    if (!wallet?.mnemonic) throw new Error('Wallet not unlocked')
-    
-    const res = await fetch('/api/wallet/send', {
+  const signAndSend = useCallback(async (password, chain, to, amount) => {
+    if (!isUnlocked) throw new Error('Wallet not unlocked')
+    const privateKey = await clientWalletService.getPrivateKey(password, chain)
+    const res = await fetch('/api/wallet/send-signed', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        chain: 'solana',
-        mnemonic: wallet.mnemonic,
+        chain,
+        privateKey,
         to,
         amount,
       }),
     })
     const data = await res.json()
-    
     if (data.success) {
       refreshBalances()
     }
-    
     return data
-  }, [wallet, refreshBalances])
+  }, [isUnlocked, refreshBalances])
+  
+  const signAndSendSolana = useCallback(async (password, to, amount) => {
+    return signAndSend(password, 'solana', to, amount)
+  }, [signAndSend])
   
   const value = {
     hasWallet,
     isUnlocked,
     loading,
-    wallet,
+    addresses,
     balances,
     totalUsd,
+    createWallet,
+    importWallet,
     unlock,
     lock,
+    deleteWallet,
     refreshBalances,
     getSolanaAddress,
     getEvmAddress,
     getSolanaBalance,
+    signAndSend,
     signAndSendSolana,
-    solanaAddress: getSolanaAddress(),
+    solanaAddress: addresses?.solana || null,
     solanaBalance: getSolanaBalance(),
   }
   

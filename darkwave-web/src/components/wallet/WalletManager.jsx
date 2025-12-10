@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import InfoTooltip from '../ui/InfoTooltip'
+import { useBuiltInWallet } from '../../context/BuiltInWalletContext'
 
 const WALLET_DEFINITIONS = {
   mnemonic: {
@@ -28,14 +29,11 @@ const CHAIN_INFO = {
   arbitrum: { name: 'Arbitrum', symbol: 'ETH', color: '#28A0F0', icon: '🔷' },
 }
 
-const STORAGE_KEY = 'pulse_wallet_encrypted'
-
 export default function WalletManager({ userId }) {
+  const builtInWallet = useBuiltInWallet()
+  
   const [view, setView] = useState('landing')
-  const [wallet, setWallet] = useState(null)
-  const [balances, setBalances] = useState({})
-  const [totalUsd, setTotalUsd] = useState(0)
-  const [loading, setLoading] = useState(false)
+  const [mnemonic, setMnemonic] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   
@@ -48,21 +46,25 @@ export default function WalletManager({ userId }) {
   const [sendChain, setSendChain] = useState('solana')
   const [sendTo, setSendTo] = useState('')
   const [sendAmount, setSendAmount] = useState('')
+  const [sendPassword, setSendPassword] = useState('')
   const [gasEstimate, setGasEstimate] = useState(null)
   
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored) {
-      setView('unlock')
+    if (builtInWallet.hasWallet) {
+      if (builtInWallet.isUnlocked) {
+        setView('main')
+      } else {
+        setView('unlock')
+      }
     }
-  }, [])
+  }, [builtInWallet.hasWallet, builtInWallet.isUnlocked])
   
   const clearMessages = () => {
     setError('')
     setSuccess('')
   }
   
-  const createWallet = async () => {
+  const handleCreateWallet = async () => {
     clearMessages()
     if (!password || password.length < 8) {
       setError('Password must be at least 8 characters')
@@ -73,30 +75,18 @@ export default function WalletManager({ userId }) {
       return
     }
     
-    setLoading(true)
     try {
-      const res = await fetch('/api/wallet/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ wordCount: 12, password }),
-      })
-      const data = await res.json()
-      
-      if (!data.success) throw new Error(data.error)
-      
-      localStorage.setItem(STORAGE_KEY, data.wallet.encryptedMnemonic)
-      setWallet(data.wallet)
+      const newMnemonic = await builtInWallet.createWallet(password, 12)
+      setMnemonic(newMnemonic)
       setShowMnemonic(true)
       setView('backup')
       setSuccess('Wallet created! Save your recovery phrase now.')
     } catch (err) {
       setError(err.message)
-    } finally {
-      setLoading(false)
     }
   }
   
-  const importWallet = async () => {
+  const handleImportWallet = async () => {
     clearMessages()
     if (!importPhrase.trim()) {
       setError('Please enter your recovery phrase')
@@ -111,92 +101,30 @@ export default function WalletManager({ userId }) {
       return
     }
     
-    setLoading(true)
     try {
-      const res = await fetch('/api/wallet/import', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mnemonic: importPhrase.trim(), password }),
-      })
-      const data = await res.json()
-      
-      if (!data.success) throw new Error(data.error)
-      
-      localStorage.setItem(STORAGE_KEY, data.wallet.encryptedMnemonic)
-      setWallet({ ...data.wallet, mnemonic: importPhrase.trim() })
+      await builtInWallet.importWallet(importPhrase.trim(), password)
       setView('main')
       setSuccess('Wallet imported successfully!')
-      fetchBalances(data.wallet.accounts)
     } catch (err) {
       setError(err.message)
-    } finally {
-      setLoading(false)
     }
   }
   
-  const unlockWallet = async () => {
+  const handleUnlockWallet = async () => {
     clearMessages()
-    const encrypted = localStorage.getItem(STORAGE_KEY)
-    if (!encrypted) {
-      setError('No wallet found')
-      return
-    }
-    
-    setLoading(true)
     try {
-      const res = await fetch('/api/wallet/decrypt', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ encryptedMnemonic: encrypted, password: unlockPassword }),
-      })
-      const data = await res.json()
-      
-      if (!data.success) throw new Error(data.error || 'Invalid password')
-      
-      const deriveRes = await fetch('/api/wallet/derive', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mnemonic: data.mnemonic }),
-      })
-      const deriveData = await deriveRes.json()
-      
-      if (!deriveData.success) throw new Error(deriveData.error)
-      
-      setWallet({ mnemonic: data.mnemonic, accounts: deriveData.accounts })
+      await builtInWallet.unlock(unlockPassword)
       setView('main')
-      fetchBalances(deriveData.accounts)
     } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
-  
-  const fetchBalances = async (accounts) => {
-    if (!accounts?.length) return
-    
-    try {
-      const res = await fetch('/api/wallet/balances', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ accounts }),
-      })
-      const data = await res.json()
-      
-      if (data.success) {
-        setBalances(data.balances)
-        setTotalUsd(data.totalUsd)
-      }
-    } catch (err) {
-      console.error('Balance fetch error:', err)
+      setError(err.message || 'Invalid password')
     }
   }
   
   const estimateGas = async () => {
-    if (!sendTo || !sendAmount || !wallet) return
+    if (!sendTo || !sendAmount || !builtInWallet.addresses) return
     
-    const account = wallet.accounts.find(a => a.chain === sendChain)
-    if (!account) return
+    const address = builtInWallet.addresses[sendChain]
+    if (!address) return
     
     try {
       const res = await fetch('/api/wallet/estimate-gas', {
@@ -204,7 +132,7 @@ export default function WalletManager({ userId }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           chain: sendChain,
-          from: account.address,
+          from: address,
           to: sendTo,
           amount: sendAmount,
         }),
@@ -225,54 +153,36 @@ export default function WalletManager({ userId }) {
     }
   }, [sendTo, sendAmount, sendChain])
   
-  const sendTransaction = async () => {
+  const handleSendTransaction = async () => {
     clearMessages()
-    if (!sendTo || !sendAmount || !wallet?.mnemonic) {
-      setError('Please fill in all fields')
+    if (!sendTo || !sendAmount || !sendPassword) {
+      setError('Please fill in all fields including password')
       return
     }
     
-    setLoading(true)
     try {
-      const res = await fetch('/api/wallet/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chain: sendChain,
-          mnemonic: wallet.mnemonic,
-          to: sendTo,
-          amount: sendAmount,
-        }),
-      })
-      const data = await res.json()
+      const result = await builtInWallet.signAndSend(sendPassword, sendChain, sendTo, sendAmount)
+      if (!result.success) throw new Error(result.error)
       
-      if (!data.success) throw new Error(data.error)
-      
-      setSuccess(`Transaction sent! Hash: ${data.txHash?.slice(0, 20)}...`)
+      setSuccess(`Transaction sent! Hash: ${result.txHash?.slice(0, 20)}...`)
       setSendTo('')
       setSendAmount('')
+      setSendPassword('')
       setGasEstimate(null)
-      fetchBalances(wallet.accounts)
     } catch (err) {
       setError(err.message)
-    } finally {
-      setLoading(false)
     }
   }
   
-  const lockWallet = () => {
-    setWallet(null)
-    setBalances({})
-    setTotalUsd(0)
+  const handleLockWallet = () => {
+    builtInWallet.lock()
     setUnlockPassword('')
     setView('unlock')
   }
   
-  const deleteWallet = () => {
+  const handleDeleteWallet = () => {
     if (confirm('Are you sure? This will remove your wallet from this device. Make sure you have your recovery phrase saved!')) {
-      localStorage.removeItem(STORAGE_KEY)
-      setWallet(null)
-      setBalances({})
+      builtInWallet.deleteWallet()
       setView('landing')
     }
   }
@@ -349,8 +259,8 @@ export default function WalletManager({ userId }) {
         <button className="wallet-btn secondary" onClick={() => { setView('landing'); clearMessages(); }}>
           Back
         </button>
-        <button className="wallet-btn primary" onClick={createWallet} disabled={loading}>
-          {loading ? 'Creating...' : 'Create Wallet'}
+        <button className="wallet-btn primary" onClick={handleCreateWallet} disabled={builtInWallet.loading}>
+          {builtInWallet.loading ? 'Creating...' : 'Create Wallet'}
         </button>
       </div>
     </div>
@@ -365,7 +275,7 @@ export default function WalletManager({ userId }) {
       </p>
       
       <div className="wallet-mnemonic">
-        {wallet?.mnemonic?.split(' ').map((word, i) => (
+        {mnemonic?.split(' ').map((word, i) => (
           <div key={i} className="wallet-word">
             <span className="wallet-word-num">{i + 1}</span>
             <span className="wallet-word-text">{showMnemonic ? word : '•••••'}</span>
@@ -386,7 +296,7 @@ export default function WalletManager({ userId }) {
       <div className="wallet-actions">
         <button 
           className="wallet-btn primary" 
-          onClick={() => { setView('main'); fetchBalances(wallet.accounts); }}
+          onClick={() => { setMnemonic(''); setView('main'); }}
         >
           I've Saved My Phrase
         </button>
@@ -438,8 +348,8 @@ export default function WalletManager({ userId }) {
         <button className="wallet-btn secondary" onClick={() => { setView('landing'); clearMessages(); }}>
           Back
         </button>
-        <button className="wallet-btn primary" onClick={importWallet} disabled={loading}>
-          {loading ? 'Importing...' : 'Import Wallet'}
+        <button className="wallet-btn primary" onClick={handleImportWallet} disabled={builtInWallet.loading}>
+          {builtInWallet.loading ? 'Importing...' : 'Import Wallet'}
         </button>
       </div>
     </div>
@@ -462,21 +372,21 @@ export default function WalletManager({ userId }) {
           value={unlockPassword}
           onChange={(e) => setUnlockPassword(e.target.value)}
           placeholder="Enter your password"
-          onKeyDown={(e) => e.key === 'Enter' && unlockWallet()}
+          onKeyDown={(e) => e.key === 'Enter' && handleUnlockWallet()}
         />
       </div>
       
       {error && <div className="wallet-error">{error}</div>}
       
       <div className="wallet-actions">
-        <button className="wallet-btn primary" onClick={unlockWallet} disabled={loading}>
-          {loading ? 'Unlocking...' : 'Unlock'}
+        <button className="wallet-btn primary" onClick={handleUnlockWallet} disabled={builtInWallet.loading}>
+          {builtInWallet.loading ? 'Unlocking...' : 'Unlock'}
         </button>
       </div>
       
       <button 
         className="wallet-link-btn"
-        onClick={deleteWallet}
+        onClick={handleDeleteWallet}
       >
         Remove wallet from this device
       </button>
@@ -487,7 +397,7 @@ export default function WalletManager({ userId }) {
     <div className="wallet-main">
       <div className="wallet-header-row">
         <h2>Wallet</h2>
-        <button className="wallet-icon-btn" onClick={lockWallet} title="Lock wallet">
+        <button className="wallet-icon-btn" onClick={handleLockWallet} title="Lock wallet">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <rect x="3" y="11" width="18" height="11" rx="2"/>
             <path d="M7 11V7a5 5 0 0110 0v4"/>
@@ -497,19 +407,20 @@ export default function WalletManager({ userId }) {
       
       <div className="wallet-total">
         <span className="wallet-total-label">Total Balance</span>
-        <span className="wallet-total-value">${totalUsd.toFixed(2)}</span>
+        <span className="wallet-total-value">${builtInWallet.totalUsd.toFixed(2)}</span>
       </div>
       
       {success && <div className="wallet-success">{success}</div>}
       {error && <div className="wallet-error">{error}</div>}
       
       <div className="wallet-accounts">
-        {wallet?.accounts?.map((account) => {
-          const chain = CHAIN_INFO[account.chain]
-          const balance = balances[account.chain]
+        {builtInWallet.addresses && Object.entries(builtInWallet.addresses).map(([chainKey, address]) => {
+          const chain = CHAIN_INFO[chainKey]
+          if (!chain) return null
+          const balance = builtInWallet.balances[chainKey]
           
           return (
-            <div key={account.chain} className="wallet-account-card" style={{ borderColor: chain?.color }}>
+            <div key={chainKey} className="wallet-account-card" style={{ borderColor: chain?.color }}>
               <div className="wallet-account-header">
                 <span className="wallet-account-icon" style={{ color: chain?.color }}>
                   {chain?.icon}
@@ -519,8 +430,8 @@ export default function WalletManager({ userId }) {
                   {balance ? `${balance.balance} ${chain?.symbol}` : '...'}
                 </span>
               </div>
-              <div className="wallet-account-address" onClick={() => copyAddress(account.address)}>
-                {account.address.slice(0, 8)}...{account.address.slice(-6)}
+              <div className="wallet-account-address" onClick={() => copyAddress(address)}>
+                {address.slice(0, 8)}...{address.slice(-6)}
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <rect x="9" y="9" width="13" height="13" rx="2"/>
                   <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
@@ -536,7 +447,7 @@ export default function WalletManager({ userId }) {
       
       <button 
         className="wallet-btn secondary" 
-        onClick={() => fetchBalances(wallet.accounts)}
+        onClick={builtInWallet.refreshBalances}
         style={{ marginTop: 16 }}
       >
         Refresh Balances
@@ -576,6 +487,16 @@ export default function WalletManager({ userId }) {
         />
       </div>
       
+      <div className="wallet-input-group">
+        <label>Wallet Password (to sign transaction)</label>
+        <input
+          type="password"
+          value={sendPassword}
+          onChange={(e) => setSendPassword(e.target.value)}
+          placeholder="Enter password to sign"
+        />
+      </div>
+      
       {gasEstimate && (
         <div className="wallet-gas-estimate">
           <span>
@@ -588,10 +509,10 @@ export default function WalletManager({ userId }) {
       
       <button 
         className="wallet-btn primary" 
-        onClick={sendTransaction} 
-        disabled={loading || !sendTo || !sendAmount}
+        onClick={handleSendTransaction} 
+        disabled={builtInWallet.loading || !sendTo || !sendAmount || !sendPassword}
       >
-        {loading ? 'Sending...' : 'Send Transaction'}
+        {builtInWallet.loading ? 'Sending...' : 'Send Transaction'}
       </button>
     </div>
   )

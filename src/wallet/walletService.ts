@@ -412,6 +412,64 @@ class MultiChainWalletService {
     }
   }
 
+  async sendWithPrivateKey(
+    chain: string,
+    privateKey: string,
+    to: string,
+    amount: string
+  ): Promise<{ success: boolean; txHash?: string; error?: string; explorerUrl?: string }> {
+    try {
+      const config = SUPPORTED_CHAINS[chain];
+      if (!config) throw new Error(`Unsupported chain: ${chain}`);
+
+      if (chain === 'solana') {
+        const keypair = Keypair.fromSecretKey(bs58.decode(privateKey));
+        
+        const transaction = new Transaction().add(
+          SystemProgram.transfer({
+            fromPubkey: keypair.publicKey,
+            toPubkey: new PublicKey(to),
+            lamports: Math.floor(parseFloat(amount) * LAMPORTS_PER_SOL)
+          })
+        );
+        
+        const { blockhash } = await this.solanaConnection.getLatestBlockhash();
+        transaction.recentBlockhash = blockhash;
+        transaction.feePayer = keypair.publicKey;
+        
+        const signature = await this.solanaConnection.sendTransaction(transaction, [keypair]);
+        await this.solanaConnection.confirmTransaction(signature);
+        
+        return { 
+          success: true, 
+          txHash: signature,
+          explorerUrl: `${config.explorer}/tx/${signature}`
+        };
+      } else {
+        const provider = this.evmProviders.get(chain);
+        if (!provider) throw new Error(`No provider for chain: ${chain}`);
+        
+        const wallet = new ethers.Wallet(privateKey, provider);
+        
+        const tx = await wallet.sendTransaction({
+          to,
+          value: ethers.parseEther(amount)
+        });
+        
+        await tx.wait();
+        
+        return { 
+          success: true, 
+          txHash: tx.hash,
+          explorerUrl: `${config.explorer}/tx/${tx.hash}`
+        };
+      }
+    } catch (error: any) {
+      console.error(`[Wallet] Send with private key error:`, error);
+      return { success: false, error: error.message };
+    }
+  }
+
   getSupportedChains(): ChainConfig[] {
     return Object.values(SUPPORTED_CHAINS);
   }
