@@ -65,7 +65,7 @@ export default function BitcoinChart() {
   const basePriceRef = useRef(null)
   const dataRef = useRef([])
   
-  const [chartType, setChartType] = useState('candlestick')
+  const [chartType, setChartType] = useState('area')
   const [timeframe, setTimeframe] = useState('7D')
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [showColorPicker, setShowColorPicker] = useState(false)
