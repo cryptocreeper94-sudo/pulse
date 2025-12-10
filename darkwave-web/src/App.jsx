@@ -9,7 +9,8 @@ import {
   SettingsTab,
   V2DetailsTab,
   DashboardTab,
-  SniperBotTab
+  SniperBotTab,
+  WalletTab
 } from './components/tabs'
 import { GlossaryPopup } from './components/ui'
 import { GlossaryProvider } from './context/GlossaryContext'
@@ -64,6 +65,8 @@ function App() {
         return <StakingTab />
       case 'sniper':
         return <SniperBotTab />
+      case 'wallet':
+        return <WalletTab userId={userId} />
       case 'settings':
         return <SettingsTab userId={userId} userConfig={userConfig} setUserConfig={setUserConfig} />
       case 'v2-details':
