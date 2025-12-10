@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useFavorites } from '../../context/FavoritesContext'
 import { useAvatar } from '../../context/AvatarContext'
 import BitcoinChart from '../charts/BitcoinChart'
 import CoinAnalysisModal from '../modals/CoinAnalysisModal'
 import Gauge from '../ui/Gauge'
+import FlipCarousel from '../ui/FlipCarousel'
 
 function formatMarketCap(value) {
   if (!value) return '—'
@@ -14,559 +15,287 @@ function formatMarketCap(value) {
   return `$${value.toFixed(0)}`
 }
 
-function MiniSparkline({ data, positive }) {
-  if (!data || data.length < 2) return null
-  
-  const samples = data.length > 20 ? data.filter((_, i) => i % Math.floor(data.length / 20) === 0) : data
-  const min = Math.min(...samples)
-  const max = Math.max(...samples)
-  const range = max - min || 1
-  
-  const width = 60
-  const height = 24
-  const points = samples.map((val, i) => {
-    const x = (i / (samples.length - 1)) * width
-    const y = height - ((val - min) / range) * height
-    return `${x},${y}`
-  }).join(' ')
-  
-  const color = positive ? '#39FF14' : '#FF4444'
-  
-  return (
-    <svg width={width} height={height} style={{ display: 'block' }}>
-      <polyline
-        points={points}
-        fill="none"
-        stroke={color}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
+function formatPrice(price) {
+  if (!price) return '$0.00'
+  if (price < 0.01) return `$${price.toFixed(6)}`
+  if (price < 1) return `$${price.toFixed(4)}`
+  return `$${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 }
 
-function CarouselRow({ children, title, showArrows = false }) {
-  const scrollRef = useRef(null)
-  const [scrollPos, setScrollPos] = useState(0)
-  const [maxScroll, setMaxScroll] = useState(0)
-  const childCount = Array.isArray(children) ? children.length : 1
-  const forceArrows = showArrows || childCount >= 4
-  
-  const updateScrollState = () => {
-    if (scrollRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current
-      setScrollPos(scrollLeft)
-      setMaxScroll(scrollWidth - clientWidth)
-    }
-  }
-  
-  useEffect(() => {
-    updateScrollState()
-    const el = scrollRef.current
-    if (el) {
-      el.addEventListener('scroll', updateScrollState)
-      window.addEventListener('resize', updateScrollState)
-    }
-    return () => {
-      if (el) el.removeEventListener('scroll', updateScrollState)
-      window.removeEventListener('resize', updateScrollState)
-    }
-  }, [children])
-  
-  const scroll = (direction) => {
-    if (scrollRef.current) {
-      const scrollAmount = 180
-      scrollRef.current.scrollBy({ 
-        left: direction === 'left' ? -scrollAmount : scrollAmount, 
-        behavior: 'smooth' 
-      })
-    }
-  }
-
-  const canScrollLeft = scrollPos > 5
-  const canScrollRight = scrollPos < maxScroll - 5
-  
+function BentoTile({ children, gridArea, style = {}, onClick }) {
   return (
-    <div style={{ marginBottom: 16 }}>
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        marginBottom: 8,
-      }}>
-        {title && (
-          <div style={{ 
-            fontSize: 10, 
-            fontWeight: 700, 
-            color: '#555', 
-            textTransform: 'uppercase', 
-            letterSpacing: 1,
-          }}>
-            {title}
-          </div>
-        )}
-        {forceArrows && (
-          <div style={{ display: 'flex', gap: 6 }}>
-            <button
-              onClick={() => scroll('left')}
-              disabled={!canScrollLeft}
-              style={{
-                width: 24,
-                height: 24,
-                borderRadius: '50%',
-                background: canScrollLeft ? '#1a1a1a' : '#111',
-                border: '1px solid #333',
-                color: canScrollLeft ? '#fff' : '#444',
-                fontSize: 12,
-                cursor: canScrollLeft ? 'pointer' : 'default',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              ‹
-            </button>
-            <button
-              onClick={() => scroll('right')}
-              disabled={!canScrollRight}
-              style={{
-                width: 24,
-                height: 24,
-                borderRadius: '50%',
-                background: canScrollRight ? '#1a1a1a' : '#111',
-                border: '1px solid #333',
-                color: canScrollRight ? '#fff' : '#444',
-                fontSize: 12,
-                cursor: canScrollRight ? 'pointer' : 'default',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              ›
-            </button>
-          </div>
-        )}
-      </div>
-      <div
-        ref={scrollRef}
-        style={{
-          display: 'flex',
-          flexWrap: 'nowrap',
-          gap: 10,
-          overflowX: 'auto',
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-          WebkitOverflowScrolling: 'touch',
-          scrollSnapType: 'x mandatory',
-        }}
-        className="hide-scrollbar"
-      >
-        {children}
-      </div>
-    </div>
-  )
-}
-
-function BentoCard({ children, onClick, style = {} }) {
-  return (
-    <div 
+    <div
       onClick={onClick}
       style={{
+        gridArea,
         background: '#0f0f0f',
         border: '1px solid #222',
         borderRadius: 12,
         padding: 12,
+        overflow: 'hidden',
+        position: 'relative',
         cursor: onClick ? 'pointer' : 'default',
-        transition: 'border-color 0.2s',
-        flex: '0 0 auto',
+        transition: 'border-color 0.2s, box-shadow 0.2s',
         ...style,
       }}
-      onMouseEnter={(e) => onClick && (e.currentTarget.style.borderColor = '#00D4FF')}
-      onMouseLeave={(e) => e.currentTarget.style.borderColor = '#222'}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = '#333'
+        e.currentTarget.style.boxShadow = '0 0 20px rgba(0,212,255,0.1)'
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = '#222'
+        e.currentTarget.style.boxShadow = 'none'
+      }}
     >
       {children}
     </div>
   )
 }
 
-function QuickActionCard({ icon, title, subtitle, onClick, accentColor = '#00D4FF' }) {
+function TileLabel({ children, color = '#555' }) {
   return (
-    <BentoCard onClick={onClick} style={{ flexShrink: 0, width: 'calc((100% - 40px) / 5)', minWidth: 110, scrollSnapAlign: 'start' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <div style={{ 
-          fontSize: 16, 
-          width: 28, 
-          height: 28, 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center',
-          background: `${accentColor}15`,
-          borderRadius: 6,
-          flexShrink: 0,
-        }}>
-          {icon}
-        </div>
-        <div style={{ minWidth: 0 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{title}</div>
-          <div style={{ fontSize: 9, color: '#666', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{subtitle}</div>
-        </div>
-      </div>
-    </BentoCard>
-  )
-}
-
-function MetricCard({ title, value, change, inflow }) {
-  const isPositive = change >= 0
-  return (
-    <BentoCard style={{ flexShrink: 0, width: 'calc((100% - 30px) / 4)', minWidth: 120, scrollSnapAlign: 'start' }}>
-      <div style={{ fontSize: 9, color: '#666', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>
-        {title}
-      </div>
-      <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 4 }}>
-        {value}
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span style={{ fontSize: 10, fontWeight: 600, color: isPositive ? '#39FF14' : '#ff4444' }}>
-          {isPositive ? '▲' : '▼'} {Math.abs(change).toFixed(1)}%
-        </span>
-        {inflow !== undefined && (
-          <span style={{ fontSize: 9, color: inflow >= 0 ? '#39FF14' : '#ff4444' }}>
-            {inflow >= 0 ? '+' : ''}{formatMarketCap(inflow)}
-          </span>
-        )}
-      </div>
-    </BentoCard>
-  )
-}
-
-function GaugeCard({ title, value, type, accentColor }) {
-  return (
-    <BentoCard style={{ flexShrink: 0, width: 'calc((100% - 30px) / 4)', minWidth: 120, scrollSnapAlign: 'start', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <div style={{ color: accentColor, fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>
-        {title}
-      </div>
-      <div style={{ width: '80%', maxWidth: 100 }}>
-        <Gauge value={value} type={type} size={100} showLabels={false} />
-      </div>
-    </BentoCard>
-  )
-}
-
-function CoinTableWidget({ coins, favorites, onCoinClick, activeView, setActiveView, timeframe, setTimeframe, loading }) {
-  const getDisplayCoins = () => {
-    if (!coins || coins.length === 0) return []
-    
-    switch (activeView) {
-      case 'favorites':
-        return favorites || []
-      case 'gainers':
-        return [...coins]
-          .sort((a, b) => (timeframe === '1h' 
-            ? (b.price_change_percentage_1h_in_currency || 0) - (a.price_change_percentage_1h_in_currency || 0)
-            : (b.price_change_percentage_24h || 0) - (a.price_change_percentage_24h || 0)))
-          .slice(0, 10)
-      case 'losers':
-        return [...coins]
-          .sort((a, b) => (timeframe === '1h'
-            ? (a.price_change_percentage_1h_in_currency || 0) - (b.price_change_percentage_1h_in_currency || 0)
-            : (a.price_change_percentage_24h || 0) - (b.price_change_percentage_24h || 0)))
-          .slice(0, 10)
-      default:
-        return coins.slice(0, 10)
-    }
-  }
-
-  const displayCoins = getDisplayCoins()
-  const isFavorite = (symbol) => favorites?.some(f => f.symbol?.toUpperCase() === symbol?.toUpperCase())
-
-  const formatPrice = (price) => {
-    if (!price) return '$0.00'
-    if (price < 0.01) return `$${price.toFixed(6)}`
-    if (price < 1) return `$${price.toFixed(4)}`
-    return `$${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-  }
-
-  const formatChange = (change) => {
-    if (change === null || change === undefined) return '-'
-    const color = change >= 0 ? '#39FF14' : '#ff4444'
-    const arrow = change >= 0 ? '▲' : '▼'
-    return <span style={{ color }}>{arrow} {Math.abs(change).toFixed(1)}%</span>
-  }
-
-  const tabs = [
-    { id: 'top10', label: 'Top 10' },
-    { id: 'favorites', label: 'Favs' },
-    { id: 'gainers', label: 'Gainers' },
-    { id: 'losers', label: 'Losers' }
-  ]
-
-  return (
-    <div style={{ background: '#0f0f0f', border: '1px solid #222', borderRadius: 12, marginBottom: 16 }}>
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        padding: '8px 10px', 
-        borderBottom: '1px solid #222',
-        overflowX: 'auto',
-        gap: 8,
-      }}>
-        <div style={{ display: 'flex', gap: 3, alignItems: 'center', flexShrink: 0 }}>
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveView(tab.id)}
-              style={{
-                padding: '5px 8px',
-                fontSize: 10,
-                height: 26,
-                background: activeView === tab.id ? '#00D4FF' : '#1a1a1a',
-                color: activeView === tab.id ? '#000' : '#888',
-                border: activeView === tab.id ? '1px solid #00D4FF' : '1px solid #333',
-                borderRadius: 4,
-                cursor: 'pointer',
-                fontWeight: activeView === tab.id ? 700 : 500,
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-        <div style={{ display: 'flex', gap: 3, alignItems: 'center', flexShrink: 0 }}>
-          {['1H', '24H'].map(tf => (
-            <button
-              key={tf}
-              onClick={() => setTimeframe(tf.toLowerCase())}
-              style={{
-                padding: '5px 8px',
-                fontSize: 10,
-                height: 26,
-                background: timeframe === tf.toLowerCase() ? '#1a1a1a' : 'transparent',
-                color: timeframe === tf.toLowerCase() ? '#00D4FF' : '#555',
-                border: timeframe === tf.toLowerCase() ? '1px solid #00D4FF' : '1px solid #333',
-                borderRadius: 4,
-                cursor: 'pointer',
-                fontWeight: 600,
-              }}
-            >
-              {tf}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div style={{ overflowX: 'auto' }}>
-        {loading ? (
-          <div style={{ padding: 24, textAlign: 'center', color: '#888' }}>
-            <div style={{ 
-              width: 24, 
-              height: 24, 
-              border: '2px solid #333', 
-              borderTop: '2px solid #00D4FF', 
-              borderRadius: '50%', 
-              animation: 'spin 1s linear infinite',
-              margin: '0 auto 8px'
-            }}></div>
-            Loading...
-          </div>
-        ) : displayCoins.length === 0 ? (
-          <div style={{ padding: 24, textAlign: 'center', color: '#888', fontSize: 12 }}>
-            {activeView === 'favorites' ? 'No favorites yet' : 'No coins found'}
-          </div>
-        ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid #222' }}>
-                <th style={{ padding: '10px 8px', textAlign: 'left', color: '#555', fontWeight: 600, fontSize: 10 }}>#</th>
-                <th style={{ padding: '10px 8px', textAlign: 'left', color: '#555', fontWeight: 600, fontSize: 10 }}>Coin</th>
-                <th style={{ padding: '10px 8px', textAlign: 'right', color: '#555', fontWeight: 600, fontSize: 10 }}>Price</th>
-                <th style={{ padding: '10px 8px', textAlign: 'right', color: '#555', fontWeight: 600, fontSize: 10 }}>{timeframe.toUpperCase()}</th>
-                <th style={{ padding: '10px 8px', textAlign: 'right', color: '#555', fontWeight: 600, fontSize: 10 }}>Market Cap</th>
-                <th style={{ padding: '10px 8px', textAlign: 'right', color: '#555', fontWeight: 600, fontSize: 10 }}>Volume</th>
-                <th style={{ padding: '10px 8px', textAlign: 'center', color: '#555', fontWeight: 600, fontSize: 10 }}>7D</th>
-              </tr>
-            </thead>
-            <tbody>
-              {displayCoins.map((coin, index) => {
-                const change = timeframe === '1h' 
-                  ? (coin.price_change_percentage_1h_in_currency || coin.priceChange1h)
-                  : (coin.price_change_percentage_24h || coin.priceChange24h)
-                const sparkline = coin.sparkline_in_7d?.price || []
-                const sparklinePositive = sparkline.length > 1 ? sparkline[sparkline.length - 1] > sparkline[0] : true
-                return (
-                  <tr 
-                    key={coin.id || coin.symbol} 
-                    onClick={() => onCoinClick(coin)}
-                    style={{ borderBottom: '1px solid #1a1a1a', cursor: 'pointer', transition: 'background 0.15s' }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = '#1a1a1a'}
-                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                  >
-                    <td style={{ padding: '10px 8px', color: '#444' }}>{index + 1}</td>
-                    <td style={{ padding: '10px 8px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        {coin.image && (
-                          <img 
-                            src={coin.image} 
-                            alt="" 
-                            style={{ width: 24, height: 24, borderRadius: '50%' }}
-                            onError={(e) => e.target.style.display = 'none'}
-                          />
-                        )}
-                        <div>
-                          <div style={{ fontWeight: 600, fontSize: 12, color: '#fff' }}>
-                            {coin.symbol?.toUpperCase()}
-                            {isFavorite(coin.symbol) && <span style={{ color: '#FFD700', marginLeft: 4 }}>★</span>}
-                          </div>
-                          <div style={{ fontSize: 10, color: '#666' }}>{coin.name}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td style={{ padding: '10px 8px', textAlign: 'right', fontWeight: 600, color: '#fff', fontSize: 12 }}>
-                      {formatPrice(coin.current_price || coin.price)}
-                    </td>
-                    <td style={{ padding: '10px 8px', textAlign: 'right', fontWeight: 600, fontSize: 11 }}>
-                      {formatChange(change)}
-                    </td>
-                    <td style={{ padding: '10px 8px', textAlign: 'right', color: '#999', fontSize: 11 }}>
-                      {formatMarketCap(coin.market_cap)}
-                    </td>
-                    <td style={{ padding: '10px 8px', textAlign: 'right', color: '#888', fontSize: 11 }}>
-                      {formatMarketCap(coin.total_volume)}
-                    </td>
-                    <td style={{ padding: '10px 8px', textAlign: 'center' }}>
-                      {sparkline.length > 0 ? (
-                        <MiniSparkline data={sparkline} positive={sparklinePositive} />
-                      ) : (
-                        <span style={{ color: '#444', fontSize: 10 }}>—</span>
-                      )}
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        )}
-      </div>
+    <div style={{
+      fontSize: 9,
+      fontWeight: 700,
+      color,
+      textTransform: 'uppercase',
+      letterSpacing: 1,
+      marginBottom: 8,
+    }}>
+      {children}
     </div>
   )
 }
 
-function ChartWidget() {
+function QuickActionContent({ action }) {
   return (
     <div style={{ 
-      background: '#0f0f0f', 
-      border: '1px solid #222', 
-      borderRadius: 12,
-      overflow: 'hidden',
-      marginBottom: 16
+      display: 'flex', 
+      flexDirection: 'column', 
+      alignItems: 'center', 
+      justifyContent: 'center',
+      height: '100%',
+      gap: 8,
+      padding: 16,
     }}>
       <div style={{ 
-        padding: '10px 12px', 
-        borderBottom: '1px solid #222',
+        fontSize: 32,
+        width: 56,
+        height: 56,
         display: 'flex',
         alignItems: 'center',
-        gap: 8
+        justifyContent: 'center',
+        background: `${action.color}20`,
+        borderRadius: 12,
+        boxShadow: `0 0 20px ${action.color}30`,
       }}>
-        <span style={{ fontSize: 14 }}>📈</span>
-        <span style={{ fontSize: 12, fontWeight: 700, color: '#fff' }}>Bitcoin Chart</span>
+        {action.icon}
       </div>
-      <BitcoinChart />
+      <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>{action.title}</div>
+      <div style={{ fontSize: 11, color: '#666' }}>{action.subtitle}</div>
     </div>
   )
 }
 
-function TrendingCoinCard({ coin, onClick, isFavorite }) {
+function MetricContent({ title, value, change }) {
+  const isPositive = change >= 0
+  return (
+    <div style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      justifyContent: 'center',
+      height: '100%',
+      padding: 8,
+    }}>
+      <div style={{ fontSize: 10, color: '#666', fontWeight: 600, textTransform: 'uppercase', marginBottom: 8 }}>
+        {title}
+      </div>
+      <div style={{ fontSize: 22, fontWeight: 800, color: '#fff', marginBottom: 6 }}>
+        {value}
+      </div>
+      <div style={{ 
+        fontSize: 12, 
+        fontWeight: 600, 
+        color: isPositive ? '#39FF14' : '#ff4444',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 4,
+      }}>
+        <span>{isPositive ? '▲' : '▼'}</span>
+        <span>{Math.abs(change).toFixed(1)}%</span>
+      </div>
+    </div>
+  )
+}
+
+function GaugeContent({ title, value, type, accentColor }) {
+  return (
+    <div style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: '100%',
+      padding: 8,
+    }}>
+      <div style={{ 
+        color: accentColor, 
+        fontSize: 10, 
+        fontWeight: 700, 
+        textTransform: 'uppercase', 
+        letterSpacing: 1,
+        marginBottom: 8,
+      }}>
+        {title}
+      </div>
+      <div style={{ width: '100%', maxWidth: 120 }}>
+        <Gauge value={value} type={type} size={120} showLabels={false} />
+      </div>
+    </div>
+  )
+}
+
+function CoinContent({ coin, isFavorite }) {
   const change = coin.price_change_percentage_24h || 0
   const isPositive = change >= 0
   
-  const formatPrice = (price) => {
-    if (!price) return '$0.00'
-    if (price < 0.01) return `$${price.toFixed(6)}`
-    if (price < 1) return `$${price.toFixed(4)}`
-    return `$${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-  }
-  
   return (
-    <BentoCard onClick={onClick} style={{ flexShrink: 0, width: 95, minWidth: 95, scrollSnapAlign: 'start' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+    <div style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: '100%',
+      padding: 12,
+      gap: 8,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         {coin.image && (
           <img 
             src={coin.image} 
             alt="" 
-            style={{ width: 22, height: 22, borderRadius: '50%', flexShrink: 0 }}
+            style={{ width: 36, height: 36, borderRadius: '50%' }}
             onError={(e) => e.target.style.display = 'none'}
           />
         )}
-        <div style={{ minWidth: 0 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#fff' }}>
             {coin.symbol?.toUpperCase()}
-            {isFavorite && <span style={{ color: '#FFD700', marginLeft: 3 }}>★</span>}
+            {isFavorite && <span style={{ color: '#FFD700', marginLeft: 6 }}>★</span>}
           </div>
-          <div style={{ fontSize: 8, color: '#666', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{coin.name}</div>
+          <div style={{ fontSize: 11, color: '#666' }}>{coin.name}</div>
         </div>
       </div>
-      <div style={{ fontSize: 12, fontWeight: 700, color: '#fff', marginBottom: 3 }}>
+      <div style={{ fontSize: 20, fontWeight: 700, color: '#fff' }}>
         {formatPrice(coin.current_price || coin.price)}
       </div>
-      <div style={{ fontSize: 9, fontWeight: 600, color: isPositive ? '#39FF14' : '#ff4444' }}>
-        {isPositive ? '▲' : '▼'} {Math.abs(change).toFixed(1)}%
+      <div style={{ 
+        fontSize: 13, 
+        fontWeight: 600, 
+        color: isPositive ? '#39FF14' : '#ff4444',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 4,
+      }}>
+        <span>{isPositive ? '▲' : '▼'}</span>
+        <span>{Math.abs(change).toFixed(2)}%</span>
       </div>
-    </BentoCard>
+    </div>
   )
 }
 
-function NewsCard({ news }) {
+function NewsContent({ news }) {
   return (
-    <BentoCard 
+    <div 
+      style={{ 
+        height: '100%',
+        padding: 8,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        cursor: 'pointer',
+      }}
       onClick={() => news.url && window.open(news.url, '_blank')}
-      style={{ flexShrink: 0, width: 'calc((100% - 30px) / 4)', minWidth: 180, scrollSnapAlign: 'start' }}
     >
-      <div style={{ fontSize: 9, color: '#00D4FF', fontWeight: 600, marginBottom: 4, textTransform: 'uppercase' }}>
+      <div style={{ fontSize: 10, color: '#00D4FF', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase' }}>
         {news.source}
       </div>
       <div style={{ 
-        fontSize: 11, 
+        fontSize: 13, 
         fontWeight: 600, 
         color: '#fff', 
-        lineHeight: 1.3,
+        lineHeight: 1.4,
         display: '-webkit-box',
         WebkitLineClamp: 3,
         WebkitBoxOrient: 'vertical',
         overflow: 'hidden',
-        marginBottom: 6,
+        marginBottom: 8,
       }}>
         {news.title}
       </div>
-      <div style={{ fontSize: 9, color: '#555' }}>{news.time}</div>
-    </BentoCard>
+      <div style={{ fontSize: 10, color: '#555' }}>{news.time}</div>
+    </div>
   )
 }
 
-function Footer() {
+function MiniCoinTable({ coins, onCoinClick, favorites }) {
+  const displayCoins = coins.slice(0, 5)
+  const isFavorite = (symbol) => favorites?.some(f => f.symbol?.toUpperCase() === symbol?.toUpperCase())
+  
   return (
-    <div style={{
-      textAlign: 'center',
-      padding: '8px 0',
-      color: '#666',
-      fontSize: 11,
-      fontWeight: 500,
-    }}>
-      Powered by DarkWave Studios, LLC © 2025 | v2.0.6
+    <div style={{ height: '100%', overflow: 'hidden' }}>
+      <TileLabel>Top Coins</TileLabel>
+      <div style={{ fontSize: 9, color: '#444', display: 'flex', padding: '4px 0', borderBottom: '1px solid #222' }}>
+        <span style={{ flex: 2 }}>Coin</span>
+        <span style={{ flex: 1, textAlign: 'right' }}>Price</span>
+        <span style={{ flex: 1, textAlign: 'right' }}>24h</span>
+      </div>
+      {displayCoins.map((coin, i) => {
+        const change = coin.price_change_percentage_24h || 0
+        const isPositive = change >= 0
+        return (
+          <div 
+            key={coin.id || i}
+            onClick={() => onCoinClick(coin)}
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              padding: '6px 0',
+              borderBottom: '1px solid #1a1a1a',
+              cursor: 'pointer',
+              transition: 'background 0.2s',
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = '#1a1a1a'}
+            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+          >
+            <div style={{ flex: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+              {coin.image && (
+                <img src={coin.image} alt="" style={{ width: 18, height: 18, borderRadius: '50%' }} />
+              )}
+              <span style={{ fontSize: 11, fontWeight: 600, color: '#fff' }}>
+                {coin.symbol?.toUpperCase()}
+                {isFavorite(coin.symbol) && <span style={{ color: '#FFD700', marginLeft: 4 }}>★</span>}
+              </span>
+            </div>
+            <div style={{ flex: 1, textAlign: 'right', fontSize: 11, color: '#fff' }}>
+              {formatPrice(coin.current_price)}
+            </div>
+            <div style={{ flex: 1, textAlign: 'right', fontSize: 11, fontWeight: 600, color: isPositive ? '#39FF14' : '#ff4444' }}>
+              {isPositive ? '+' : ''}{change.toFixed(1)}%
+            </div>
+          </div>
+        )
+      })}
     </div>
   )
 }
 
 export default function DashboardTab({ userId, userConfig, onNavigate }) {
-  const { favorites, loading: favoritesLoading } = useFavorites()
-  const { avatarSvg } = useAvatar()
+  const { favorites } = useFavorites()
   const [selectedCoin, setSelectedCoin] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [coins, setCoins] = useState([])
   const [coinsLoading, setCoinsLoading] = useState(true)
-  const [activeView, setActiveView] = useState('top10')
-  const [timeframe, setTimeframe] = useState('24h')
   const [marketData, setMarketData] = useState({
     fearGreed: 65,
     altcoinSeason: 75,
@@ -599,8 +328,7 @@ export default function DashboardTab({ userId, userConfig, onNavigate }) {
         const response = await fetch('/api/market-overview?category=top')
         if (response.ok) {
           const data = await response.json()
-          const coinList = Array.isArray(data) ? data : (data.coins || [])
-          setCoins(coinList)
+          setCoins(Array.isArray(data) ? data : (data.coins || []))
         }
       } catch (err) {
         console.log('Failed to fetch coins')
@@ -620,7 +348,6 @@ export default function DashboardTab({ userId, userConfig, onNavigate }) {
       { source: 'The Block', title: 'Solana DeFi TVL Surges Past $5 Billion Milestone', time: '6h ago', url: 'https://theblock.co' },
       { source: 'Decrypt', title: 'AI Tokens Lead Altcoin Rally as Sector Gains Momentum', time: '8h ago', url: 'https://decrypt.co' },
     ]
-    
     const fetchNews = async () => {
       try {
         const response = await fetch('/api/crypto/news')
@@ -630,11 +357,10 @@ export default function DashboardTab({ userId, userConfig, onNavigate }) {
         } else {
           setNews(defaultNews)
         }
-      } catch (err) {
+      } catch {
         setNews(defaultNews)
       }
     }
-    
     fetchNews()
     const interval = setInterval(fetchNews, 5 * 60 * 1000)
     return () => clearInterval(interval)
@@ -655,97 +381,122 @@ export default function DashboardTab({ userId, userConfig, onNavigate }) {
     { icon: '⚙️', title: 'Settings', subtitle: 'Preferences', color: '#888', tab: 'settings' },
   ]
 
+  const marketOverviewItems = [
+    { type: 'metric', title: 'Market Cap', value: formatMarketCap(marketData.totalMarketCap), change: marketData.totalMarketCapChange },
+    { type: 'metric', title: '24h Volume', value: formatMarketCap(marketData.totalVolume), change: marketData.totalVolumeChange },
+    { type: 'gauge', title: 'Fear & Greed', value: marketData.fearGreed, gaugeType: 'fearGreed', color: '#FF006E' },
+    { type: 'gauge', title: 'Altcoin Season', value: marketData.altcoinSeason, gaugeType: 'altcoinSeason', color: '#00D4FF' },
+  ]
+
   return (
-    <div style={{ padding: '12px 12px 0' }}>
-      <style>{`
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-      `}</style>
+    <div style={{ 
+      height: 'calc(100vh - 100px)',
+      padding: 12,
+      display: 'grid',
+      gridTemplateColumns: 'repeat(12, 1fr)',
+      gridTemplateRows: 'repeat(4, 1fr)',
+      gap: 10,
+      overflow: 'hidden',
+    }}>
       
-      {/* Quick Actions Carousel */}
-      <CarouselRow title="Quick Actions" showArrows>
-        {quickActions.map((action, i) => (
-          <QuickActionCard 
-            key={i}
-            icon={action.icon}
-            title={action.title}
-            subtitle={action.subtitle}
-            accentColor={action.color}
-            onClick={() => onNavigate && onNavigate(action.tab)}
+      <BentoTile gridArea="1 / 1 / 3 / 4">
+        <TileLabel>Quick Actions</TileLabel>
+        <div style={{ height: 'calc(100% - 24px)' }}>
+          <FlipCarousel
+            items={quickActions}
+            renderItem={(action) => (
+              <div 
+                onClick={() => onNavigate && onNavigate(action.tab)}
+                style={{ height: '100%', cursor: 'pointer' }}
+              >
+                <QuickActionContent action={action} />
+              </div>
+            )}
+            showDots={true}
+            autoPlay={true}
+            interval={6000}
           />
-        ))}
-      </CarouselRow>
-      
-      {/* Market Metrics & Gauges Carousel */}
-      <CarouselRow title="Market Overview" showArrows>
-        <MetricCard 
-          title="Market Cap" 
-          value={formatMarketCap(marketData.totalMarketCap)} 
-          change={marketData.totalMarketCapChange || 2.1}
-        />
-        <MetricCard 
-          title="24h Volume" 
-          value={formatMarketCap(marketData.totalVolume)} 
-          change={marketData.totalVolumeChange || -1.8}
-        />
-        <GaugeCard 
-          title="Fear & Greed" 
-          value={marketData.fearGreed} 
-          type="fearGreed" 
-          accentColor="#FF006E" 
-        />
-        <GaugeCard 
-          title="Altcoin Season" 
-          value={marketData.altcoinSeason} 
-          type="altcoinSeason" 
-          accentColor="#00D4FF" 
-        />
-      </CarouselRow>
-      
-      {/* Trending Coins Carousel */}
-      <CarouselRow title="Trending" showArrows>
-        {coinsLoading ? (
-          <BentoCard style={{ minWidth: 120, display: 'flex', alignItems: 'center', justifyContent: 'center', height: 80 }}>
-            <div style={{ color: '#666', fontSize: 11 }}>Loading...</div>
-          </BentoCard>
-        ) : (
-          coins.slice(0, 12).map((coin, i) => (
-            <TrendingCoinCard 
-              key={coin.id || i}
-              coin={coin}
-              onClick={() => handleCoinClick(coin)}
-              isFavorite={isFavorite(coin.symbol)}
+        </div>
+      </BentoTile>
+
+      <BentoTile gridArea="1 / 4 / 3 / 7">
+        <TileLabel>Market Overview</TileLabel>
+        <div style={{ height: 'calc(100% - 24px)' }}>
+          <FlipCarousel
+            items={marketOverviewItems}
+            renderItem={(item) => (
+              item.type === 'metric' 
+                ? <MetricContent title={item.title} value={item.value} change={item.change} />
+                : <GaugeContent title={item.title} value={item.value} type={item.gaugeType} accentColor={item.color} />
+            )}
+            showDots={true}
+            autoPlay={true}
+            interval={5000}
+          />
+        </div>
+      </BentoTile>
+
+      <BentoTile gridArea="1 / 7 / 3 / 10">
+        <TileLabel>Trending</TileLabel>
+        <div style={{ height: 'calc(100% - 24px)' }}>
+          {coinsLoading ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#666' }}>
+              Loading...
+            </div>
+          ) : (
+            <FlipCarousel
+              items={coins.slice(0, 10)}
+              renderItem={(coin) => (
+                <div onClick={() => handleCoinClick(coin)} style={{ height: '100%', cursor: 'pointer' }}>
+                  <CoinContent coin={coin} isFavorite={isFavorite(coin.symbol)} />
+                </div>
+              )}
+              showDots={true}
+              autoPlay={true}
+              interval={4000}
             />
-          ))
-        )}
-      </CarouselRow>
-      
-      {/* Coin Table */}
-      <CoinTableWidget 
-        coins={coins}
-        favorites={favorites}
-        onCoinClick={handleCoinClick}
-        activeView={activeView}
-        setActiveView={setActiveView}
-        timeframe={timeframe}
-        setTimeframe={setTimeframe}
-        loading={coinsLoading}
-      />
-      
-      {/* Bitcoin Chart */}
-      <ChartWidget />
-      
-      {/* News Carousel */}
-      <CarouselRow title="News" showArrows>
-        {news.map((item, i) => (
-          <NewsCard key={i} news={item} />
-        ))}
-      </CarouselRow>
-      
-      <Footer />
+          )}
+        </div>
+      </BentoTile>
+
+      <BentoTile gridArea="1 / 10 / 3 / 13">
+        <TileLabel>News</TileLabel>
+        <div style={{ height: 'calc(100% - 24px)' }}>
+          <FlipCarousel
+            items={news}
+            renderItem={(item) => <NewsContent news={item} />}
+            showDots={true}
+            autoPlay={true}
+            interval={7000}
+          />
+        </div>
+      </BentoTile>
+
+      <BentoTile gridArea="3 / 1 / 5 / 5">
+        <MiniCoinTable coins={coins} onCoinClick={handleCoinClick} favorites={favorites} />
+      </BentoTile>
+
+      <BentoTile gridArea="3 / 5 / 5 / 13" style={{ padding: 8 }}>
+        <TileLabel>Bitcoin Chart</TileLabel>
+        <div style={{ height: 'calc(100% - 28px)' }}>
+          <BitcoinChart compact={true} />
+        </div>
+      </BentoTile>
+
+      <div style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        textAlign: 'center',
+        padding: '6px 0',
+        background: '#0a0a0a',
+        color: '#444',
+        fontSize: 10,
+        borderTop: '1px solid #1a1a1a',
+      }}>
+        Powered by DarkWave Studios, LLC © 2025 | v2.0.6
+      </div>
       
       <CoinAnalysisModal 
         coin={selectedCoin}
