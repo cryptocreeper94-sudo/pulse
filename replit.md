@@ -21,16 +21,16 @@ Pulse (powered by DarkWave Studios, LLC) is a predictive trading platform built 
 
 ---
 
-## STATUS SUMMARY (December 7, 2025)
+## STATUS SUMMARY (December 10, 2025)
 
-**Current Version**: v2.0.6
+**Current Version**: v1.20.1 (auto-incrementing, v2.0.0 reserved for token launch)
 
 ### WORKING
 - Core platform operational on Vite + Express backend
 - **React 19 Conversion Complete** - Full migration from vanilla JS to React components
 - User authentication system (email whitelist + access codes)
 - Slim 50px header with hamburger menu navigation
-- Slim single-line footer: "Powered by DarkWave Studios, LLC © 2025 | v2.0.6"
+- Slim single-line footer: "Powered by DarkWave Studios, LLC © 2025 | v{version}" (dynamic from version.json)
 - **SVG Gauge Components** - Fear & Greed and Altcoin Season with animated needles
 - **Metric Cards** - Market Cap and Volume with % change arrows and inflow/outflow indicators
 - **Bitcoin Chart** - lightweight-charts v5 with candlestick/sparkline toggle, timeframes, color presets
@@ -209,6 +209,17 @@ Pulse (powered by DarkWave Studios, LLC) is a predictive trading platform built 
 ### Mobile App
 - `darkwave-mobile/app/index.tsx` - Main mobile entry point
 - `darkwave-mobile/app/_layout.tsx` - Navigation layout
+
+### Automatic Versioning System
+- **Version Files**: `src/system/version.json` (backend), `darkwave-web/src/data/version.json` (frontend)
+- **Bump Script**: `scripts/bumpVersion.ts` - Auto-increment patch version with Solana hashing
+- **Launch Script**: `scripts/promoteToV2.ts` - Promotes to v2.0.0 on token launch day (Feb 14, 2026)
+- **Prebuild Hook**: Runs bump script automatically before builds
+- **Commands**:
+  - `npm run bump` - Manual patch bump (1.20.0 → 1.20.1)
+  - `npm run bump:minor` - Minor bump (1.20.x → 1.21.0)
+  - `npm run launch-v2` - Token launch day promotion to v2.0.0
+- **Safety**: Major version bumps blocked until releaseGate flag is set
 
 ### ORBIT Ecosystem Integration (NEW)
 - **Service**: `src/services/ecosystemService.ts` - Central hub communication
