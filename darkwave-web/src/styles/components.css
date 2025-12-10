@@ -121,6 +121,29 @@ body {
   font-weight: 600;
 }
 
+.header-back-btn {
+  width: 40px;
+  height: 40px;
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  color: var(--neon-blue);
+}
+
+.header-back-btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--neon-blue);
+}
+
+.header-back-btn:active {
+  transform: scale(0.95);
+}
+
 /* ============================================ */
 /* HAMBURGER MENU                              */
 /* ============================================ */
@@ -1556,48 +1579,6 @@ img {
   }
 }
 
-/* ============================================ */
-/* FLOATING HOME BUTTON                        */
-/* ============================================ */
-
-.floating-home-btn {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  width: 56px;
-  height: 56px;
-  background: linear-gradient(145deg, rgba(0, 212, 255, 0.3), rgba(0, 212, 255, 0.15));
-  border: 2px solid var(--neon-blue);
-  border-radius: 50%;
-  font-size: 24px;
-  cursor: pointer;
-  z-index: 9000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 20px var(--neon-blue-glow);
-}
-
-.floating-home-btn:hover {
-  transform: scale(1.1);
-  background: rgba(0, 212, 255, 0.4);
-  box-shadow: 0 6px 30px var(--neon-blue-glow);
-}
-
-.floating-home-btn:active {
-  transform: scale(0.95);
-}
-
-@media (max-width: 768px) {
-  .floating-home-btn {
-    bottom: 80px;
-    right: 16px;
-    width: 48px;
-    height: 48px;
-    font-size: 20px;
-  }
-}
 
 /* ============================================ */
 /* MENU HOME BUTTON                            */

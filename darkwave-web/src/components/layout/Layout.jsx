@@ -53,6 +53,8 @@ export default function Layout({ children, activeTab, onTabChange }) {
         onMenuToggle={handleMenuToggle}
         isMenuOpen={isMenuOpen}
         onAvatarClick={() => setIsAvatarCreatorOpen(true)}
+        activeTab={activeTab}
+        onBackClick={handleHomeClick}
       />
       
       <HamburgerMenu
@@ -67,15 +69,6 @@ export default function Layout({ children, activeTab, onTabChange }) {
         {children}
       </main>
 
-      {activeTab !== 'dashboard' && (
-        <button 
-          className="floating-home-btn"
-          onClick={handleHomeClick}
-          title="Back to Markets"
-        >
-          🏠
-        </button>
-      )}
 
       <BugReportModal 
         isOpen={isBugModalOpen} 
