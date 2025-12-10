@@ -310,6 +310,7 @@ function MiniCoinTable({ coins, onCoinClick, favorites }) {
 
 export default function DashboardTab({ userId, userConfig, onNavigate }) {
   const { favorites } = useFavorites()
+  const isMobile = useIsMobile()
   const [selectedCoin, setSelectedCoin] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [coins, setCoins] = useState([])
@@ -449,12 +450,110 @@ export default function DashboardTab({ userId, userConfig, onNavigate }) {
             gap: 12px;
             padding: 10px;
           }
-          .bento-quick, .bento-market, .bento-trending, .bento-news { min-height: 180px; }
+          .bento-quick, .bento-market, .bento-trending, .bento-news { 
+            display: none;
+          }
           .bento-table { min-height: 300px; }
           .bento-chart { min-height: 350px; }
+          .mobile-categories-wrapper {
+            display: block;
+          }
+        }
+        
+        .mobile-categories-wrapper {
+          display: none;
+        }
+        
+        .mobile-category-card {
+          background: #0f0f0f;
+          border: 1px solid #222;
+          border-radius: 12px;
+          padding: 16px;
+          min-height: 280px;
+          display: flex;
+          flex-direction: column;
         }
       `}</style>
       <div className="bento-dashboard">
+      
+      {isMobile && (
+        <div className="mobile-categories-wrapper">
+          <MobileCardCarousel>
+            <div className="mobile-category-card">
+              <TileLabel>Quick Actions</TileLabel>
+              <div style={{ flex: 1 }}>
+                <FlipCarousel
+                  items={quickActions}
+                  renderItem={(action) => (
+                    <div 
+                      onClick={() => onNavigate && onNavigate(action.tab)}
+                      style={{ height: '100%', cursor: 'pointer' }}
+                    >
+                      <QuickActionContent action={action} />
+                    </div>
+                  )}
+                  showDots={true}
+                  autoPlay={false}
+                  interval={6000}
+                />
+              </div>
+            </div>
+            
+            <div className="mobile-category-card">
+              <TileLabel>Market Overview</TileLabel>
+              <div style={{ flex: 1 }}>
+                <FlipCarousel
+                  items={marketOverviewItems}
+                  renderItem={(item) => (
+                    item.type === 'metric' 
+                      ? <MetricContent title={item.title} value={item.value} change={item.change} />
+                      : <GaugeContent title={item.title} value={item.value} type={item.gaugeType} accentColor={item.color} />
+                  )}
+                  showDots={true}
+                  autoPlay={false}
+                  interval={5000}
+                />
+              </div>
+            </div>
+            
+            <div className="mobile-category-card">
+              <TileLabel>Trending</TileLabel>
+              <div style={{ flex: 1 }}>
+                {coinsLoading ? (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#666' }}>
+                    Loading...
+                  </div>
+                ) : (
+                  <FlipCarousel
+                    items={coins.slice(0, 10)}
+                    renderItem={(coin) => (
+                      <div onClick={() => handleCoinClick(coin)} style={{ height: '100%', cursor: 'pointer' }}>
+                        <CoinContent coin={coin} isFavorite={isFavorite(coin.symbol)} />
+                      </div>
+                    )}
+                    showDots={true}
+                    autoPlay={false}
+                    interval={4000}
+                  />
+                )}
+              </div>
+            </div>
+            
+            <div className="mobile-category-card">
+              <TileLabel>News</TileLabel>
+              <div style={{ flex: 1 }}>
+                <FlipCarousel
+                  items={news}
+                  renderItem={(item) => <NewsContent news={item} />}
+                  showDots={true}
+                  autoPlay={false}
+                  interval={7000}
+                />
+              </div>
+            </div>
+          </MobileCardCarousel>
+        </div>
+      )}
       
       <BentoTile className="bento-quick">
         <TileLabel>Quick Actions</TileLabel>
