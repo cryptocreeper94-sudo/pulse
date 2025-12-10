@@ -3,7 +3,7 @@ import { ConnectionProvider, WalletProvider as SolanaWalletProvider, useWallet, 
 import { WalletModalProvider, useWalletModal } from '@solana/wallet-adapter-react-ui'
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom'
 import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare'
-import { clusterApiUrl, LAMPORTS_PER_SOL } from '@solana/web3.js'
+import { clusterApiUrl } from '@solana/web3.js'
 import '@solana/wallet-adapter-react-ui/styles.css'
 
 const SOLANA_MAINNET_RPC = clusterApiUrl('mainnet-beta')
@@ -60,7 +60,7 @@ function MobileWalletButton({ walletName = 'phantom' }) {
 }
 
 function CustomWalletButton() {
-  const { publicKey, connected, connecting, disconnect, select, wallets } = useWallet()
+  const { publicKey, connected, connecting, disconnect } = useWallet()
   const { setVisible } = useWalletModal()
   const [showMobileOptions, setShowMobileOptions] = useState(false)
   const walletState = useContext(WalletStateContext)
@@ -139,9 +139,9 @@ function CustomWalletButton() {
             boxShadow: '0 0 8px #39FF14',
           }}></span>
           <span>{walletState?.shortAddress || 'Connected'}</span>
-          {walletState?.balance !== null && (
+          {walletState?.balance !== null && walletState?.balance !== undefined && (
             <span style={{ color: '#888', fontSize: '11px' }}>
-              ({walletState.balance.toFixed(2)} SOL)
+              ({walletState.balance} SOL)
             </span>
           )}
         </>
@@ -176,9 +176,17 @@ function WalletStateProvider({ children }) {
 
       setBalanceLoading(true)
       try {
-        const bal = await connection.getBalance(publicKey)
-        if (mounted) {
-          setBalance(bal / LAMPORTS_PER_SOL)
+        const address = publicKey.toBase58()
+        const response = await fetch(`/api/sniper/wallets/balance?address=${address}`)
+        
+        if (response.ok) {
+          const data = await response.json()
+          if (mounted) {
+            setBalance(data.balance)
+          }
+        } else {
+          console.error('Balance API error:', response.status)
+          if (mounted) setBalance(null)
         }
       } catch (err) {
         console.error('Failed to fetch balance:', err)
@@ -189,13 +197,13 @@ function WalletStateProvider({ children }) {
     }
 
     fetchBalance()
-    const interval = setInterval(fetchBalance, 30000)
+    const interval = setInterval(fetchBalance, 15000)
 
     return () => {
       mounted = false
       clearInterval(interval)
     }
-  }, [publicKey, connected, connection])
+  }, [publicKey, connected])
 
   const value = useMemo(() => ({
     publicKey,
