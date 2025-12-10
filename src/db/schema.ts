@@ -1,4 +1,4 @@
-import { pgTable, varchar, timestamp, boolean, text, integer, serial, json } from 'drizzle-orm/pg-core';
+import { pgTable, varchar, timestamp, boolean, text, integer, serial, json, numeric } from 'drizzle-orm/pg-core';
 
 export const subscriptions = pgTable('subscriptions', {
   userId: varchar('user_id', { length: 255 }).primaryKey(),
@@ -761,4 +761,45 @@ export const sniperSessionStats = pgTable('sniper_session_stats', {
   
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// ============================================
+// LIMIT ORDER SYSTEM
+// Price-based limit orders for automated trading
+// ============================================
+
+export const limitOrders = pgTable('limit_orders', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  
+  // Token Details
+  tokenAddress: varchar('token_address', { length: 255 }).notNull(),
+  tokenSymbol: varchar('token_symbol', { length: 50 }).notNull(),
+  
+  // Price Targets
+  entryPrice: numeric('entry_price', { precision: 30, scale: 18 }).notNull(),
+  exitPrice: numeric('exit_price', { precision: 30, scale: 18 }),
+  stopLoss: numeric('stop_loss', { precision: 30, scale: 18 }),
+  
+  // Trade Amount
+  buyAmountSol: numeric('buy_amount_sol', { precision: 18, scale: 9 }).notNull(),
+  
+  // Wallet
+  walletAddress: varchar('wallet_address', { length: 255 }).notNull(),
+  
+  // Status: PENDING | WATCHING | FILLED_ENTRY | FILLED_EXIT | STOPPED_OUT | CANCELLED
+  status: varchar('status', { length: 50 }).notNull().default('PENDING'),
+  
+  // Execution Details
+  entryTxSignature: varchar('entry_tx_signature', { length: 128 }),
+  exitTxSignature: varchar('exit_tx_signature', { length: 128 }),
+  actualEntryPrice: numeric('actual_entry_price', { precision: 30, scale: 18 }),
+  actualExitPrice: numeric('actual_exit_price', { precision: 30, scale: 18 }),
+  tokensReceived: varchar('tokens_received', { length: 100 }),
+  
+  // Timestamps
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  filledEntryAt: timestamp('filled_entry_at'),
+  filledExitAt: timestamp('filled_exit_at'),
 });

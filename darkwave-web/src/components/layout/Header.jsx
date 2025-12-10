@@ -1,8 +1,10 @@
 import { useAvatar } from '../../context/AvatarContext'
+import { useWalletState, WalletMultiButton } from '../../context/WalletContext'
 import MiniAvatar from '../ui/MiniAvatar'
 
 export default function Header({ onMenuToggle, isMenuOpen, onAvatarClick, activeTab, onBackClick }) {
   const { avatar, isCustomMode } = useAvatar()
+  const wallet = useWalletState()
   const showBackButton = activeTab && activeTab !== 'dashboard' && activeTab !== 'markets'
   
   return (
@@ -34,7 +36,7 @@ export default function Header({ onMenuToggle, isMenuOpen, onAvatarClick, active
       <h1 className="header-title">PULSE</h1>
       
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span className="header-version">v2.0</span>
+        <WalletMultiButton />
         <MiniAvatar 
           size={32} 
           onClick={onAvatarClick}

@@ -44,6 +44,7 @@ import { predictionLearningService } from "../services/predictionLearningService
 import { ecosystemService } from "../services/ecosystemService.js";
 import { inngest as inngestClient } from "./inngest/client";
 import { sniperBotRoutes } from "./routes/sniperBotRoutes";
+import { limitOrderRoutes } from "./routes/limitOrderRoutes";
 
 class ProductionPinoLogger extends MastraLogger {
   protected logger: pino.Logger;
@@ -5661,6 +5662,9 @@ export const mastra = new Mastra({
       
       // Sniper Bot API Routes (MUST be before catch-all)
       ...sniperBotRoutes,
+      
+      // Limit Order API Routes
+      ...limitOrderRoutes,
       
       // Catch-all static file handler (MUST BE LAST) - serves all assets from public/
       {

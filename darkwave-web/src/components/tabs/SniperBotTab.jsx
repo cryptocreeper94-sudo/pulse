@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { createChart } from 'lightweight-charts'
 import BentoGrid, { BentoItem } from '../ui/BentoGrid'
-import { useWalletState, WalletMultiButton } from '../../context/WalletContext'
+import { useWalletState } from '../../context/WalletContext'
+import ManualWatchlist from '../trading/ManualWatchlist'
 import './SniperBotTab.css'
 
 const API_BASE = ''
@@ -700,9 +701,6 @@ export default function SniperBotTab() {
               </span>
             </div>
           )}
-          <div className="sniper-wallet-connect">
-            <WalletMultiButton />
-          </div>
           <div className="sniper-mode-toggle">
             <button
               className={`sniper-mode-btn ${mode === 'simple' ? 'active' : ''}`}
@@ -773,6 +771,10 @@ export default function SniperBotTab() {
               )}
             </div>
           </div>
+        </BentoItem>
+
+        <BentoItem span={2} className="sniper-watchlist-section">
+          <ManualWatchlist />
         </BentoItem>
 
         <BentoItem span={2} className="sniper-discovery-section">
