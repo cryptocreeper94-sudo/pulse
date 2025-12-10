@@ -10,7 +10,8 @@ import {
   V2DetailsTab,
   DashboardTab,
   SniperBotTab,
-  WalletTab
+  WalletTab,
+  PricingTab
 } from './components/tabs'
 import { GlossaryPopup } from './components/ui'
 import { GlossaryProvider } from './context/GlossaryContext'
@@ -72,6 +73,8 @@ function App() {
         return <SettingsTab userId={userId} userConfig={userConfig} setUserConfig={setUserConfig} />
       case 'v2-details':
         return <V2DetailsTab />
+      case 'pricing':
+        return <PricingTab userId={userId} currentTier={userConfig?.subscriptionTier} />
       default:
         return <DashboardTab userId={userId} userConfig={userConfig} onNavigate={setActiveTab} />
     }

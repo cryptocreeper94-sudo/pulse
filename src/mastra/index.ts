@@ -46,6 +46,7 @@ import { inngest as inngestClient } from "./inngest/client";
 import { sniperBotRoutes } from "./routes/sniperBotRoutes";
 import { limitOrderRoutes } from "./routes/limitOrderRoutes";
 import { walletRoutes } from "./routes/walletRoutes";
+import { paymentRoutes } from "./routes/paymentRoutes";
 
 class ProductionPinoLogger extends MastraLogger {
   protected logger: pino.Logger;
@@ -5669,6 +5670,9 @@ export const mastra = new Mastra({
       
       // Multi-Chain Wallet API Routes
       ...walletRoutes,
+      
+      // Stripe Payment API Routes
+      ...paymentRoutes,
       
       // Catch-all static file handler (MUST BE LAST) - serves all assets from public/
       {
