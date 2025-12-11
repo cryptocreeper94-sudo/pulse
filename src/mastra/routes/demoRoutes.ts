@@ -325,4 +325,33 @@ export const demoRoutes = [
       });
     }
   },
+  {
+    path: "/api/demo/capture-lead",
+    method: "POST",
+    createHandler: async ({ mastra }: any) => async (c: any) => {
+      const logger = mastra.getLogger();
+      try {
+        const body = await c.req.json();
+        const { email, telegram } = body;
+        
+        if (!email && !telegram) {
+          return c.json({ success: false, error: 'Email or Telegram required' }, 400);
+        }
+        
+        logger?.info('📧 [Demo] Lead captured', { 
+          email: email ? email.substring(0, 3) + '***' : null, 
+          telegram: telegram || null,
+          timestamp: new Date().toISOString()
+        });
+        
+        return c.json({ 
+          success: true, 
+          message: 'Successfully registered for early access' 
+        });
+      } catch (error: any) {
+        logger?.error('❌ [Demo] Lead capture error', { error: error.message });
+        return c.json({ success: false, error: 'Failed to register' }, 500);
+      }
+    }
+  },
 ];

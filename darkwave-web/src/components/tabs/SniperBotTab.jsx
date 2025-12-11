@@ -6,6 +6,8 @@ import { useBuiltInWallet } from '../../context/BuiltInWalletContext'
 import ManualWatchlist from '../trading/ManualWatchlist'
 import SafetyReport from '../trading/SafetyReport'
 import DemoTradeHistory from './DemoTradeHistory'
+import DemoLeadCapture from './DemoLeadCapture'
+import DemoUpgradeCTA from './DemoUpgradeCTA'
 import './SniperBotTab.css'
 
 const API_BASE = ''
@@ -743,6 +745,10 @@ export default function SniperBotTab() {
   const [livePrices, setLivePrices] = useState({})
   const [activeSubTab, setActiveSubTab] = useState('discovery')
   const [historyRefreshKey, setHistoryRefreshKey] = useState(0)
+  const [showLeadCapture, setShowLeadCapture] = useState(false)
+  const [leadCaptured, setLeadCaptured] = useState(() => {
+    return sessionStorage.getItem('dwp_lead_captured') === 'true'
+  })
   
   const wallet = isDemoMode
     ? {
@@ -1243,6 +1249,20 @@ export default function SniperBotTab() {
             <div className="section-box">
               <DemoTradeHistory sessionId={demoSessionId} refreshKey={historyRefreshKey} />
             </div>
+          </BentoItem>
+        )}
+
+        {isDemoMode && !leadCaptured && (
+          <BentoItem span={1} className="sniper-lead-capture-section">
+            <DemoLeadCapture 
+              onSuccess={() => setLeadCaptured(true)}
+            />
+          </BentoItem>
+        )}
+
+        {isDemoMode && (
+          <BentoItem span={leadCaptured ? 2 : 1} className="sniper-upgrade-section">
+            <DemoUpgradeCTA />
           </BentoItem>
         )}
 

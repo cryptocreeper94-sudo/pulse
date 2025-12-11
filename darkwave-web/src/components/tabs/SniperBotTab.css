@@ -1960,3 +1960,231 @@
   font-size: 11px;
   color: #555;
 }
+
+/* Lead Capture Styles */
+.demo-lead-capture {
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(157, 78, 221, 0.1));
+  border-radius: 12px;
+  border: 1px solid rgba(0, 212, 255, 0.3);
+}
+
+.lead-header {
+  text-align: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.lead-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 8px 0;
+}
+
+.lead-subtitle {
+  font-size: 13px;
+  color: #888;
+  margin: 0;
+}
+
+.lead-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.lead-close:hover {
+  color: #fff;
+}
+
+.lead-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lead-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lead-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+}
+
+.lead-input {
+  padding: 12px 14px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.lead-input:focus {
+  outline: none;
+  border-color: #00D4FF;
+}
+
+.lead-input::placeholder {
+  color: #555;
+}
+
+.lead-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #555;
+  font-size: 12px;
+}
+
+.lead-divider::before,
+.lead-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #333;
+}
+
+.lead-error {
+  padding: 10px;
+  background: rgba(255, 68, 68, 0.1);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  border-radius: 6px;
+  color: #FF4444;
+  font-size: 12px;
+  text-align: center;
+}
+
+.lead-submit-btn {
+  padding: 14px 20px;
+  background: linear-gradient(135deg, #00D4FF, #9D4EDD);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.lead-submit-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
+}
+
+.lead-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.lead-privacy {
+  font-size: 11px;
+  color: #555;
+  text-align: center;
+  margin: 4px 0 0 0;
+}
+
+.lead-success {
+  text-align: center;
+  padding: 30px 20px;
+}
+
+.lead-success-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.lead-success h3 {
+  font-size: 18px;
+  color: #39FF14;
+  margin: 0 0 8px 0;
+}
+
+.lead-success p {
+  font-size: 13px;
+  color: #888;
+  margin: 0;
+}
+
+/* Upgrade CTA Styles */
+.demo-upgrade-cta {
+  padding: 20px;
+  background: linear-gradient(135deg, #1a1a1a, #0f0f0f);
+  border-radius: 12px;
+  border: 1px solid #333;
+  text-align: center;
+}
+
+.upgrade-icon {
+  font-size: 36px;
+  margin-bottom: 12px;
+}
+
+.upgrade-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 8px 0;
+}
+
+.upgrade-desc {
+  font-size: 12px;
+  color: #888;
+  margin: 0 0 16px 0;
+  line-height: 1.5;
+}
+
+.upgrade-features {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.upgrade-feature {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #aaa;
+}
+
+.upgrade-feature-icon {
+  color: #39FF14;
+}
+
+.upgrade-btn {
+  width: 100%;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #39FF14, #00D4FF);
+  border: none;
+  border-radius: 8px;
+  color: #000;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.upgrade-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(57, 255, 20, 0.3);
+}
+
+.upgrade-price {
+  font-size: 11px;
+  color: #555;
+  margin-top: 8px;
+}
