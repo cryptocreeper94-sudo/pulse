@@ -423,17 +423,17 @@ function MiniCoinTable({ coins, onCoinClick, favorites, selectedCoinId }) {
         </div>
       </div>
       <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
-        <div style={{ fontSize: 8, color: '#444', display: 'flex', padding: '4px 0', borderBottom: '1px solid #222', position: 'sticky', top: 0, background: '#0f0f0f', zIndex: 1 }}>
-          <span style={{ flex: '0 0 20px', textAlign: 'center' }}>#</span>
-          <span style={{ flex: '1 1 45px', minWidth: 40 }}>Coin</span>
-          <span style={{ flex: '1 1 50px', minWidth: 45, textAlign: 'right' }}>Price</span>
-          <span style={{ flex: '0 0 38px', textAlign: 'right' }}>24h</span>
-          <span style={{ flex: '0 0 38px', textAlign: 'right' }}>7d</span>
-          <span style={{ flex: '0 0 38px', textAlign: 'right' }}>MC</span>
-          <span style={{ flex: '0 0 35px', textAlign: 'right' }}>Vol</span>
-          <span style={{ flex: '0 0 42px', textAlign: 'right' }}>Circ</span>
-          <span style={{ flex: '0 0 40px', textAlign: 'center' }}>7d</span>
-          <span style={{ flex: '0 0 38px', textAlign: 'right' }}>ATH</span>
+        <div style={{ fontSize: 8, color: '#444', display: 'flex', padding: '4px 0', borderBottom: '1px solid #222', position: 'sticky', top: 0, background: '#0f0f0f', zIndex: 1, minWidth: 500 }}>
+          <span style={{ width: '3%', minWidth: 24, textAlign: 'center' }}>#</span>
+          <span style={{ width: '12%', minWidth: 60 }}>Coin</span>
+          <span style={{ width: '12%', minWidth: 60, textAlign: 'right' }}>Price</span>
+          <span style={{ width: '8%', minWidth: 40, textAlign: 'right' }}>24h</span>
+          <span style={{ width: '8%', minWidth: 40, textAlign: 'right' }}>7d</span>
+          <span style={{ width: '10%', minWidth: 50, textAlign: 'right' }}>MC</span>
+          <span style={{ width: '10%', minWidth: 50, textAlign: 'right' }}>Vol</span>
+          <span style={{ width: '12%', minWidth: 55, textAlign: 'right' }}>Circ</span>
+          <span style={{ width: '15%', minWidth: 50, textAlign: 'center' }}>7d Chart</span>
+          <span style={{ width: '10%', minWidth: 45, textAlign: 'right' }}>ATH</span>
         </div>
         {displayCoins.length === 0 && (
           <div style={{ padding: 20, textAlign: 'center', color: '#666', fontSize: 11 }}>
@@ -464,14 +464,15 @@ function MiniCoinTable({ coins, onCoinClick, favorites, selectedCoinId }) {
                 transition: 'background 0.2s',
                 background: isSelected ? 'rgba(0, 212, 255, 0.1)' : 'transparent',
                 borderLeft: isSelected ? '2px solid #00D4FF' : '2px solid transparent',
+                minWidth: 500,
               }}
               onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = '#1a1a1a' }}
               onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = 'transparent' }}
             >
-              <div style={{ flex: '0 0 20px', textAlign: 'center', fontSize: 9, color: '#666' }}>
+              <div style={{ width: '3%', minWidth: 24, textAlign: 'center', fontSize: 9, color: '#666' }}>
                 {coin.market_cap_rank || i + 1}
               </div>
-              <div style={{ flex: '1 1 45px', minWidth: 40, display: 'flex', alignItems: 'center', gap: 3 }}>
+              <div style={{ width: '12%', minWidth: 60, display: 'flex', alignItems: 'center', gap: 3 }}>
                 {coin.image && (
                   <img src={coin.image} alt="" style={{ width: 14, height: 14, borderRadius: '50%' }} />
                 )}
@@ -480,25 +481,25 @@ function MiniCoinTable({ coins, onCoinClick, favorites, selectedCoinId }) {
                   {isFavorite(coin.symbol) && <span style={{ color: '#FFD700', marginLeft: 2 }}>★</span>}
                 </span>
               </div>
-              <div style={{ flex: '1 1 50px', minWidth: 45, textAlign: 'right', fontSize: 9, color: '#fff' }}>
+              <div style={{ width: '12%', minWidth: 60, textAlign: 'right', fontSize: 9, color: '#fff' }}>
                 {formatPrice(coin.current_price)}
               </div>
-              <div style={{ flex: '0 0 38px', textAlign: 'right', fontSize: 9, fontWeight: 600, color: isPositive24h ? '#39FF14' : '#ff4444' }}>
+              <div style={{ width: '8%', minWidth: 40, textAlign: 'right', fontSize: 9, fontWeight: 600, color: isPositive24h ? '#39FF14' : '#ff4444' }}>
                 {change24h.toFixed(1)}%
               </div>
-              <div style={{ flex: '0 0 38px', textAlign: 'right', fontSize: 9, fontWeight: 600, color: isPositive7d ? '#39FF14' : '#ff4444' }}>
+              <div style={{ width: '8%', minWidth: 40, textAlign: 'right', fontSize: 9, fontWeight: 600, color: isPositive7d ? '#39FF14' : '#ff4444' }}>
                 {change7d.toFixed(1)}%
               </div>
-              <div style={{ flex: '0 0 38px', textAlign: 'right', fontSize: 9, color: '#888' }}>
+              <div style={{ width: '10%', minWidth: 50, textAlign: 'right', fontSize: 9, color: '#888' }}>
                 {mc}
               </div>
-              <div style={{ flex: '0 0 35px', textAlign: 'right', fontSize: 9, color: '#888' }}>
+              <div style={{ width: '10%', minWidth: 50, textAlign: 'right', fontSize: 9, color: '#888' }}>
                 {vol}
               </div>
-              <div style={{ flex: '0 0 42px', textAlign: 'right', fontSize: 9, color: '#888' }}>
+              <div style={{ width: '12%', minWidth: 55, textAlign: 'right', fontSize: 9, color: '#888' }}>
                 {supply}
               </div>
-              <div style={{ flex: '0 0 40px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <div style={{ width: '15%', minWidth: 50, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 {sparkline.length > 0 ? (
                   <svg width="32" height="14" viewBox="0 0 32 14">
                     <polyline
@@ -517,7 +518,7 @@ function MiniCoinTable({ coins, onCoinClick, favorites, selectedCoinId }) {
                   </svg>
                 ) : <span style={{ fontSize: 8, color: '#444' }}>-</span>}
               </div>
-              <div style={{ flex: '0 0 38px', textAlign: 'right', fontSize: 9, color: athChange >= -10 ? '#39FF14' : athChange >= -50 ? '#FFD700' : '#ff4444' }}>
+              <div style={{ width: '10%', minWidth: 45, textAlign: 'right', fontSize: 9, color: athChange >= -10 ? '#39FF14' : athChange >= -50 ? '#FFD700' : '#ff4444' }}>
                 {athChange.toFixed(0)}%
               </div>
             </div>
