@@ -1,15 +1,7 @@
 # Pulse - AI Trading Analysis Platform
 
 ## Overview
-Pulse (powered by DarkWave Studios, LLC) is a predictive trading platform built on the Mastra AI framework, offering predictive signals and institutional-grade technical analysis for cryptocurrency and stocks. Its mission is to provide an AI-powered trading advantage by catching trends early and offering risk-adjusted analytics.
-
-**DWAV Token Launch**: February 14, 2026
-
-## Token Information
-- **Token Name**: DarkWave Studios (DWAV)
-- **Network**: Solana
-- **Purpose**: Ecosystem token powering all DarkWave Studios apps
-- **Utility**: Staking rewards, premium access, cross-app benefits
+Pulse, powered by DarkWave Studios, LLC, is an AI-driven trading platform utilizing the Mastra AI framework to deliver predictive signals and institutional-grade technical analysis for cryptocurrency and stocks. Its primary goal is to provide users with a significant trading advantage by identifying market trends early and offering sophisticated, risk-adjusted analytics. The platform is designed to integrate with the broader DarkWave Studios ecosystem, powered by the upcoming DWAV token, and aims to empower traders with advanced AI capabilities.
 
 ## User Preferences
 - User name: Jason (Owner/Admin)
@@ -19,235 +11,36 @@ Pulse (powered by DarkWave Studios, LLC) is a predictive trading platform built 
 - Agent diversity: Equal distribution across age groups, gender, race, and hair color
 - Design aesthetic: Solid black/dark gray backgrounds (#0f0f0f, #1a1a1a, #141414) with free-floating elements featuring glow effects - NO glassmorphism, NO transparency, NO backdrop-filter
 
----
-
-## STATUS SUMMARY (December 10, 2025)
-
-**Current Version**: v1.20.1 (auto-incrementing, v2.0.0 reserved for token launch)
-
-### WORKING
-- Core platform operational on Vite + Express backend
-- **React 19 Conversion Complete** - Full migration from vanilla JS to React components
-- User authentication system (email whitelist + access codes)
-- Slim 50px header with hamburger menu navigation
-- Slim single-line footer: "Powered by DarkWave Studios, LLC © 2025 | v{version}" (dynamic from version.json)
-- **SVG Gauge Components** - Fear & Greed and Altcoin Season with animated needles
-- **Metric Cards** - Market Cap and Volume with % change arrows and inflow/outflow indicators
-- **Bitcoin Chart** - lightweight-charts v5 with candlestick/sparkline toggle, timeframes, color presets
-- **Coin Analysis Modal** - Technical indicators, AI predictions, support/resistance when clicking coins
-- **Navigation** - Floating home button, hamburger menu quick actions all wired
-- Bitcoin and crypto price tracking via CoinGecko API
-- Admin dashboard with full user management
-- Telegram bot integration
-- Solana blockchain audit trail (LIVE on mainnet)
-- Admin/Owner login redirects to `/app?tab=dev`
-- Dark theme UI (solid black/gray, no transparency)
-- 18 AI Agent personas with NFT Trading Cards
-- Knowledge Base (8 chapters, 143-term glossary)
-- **Prediction Tracking System** - Logs every signal, tracks outcomes at 1hr/4hr/24hr/7d, calculates accuracy stats
-- **Custom Avatar Creator** - Full character customization with 17 hairstyles (including bald, afro, dreads, cornrows), 8 skin tones, 6 eye colors, facial hair options (beard, mustache, goatee), 13 clothing styles, 13 accessories, face shapes, backgrounds. Avatar appears in header and replaces agents when in custom mode.
-- **Personal Dashboard System (NEW)** - Each user gets their own dashboard as landing page with:
-  - Unique Hallmark ID (PULSE-XXXX-YYYY format) generated per user
-  - Favorites widget showing saved coins with quick analysis access
-  - Market gauges (Fear & Greed, Altcoin Season)
-  - Customizable main chart widget
-  - Landing page selector in Settings (Dashboard, Markets, Portfolio, Projects)
-- **Favorites System (NEW)** - Users can save favorite coins:
-  - Star toggle (☆/★) on each coin in Markets tab
-  - Favorites category filter to view only favorites
-  - Favorites persist to database per user
-  - Quick access to analysis modal from favorites
-  - FavoritesContext for app-wide state management
-- **StrikeAgent (formerly Sniper Bot)** - AI-powered predictive trading tool:
-  - Rebranded from "Sniper Bot" to "StrikeAgent" for professional positioning
-  - Domain: strikeagent.io (reserved for future standalone product)
-  - Real-time token discovery with AI scoring
-  - Safety filters (bot %, bundle %, liquidity checks)
-  - Smart Auto Mode with configurable limits
-  - RPC configuration (Helius premium or custom)
-  - Wallet integration (external Phantom/Solflare or built-in)
-- **Manual Token Watchlist / Limit Orders** - Set-and-forget limit order system:
-  - 4 token slots with entry/exit/stop-loss fields
-  - Backend monitors prices every minute via Inngest cron
-  - Flag-based execution: orders flagged READY_TO_EXECUTE/EXIT/STOP when targets hit
-  - User signs transaction on frontend (wallet security preserved)
-  - Status lifecycle: PENDING → WATCHING → READY_TO_EXECUTE → FILLED_ENTRY → READY_TO_EXIT/STOP → FILLED_EXIT/STOPPED_OUT
-  - Wallet connect button in header for Phantom/Solflare integration
-- **Multi-Chain Built-in Wallet (NEW)** - Custom HD wallet with Trust Wallet-style UX:
-  - Supports Solana, Ethereum, Polygon, Base, Arbitrum, BSC
-  - BIP39 mnemonic generation (12/24 words)
-  - Proper ed25519 derivation for Solana (SLIP-0010)
-  - AES-256-GCM encrypted storage in localStorage
-  - **Client-side crypto operations** - Mnemonics/keys never leave the browser
-  - Balance checking and transaction sending
-  - Wallet tab with create/import/send UI
-  - Integrated into Sniper Bot with wallet source toggle (external vs built-in)
-  - Inline unlock prompt in Sniper Bot tab
-
-### NEEDS ATTENTION
-- CoinGecko API rate limiting (429 errors) - using Pro API now
-- Backend startup timing (API errors during cold start)
-
-### NOT YET BUILT
-- DWAV token smart contract
-- Staking platform with hourly rewards
-- Liquidity pools
-- CoinGecko/Jupiter listings
-- Coinbase Commerce crypto payments
-
----
-
-## LAUNCH CHECKLIST
-
-### PHASE 1: CLEANUP ✅
-- [x] Remove whitepaper.html
-- [x] Remove whitepaper-hub.html
-- [x] Remove darkwave-whitepaper.md
-- [x] Update replit.md with DWAV branding
-- [x] Update all "December 25" dates to "February 14"
-- [x] Update all "PULSE token" to "DWAV token"
-
-### PHASE 2: CORE APP ✅
-- [x] Update app.js token references (DWAV)
-- [x] Update index.html V2 content
-- [x] Update subscription.js messaging
-- [x] Update upgrade-system.js
-- [x] Update lockscreen.html branding (DWAV-XXXX-2026)
-- [x] Update admin.html
-- [x] Fix CoinGecko rate limiting (Pro API)
-- [x] Test all navigation buttons
-- [x] Test all tabs work
-- [x] Test login/logout flow
-- [x] Test chart loading
-- [x] Test metric cards display
-
-### PHASE 3: LANDING PAGES ✅
-- [x] Update darkwave-studios-landing.html (DWAV Staking)
-- [x] Update darkwavestudios-main.html (DWAV Staking)
-
-### PHASE 4: MOBILE APP ✅
-- [x] Update token references
-- [x] Neon color palette applied (#00D4FF, #39FF14, #9D4EDD, #FF006E)
-- [x] Shadow/glow effects added to cards
-
-### PHASE 5: SMART CONTRACT
-- [ ] Write DWAV token contract
-- [ ] Deploy to Solana devnet
-- [ ] Test token functions
-- [ ] Deploy to mainnet
-
-### PHASE 6: TOKEN INFRASTRUCTURE
-- [ ] Create liquidity pool
-- [ ] Apply for Jupiter listing
-- [ ] Apply for CoinGecko listing
-- [ ] Write new DWAV whitepaper
-
-### PHASE 7: FINAL
-- [ ] Full platform test
-- [ ] Marketing push (2 weeks)
-- [ ] Launch (Feb 14, 2026)
-
----
-
 ## System Architecture
 
-### Frontend (Web)
-- **Framework**: React 19 + Vite 7
-- **Location**: `public/` and `darkwave-web/public/`
-- **Design**: CoinMarketCap-style market overview, 9-column data table, 7 category tabs
-- **Theme**: Solid dark (#0f0f0f, #1a1a1a) - NO transparency effects
+### UI/UX Decisions
+The platform features a solid dark theme (`#0f0f0f`, `#1a1a1a`, `#141414`) with free-floating elements and glow effects, explicitly avoiding glassmorphism, transparency, and backdrop-filters. The design includes a slim 50px header with a hamburger menu and a slim, dynamic footer. Key UI components include SVG gauge components for market sentiment (Fear & Greed, Altcoin Season), metric cards for market cap and volume, and a customizable Bitcoin chart using `lightweight-charts` with various display options.
 
-### Frontend (Mobile)
-- **Framework**: React Native + Expo
-- **Location**: `darkwave-mobile/`
-- **Status**: In development
+### Technical Implementations
+- **Frontend**: Built with React 19 and Vite 7, located in `public/` and `darkwave-web/public/`. A mobile app is in development using React Native + Expo.
+- **Backend**: Utilizes the Mastra AI framework with an Express server. The AI agent, DarkWave-V2, supports tool calling and memory.
+- **Database**: PostgreSQL, specifically Neon-backed via Replit.
+- **Authentication**: Session-based, employing an email whitelist and access codes.
+- **Workflow Management**: Inngest is used for event-driven processing and cron jobs.
+- **Prediction Tracking**: A robust system logs every AI signal, tracks outcomes at 1hr, 4hr, 24hr, and 7d intervals, and calculates accuracy statistics. Each prediction is hashed and stamped on the Solana blockchain.
+- **ML Learning System**: Incorporates feature extraction, training, and inference services (`predictionLearningService.ts`). It uses logistic regression across different time horizons, with automated weekly training via Inngest. Features include RSI, MACD, EMA spreads, Bollinger position, volume delta, spike score, and volatility.
+- **Personal Dashboard System**: Each user receives a unique Hallmark ID and a customizable landing page featuring favorite coins, market gauges, and a main chart widget.
+- **Favorites System**: Users can save favorite coins with quick analysis access, persisting data to the database.
+- **StrikeAgent (formerly Sniper Bot)**: An AI-powered predictive trading tool for real-time token discovery, featuring safety filters (anti-MEV, mint/freeze authority checks, honeypot simulation), smart auto mode, and multi-chain support (Solana, Ethereum, Base, Polygon, Arbitrum, BSC).
+- **Manual Token Watchlist/Limit Orders**: A system for setting entry, exit, and stop-loss orders across four token slots, monitored by Inngest cron jobs.
+- **Multi-Chain Built-in Wallet**: A custom HD wallet with Trust Wallet-style UX, supporting Solana and multiple EVM chains (Ethereum, Polygon, Base, Arbitrum, BSC). It features BIP39 mnemonic generation, AES-256-GCM encrypted storage, and client-side crypto operations.
+- **Automatic Versioning System**: Manages `version.json` files for both frontend and backend, with scripts for auto-incrementing patch versions and promoting to v2.0.0 for token launch.
+- **ORBIT Ecosystem Integration**: Facilitates cross-app communication with the ORBIT Developer Hub for activity logging, code snippet sharing, metrics reporting, and alerts.
 
-### Backend
-- **Framework**: Mastra AI + Express
-- **AI Agent**: DarkWave-V2 with tool calling and memory
-- **Database**: PostgreSQL (Neon-backed via Replit)
-- **Authentication**: Session-based with email whitelist + access codes
-- **Workflows**: Inngest for event-driven processing
-
-### Blockchain Integration
-- **Network**: Solana (mainnet)
-- **Audit Trail**: SHA-256 hashing via Memo Program
-- **Token**: DWAV (DarkWave Studios) - pending deployment
-- **Wallet Support**: Solana, Ethereum, Polygon, Arbitrum, Base, BSC
-
----
-
-## Important Files
-
-### Core Application
-- `public/index.html` - Main web app HTML
-- `public/app.js` - Core JavaScript logic
-- `public/styles.css` - Global styles
-- `public/lockscreen.html` - Login/authentication page
-- `darkwave-web/public/` - Mirror of public/ for deployment
-
-### Backend Services
-- `src/services/auditTrailService.ts` - Solana blockchain stamping
-- `src/services/predictionTrackingService.ts` - Prediction logging & accuracy tracking
-- `src/mastra/agents/index.ts` - AI agent configuration
-- `src/mastra/inngest/predictionWorker.ts` - Inngest workflow for outcome verification
-- `server.ts` - Express server entry point
-- `run-dev.sh` - Development startup script
-
-### Prediction Tracking System
-- **Database Tables**: `prediction_events`, `prediction_outcomes`, `prediction_accuracy_stats`
-- **Time Horizons**: 1hr, 4hr, 24hr, 7d outcome verification
-- **Blockchain Stamping**: Every prediction SHA-256 hashed and stamped to Solana
-- **API Endpoint**: `GET /api/prediction-accuracy` - Returns accuracy stats
-- **Inngest Workers**: Hourly cron job + per-prediction scheduled checks
-- **Evaluation Logic**: BUY correct if price rises, SELL correct if price drops, HOLD correct if stable
-
-### ML Learning System (NEW)
-- **Database Tables**: `prediction_features`, `prediction_model_versions`, `prediction_model_metrics`
-- **Service**: `src/services/predictionLearningService.ts` - Feature extraction, training, inference
-- **Algorithm**: Logistic regression per time horizon (1h, 4h, 24h, 7d)
-- **Training**: Automated weekly via Inngest `modelTrainingWorker`
-- **Features**: RSI, MACD, EMA spreads, Bollinger position, volume delta, spike score, volatility
-- **Integration**: technicalAnalysisTool blends ML predictions with rule-based signals
-- **API Endpoints**:
-  - `GET /api/model-status` - Returns model training status and metrics
-  - `POST /api/train-models` - Trigger manual training (admin only)
-- **Min Training Samples**: 50 predictions per horizon before training starts
-
-### Mobile App
-- `darkwave-mobile/app/index.tsx` - Main mobile entry point
-- `darkwave-mobile/app/_layout.tsx` - Navigation layout
-
-### Automatic Versioning System
-- **Version Files**: `src/system/version.json` (backend), `darkwave-web/src/data/version.json` (frontend)
-- **Bump Script**: `scripts/bumpVersion.ts` - Auto-increment patch version with Solana hashing
-- **Launch Script**: `scripts/promoteToV2.ts` - Promotes to v2.0.0 on token launch day (Feb 14, 2026)
-- **Prebuild Hook**: Runs bump script automatically before builds
-- **Commands**:
-  - `npm run bump` - Manual patch bump (1.20.0 → 1.20.1)
-  - `npm run bump:minor` - Minor bump (1.20.x → 1.21.0)
-  - `npm run launch-v2` - Token launch day promotion to v2.0.0
-- **Safety**: Major version bumps blocked until releaseGate flag is set
-
-### ORBIT Ecosystem Integration (NEW)
-- **Service**: `src/services/ecosystemService.ts` - Central hub communication
-- **Client**: `src/services/ecosystemClient.ts` - HMAC-signed API client
-- **Purpose**: Cross-app communication with ORBIT Developer Hub
-- **Features**:
-  - Activity logging to central dashboard
-  - Code snippet sharing between apps
-  - Metrics reporting (users, predictions, revenue)
-  - Alert system for critical events
-- **API Endpoints**:
-  - `GET /api/ecosystem/status` - Connection status to ORBIT Hub
-  - `GET /api/ecosystem/logs` - Fetch activity logs
-  - `POST /api/ecosystem/log` - Log activity (admin only)
-  - `POST /api/ecosystem/snippets` - Push code snippet (admin only)
-  - `GET /api/ecosystem/snippets/:id` - Get code snippet
-  - `POST /api/ecosystem/metrics` - Report app metrics (admin only)
-- **Required Secrets**: `ORBIT_HUB_URL`, `ORBIT_API_KEY`, `ORBIT_API_SECRET`
-
----
+### Feature Specifications
+- User authentication and management.
+- Real-time crypto price tracking.
+- AI prediction and analysis modals for coins.
+- Admin dashboard for user management.
+- Telegram bot integration.
+- 18 AI Agent personas with NFT Trading Cards.
+- Comprehensive Knowledge Base.
+- Custom Avatar Creator with extensive customization options.
 
 ## External Dependencies
 
@@ -256,10 +49,9 @@ Pulse (powered by DarkWave Studios, LLC) is a predictive trading platform built 
 - Vercel AI SDK (`ai`, `@ai-sdk/openai`)
 
 ### Market Data APIs
-- CoinGecko API (primary - has rate limits)
+- CoinGecko API (primary)
 - Yahoo Finance
 - Dexscreener API
-- QuickChart.io
 - Helius API (Solana)
 - Alchemy API
 
@@ -268,8 +60,6 @@ Pulse (powered by DarkWave Studios, LLC) is a predictive trading platform built 
 
 ### Infrastructure & Deployment
 - Inngest (`inngest`, `@mastra/inngest`)
-- Stripe (payments pending)
-- Coinbase Commerce (crypto payments pending)
 
 ### Messaging Platform
 - Telegram Bot API
@@ -279,11 +69,3 @@ Pulse (powered by DarkWave Studios, LLC) is a predictive trading platform built 
 
 ### Supporting Libraries
 - `axios`, `zod`, React 19, Vite 7
-
----
-
-## Deployment Notes
-
-- **Development**: `./run-dev.sh` starts Vite + Express on port 5000
-- **Production**: Republish required after changes
-- **Critical**: Always copy changes to BOTH `public/` and `darkwave-web/public/`

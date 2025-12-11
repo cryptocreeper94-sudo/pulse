@@ -1,0 +1,313 @@
+Agent
+
+
+
+Show previous events
+
+7 messages & 46 actions
+Let me wait for the backend to start and restart the inngest workflow:
+18 hours ago
+Add manual token watchlist and limit order system
+
+Rollback here
+
+Changes
+
+Preview
+Worked for 30 minutes
+one thing I know for sure we're going to need in the sniper Rod is definitions on all the terms related to anything in here basically because nobody really knows what it means to have or even a bot you know like percentage of bots I mean no half the people don't even know they're just trying to learn they're trying to figure out how to make some quick money you know I want something more stable something to learn something that gets better you know like a fine wine so to speak but all of the terms any input boxes any values any return boxes they need to have definitions so that you know I mean click or hoverable or clickable definitions that people can click them and it'll tell them what it means what it what it does how to set it you know obviously we're not giving Financial advice but you know basically why you would want to set it you know a certain way or something we just need to make sure that people understand what they're doing before they jump into this thing and put money into it and then lose it all because they have no clue you know how to set it up properly
+
+12 hours ago
+
+Show less
+
+Decided on tooltip system design (5 seconds)
+Great idea, Jason! Having clear definitions for all the terms will help users understand what they're doing before risking real money. Let me add a tooltip/definition system to the Manual Watchlist.
+
+
+Decided on tooltip component creation
+
+Created darkwave-web/src/components/ui/InfoTooltip.jsx
+
+Decided on tooltip integration
+Now let me update the ManualWatchlist to use these tooltips:
+
+
+Show 2 more
+
+Opened darkwave-web/src/components/trading/ManualWatchlist.jsx
+
+Decided on tooltip placement strategy
+Now let me update the ManualWatchlist to add tooltips to all the input fields:
+
+
+Show 5 more
+
+Edited darkwave-web/src/components/trading/ManualWatchlist.jsx
+
+Decided on status badge interaction
+Now let me add tooltips to the StatusBadge component:
+
+
+Show 4 more
+
+Edited darkwave-web/src/components/trading/ManualWatchlist.jsx
+
+Decided on tooltip styling adjustments
+Now let me add some CSS for the new address label styling and restart the workflow to test:
+
+
+Show 10 more
+Checked console and system logs
+
+Decided on frontend startup behavior analysis (4 seconds)
+The startup errors are temporary - the backend is now running. Let me update the task list and take a screenshot to verify the tooltips are working:
+
+
+Completed tasks
+
+Verified tooltip behavior
+
+Took a screenshot
+
+Decided on testing tooltip behavior
+The app is running! The tooltips are added to the Manual Watchlist component. Let me quickly verify the Sniper Bot tab loads correctly with the tooltips visible:
+
+
+Took a screenshot
+
+Decided on tooltip system visibility
+I've added a comprehensive tooltip/help system to the Sniper Bot / Manual Watchlist feature. Here's what's now available:
+
+Clickable Help Icons (?) next to every field:
+
+Token Address - Explains what a Solana token address is and where to find it
+Entry Price - What it means, how to set it, and why (buying at a lower price)
+Take Profit - How to lock in gains when price rises
+Stop Loss - Safety net to limit losses, why it matters
+Buy Amount (SOL) - How much you're investing, start small advice
+Current Price - Real-time market price explanation
+Status Badge Tooltips:
+
+Watching - System is monitoring, no action needed
+Ready to Buy - Price hit target, time to execute
+Position Open - You own the token now
+Ready to Sell - Exit target reached, lock in profits
+Stop Loss Hit - Emergency exit time
+Additional Definitions Available:
+
+Slippage, Liquidity, Market Cap, 24h Volume, Price Change %, Bot Percentage, Holders
+Each tooltip includes:
+
+Plain English definition
+Practical example
+Why it matters for your trade
+The tooltips match your dark theme with a cyan glow effect. Users click the (?) icon to see the full explanation, then click X or elsewhere to close.
+
+This should help people understand what they're doing before putting real money in. Want me to add definitions anywhere else in the app?
+
+12 hours ago
+Saved progress at the end of the loop
+
+Rollback here
+
+Changes
+
+Preview
+Worked for 5 minutes
+we need to recreate the pwa on this I need to provide you with another image so you can put that in the splash screen and in the icon for the home screen
+
+11 hours ago
+
+Show less
+
+Decided on image sharing for PWA
+Sure! Please share the image you'd like to use for the PWA splash screen and home screen icon. Once you upload it, I'll:
+
+Create the PWA manifest with proper app info
+Generate the icon in all required sizes (192x192, 512x512, etc.)
+Set up the splash screen
+Configure the service worker for offline capability
+Go ahead and attach the image when you're ready!
+
+Worked for 11 seconds
+the manual coin snipes are also controlled by the safety features correct?
+
+11 hours ago
+
+4 actions
+or i guess they shouldn't be
+
+11 hours ago
+
+1 message & 1 action
+You're right - the manual watchlist is currently **not** controlled by the safety features. Here's how it works: **Manual Token Watchlist (Current):** - You enter any token address you want - It looks up the token info (name, price, logo) - You set your entry/exit/stop-loss - The system monitors prices and flags when targets hit - **No blocking** - you're in full control of what you buy **Autonomous Sniper Mode (Where Safety Features Apply):** - Auto-discovers new tokens on DEXs - Runs safety checks (bot %, holder concentration, liquidity, creator wallet) - Only snipes tokens that pass your safety filter thresholds - Designed to protect you from obvious rug pulls This makes sense because with manual watchlist, **you've done your own research** - you specifically chose that token. The safety features are more for when the bot is auto-discovering and you want guardrails. If you want, I could add an optional "Safety Score" display when you paste a token address in the manual watchlist - just as info to help you decide, but it wouldn't block you from setting the order. That way you get the education without losing control. What do you think?
+the safety settings are for AI trading only
+
+11 hours ago
+
+1 message & 1 action
+Got it - that's exactly how it's set up. The safety features (bot %, holder concentration, liquidity checks, creator wallet analysis) only apply to the AI autonomous trading mode, not the manual watchlist. When you manually add a token to watch, you're in full control - no restrictions.
+or should it. obvioulsy the manual snipe is something that you are overriding the AI trading on? Can we have ai auto sniping happening while also running the manual snipes? if you decide to manually snipe you understand what you're sniping. AI snipping and auto sniping should be controlled by the safety rules. i think that makes sense. Do you agree?
+
+11 hours ago
+
+1 message & 1 action
+100% agree. That's the right approach: **AI/Auto Sniping** - Safety rules enforced - Bot is making autonomous decisions - Needs guardrails to protect you from scams - Filters: bot %, holder concentration, liquidity minimums, creator wallet checks - Only executes on tokens that pass YOUR safety thresholds **Manual Sniping** - No restrictions - You're overriding the AI - You've done your own research - You accept the risk - Full control, no blocking **Running Both Simultaneously** - Yes, absolutely works - The Inngest worker monitors your manual limit orders every minute - The AI scanner can be discovering and auto-sniping separately - They're independent systems - one doesn't interfere with the other Think of it like a self-driving car: - Auto mode follows all the safety rules - Manual mode means you've grabbed the wheel - you're in charge This is already how it's built. The safety filters in the sniper settings only apply to the autonomous discovery/trading mode. Your manual watchlist slots are completely unrestricted.
+can you see the the writing the text behind the blur on that the image that I sent it's the safety settings for the thought that I used to use and it was terrible I mean the safety settings didn't really seem to do anything but keep me from being able to make transactions but I'm you know these are these are the ones that I mentioned to you I was thinking combination with other things you know we need to make ours more robust than just basing our you know Snipes or our AI Snipes on these just these alone we need to come up with something that that is very thorough and gives you the best chance to actually make a profit when you're trading so what are your suggestions do we have all these can we add more safety settings what can we do
+
+11 hours ago
+
+1 message & 2 actions
+I can see the SOLSniper settings in that screenshot: - Top 10 Holders Max: 30% - Bundled Max: 20% - Max Same Block Buys: 10 - Safety Check Period: 10 seconds - Choose DEXes: CPMM (Raydium) You're right - those basic filters alone aren't enough. Let me research what makes a truly robust safety system and get some strategic guidance on how we can do better:
+we need anti-mev
+
+11 hours ago
+
+2 messages & 3 actions
+Good call - MEV protection is critical. Without it, bots can frontrun your trades and you end up paying more or getting less. Let me research the best anti-MEV solutions for Solana:
+11 hours ago
+Add anti-MEV protection for trading transactions
+
+Rollback here
+
+Changes
+
+Preview
+Worked for 1 minute
+all that sounds good all I would say is I know that we're going to go back after we do this and we're going to say well we could do this and we could do this to make it better and we could do this to make it better let's go ahead and explore all the options all the automatic options all the I mean this is pretty thorough I must say but is there anything we're missing let's just put it that way
+
+10 hours ago
+
+1 action
+mutable mentable freezable right then we should not be going for any of those but I noticed a lot of these tokens on Deck screener are mutable and all the ones that come out of bong I believe or mutable so is that a really a thing that you have to pay close attention to
+
+10 hours ago
+
+1 message & 3 actions
+Great question! Here's the deal: **Pump.fun tokens are actually SAFER than regular tokens:** - Metadata is **automatically immutable** (can't change name/logo) - **No mint authority** - fixed supply, can't create more - When they hit ~$69k market cap, LP tokens are **burned** (not just locked) - The "mutable" you might see on Dexscreener for pump.fun tokens is often a display quirk **What you need to watch for is NON-pump.fun tokens:** | Authority | Safe Status | Red Flag | |-----------|-------------|----------| | **Mint Authority** | Revoked/None | Active (can print infinite tokens) | | **Freeze Authority** | Revoked/None | Active (can freeze your wallet) | | **Update Authority** | Revoked/None | Active (can change token metadata) | **Our Safety System Should:** 1. **Detect token origin** - Is this from Pump.fun, Raydium launch, or manual creation? 2. **For Pump.fun tokens** - Less strict on authority checks (they're handled by the program) 3. **For other tokens** - Hard block on active mint/freeze authority 4. **Mutable metadata alone** - Warning, not a hard block (many legit projects keep this for updates) **Updated Priority List:** | Check | Pump.fun Token | Other Tokens | |-------|----------------|--------------| | Mint Authority | Skip (always safe) | **CRITICAL - block if active** | | Freeze Authority | Skip (not used) | **CRITICAL - block if active** | | Mutable Metadata | Skip (immutable by design) | Warning only | | LP Status | Check if migrated to Raydium | **Check lock/burn status** | So yes, these ARE important - but we need context-aware checking. A pump.fun token showing "mutable" on Dexscreener isn't the same risk as a manually-created token with active mint authority. Want me to build this smart detection into the safety engine?
+okay yeah as long as this context to where I just don't want it to be Robo trading every freaking coin it comes across you know I mean that's the that's the worry that's why I lost money doing it with that other bot and it's still the same way it's been months and these guys are making who knows how much money they're charging $75 a month just for the use and it doesn't even work I mean you just lose money hand over this they say they have $1,500 people at least 1500 people using their pot so I mean my goodness if we could come up with something I mean we got we have to come up with a separate prescriptive subscription price I believe for the body do you agree with that tell me before you continue on
+
+10 hours ago
+
+1 message & 1 action
+100% agree. The AI Sniper Bot should be a separate premium tier. Here's my thinking: **Why Separate Pricing Makes Sense:** 1. **Different Value Proposition** - Base Pulse subscription = analysis, signals, education - Sniper Bot = active automated trading with real money - Completely different risk/reward for the user 2. **Infrastructure Costs** - Jito bundle fees (tips for anti-MEV) - Real-time RPC calls (Helius) - 24/7 monitoring (Inngest workers) - Much higher server load than passive analysis 3. **Market Validation** - Competitor charges $75/month with 1,500+ users - That's $112,500+/month in revenue - And theirs doesn't even work well (by your experience) 4. **Risk Justification** - Users putting real money at risk deserve a premium tool - Higher price = more committed users who read the docs - Reduces support load from "I clicked buttons randomly and lost money" **Suggested Tier Structure:** | Tier | Price | Features | |------|-------|----------| | **Base** | Current pricing | Analysis, signals, manual watchlist, education | | **Sniper Pro** | $49-99/month | AI auto-sniping, advanced safety filters, Jito anti-MEV | | **Founder/Whale** | Higher | Priority execution, custom filters, dedicated support | **My Recommendation:** Start at $49-69/month to undercut the $75 competitor while delivering a better product. You can always raise prices once you prove the value. This is your business call though. Want me to continue building out the safety system, or should we map out the subscription tiers first?
+I think we'll start with a pounder's level for this as well so we need to add it to our documentation it'll coincide with all the other dates that we have set but we're going to have to extend the the founders from December 25th that's going to have to go beyond that I mean we're almost there now we haven't even marketed this at all we're still working on the core features of the system for the premium subscribers so you know we can have people going and looking at it all day long but unless somebody subscribes it's not going to do us any good so we've got to get all this set up we need to I've only had one person so far by into it with a Founders Club your full 24 purchase for the 6 months we need to make sure that our white list is still intact and all the people that I had on that are still there and are still white listed and are still scheduled to get the air drops that are scheduled you know that were meant for the beta testers and Legacy members we just we're going to have to push all this off until we get ready we can lock them in at a certain point but the there's no way that by December 25th we're even going to have more than five people in the Legacy members you know I mean we got a we got to make some we got to do a hell of a marketing push coming up soon but we have to get this set up because if we don't have the products to offer people then you know they're not going to want to come anyway so let's let's discuss all that let's figure out how we can push it off I think we'll start a legacy club for the bot as well first 1,000 people sign up for 999 you know and 999 a month first 1000 people then it goes up to 20 1999 a month or whatever you know for the next 5,000 people I don't know let's figure out how to structure that but we've got to ultimately make all this into we might need to just make this a separate page instead of a pop up I don't know or maybe even a widget the tool itself a widget fit into a page that has all the descriptions all the tears all that into it tell me what you think let's let's plan this out and get it done
+
+10 hours ago
+
+1 message & 3 actions
+Here's my recommendation for structuring all of this: --- ## **PULSE SUBSCRIPTION RESTRUCTURE PLAN** ### **Timeline Update** - Push **ALL dates** to align with **February 14, 2026** DWAV launch - Founders enrollment stays open until launch - Marketing push: 2 weeks before launch (Feb 1, 2026) --- ### **TIER STRUCTURE** #### **Base Platform (Existing)** | Tier | Price | Features | |------|-------|----------| | Free | $0 | Basic market view, limited signals | | Premium | $19.99/mo | Full analysis, AI signals, manual watchlist | | Founders (Legacy) | $24/6mo | Locked pricing, airdrop eligible, early access | #### **AI Sniper Bot (NEW - Separate Product)** | Tier | Slots | Price | Perks | |------|-------|-------|-------| | **Founders Club** | First 1,000 | $9.99/mo | Locked forever, priority features, DWAV airdrop bonus | | **Legacy** | Next 5,000 | $19.99/mo | Locked pricing, airdrop eligible | | **Standard** | Unlimited | $49.99/mo | Full features, regular price | --- ### **UI RECOMMENDATION: Dedicated Page (Not Popup)** **Why a full page wins:** 1. **SEO** - Can rank for "Solana trading bot", "AI sniper bot" searches 2. **Marketing** - Direct link for ads, social, email campaigns 3. **Trust** - Room for feature breakdown, safety explanations, risk disclosures 4. **Conversion** - Proper sales page with testimonials, pricing table, FAQs 5. **Legal** - Space for required disclaimers ("not financial advice", risk warnings) **Page Structure:** ``` /sniper-bot (or /ai-sniper) ├── Hero: "AI Sniper Bot - Catch Trends Before They Explode" ├── Safety Features (your differentiator vs competitors) ├── How It Works (simple 3-step visual) ├── Pricing Tiers (Founders/Legacy/Standard with slot counters) ├── Risk Disclosure (required for trading products) ├── FAQ └── CTA: "Join Founders Club" / "Get Started" ``` **In-App:** Keep the Sniper tab as the actual tool, but add a banner/upgrade prompt for non-subscribers. --- ### **EXISTING COMMITMENTS - PRESERVED** Your database already has: - `whitelistedUsers` - Beta testers, early access - `launchWhitelist` - Airdrop eligible users - `subscriptions` - Current Founder (the one who paid $24) **Migration Plan:** 1. All existing whitelist entries → automatically eligible for Sniper Founders tier 2. Current 6-month Founder → gets Sniper Bot access included (reward loyalty) 3. Airdrop schedules stay tied to whitelist entries (no changes needed) --- ### **IMPLEMENTATION SEQUENCE** | Week | Focus | |------|-------| | Now - Dec 20 | Finish Safety Engine MVP (anti-MEV, authority checks, honeypot detection) | | Dec 20 - Jan 10 | Build Sniper Bot landing page + pricing widget | | Jan 10 - Jan 25 | Stripe setup for new tiers, slot tracking, entitlement logic | | Jan 25 - Feb 1 | Testing, whitelist validation, airdrop confirmation | | Feb 1 - Feb 14 | Marketing push | | **Feb 14, 2026** | DWAV Launch + Sniper Bot goes live | --- ### **NEXT STEPS** Do you want me to: 1. **Create the Sniper Bot landing page** with tier pricing and slot counters? 2. **Set up Stripe products** for the new Founders/Legacy/Standard tiers? 3. **Verify whitelist integrity** - check all existing entries are preserved? 4. **Continue building Safety Engine** - Jito anti-MEV, authority checks, etc.? What's your priority? I'd suggest we nail down the Safety Engine first (that's the product), then build the sales page around it.
+we need to make sure too that we have a subscription price for the entire package so any tool that we offer you know we need to have a subscription price you know for that as well so are predictive tool which we're making more robust as we go we need to revisit it to make sure that it is optimal right now so we got our subscription tool we've got the base usage we got the different premium skins you know there's different little things that we had for subscription members so we need to also have bundles I guess cuz you know maybe we had more tools coming up I don't know what we could add I'm going to try to figure it out I mean I'm again we got to think outside of the box and integrate stuff that hasn't been integrated before and you know you can help me war game that but we need to make sure we have a bundle price as well so you know we're at five dollars Legacy price for the entire thing or I think 24 dollars for 6 months or 80 for a year we need to go ahead and create a bundle that includes the sniper bot as well and make it reasonable but make it you know profitable and make it valuable you know make people see that we're not going to charge you know $2 for it because you know we've got time and effort invested and we know what's a better product than what's out there and we need to add comparisons like Soul sniper $75 a month you know I mean just for a tool that is strictly AI driven with no contacts I mean you know we need to play on the weaknesses of others so to speak in our advertising on this page and with and throughout and or marketing and anywhere so people know these people that are paying a lot of money for these Bots should you have to give ours a shot you know I mean that's maybe we should have a test run where you can you know test it with you know a minimum amount of Soul or something one Soul you know test it you know get a certain number of Snipes you know four you know two dollars and you can try it for a day or something like that I don't know just and I don't know what do you think
+
+10 hours ago
+
+1 message & 2 actions
+I love where your head's at. Here's the complete pricing strategy: --- ## **COMPLETE PRICING MATRIX** ### **INDIVIDUAL TOOLS** | Product | Founders (Limited) | Legacy | Standard | |---------|-------------------|--------|----------| | **Base Platform** | FREE | FREE | FREE | | **Premium Analysis** | $5/mo (current) | $9.99/mo | $19.99/mo | | **AI Sniper Bot** | $9.99/mo (1,000 slots) | $19.99/mo (5,000 slots) | $49.99/mo | | **Premium Skins Pack** | $2.99/mo | $4.99/mo | $4.99/mo | ### **BUNDLES - "PULSE INFINITY"** (Everything Included) | Tier | Monthly | 6-Month | Annual | Savings | |------|---------|---------|--------|---------| | **Founders** | $29.99/mo | $149 ($24.83/mo) | $249 ($20.75/mo) | ~40% vs à la carte | | **Legacy** | $39.99/mo | $199 ($33.16/mo) | $349 ($29.08/mo) | ~30% vs à la carte | | **Standard** | $59.99/mo | $299 ($49.83/mo) | $499 ($41.58/mo) | ~20% vs à la carte | ### **TRIAL OPTIONS** | Trial | Price | Limits | Purpose | |-------|-------|--------|---------| | **Sniper Day Pass** | $2.00 | 24 hours, 1 SOL max, 3 snipes | "Test drive" for skeptics | | **7-Day Trial** | $4.99 | 7 days, 2 SOL max, 10 snipes | Serious evaluation | *If they upgrade within 7 days of trial, credit applies to first month* --- ## **COMPETITOR COMPARISON (For Landing Page)** | Feature | PULSE | SOLSniper | Others | |---------|-------|-----------|--------| | **Price** | $9.99-49.99/mo | $75/mo | $50-100/mo | | **Anti-MEV (Jito)** | ✅ Yes | ❌ No | Varies | | **Honeypot Detection** | ✅ Simulated | ⚠️ Basic | ⚠️ Basic | | **Liquidity Lock Check** | ✅ Yes | ⚠️ Basic | ❌ No | | **Mint/Freeze Authority** | ✅ Auto-block | ⚠️ Warning only | ❌ No | | **Creator Wallet History** | ✅ AI-scored | ❌ No | ❌ No | | **Manual Override Mode** | ✅ Yes | ❌ No | ❌ No | | **Human Support** | ✅ Telegram | ❌ Discord only | Varies | **Headline:** *"Institutional-grade safety at half the cost of competitors who don't even protect you from sandwich attacks."* --- ## **FUTURE TOOLS TO ADD (Bundle Value)** | Tool | Description | Bundle Tier | |------|-------------|-------------| | **Portfolio Risk Guard** | VAR-based limits, auto stop-loss across all positions | Infinity | | **Multi-Chain Scanner** | Extend to ETH, Polygon, Base when ready | Premium+ | | **Smart Airdrop Tracker** | Never miss eligible airdrops | Premium | | **Copy-Sniper** | Follow successful wallets, mirror their trades | Infinity | | **Whale Alert Feed** | Real-time big wallet movements | Premium | | **Tax Report Export** | CSV/PDF for tax season | All tiers | --- ## **TRIAL MECHANICS (Safe for Us)** ``` User buys $2 Day Pass → Backend creates 24hr entitlement → Enforces: 1 SOL max volume, 3 snipes max → All trades use safety engine (no turning it off) → After limit hit OR 24hrs: access ends → Upgrade within 7 days → $2 credit applied ``` This prevents abuse while letting skeptics try before they commit. --- ## **NEXT STEPS** 1. **Build the Sniper Bot landing page** with: - Comparison table - Pricing tiers with slot counters - Trial CTA - Risk disclosures 2. **Set up Stripe products** for all tiers 3. **Finish Safety Engine** (the actual product that makes us better) What do you want me to tackle first?
+let's go ahead and add all that I mean the sniper bot is something different because it actually deals with money and if I'm playing with people's money in any way I need to have every feature in there because I don't want them to tell their friends that you know hey they made the mistake not me I mean I can say that and my experience I have made most of the mistakes but you know I don't want them to make the first mistake which is being subscribing to us so we need to add all this in there and then you need to explain to me how we need to get these other things integrated because I definitely want ethereum I would love to have base I would love to have polygon I'd love to have all of them you know available and you can just toggle from one to the other and you know we could ultimately have our own wallet that's multi-chain wallet that supports all of them and you can just talk about and forth snipe what you wanted set your parameters set your Buy sales say mistake which is subscribing to us I want this to be above and beyond anything they've ever you know dealt with and they're not going to just constantly lose money it's going to help them understand how to operate in a way that's going to at least be safer for them you know obviously we've got to have the disclaimers nothing is financial advice but we need to make this learn we need to make it smart we need to make it recognize we need to make a contextual we need to make it picky if they can't just choose everything it sees it's got to be just as if I were sitting there and I could see the signals happening live time across the board I could make these decisions you know even on live releases and things of that nature so and I was talking and it cut off and I forgot something I said it's a little come back to me but do we have everything in here I mean is this is robust as it can be I want to add all those features that you mentioned and I want to figure out how to get you know polygon base the ethereum I mean all the different chains I mean arbit room any of them I would like to add we need to get started on that too so we can ultimately integrate that in and have a wallet I want to start working on a wallet if we do it slowly I don't care I want to have a wallet and it's going to have all the features and more that we've discussed be able to support resales or advertise at least you know I mean I want to do I want to do what best wallet is doing I want it to be in our tool and everything else is available I noticed Phantom wallet is now starting to do more they they have a platform now it's raining platform and Phantom is really popular so we are going to have to really step up our game to compete with these guys when they have a lot of people in their Corner already so what what say you what do we do
+
+10 hours ago
+
+Show less
+
+Planned major feature integration
+
+Planned institutional trading platform architecture
+
+Planned task list creation
+Here's the master plan. This is big, but we'll do it in phases:
+
+DARKWAVE PULSE - COMPLETE ROADMAP
+PHASE 1: SAFETY ENGINE MVP (Now → Mid-January)
+"The product that makes us different"
+
+Feature	Status	Priority
+Anti-MEV (Jito Bundles)	NOT STARTED	CRITICAL
+Mint Authority Check	NOT STARTED	CRITICAL
+Freeze Authority Check	NOT STARTED	CRITICAL
+Liquidity Lock/Burn Verify	NOT STARTED	CRITICAL
+Honeypot Simulation	NOT STARTED	CRITICAL
+Creator Wallet Scoring	BASIC EXISTS	HIGH
+Token Age Filter	NOT STARTED	HIGH
+Volume/Holder Trend Analysis	PARTIAL	HIGH
+AI Scoring Pipeline	BASIC EXISTS	HIGH
+Decision Logging (audit trail)	EXISTS	✅
+PHASE 2: MULTI-CHAIN ARCHITECTURE (Jan → March)
+"Trade anywhere, same protection"
+
+Chain	DEXs	MEV Protection	SDK/API
+Solana	Jupiter, Raydium, Pump.fun	Jito Bundles	Helius, Jupiter API
+Ethereum	Uniswap, Sushiswap	Flashbots/CoW Swap	Alchemy, Uniswap SDK
+Base	Aerodrome, Uniswap	Flashbots (Base)	Coinbase Cloud RPC
+Polygon	QuickSwap, Uniswap	Polygon MEV (limited)	Alchemy, 0x API
+Arbitrum	Camelot, GMX, Uniswap	Arbitrum Sequencer	Offchain Labs RPC
+BSC	PancakeSwap	bloXroute	QuickNode
+Architecture: Chain Registry + Per-Chain Adapters
+
+Same safety checks, different implementations per chain
+Toggle chains in UI like switching tabs
+Unified portfolio view across all chains
+PHASE 3: MULTI-CHAIN WALLET (Feb → April)
+"Your money, your keys, all chains"
+
+Strategy Options:
+
+Approach	Pros	Cons	Recommendation
+Use SDK (Dynamic/Privy)	Fast to market, battle-tested	Monthly fees, less control	START HERE
+Build Custom	Full control, no fees	6+ months dev time	LONG-TERM GOAL
+Hybrid	Best of both	Complexity	PHASE 2
+Wallet Features:
+
+Multi-chain support (Solana + all EVM)
+One seed phrase, all chains
+In-app signing (no external wallet needed)
+Portfolio dashboard across chains
+Trade history export (taxes)
+Optional: Account abstraction (gasless, session keys)
+PHASE 4: ADAPTIVE AI (Parallel R&D)
+"Gets smarter with every trade"
+
+Feature	How It Works
+Trade Ledger	Log every decision + outcome
+Feature Store	Extract patterns (liquidity health, velocity, timing)
+Supervised Learning	Train on successful vs failed trades
+Drift Detection	Recognize when market conditions change
+Explainability	Show WHY the AI made each decision
+Human Override	You can always take the wheel
+Goal: AI that says "I've seen this pattern before, it usually rugs in 4 hours" or "This looks like the early $WIF setup"
+
+HOW WE BEAT PHANTOM & BEST WALLET
+They Have	We Have Better
+Trading platform	AI-powered sniper with safety engine
+Multi-chain wallet	Same + anti-MEV protection per chain
+Nice UI	Same + educational tooltips everywhere
+Generic swaps	Intelligent limit orders + auto-execution
+No learning	AI that adapts and gets smarter
+No transparency	Audit trail on blockchain (Solana stamps)
+Our Differentiators:
+
+Safety-first - We actually protect users from scams
+AI that learns - Not just rules, adaptive intelligence
+Transparent - Every decision logged and explainable
+Affordable - $9.99 vs $75/month competitors
+Education built-in - Users understand what they're doing
+TIMELINE TO LAUNCH
+NOW ────────────────────────────────────────────► FEB 14, 2026
+ │
+ ├─ Dec 10-20: Safety Engine (Jito, authorities, honeypot)
+ │
+ ├─ Dec 20-Jan 10: Sniper Bot landing page + pricing
+ │
+ ├─ Jan 10-25: Stripe setup, trial system, entitlements
+ │
+ ├─ Jan 25-Feb 1: Testing, whitelist validation
+ │
+ ├─ Feb 1-14: MARKETING PUSH
+ │
+ └─ FEB 14: DWAV LAUNCH + SNIPER BOT LIVE
+ 
+POST-LAUNCH:
+ ├─ Feb-Mar: Multi-chain (ETH, Base, Polygon)
+ ├─ Mar-Apr: Wallet integration
+ └─ Ongoing: AI learning improvements
+
