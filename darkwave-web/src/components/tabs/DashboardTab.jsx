@@ -317,13 +317,17 @@ function MiniCoinTable({ coins, onCoinClick, favorites }) {
       </div>
       <div style={{ fontSize: 9, color: '#444', display: 'flex', padding: '4px 0', borderBottom: '1px solid #222' }}>
         <span style={{ flex: 2 }}>Coin</span>
-        <span style={{ flex: 1, textAlign: 'right' }}>Price</span>
-        <span style={{ flex: 1, textAlign: 'right' }}>24h</span>
+        <span style={{ flex: 1.2, textAlign: 'right' }}>Price</span>
+        <span style={{ flex: 1, textAlign: 'right' }}>MC</span>
+        <span style={{ flex: 1, textAlign: 'right' }}>Vol</span>
+        <span style={{ flex: 0.8, textAlign: 'right' }}>24h</span>
       </div>
       <div style={{ flex: 1, overflowY: 'auto' }}>
         {displayCoins.map((coin, i) => {
           const change = coin.price_change_percentage_24h || 0
           const isPositive = change >= 0
+          const mc = coin.market_cap ? (coin.market_cap >= 1e12 ? `${(coin.market_cap / 1e12).toFixed(1)}T` : coin.market_cap >= 1e9 ? `${(coin.market_cap / 1e9).toFixed(1)}B` : `${(coin.market_cap / 1e6).toFixed(0)}M`) : '-'
+          const vol = coin.total_volume ? (coin.total_volume >= 1e9 ? `${(coin.total_volume / 1e9).toFixed(1)}B` : `${(coin.total_volume / 1e6).toFixed(0)}M`) : '-'
           return (
             <div 
               key={coin.id || i}
@@ -348,10 +352,16 @@ function MiniCoinTable({ coins, onCoinClick, favorites }) {
                   {isFavorite(coin.symbol) && <span style={{ color: '#FFD700', marginLeft: 4 }}>★</span>}
                 </span>
               </div>
-              <div style={{ flex: 1, textAlign: 'right', fontSize: 11, color: '#fff' }}>
+              <div style={{ flex: 1.2, textAlign: 'right', fontSize: 11, color: '#fff' }}>
                 {formatPrice(coin.current_price)}
               </div>
-              <div style={{ flex: 1, textAlign: 'right', fontSize: 11, fontWeight: 600, color: isPositive ? '#39FF14' : '#ff4444' }}>
+              <div style={{ flex: 1, textAlign: 'right', fontSize: 10, color: '#888' }}>
+                {mc}
+              </div>
+              <div style={{ flex: 1, textAlign: 'right', fontSize: 10, color: '#888' }}>
+                {vol}
+              </div>
+              <div style={{ flex: 0.8, textAlign: 'right', fontSize: 11, fontWeight: 600, color: isPositive ? '#39FF14' : '#ff4444' }}>
                 {isPositive ? '+' : ''}{change.toFixed(1)}%
               </div>
             </div>
