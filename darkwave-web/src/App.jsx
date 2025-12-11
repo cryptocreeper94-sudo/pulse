@@ -14,7 +14,7 @@ import {
   PricingTab,
   AnalysisTab
 } from './components/tabs'
-import { GlossaryPopup } from './components/ui'
+import { GlossaryPopup, AIChatButton } from './components/ui'
 import { GlossaryProvider } from './context/GlossaryContext'
 import { AvatarProvider } from './context/AvatarContext'
 import { FavoritesProvider } from './context/FavoritesContext'
@@ -106,6 +106,7 @@ function App() {
                 </Layout>
                 <GlossaryPopup />
                 <CryptoCatPopup enabled={true} interval={90000} />
+                <AIChatButton isSubscribed={userConfig?.subscriptionTier && userConfig.subscriptionTier !== 'free'} />
               </GlossaryProvider>
             </FavoritesProvider>
           </BuiltInWalletProvider>

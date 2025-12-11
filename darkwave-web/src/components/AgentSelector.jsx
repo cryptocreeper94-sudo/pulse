@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from 'react'
-import { Platform } from 'react-native'
-import '../styles/AgentSelector.css'
+import React, { useState } from 'react'
 
 const AGENTS = [
   { id: 1, name: 'Agent Alex', age: 28, ageGroup: 'young' },

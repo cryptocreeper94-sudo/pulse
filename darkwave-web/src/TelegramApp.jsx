@@ -14,7 +14,7 @@ import {
   PricingTab,
   AnalysisTab
 } from './components/tabs'
-import { GlossaryPopup } from './components/ui'
+import { GlossaryPopup, AIChatButton } from './components/ui'
 import SubscriptionGate from './components/ui/SubscriptionGate'
 import { GlossaryProvider } from './context/GlossaryContext'
 import { AvatarProvider } from './context/AvatarContext'
@@ -185,6 +185,7 @@ function TelegramAppContent() {
             </Layout>
             <GlossaryPopup />
             <CryptoCatPopup enabled={true} interval={90000} />
+            <AIChatButton isSubscribed={userConfig?.subscriptionTier && userConfig.subscriptionTier !== 'free'} />
           </GlossaryProvider>
         </FavoritesProvider>
       </BuiltInWalletProvider>

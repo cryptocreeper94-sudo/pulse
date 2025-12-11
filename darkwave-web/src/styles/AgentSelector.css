@@ -1,0 +1,210 @@
+.agent-selector-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.agent-selector-container {
+  background: #1a1a1a;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.agent-selector-locked {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.agent-lock-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.agent-selector-locked h3 {
+  color: #fff;
+  margin: 0 0 8px;
+}
+
+.agent-selector-locked p {
+  color: #888;
+  margin: 0 0 20px;
+}
+
+.agent-upgrade-btn {
+  background: linear-gradient(135deg, #00d4ff, #0099ff);
+  color: white;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.agent-carousel-wrapper {
+  width: 100%;
+}
+
+.agent-carousel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.agent-carousel-header h3 {
+  color: #fff;
+  margin: 0;
+}
+
+.agent-carousel-close {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 28px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.agent-carousel-close:hover {
+  color: #fff;
+}
+
+.agent-carousel-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.agent-filter-btn {
+  background: #252525;
+  border: 1px solid #333;
+  color: #888;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.agent-filter-btn:hover {
+  border-color: #00d4ff;
+  color: #00d4ff;
+}
+
+.agent-filter-btn.active {
+  background: #00d4ff;
+  border-color: #00d4ff;
+  color: #000;
+}
+
+.agent-carousel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.agent-carousel-nav {
+  background: #252525;
+  border: 1px solid #333;
+  color: #888;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.agent-carousel-nav:hover {
+  border-color: #00d4ff;
+  color: #00d4ff;
+}
+
+.agent-carousel-track {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 8px 0;
+  flex: 1;
+}
+
+.agent-carousel-card {
+  background: #252525;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 16px;
+  min-width: 120px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.agent-carousel-card:hover {
+  border-color: #00d4ff;
+  transform: translateY(-2px);
+}
+
+.agent-card-placeholder {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #00d4ff, #0099ff);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  margin: 0 auto 12px;
+}
+
+.agent-card-info {
+  color: #fff;
+}
+
+.agent-card-name {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.agent-card-age {
+  font-size: 12px;
+  color: #888;
+}
+
+.agent-carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.agent-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #333;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.agent-dot.active {
+  background: #00d4ff;
+}
