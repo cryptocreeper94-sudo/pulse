@@ -263,10 +263,12 @@ const coinCategories = [
   { id: 'losers', label: 'Losers' },
   { id: 'meme', label: 'Meme' },
   { id: 'defi', label: 'DeFi' },
+  { id: 'dex', label: 'DEX' },
 ]
 
-const memeCoins = ['doge', 'shib', 'pepe', 'floki', 'bonk', 'wif', 'meme', 'turbo', 'brett', 'mog']
-const defiCoins = ['uni', 'aave', 'mkr', 'ldo', 'crv', 'snx', 'comp', 'sushi', 'yfi', '1inch']
+const memeCoins = ['doge', 'shib', 'pepe', 'floki', 'bonk', 'wif', 'meme', 'turbo', 'brett', 'mog', 'popcat', 'neiro', 'pnut', 'act', 'goat', 'cow', 'fartcoin', 'chillguy', 'ponke', 'slerf']
+const defiCoins = ['uni', 'aave', 'mkr', 'ldo', 'crv', 'snx', 'comp', 'sushi', 'yfi', '1inch', 'pendle', 'ena', 'ethfi', 'eigen', 'ondo']
+const dexCoins = ['uni', 'cake', 'ray', 'jup', 'dydx', 'gmx', 'sushi', '1inch', 'crv', 'bal', 'joe', 'orca', 'velo', 'aero', 'osmo']
 
 function MiniCoinTable({ coins, onCoinClick, favorites }) {
   const [category, setCategory] = useState('top')
@@ -282,6 +284,8 @@ function MiniCoinTable({ coins, onCoinClick, favorites }) {
         return coins.filter(c => memeCoins.includes(c.symbol?.toLowerCase())).slice(0, 10)
       case 'defi':
         return coins.filter(c => defiCoins.includes(c.symbol?.toLowerCase())).slice(0, 10)
+      case 'dex':
+        return coins.filter(c => dexCoins.includes(c.symbol?.toLowerCase())).slice(0, 10)
       default:
         return coins.slice(0, 10)
     }
@@ -292,7 +296,7 @@ function MiniCoinTable({ coins, onCoinClick, favorites }) {
   return (
     <div style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-        <TileLabel>{category === 'top' ? 'Top Coins' : category === 'gainers' ? 'Top Gainers' : category === 'losers' ? 'Top Losers' : category === 'meme' ? 'Meme Coins' : 'DeFi'}</TileLabel>
+        <TileLabel>{category === 'top' ? 'Top Coins' : category === 'gainers' ? 'Top Gainers' : category === 'losers' ? 'Top Losers' : category === 'meme' ? 'Meme Coins' : category === 'defi' ? 'DeFi' : 'DEX Tokens'}</TileLabel>
       </div>
       <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
         {coinCategories.map(cat => (
@@ -315,101 +319,99 @@ function MiniCoinTable({ coins, onCoinClick, favorites }) {
           </button>
         ))}
       </div>
-      <div style={{ flex: 1, overflowX: 'auto', overflowY: 'auto' }}>
-        <div style={{ minWidth: 580 }}>
-          <div style={{ fontSize: 9, color: '#444', display: 'flex', padding: '4px 0', borderBottom: '1px solid #222', position: 'sticky', top: 0, background: '#0f0f0f', zIndex: 1 }}>
-            <span style={{ width: 30, textAlign: 'center' }}>#</span>
-            <span style={{ width: 70 }}>Coin</span>
-            <span style={{ width: 75, textAlign: 'right' }}>Price</span>
-            <span style={{ width: 55, textAlign: 'right' }}>24h</span>
-            <span style={{ width: 55, textAlign: 'right' }}>7d</span>
-            <span style={{ width: 55, textAlign: 'right' }}>MC</span>
-            <span style={{ width: 50, textAlign: 'right' }}>Vol</span>
-            <span style={{ width: 70, textAlign: 'right' }}>Supply</span>
-            <span style={{ width: 70, textAlign: 'center' }}>7d Chart</span>
-            <span style={{ width: 55, textAlign: 'right' }}>ATH %</span>
-          </div>
-          {displayCoins.map((coin, i) => {
-            const change24h = coin.price_change_percentage_24h || 0
-            const change7d = coin.price_change_percentage_7d_in_currency || 0
-            const isPositive24h = change24h >= 0
-            const isPositive7d = change7d >= 0
-            const mc = coin.market_cap ? (coin.market_cap >= 1e12 ? `${(coin.market_cap / 1e12).toFixed(1)}T` : coin.market_cap >= 1e9 ? `${(coin.market_cap / 1e9).toFixed(1)}B` : `${(coin.market_cap / 1e6).toFixed(0)}M`) : '-'
-            const vol = coin.total_volume ? (coin.total_volume >= 1e9 ? `${(coin.total_volume / 1e9).toFixed(1)}B` : `${(coin.total_volume / 1e6).toFixed(0)}M`) : '-'
-            const supply = coin.circulating_supply ? (coin.circulating_supply >= 1e9 ? `${(coin.circulating_supply / 1e9).toFixed(1)}B` : coin.circulating_supply >= 1e6 ? `${(coin.circulating_supply / 1e6).toFixed(0)}M` : `${(coin.circulating_supply / 1e3).toFixed(0)}K`) : '-'
-            const athChange = coin.ath_change_percentage || 0
-            const sparkline = coin.sparkline_in_7d?.price || []
-            return (
-              <div 
-                key={coin.id || i}
-                onClick={() => onCoinClick(coin)}
-                style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  padding: '5px 0',
-                  borderBottom: '1px solid #1a1a1a',
-                  cursor: 'pointer',
-                  transition: 'background 0.2s',
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.background = '#1a1a1a'}
-                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-              >
-                <div style={{ width: 30, textAlign: 'center', fontSize: 10, color: '#666' }}>
-                  {coin.market_cap_rank || i + 1}
-                </div>
-                <div style={{ width: 70, display: 'flex', alignItems: 'center', gap: 4 }}>
-                  {coin.image && (
-                    <img src={coin.image} alt="" style={{ width: 16, height: 16, borderRadius: '50%' }} />
-                  )}
-                  <span style={{ fontSize: 10, fontWeight: 600, color: '#fff' }}>
-                    {coin.symbol?.toUpperCase()}
-                    {isFavorite(coin.symbol) && <span style={{ color: '#FFD700', marginLeft: 2 }}>★</span>}
-                  </span>
-                </div>
-                <div style={{ width: 75, textAlign: 'right', fontSize: 10, color: '#fff' }}>
-                  {formatPrice(coin.current_price)}
-                </div>
-                <div style={{ width: 55, textAlign: 'right', fontSize: 10, fontWeight: 600, color: isPositive24h ? '#39FF14' : '#ff4444' }}>
-                  {isPositive24h ? '+' : ''}{change24h.toFixed(1)}%
-                </div>
-                <div style={{ width: 55, textAlign: 'right', fontSize: 10, fontWeight: 600, color: isPositive7d ? '#39FF14' : '#ff4444' }}>
-                  {isPositive7d ? '+' : ''}{change7d.toFixed(1)}%
-                </div>
-                <div style={{ width: 55, textAlign: 'right', fontSize: 10, color: '#888' }}>
-                  {mc}
-                </div>
-                <div style={{ width: 50, textAlign: 'right', fontSize: 10, color: '#888' }}>
-                  {vol}
-                </div>
-                <div style={{ width: 70, textAlign: 'right', fontSize: 10, color: '#888' }}>
-                  {supply}
-                </div>
-                <div style={{ width: 70, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                  {sparkline.length > 0 ? (
-                    <svg width="50" height="20" viewBox={`0 0 50 20`}>
-                      <polyline
-                        fill="none"
-                        stroke={sparkline[sparkline.length - 1] >= sparkline[0] ? '#39FF14' : '#ff4444'}
-                        strokeWidth="1.5"
-                        points={sparkline.filter((_, idx) => idx % Math.ceil(sparkline.length / 25) === 0).map((price, idx, arr) => {
-                          const min = Math.min(...arr)
-                          const max = Math.max(...arr)
-                          const range = max - min || 1
-                          const x = (idx / (arr.length - 1)) * 50
-                          const y = 18 - ((price - min) / range) * 16
-                          return `${x},${y}`
-                        }).join(' ')}
-                      />
-                    </svg>
-                  ) : <span style={{ fontSize: 9, color: '#444' }}>-</span>}
-                </div>
-                <div style={{ width: 55, textAlign: 'right', fontSize: 10, color: athChange >= -10 ? '#39FF14' : athChange >= -50 ? '#FFD700' : '#ff4444' }}>
-                  {athChange.toFixed(0)}%
-                </div>
-              </div>
-            )
-          })}
+      <div style={{ flex: 1, overflowY: 'auto' }}>
+        <div style={{ fontSize: 8, color: '#444', display: 'flex', padding: '4px 0', borderBottom: '1px solid #222', position: 'sticky', top: 0, background: '#0f0f0f', zIndex: 1 }}>
+          <span style={{ flex: '0 0 20px', textAlign: 'center' }}>#</span>
+          <span style={{ flex: '1 1 45px', minWidth: 40 }}>Coin</span>
+          <span style={{ flex: '1 1 50px', minWidth: 45, textAlign: 'right' }}>Price</span>
+          <span style={{ flex: '0 0 38px', textAlign: 'right' }}>24h</span>
+          <span style={{ flex: '0 0 38px', textAlign: 'right' }}>7d</span>
+          <span style={{ flex: '0 0 38px', textAlign: 'right' }}>MC</span>
+          <span style={{ flex: '0 0 35px', textAlign: 'right' }}>Vol</span>
+          <span style={{ flex: '0 0 42px', textAlign: 'right' }}>Circ</span>
+          <span style={{ flex: '0 0 40px', textAlign: 'center' }}>7d</span>
+          <span style={{ flex: '0 0 38px', textAlign: 'right' }}>ATH</span>
         </div>
+        {displayCoins.map((coin, i) => {
+          const change24h = coin.price_change_percentage_24h || 0
+          const change7d = coin.price_change_percentage_7d_in_currency || 0
+          const isPositive24h = change24h >= 0
+          const isPositive7d = change7d >= 0
+          const mc = coin.market_cap ? (coin.market_cap >= 1e12 ? `${(coin.market_cap / 1e12).toFixed(1)}T` : coin.market_cap >= 1e9 ? `${(coin.market_cap / 1e9).toFixed(1)}B` : `${(coin.market_cap / 1e6).toFixed(0)}M`) : '-'
+          const vol = coin.total_volume ? (coin.total_volume >= 1e9 ? `${(coin.total_volume / 1e9).toFixed(1)}B` : `${(coin.total_volume / 1e6).toFixed(0)}M`) : '-'
+          const supply = coin.circulating_supply ? (coin.circulating_supply >= 1e9 ? `${(coin.circulating_supply / 1e9).toFixed(1)}B` : coin.circulating_supply >= 1e6 ? `${(coin.circulating_supply / 1e6).toFixed(0)}M` : `${(coin.circulating_supply / 1e3).toFixed(0)}K`) : '-'
+          const athChange = coin.ath_change_percentage || 0
+          const sparkline = coin.sparkline_in_7d?.price || []
+          return (
+            <div 
+              key={coin.id || i}
+              onClick={() => onCoinClick(coin)}
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                padding: '5px 0',
+                borderBottom: '1px solid #1a1a1a',
+                cursor: 'pointer',
+                transition: 'background 0.2s',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = '#1a1a1a'}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+            >
+              <div style={{ flex: '0 0 20px', textAlign: 'center', fontSize: 9, color: '#666' }}>
+                {coin.market_cap_rank || i + 1}
+              </div>
+              <div style={{ flex: '1 1 45px', minWidth: 40, display: 'flex', alignItems: 'center', gap: 3 }}>
+                {coin.image && (
+                  <img src={coin.image} alt="" style={{ width: 14, height: 14, borderRadius: '50%' }} />
+                )}
+                <span style={{ fontSize: 9, fontWeight: 600, color: '#fff' }}>
+                  {coin.symbol?.toUpperCase()}
+                  {isFavorite(coin.symbol) && <span style={{ color: '#FFD700', marginLeft: 2 }}>★</span>}
+                </span>
+              </div>
+              <div style={{ flex: '1 1 50px', minWidth: 45, textAlign: 'right', fontSize: 9, color: '#fff' }}>
+                {formatPrice(coin.current_price)}
+              </div>
+              <div style={{ flex: '0 0 38px', textAlign: 'right', fontSize: 9, fontWeight: 600, color: isPositive24h ? '#39FF14' : '#ff4444' }}>
+                {change24h.toFixed(1)}%
+              </div>
+              <div style={{ flex: '0 0 38px', textAlign: 'right', fontSize: 9, fontWeight: 600, color: isPositive7d ? '#39FF14' : '#ff4444' }}>
+                {change7d.toFixed(1)}%
+              </div>
+              <div style={{ flex: '0 0 38px', textAlign: 'right', fontSize: 9, color: '#888' }}>
+                {mc}
+              </div>
+              <div style={{ flex: '0 0 35px', textAlign: 'right', fontSize: 9, color: '#888' }}>
+                {vol}
+              </div>
+              <div style={{ flex: '0 0 42px', textAlign: 'right', fontSize: 9, color: '#888' }}>
+                {supply}
+              </div>
+              <div style={{ flex: '0 0 40px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                {sparkline.length > 0 ? (
+                  <svg width="32" height="14" viewBox="0 0 32 14">
+                    <polyline
+                      fill="none"
+                      stroke={sparkline[sparkline.length - 1] >= sparkline[0] ? '#39FF14' : '#ff4444'}
+                      strokeWidth="1.2"
+                      points={sparkline.filter((_, idx) => idx % Math.ceil(sparkline.length / 16) === 0).map((price, idx, arr) => {
+                        const min = Math.min(...arr)
+                        const max = Math.max(...arr)
+                        const range = max - min || 1
+                        const x = (idx / (arr.length - 1)) * 32
+                        const y = 12 - ((price - min) / range) * 10
+                        return `${x},${y}`
+                      }).join(' ')}
+                    />
+                  </svg>
+                ) : <span style={{ fontSize: 8, color: '#444' }}>-</span>}
+              </div>
+              <div style={{ flex: '0 0 38px', textAlign: 'right', fontSize: 9, color: athChange >= -10 ? '#39FF14' : athChange >= -50 ? '#FFD700' : '#ff4444' }}>
+                {athChange.toFixed(0)}%
+              </div>
+            </div>
+          )
+        })}
       </div>
     </div>
   )
