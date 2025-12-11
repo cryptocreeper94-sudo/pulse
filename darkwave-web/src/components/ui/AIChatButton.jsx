@@ -1,9 +1,16 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import AgentSelector from '../AgentSelector'
+import PIXAR_AGENTS from '../../data/agents'
 
-export default function AIChatButton({ isSubscribed = false }) {
+export default function AIChatButton({ isSubscribed = false, selectedAgentId = 1 }) {
   const [showAgentSelector, setShowAgentSelector] = useState(false)
   const [showChat, setShowChat] = useState(false)
+  const [agent, setAgent] = useState(null)
+
+  useEffect(() => {
+    const selectedAgent = PIXAR_AGENTS.find(a => a.id === selectedAgentId) || PIXAR_AGENTS[0]
+    setAgent(selectedAgent)
+  }, [selectedAgentId])
 
   const handleClick = () => {
     setShowChat(!showChat)
@@ -14,13 +21,21 @@ export default function AIChatButton({ isSubscribed = false }) {
       <button
         className="ai-chat-fab"
         onClick={handleClick}
-        title="Chat with AI Agent"
+        title={agent ? `Chat with ${agent.name}` : 'Chat with AI Agent'}
       >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="currentColor"/>
-          <path d="M12 6C9.79 6 8 7.79 8 10C8 11.48 8.81 12.75 10 13.45V14C10 14.55 10.45 15 11 15H13C13.55 15 14 14.55 14 14V13.45C15.19 12.75 16 11.48 16 10C16 7.79 14.21 6 12 6Z" fill="currentColor"/>
-          <circle cx="12" cy="17.5" r="1.5" fill="currentColor"/>
-        </svg>
+        {agent ? (
+          <img 
+            src={agent.image} 
+            alt={agent.name}
+            className="ai-fab-agent-image"
+            onError={(e) => {
+              e.target.style.display = 'none'
+              e.target.nextSibling.style.display = 'flex'
+            }}
+          />
+        ) : null}
+        <div className="ai-fab-fallback" style={{ display: agent ? 'none' : 'flex' }}>AI</div>
+        <span className="ai-chat-fab-glow"></span>
         <span className="ai-chat-fab-pulse"></span>
       </button>
 
@@ -28,28 +43,42 @@ export default function AIChatButton({ isSubscribed = false }) {
         <div className="ai-chat-panel">
           <div className="ai-chat-header">
             <div className="ai-chat-title">
-              <div className="ai-chat-avatar-placeholder">AI</div>
-              <span>DarkWave AI</span>
+              {agent && (
+                <img 
+                  src={agent.image} 
+                  alt={agent.name}
+                  className="ai-chat-header-avatar"
+                />
+              )}
+              <span>{agent?.name || 'DarkWave AI'}</span>
             </div>
             <button className="ai-chat-close" onClick={() => setShowChat(false)}>×</button>
           </div>
           <div className="ai-chat-body">
             <div className="ai-chat-welcome">
-              <div className="ai-chat-icon-large">🤖</div>
-              <h3>DarkWave AI Agent</h3>
+              {agent && (
+                <div className="ai-chat-agent-preview">
+                  <div className="ai-chat-agent-glow"></div>
+                  <img 
+                    src={agent.image} 
+                    alt={agent.name}
+                    className="ai-chat-agent-image"
+                  />
+                </div>
+              )}
+              <h3>{agent?.name || 'DarkWave AI Agent'}</h3>
               <p>Your personal trading assistant powered by advanced AI</p>
               <div className="ai-chat-features">
                 <div className="ai-feature-item">📊 Market Analysis</div>
                 <div className="ai-feature-item">🎯 Trade Signals</div>
-                <div className="ai-feature-item">💡 Strategy Tips</div>
+                <div className="ai-feature-item">🎤 Voice Control (Coming Soon)</div>
               </div>
               <button 
                 className="ai-chat-select-agent"
                 onClick={() => setShowAgentSelector(true)}
               >
-                Select Your Agent
+                Choose Different Agent
               </button>
-              <p className="ai-chat-coming-soon">Voice Control Coming Soon</p>
             </div>
           </div>
           <div className="ai-chat-input-area">
@@ -78,24 +107,60 @@ export default function AIChatButton({ isSubscribed = false }) {
           position: fixed;
           bottom: 80px;
           right: 20px;
-          width: 56px;
-          height: 56px;
+          width: 70px;
+          height: 70px;
           border-radius: 50%;
-          background: linear-gradient(135deg, #00d4ff, #0099ff);
-          border: none;
+          background: #1a1a1a;
+          border: 2px solid #00d4ff;
           cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
-          color: white;
-          box-shadow: 0 4px 20px rgba(0, 212, 255, 0.4);
+          overflow: visible;
           z-index: 1000;
           transition: transform 0.2s, box-shadow 0.2s;
+          padding: 0;
         }
 
         .ai-chat-fab:hover {
           transform: scale(1.1);
-          box-shadow: 0 6px 30px rgba(0, 212, 255, 0.6);
+        }
+
+        .ai-fab-agent-image {
+          width: 90px;
+          height: 110px;
+          object-fit: contain;
+          object-position: center bottom;
+          margin-bottom: -20px;
+          filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+          position: relative;
+          z-index: 2;
+        }
+
+        .ai-fab-fallback {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: linear-gradient(135deg, #00d4ff, #0099ff);
+          border-radius: 50%;
+          color: white;
+          font-weight: bold;
+          font-size: 16px;
+        }
+
+        .ai-chat-fab-glow {
+          position: absolute;
+          bottom: -5px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 60px;
+          height: 30px;
+          background: radial-gradient(ellipse, rgba(0, 212, 255, 0.6) 0%, transparent 70%);
+          filter: blur(8px);
+          pointer-events: none;
+          z-index: 1;
         }
 
         .ai-chat-fab-pulse {
@@ -103,28 +168,28 @@ export default function AIChatButton({ isSubscribed = false }) {
           width: 100%;
           height: 100%;
           border-radius: 50%;
-          background: rgba(0, 212, 255, 0.4);
-          animation: pulse 2s infinite;
+          border: 2px solid rgba(0, 212, 255, 0.4);
+          animation: fabPulse 2s infinite;
           pointer-events: none;
         }
 
-        @keyframes pulse {
+        @keyframes fabPulse {
           0% { transform: scale(1); opacity: 1; }
           100% { transform: scale(1.5); opacity: 0; }
         }
 
         .ai-chat-panel {
           position: fixed;
-          bottom: 150px;
+          bottom: 160px;
           right: 20px;
           width: 360px;
           max-width: calc(100vw - 40px);
-          height: 500px;
+          height: 520px;
           max-height: calc(100vh - 200px);
           background: #1a1a1a;
           border-radius: 16px;
           border: 1px solid #333;
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 212, 255, 0.1);
           display: flex;
           flex-direction: column;
           z-index: 1001;
@@ -152,16 +217,11 @@ export default function AIChatButton({ isSubscribed = false }) {
           color: #fff;
         }
 
-        .ai-chat-avatar-placeholder {
-          width: 36px;
-          height: 36px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #00d4ff, #0099ff);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 14px;
-          font-weight: bold;
+        .ai-chat-header-avatar {
+          width: 40px;
+          height: 50px;
+          object-fit: contain;
+          object-position: bottom;
         }
 
         .ai-chat-close {
@@ -188,9 +248,31 @@ export default function AIChatButton({ isSubscribed = false }) {
           color: #888;
         }
 
-        .ai-chat-icon-large {
-          font-size: 48px;
-          margin-bottom: 16px;
+        .ai-chat-agent-preview {
+          position: relative;
+          width: 150px;
+          height: 180px;
+          margin: 0 auto 16px;
+        }
+
+        .ai-chat-agent-glow {
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 100px;
+          height: 50px;
+          background: radial-gradient(ellipse, rgba(0, 212, 255, 0.5) 0%, transparent 70%);
+          filter: blur(15px);
+        }
+
+        .ai-chat-agent-image {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          object-position: bottom;
+          position: relative;
+          z-index: 2;
         }
 
         .ai-chat-welcome h3 {
@@ -226,17 +308,10 @@ export default function AIChatButton({ isSubscribed = false }) {
           border-radius: 8px;
           font-weight: 600;
           cursor: pointer;
-          margin-bottom: 12px;
         }
 
         .ai-chat-select-agent:hover {
           opacity: 0.9;
-        }
-
-        .ai-chat-coming-soon {
-          font-size: 12px;
-          color: #666;
-          font-style: italic;
         }
 
         .ai-chat-input-area {
@@ -283,7 +358,7 @@ export default function AIChatButton({ isSubscribed = false }) {
 
         @media (max-width: 480px) {
           .ai-chat-panel {
-            bottom: 80px;
+            bottom: 90px;
             right: 10px;
             left: 10px;
             width: auto;
@@ -293,6 +368,13 @@ export default function AIChatButton({ isSubscribed = false }) {
           .ai-chat-fab {
             bottom: 20px;
             right: 16px;
+            width: 60px;
+            height: 60px;
+          }
+
+          .ai-fab-agent-image {
+            width: 75px;
+            height: 95px;
           }
         }
       `}</style>

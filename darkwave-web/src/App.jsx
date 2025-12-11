@@ -22,6 +22,7 @@ import { BuiltInWalletProvider } from './context/BuiltInWalletContext'
 import { ThemeProvider } from './context/ThemeContext'
 import { SkinsProvider } from './context/SkinsContext'
 import CryptoCatPopup from './components/engagement/CryptoCatPopup'
+import AgentPopup from './components/engagement/AgentPopup'
 import './styles/components.css'
 
 function App() {
@@ -105,8 +106,11 @@ function App() {
                   </div>
                 </Layout>
                 <GlossaryPopup />
-                <CryptoCatPopup enabled={true} interval={90000} />
-                <AIChatButton isSubscribed={userConfig?.subscriptionTier && userConfig.subscriptionTier !== 'free'} />
+                <AgentPopup enabled={true} interval={90000} selectedAgentId={userConfig?.selectedAgentId || 1} />
+                <AIChatButton 
+                  isSubscribed={userConfig?.subscriptionTier && userConfig.subscriptionTier !== 'free'} 
+                  selectedAgentId={userConfig?.selectedAgentId || 1}
+                />
               </GlossaryProvider>
             </FavoritesProvider>
           </BuiltInWalletProvider>
