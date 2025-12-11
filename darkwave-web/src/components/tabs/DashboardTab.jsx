@@ -630,11 +630,24 @@ function ChartMetricsPanel({ coin }) {
           </div>
           <div>
             <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>StrikeAgent</div>
-            <div style={{ fontSize: 11, color: '#00D4FF' }}>AI Predictive Trading</div>
+            <div style={{ fontSize: 11, color: '#00D4FF' }}>AI-Powered Trading Automation</div>
           </div>
         </div>
-        <div style={{ fontSize: 11, color: '#aaa', lineHeight: 1.5, marginBottom: 12 }}>
-          Anti-MEV protection, real-time safety checks, and AI-powered entry signals for new token launches.
+        <div style={{ fontSize: 11, color: '#ccc', lineHeight: 1.6, marginBottom: 10 }}>
+          Automate your trades on any token with AI-driven entry/exit signals, real-time safety checks, and anti-MEV protection. Set limit orders, stop-losses, and let AI monitor markets 24/7.
+        </div>
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: 8, 
+          marginBottom: 12,
+          padding: '8px 10px',
+          background: 'rgba(57, 255, 20, 0.1)',
+          borderRadius: 6,
+          border: '1px solid rgba(57, 255, 20, 0.2)',
+        }}>
+          <span style={{ fontSize: 10, color: '#39FF14', fontWeight: 600 }}>SAVE 60%+</span>
+          <span style={{ fontSize: 10, color: '#888' }}>vs SolSniper ($75/mo)</span>
         </div>
         <button style={{
           width: '100%',
@@ -652,7 +665,7 @@ function ChartMetricsPanel({ coin }) {
         onMouseEnter={(e) => { e.target.style.transform = 'scale(1.02)'; e.target.style.boxShadow = '0 0 25px rgba(0, 212, 255, 0.5)' }}
         onMouseLeave={(e) => { e.target.style.transform = 'scale(1)'; e.target.style.boxShadow = '0 0 15px rgba(0, 212, 255, 0.3)' }}
         >
-          Learn More
+          Start Trading Smarter
         </button>
       </div>
     </div>
