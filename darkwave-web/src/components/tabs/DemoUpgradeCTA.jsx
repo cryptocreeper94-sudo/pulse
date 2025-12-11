@@ -1,10 +1,6 @@
 import './SniperBotTab.css'
 
 export default function DemoUpgradeCTA({ onUpgrade }) {
-  const handleUpgrade = () => {
-    window.location.href = '/pricing'
-  }
-
   return (
     <div className="demo-upgrade-cta">
       <div className="upgrade-icon">⚡</div>
@@ -20,26 +16,26 @@ export default function DemoUpgradeCTA({ onUpgrade }) {
         </div>
         <div className="upgrade-feature">
           <span className="upgrade-feature-icon">✓</span>
-          <span>AI-powered token discovery</span>
+          <span>Unlimited AI-powered token discovery</span>
         </div>
         <div className="upgrade-feature">
           <span className="upgrade-feature-icon">✓</span>
-          <span>Institutional-grade safety checks</span>
+          <span>Advanced safety (anti-MEV, honeypot)</span>
         </div>
         <div className="upgrade-feature">
           <span className="upgrade-feature-icon">✓</span>
-          <span>Smart Auto Mode</span>
+          <span>Built-in multi-chain wallet</span>
         </div>
         <div className="upgrade-feature">
           <span className="upgrade-feature-icon">✓</span>
-          <span>Multi-wallet support</span>
+          <span>3-day free trial included</span>
         </div>
       </div>
 
-      <button className="upgrade-btn" onClick={onUpgrade || handleUpgrade}>
-        Upgrade to RM+
+      <button className="upgrade-btn" onClick={onUpgrade}>
+        View Pricing Plans
       </button>
-      <p className="upgrade-price">Starting at $29/month</p>
+      <p className="upgrade-price">Starting at $8/month - Try free for 3 days</p>
     </div>
   )
 }

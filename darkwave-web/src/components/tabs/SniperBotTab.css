@@ -2188,3 +2188,78 @@
   color: #555;
   margin-top: 8px;
 }
+
+/* ============================================ */
+/* PRICING MODAL                                */
+/* ============================================ */
+
+.sniper-pricing-section {
+  grid-column: span 2;
+}
+
+.pricing-modal {
+  position: relative;
+  padding: 0;
+  background: #0f0f0f;
+  border: 1px solid rgba(0, 212, 170, 0.3);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.pricing-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pricing-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.checkout-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 15, 15, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  gap: 16px;
+}
+
+.checkout-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(0, 212, 170, 0.2);
+  border-top-color: #00d4aa;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.checkout-loading p {
+  color: #aaa;
+  font-size: 14px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

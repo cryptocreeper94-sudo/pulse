@@ -1,5 +1,15 @@
 import { demoTradeService, DemoPortfolio } from '../../services/demoTradeService';
 import axios from 'axios';
+import Stripe from 'stripe';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || process.env.STRIPE_LIVE_SECRET_KEY || '', {
+  apiVersion: '2025-10-29.clover'
+});
+
+const PRICE_IDS = {
+  base: process.env.BASE_PRICE_ID || process.env.STRIPE_BASE_MONTHLY_PRICE,
+  annual: process.env.ANNUAL_SUBSCRIPTION_PRICE_ID || process.env.STRIPE_ANNUAL_PRICE,
+};
 
 const demoSessions = new Map<string, DemoPortfolio>();
 
@@ -351,6 +361,87 @@ export const demoRoutes = [
       } catch (error: any) {
         logger?.error('❌ [Demo] Lead capture error', { error: error.message });
         return c.json({ success: false, error: 'Failed to register' }, 500);
+      }
+    }
+  },
+  {
+    path: "/api/demo/checkout",
+    method: "POST",
+    createHandler: async ({ mastra }: any) => async (c: any) => {
+      const logger = mastra.getLogger();
+      try {
+        const body = await c.req.json();
+        const { planId, email, sessionId } = body;
+        
+        if (!planId) {
+          return c.json({ success: false, error: 'Plan ID required' }, 400);
+        }
+        
+        let priceId: string | undefined;
+        let planType: string;
+        
+        if (planId === 'rm_monthly') {
+          priceId = PRICE_IDS.base;
+          planType = 'base';
+        } else if (planId === 'rm_annual') {
+          priceId = PRICE_IDS.annual;
+          planType = 'annual';
+        } else {
+          return c.json({ success: false, error: 'Invalid plan' }, 400);
+        }
+        
+        if (!priceId) {
+          logger?.error('❌ [Demo Checkout] Price ID not configured', { planId });
+          return c.json({ success: false, error: 'Payment configuration missing' }, 500);
+        }
+        
+        const baseUrl = process.env.REPLIT_DEV_DOMAIN 
+          ? 'https://' + process.env.REPLIT_DEV_DOMAIN 
+          : 'http://localhost:5000';
+        
+        const sessionConfig: Stripe.Checkout.SessionCreateParams = {
+          payment_method_types: ['card'],
+          mode: 'subscription',
+          line_items: [{
+            price: priceId,
+            quantity: 1
+          }],
+          subscription_data: {
+            trial_period_days: 3
+          },
+          success_url: `${baseUrl}/app?tab=settings&payment=success&plan=${planType}&source=demo`,
+          cancel_url: `${baseUrl}/demo?payment=cancelled`,
+          metadata: {
+            planType,
+            demoSessionId: sessionId || 'unknown',
+            source: 'strikeagent_demo'
+          }
+        };
+        
+        if (email) {
+          sessionConfig.customer_email = email;
+        }
+        
+        const session = await stripe.checkout.sessions.create(sessionConfig);
+        
+        logger?.info('✅ [Demo Checkout] Session created', { 
+          sessionId: session.id, 
+          planType,
+          hasEmail: !!email
+        });
+        
+        return c.json({ success: true, url: session.url });
+      } catch (error: any) {
+        logger?.error('❌ [Demo Checkout] Error', { error: error.message });
+        
+        if (error.message?.includes('No such price')) {
+          return c.json({ 
+            success: false, 
+            error: 'Payment configuration incomplete. Please contact support.' 
+          }, 500);
+        }
+        
+        return c.json({ success: false, error: 'Checkout failed. Please try again.' }, 500);
       }
     }
   },

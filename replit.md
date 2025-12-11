@@ -1,7 +1,7 @@
 # Pulse - AI Trading Analysis Platform
 
 ## Overview
-Pulse, powered by DarkWave Studios, LLC, is an AI-driven trading platform utilizing the Mastra AI framework to deliver predictive signals and institutional-grade technical analysis for cryptocurrency and stocks. Its primary goal is to provide users with a significant trading advantage by identifying market trends early and offering sophisticated, risk-adjusted analytics. The platform is designed to integrate with the broader DarkWave Studios ecosystem, powered by the upcoming DWAV token, and aims to empower traders with advanced AI capabilities.
+Pulse, by DarkWave Studios, LLC, is an AI-driven trading platform that leverages the Mastra AI framework to deliver predictive signals and institutional-grade technical analysis for cryptocurrency and stocks. Its core purpose is to provide users with a competitive edge by identifying market trends early and offering sophisticated, risk-adjusted analytics. The platform integrates with the broader DarkWave Studios ecosystem, powered by the DWAV token, aiming to empower traders with advanced AI capabilities and significant market potential.
 
 ## User Preferences
 - User name: Jason (Owner/Admin)
@@ -14,34 +14,23 @@ Pulse, powered by DarkWave Studios, LLC, is an AI-driven trading platform utiliz
 ## System Architecture
 
 ### UI/UX Decisions
-The platform features a solid dark theme (`#0f0f0f`, `#1a1a1a`, `#141414`) with free-floating elements and glow effects, explicitly avoiding glassmorphism, transparency, and backdrop-filters. The design includes a slim 50px header with a hamburger menu and a slim, dynamic footer. Key UI components include SVG gauge components for market sentiment (Fear & Greed, Altcoin Season), metric cards for market cap and volume, and a customizable Bitcoin chart using `lightweight-charts` with various display options.
+The platform features a solid dark theme (`#0f0f0f`, `#1a1a1a`, `#141414`) with free-floating elements and glow effects, explicitly avoiding glassmorphism, transparency, and backdrop-filters. The design includes a slim 50px header with a hamburger menu, a dynamic footer, SVG gauge components for market sentiment, metric cards for market cap and volume, and a customizable Bitcoin chart using `lightweight-charts`. UI elements should avoid frames or boxes, with agents appearing as if walking in front of a screen, using full-body, rembg-treated, Pixar/MIB style with sweep-in animations. The color palette strictly avoids orange, yellow, and brown. A light mode theme with softer blue-tinted grays and enhanced contrast is also implemented.
 
 ### Technical Implementations
-- **Frontend**: Built with React 19 and Vite 7, located in `public/` and `darkwave-web/public/`. A mobile app is in development using React Native + Expo.
-- **Backend**: Utilizes the Mastra AI framework with an Express server. The AI agent, DarkWave-V2, supports tool calling and memory.
-- **Database**: PostgreSQL, specifically Neon-backed via Replit.
-- **Authentication**: Session-based, employing an email whitelist and access codes.
-- **Workflow Management**: Inngest is used for event-driven processing and cron jobs.
-- **Prediction Tracking**: A robust system logs every AI signal, tracks outcomes at 1hr, 4hr, 24hr, and 7d intervals, and calculates accuracy statistics. Each prediction is hashed and stamped on the Solana blockchain.
-- **ML Learning System**: Incorporates feature extraction, training, and inference services (`predictionLearningService.ts`). It uses logistic regression across different time horizons, with automated weekly training via Inngest. Features include RSI, MACD, EMA spreads, Bollinger position, volume delta, spike score, and volatility.
-- **Personal Dashboard System**: Each user receives a unique Hallmark ID and a customizable landing page featuring favorite coins, market gauges, and a main chart widget.
-- **Favorites System**: Users can save favorite coins with quick analysis access, persisting data to the database.
-- **StrikeAgent (formerly Sniper Bot)**: An AI-powered predictive trading tool for real-time token discovery, featuring safety filters (anti-MEV, mint/freeze authority checks, honeypot simulation), smart auto mode, and multi-chain support (Solana, Ethereum, Base, Polygon, Arbitrum, BSC).
-- **Manual Token Watchlist/Limit Orders**: A system for setting entry, exit, and stop-loss orders across four token slots, monitored by Inngest cron jobs.
-- **Multi-Chain Built-in Wallet**: A custom HD wallet with Trust Wallet-style UX, supporting Solana and 22 EVM chains (Ethereum, Base, Polygon, Arbitrum, BSC, Avalanche, Fantom, Optimism, Cronos, Gnosis, Celo, Moonbeam, Moonriver, Harmony, Metis, Aurora, zkSync, Linea, Scroll, Mantle, Kava, Evmos). It features BIP39 mnemonic generation, AES-256-GCM encrypted storage, client-side crypto operations, and multi-wallet support (users can create/import multiple wallets with unique seed phrases).
-- **Automatic Versioning System**: Manages `version.json` files for both frontend and backend, with scripts for auto-incrementing patch versions and promoting to v2.0.0 for token launch.
-- **ORBIT Ecosystem Integration**: Facilitates cross-app communication with the ORBIT Developer Hub for activity logging, code snippet sharing, metrics reporting, and alerts.
-
-### Feature Specifications
-- User authentication and management.
-- Real-time crypto price tracking.
-- AI prediction and analysis modals for coins.
-- Admin dashboard for user management.
-- Telegram bot integration.
-- 18 AI Agent personas with NFT Trading Cards.
-- Comprehensive Knowledge Base.
-- Custom Avatar Creator with DiceBear integration, bento grid layout, and accordion-based customization. Supports 5 professional avatar styles (personas, notionists, avataaars, lorelei, micah).
-- **Skins System**: 304 customizable themes across 14 categories (subscriber-exclusive feature). Categories include Classic (3), NFL (32), MLB (30), NBA (30), NHL (32), College Football (40), EPL (20), La Liga (20), Bundesliga (18), Serie A (20), Ligue 1 (18), MLS (29), Golf (2), Nature (9). Free users get 2 demo themes (classic-dark, light). RM+ subscribers unlock all 304 themes. Each team theme includes official logo watermarks.
+- **Frontend**: React 19 and Vite 7, with a React Native + Expo mobile app in development.
+- **Backend**: Mastra AI framework with an Express server, powered by the DarkWave-V2 AI agent supporting tool calling and memory.
+- **Database**: PostgreSQL, specifically Neon-backed.
+- **Authentication**: Session-based, using an email whitelist and access codes.
+- **Workflow Management**: Inngest for event-driven processing and cron jobs.
+- **Prediction Tracking**: Logs AI signals, tracks outcomes at various intervals, calculates accuracy, and hashes predictions on the Solana blockchain.
+- **ML Learning System**: Features include logistic regression for predictions, automated weekly training via Inngest, and feature extraction from indicators like RSI, MACD, EMA spreads, Bollinger position, volume delta, spike score, and volatility.
+- **Personal Dashboard System**: Unique Hallmark ID per user, customizable landing page, favorite coins, market gauges, and main chart widget.
+- **StrikeAgent**: An AI-powered tool for real-time token discovery, incorporating safety filters (anti-MEV, mint/freeze authority, honeypot simulation), smart auto mode, and multi-chain support (Solana, Ethereum, Base, Polygon, Arbitrum, BSC, and 17 other EVM chains).
+- **Manual Token Watchlist/Limit Orders**: System for setting entry, exit, and stop-loss orders across four token slots, monitored by Inngest.
+- **Multi-Chain Built-in Wallet**: Custom HD wallet with Trust Wallet-style UX, supporting Solana and 22 EVM chains. Features BIP39 mnemonic generation, AES-256-GCM encrypted storage, client-side crypto operations, and multi-wallet support.
+- **Automatic Versioning System**: Manages `version.json` for frontend and backend, with scripts for auto-incrementing patch versions.
+- **ORBIT Ecosystem Integration**: Cross-app communication for activity logging, code snippet sharing, metrics reporting, and alerts.
+- **Feature Specifications**: Includes user authentication, real-time crypto price tracking, AI prediction/analysis modals, admin dashboard, Telegram bot integration, 18 AI Agent personas with NFT Trading Cards, a comprehensive Knowledge Base, and a custom Avatar Creator with DiceBear integration supporting 5 professional avatar styles. A Skins System offers 304 customizable themes across 14 categories, with free and subscriber-exclusive options.
 
 ## External Dependencies
 
@@ -70,225 +59,3 @@ The platform features a solid dark theme (`#0f0f0f`, `#1a1a1a`, `#141414`) with 
 
 ### Supporting Libraries
 - `axios`, `zod`, React 19, Vite 7
-
----
-
-## 🚀 MASTER ROADMAP (Dec 2024 → Feb 2026)
-**Target: DWAV Token Launch - February 14, 2026**
-
----
-
-## TRACK A: STRIKEAGENT CORE
-
-### PHASE 1: SAFETY ENGINE MVP ✅ COMPLETE (Dec 10-20)
-| Feature | Status |
-|---------|--------|
-| Anti-MEV (Jito Bundles) | DONE ✅ |
-| Mint Authority Check | DONE ✅ |
-| Freeze Authority Check | DONE ✅ |
-| Liquidity Lock/Burn Verify | DONE ✅ |
-| Honeypot Simulation | DONE ✅ |
-| Creator Wallet Scoring | DONE ✅ |
-| Token Age Filter | DONE ✅ |
-| Safety Report UI | DONE ✅ |
-| Safety Engine API Routes | DONE ✅ |
-
-**Key Files:**
-- `src/services/safetyEngineService.ts` - Full safety check engine
-- `src/services/jitoBundleService.ts` - Jito anti-MEV integration
-- `darkwave-web/src/components/trading/SafetyReport.jsx` - Safety report UI
-- `src/mastra/routes/sniperBotRoutes.ts` - API endpoints
-
-### PHASE 2: MULTI-CHAIN ARCHITECTURE ✅ COMPLETE (Jan-March)
-| Chain Category | Chains |
-|----------------|--------|
-| Solana | DONE ✅ |
-| EVM L1s | Ethereum, BSC, Avalanche, Fantom, Cronos, Gnosis, Celo, Moonbeam, Moonriver, Harmony, Kava, Evmos ✅ |
-| EVM L2s | Base, Polygon, Arbitrum, Optimism, zkSync, Linea, Scroll, Mantle, Metis, Aurora ✅ |
-
-**Total: 23 chains (1 Solana + 22 EVM)**
-
-**Key Files:**
-- `src/services/multiChainProvider.ts` - Multi-chain provider abstraction
-- `src/services/evmSafetyEngine.ts` - EVM safety checks
-- `darkwave-web/src/components/tabs/SniperBotTab.jsx` - Chain selector UI (scrollable grid)
-
-### PHASE 3: MULTI-WALLET SYSTEM ✅ COMPLETE (Dec 2024)
-| Feature | Status |
-|---------|--------|
-| Multiple wallets per account | DONE ✅ |
-| Unique seed phrase per wallet | DONE ✅ |
-| Wallet switching with password | DONE ✅ |
-| Wallet naming and renaming | DONE ✅ |
-| Wallet deletion | DONE ✅ |
-| One seed phrase for all chains | DONE ✅ |
-| In-app signing | DONE ✅ |
-| Portfolio dashboard | PENDING |
-
-**Key Files:**
-- `darkwave-web/src/services/clientWalletService.js` - Multi-wallet storage and encryption
-- `darkwave-web/src/context/BuiltInWalletContext.jsx` - React context for wallet management
-- `darkwave-web/src/components/wallet/WalletManager.jsx` - Wallet UI with selector dropdown
-
-### PHASE 4: ADAPTIVE AI ✅ COMPLETE
-| Feature | Status |
-|---------|--------|
-| Trade Ledger | DONE ✅ |
-| StrikeAgent Trade Connection | DONE ✅ |
-| Feature Extraction | DONE ✅ |
-| Supervised Learning | DONE ✅ |
-| Drift Detection | DONE ✅ |
-| Auto-Retraining | DONE ✅ |
-
-**Key Files:**
-- `src/services/tradeLedgerService.ts` - Trade tracking and AI integration
-- `src/services/predictionLearningService.ts` - ML learning with drift detection
-
-### PHASE 5: STRIKEAGENT.IO DEMO EXPERIENCE ✅ COMPLETE (Dec 11, 2024)
-**"Try before you buy - the conversion engine"**
-
-| Wave | Feature | Status |
-|------|---------|--------|
-| 5.1 | Standalone landing page (bypass Pulse login) | DONE ✅ |
-| 5.2 | Live market data feed with real prices | DONE ✅ |
-| 5.3 | AI coin discovery using safety engine | DONE ✅ |
-| 5.4 | Paper trading with $10K demo balance | DONE ✅ |
-| 5.5 | Simulated buy/sell with live price tracking | DONE ✅ |
-| 5.6 | Demo trade history + P&L dashboard | DONE ✅ |
-| 5.7 | Email/Telegram capture for leads | DONE ✅ |
-| 5.8 | Conversion CTA → Pulse subscription | DONE ✅ |
-
-**Demo Mode Implementation (Dec 11, 2024):**
-- Demo accessed via `/demo` path or `strikeagent.io` domain
-- Uses sessionStorage (not localStorage) for security - clears when leaving demo
-- Auto-navigates to StrikeAgent tab after 500ms initialization
-- Shows $10,000 virtual balance with Demo Mode Active banner
-- Includes error boundary for graceful error handling
-- Multi-chain selector available (Solana, Ethereum, Base, Polygon, Arbitrum, BSC)
-- AI Token Discovery with safety scoring (A/B/C grades)
-- Live price polling every 10 seconds for open positions
-- Trade history with win rate, total P&L, best/worst trades
-- Lead capture form (email/Telegram) for early access signups
-- Upgrade CTA component for RM+ conversion
-
-**Key Files:**
-- `public/app.js` - Demo mode bypass logic (vanilla JS)
-- `darkwave-web/src/App.jsx` - Demo mode bypass logic (React) + SniperBotErrorBoundary
-- `src/services/demoTradeService.ts` - Paper trading logic
-- `src/mastra/routes/demoRoutes.ts` - Demo API endpoints (discover, buy, sell, portfolio, trades, capture-lead)
-- `darkwave-web/src/components/tabs/DemoTradeHistory.jsx` - Trade history UI
-- `darkwave-web/src/components/tabs/DemoLeadCapture.jsx` - Lead capture form
-- `darkwave-web/src/components/tabs/DemoUpgradeCTA.jsx` - Upgrade CTA component
-
----
-
-## TRACK B: AI AGENT SYSTEM
-
-### WAVE 1: AGENT FOUNDATION ✅ COMPLETE
-| Feature | Status |
-|---------|--------|
-| Frameless 3D floating agent button | DONE ✅ |
-| Cyan glow effect at feet | DONE ✅ |
-| Gentle floating animation | DONE ✅ |
-| Agent appears on all pages | DONE ✅ |
-
-### WAVE 2: AGENT DIVERSITY SYSTEM (Pending)
-**"50+ diverse Pixar-style agents"**
-
-| Category | Options |
-|----------|---------|
-| Gender | Male, Female, Non-binary |
-| Race | Caucasian, Black, Asian, Hispanic, Middle Eastern, Indian, Mixed |
-| Age | Young (20s), Middle (30-40s), Senior (50+) |
-| Hair | Black, Brown, Blonde, Red, Gray, White, Bald |
-| Facial Hair | Clean-shaven, Beard, Mustache, Goatee |
-| Style | All in sharp "Men in Black" suits |
-
-| Feature | Status |
-|---------|--------|
-| Full-body MIB suit poses | PENDING |
-| Filter/search by category | PENDING |
-| Custom avatar upload (rembg treated) | PENDING |
-
-### WAVE 3: VOICE AI CONTROL (Pending)
-**"Talk to your StrikeAgent"**
-
-| Feature | Status |
-|---------|--------|
-| Speech-to-text command input | PENDING |
-| AI validates command + checks market | PENDING |
-| Voice response (gender-matched) | PENDING |
-| Double confirmation before execution | PENDING |
-| Audit logging for voice commands | PENDING |
-
----
-
-## TRACK C: MOBILE & UI
-
-### WAVE M1: MOBILE DASHBOARD REDESIGN ✅ COMPLETE
-| Feature | Status |
-|---------|--------|
-| 2x3 filter button grid with blue gradient | DONE ✅ |
-| 3-card carousel (StrikeAgent, Market, Trending) | DONE ✅ |
-| News section at bottom with flashy gradient | DONE ✅ |
-| Proper CSS scoping for mobile-only styles | DONE ✅ |
-
-### WAVE M2: LIGHT MODE THEME ✅ COMPLETE
-| Feature | Status |
-|---------|--------|
-| Softer blue-tinted grays | DONE ✅ |
-| Enhanced contrast for readability | DONE ✅ |
-
----
-
-## TRACK D: MONETIZATION & LAUNCH
-
-### PHASE M1: STRIPE INTEGRATION (Dec 20 - Jan 10)
-| Feature | Status |
-|---------|--------|
-| StrikeAgent pricing page | PENDING |
-| Stripe checkout integration | PENDING |
-| Subscription tiers setup | PENDING |
-| Trial system (3-day) | PENDING |
-
-### PHASE M2: MARKETING PREP (Jan 25 - Feb 14)
-| Feature | Status |
-|---------|--------|
-| StrikeAgent.io live with demo | PENDING |
-| Email capture funnel | PENDING |
-| Telegram community integration | PENDING |
-
----
-
-## 📅 MASTER TIMELINE
-
-| Date Range | Focus |
-|------------|-------|
-| Dec 11-20 | StrikeAgent.io Demo MVP (Phase 5.1-5.5) |
-| Dec 20-Jan 10 | Stripe + Pricing + Landing Page |
-| Jan 10-25 | Agent Diversity (Wave 2) + Demo Polish |
-| Jan 25-Feb 1 | Testing + Whitelist Validation |
-| Feb 1-14 | MARKETING PUSH |
-| **Feb 14** | **🚀 DWAV LAUNCH + STRIKEAGENT LIVE** |
-
----
-
-## SUBSCRIPTION MODEL
-
-| Tier | Access | Price |
-|------|--------|-------|
-| Free | Dashboard, Markets, Basic Analysis | $0 |
-| Demo | StrikeAgent paper trading (strikeagent.io) | $0 |
-| RM+ Monthly | Full Pulse + StrikeAgent Live | TBD |
-| RM+ Annual | Full access + discount | TBD |
-| DWAV Holder | Staking features (post-launch) | Token-gated |
-
----
-
-## KEY DESIGN RULES
-- NO frames or boxes around agents
-- Agents appear like walking in front of a movie screen
-- Full-body, rembg-treated, Pixar/MIB style
-- Sweep-in animations from any angle/corner
-- NO orange, yellow, or brown colors anywhere
-- Solid black/dark gray backgrounds with glow effects

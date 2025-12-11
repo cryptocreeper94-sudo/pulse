@@ -8,6 +8,7 @@ import SafetyReport from '../trading/SafetyReport'
 import DemoTradeHistory from './DemoTradeHistory'
 import DemoLeadCapture from './DemoLeadCapture'
 import DemoUpgradeCTA from './DemoUpgradeCTA'
+import StrikeAgentPricing from './StrikeAgentPricing'
 import './SniperBotTab.css'
 
 const API_BASE = ''
@@ -749,6 +750,8 @@ export default function SniperBotTab() {
   const [leadCaptured, setLeadCaptured] = useState(() => {
     return sessionStorage.getItem('dwp_lead_captured') === 'true'
   })
+  const [showPricing, setShowPricing] = useState(false)
+  const [checkoutLoading, setCheckoutLoading] = useState(false)
   
   const wallet = isDemoMode
     ? {
@@ -885,6 +888,34 @@ export default function SniperBotTab() {
       console.error('AI Discovery error:', err)
     }
     setIsDiscovering(false)
+  }
+
+  const handleSelectPlan = async (planId) => {
+    if (planId === 'free_demo') return
+    
+    setCheckoutLoading(true)
+    try {
+      const capturedEmail = sessionStorage.getItem('dwp_lead_email')
+      const res = await fetch(`${API_BASE}/api/demo/checkout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          planId,
+          email: capturedEmail || undefined,
+          sessionId: demoSessionId
+        })
+      })
+      const data = await res.json()
+      if (data.success && data.url) {
+        window.location.href = data.url
+      } else {
+        alert(data.error || 'Failed to start checkout')
+      }
+    } catch (err) {
+      console.error('Checkout error:', err)
+      alert('Failed to start checkout. Please try again.')
+    }
+    setCheckoutLoading(false)
   }
 
   const fetchLivePrices = async () => {
@@ -1260,9 +1291,32 @@ export default function SniperBotTab() {
           </BentoItem>
         )}
 
-        {isDemoMode && (
+        {isDemoMode && !showPricing && (
           <BentoItem span={leadCaptured ? 2 : 1} className="sniper-upgrade-section">
-            <DemoUpgradeCTA />
+            <DemoUpgradeCTA onUpgrade={() => setShowPricing(true)} />
+          </BentoItem>
+        )}
+
+        {isDemoMode && showPricing && (
+          <BentoItem span={2} className="sniper-pricing-section">
+            <div className="section-box pricing-modal">
+              <button 
+                className="pricing-close-btn" 
+                onClick={() => setShowPricing(false)}
+              >
+                &times;
+              </button>
+              <StrikeAgentPricing 
+                onSelectPlan={handleSelectPlan} 
+                isDemo={true}
+              />
+              {checkoutLoading && (
+                <div className="checkout-loading">
+                  <div className="checkout-spinner"></div>
+                  <p>Preparing secure checkout...</p>
+                </div>
+              )}
+            </div>
           </BentoItem>
         )}
 

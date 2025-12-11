@@ -37,6 +37,9 @@ export const paymentRoutes = [
             price: priceId,
             quantity: 1
           }],
+          subscription_data: {
+            trial_period_days: 3
+          },
           success_url: `${process.env.REPLIT_DEV_DOMAIN ? 'https://' + process.env.REPLIT_DEV_DOMAIN : 'http://localhost:5000'}/app?tab=settings&payment=success`,
           cancel_url: `${process.env.REPLIT_DEV_DOMAIN ? 'https://' + process.env.REPLIT_DEV_DOMAIN : 'http://localhost:5000'}/app?tab=pricing&payment=cancelled`,
           client_reference_id: userId,
@@ -124,6 +127,9 @@ export const paymentRoutes = [
             price: priceId,
             quantity: 1
           }],
+          subscription_data: {
+            trial_period_days: 3
+          },
           success_url: `${process.env.REPLIT_DEV_DOMAIN ? 'https://' + process.env.REPLIT_DEV_DOMAIN : 'http://localhost:5000'}/app?tab=settings&payment=success&plan=annual`,
           cancel_url: `${process.env.REPLIT_DEV_DOMAIN ? 'https://' + process.env.REPLIT_DEV_DOMAIN : 'http://localhost:5000'}/app?tab=pricing&payment=cancelled`,
           client_reference_id: userId,
