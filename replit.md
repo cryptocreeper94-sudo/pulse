@@ -40,7 +40,7 @@ The platform features a solid dark theme (`#0f0f0f`, `#1a1a1a`, `#141414`) with 
 - Telegram bot integration.
 - 18 AI Agent personas with NFT Trading Cards.
 - Comprehensive Knowledge Base.
-- Custom Avatar Creator with extensive customization options.
+- Custom Avatar Creator with DiceBear integration, bento grid layout, and accordion-based customization. Supports 5 professional avatar styles (personas, notionists, avataaars, lorelei, micah).
 
 ## External Dependencies
 
