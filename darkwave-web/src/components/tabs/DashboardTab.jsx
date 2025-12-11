@@ -228,11 +228,12 @@ function NewsContent({ news }) {
     <div 
       style={{ 
         height: '100%',
-        padding: 8,
+        padding: '8px 44px',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         cursor: 'pointer',
+        textAlign: 'center',
       }}
       onClick={() => news.url && window.open(news.url, '_blank')}
     >
