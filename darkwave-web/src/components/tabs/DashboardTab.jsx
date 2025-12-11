@@ -258,54 +258,107 @@ function NewsContent({ news }) {
   )
 }
 
+const coinCategories = [
+  { id: 'top', label: 'Top' },
+  { id: 'gainers', label: 'Gainers' },
+  { id: 'losers', label: 'Losers' },
+  { id: 'meme', label: 'Meme' },
+  { id: 'defi', label: 'DeFi' },
+]
+
+const memeCoins = ['doge', 'shib', 'pepe', 'floki', 'bonk', 'wif', 'meme', 'turbo', 'brett', 'mog']
+const defiCoins = ['uni', 'aave', 'mkr', 'ldo', 'crv', 'snx', 'comp', 'sushi', 'yfi', '1inch']
+
 function MiniCoinTable({ coins, onCoinClick, favorites }) {
-  const displayCoins = coins.slice(0, 5)
+  const [category, setCategory] = useState('top')
   const isFavorite = (symbol) => favorites?.some(f => f.symbol?.toUpperCase() === symbol?.toUpperCase())
   
+  const getFilteredCoins = () => {
+    switch(category) {
+      case 'gainers':
+        return [...coins].sort((a, b) => (b.price_change_percentage_24h || 0) - (a.price_change_percentage_24h || 0)).slice(0, 10)
+      case 'losers':
+        return [...coins].sort((a, b) => (a.price_change_percentage_24h || 0) - (b.price_change_percentage_24h || 0)).slice(0, 10)
+      case 'meme':
+        return coins.filter(c => memeCoins.includes(c.symbol?.toLowerCase())).slice(0, 10)
+      case 'defi':
+        return coins.filter(c => defiCoins.includes(c.symbol?.toLowerCase())).slice(0, 10)
+      default:
+        return coins.slice(0, 10)
+    }
+  }
+  
+  const displayCoins = getFilteredCoins()
+  
   return (
-    <div style={{ height: '100%', overflow: 'hidden' }}>
-      <TileLabel>Top Coins</TileLabel>
+    <div style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+        <TileLabel>{category === 'top' ? 'Top Coins' : category === 'gainers' ? 'Top Gainers' : category === 'losers' ? 'Top Losers' : category === 'meme' ? 'Meme Coins' : 'DeFi'}</TileLabel>
+      </div>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
+        {coinCategories.map(cat => (
+          <button
+            key={cat.id}
+            onClick={() => setCategory(cat.id)}
+            style={{
+              padding: '4px 10px',
+              fontSize: 10,
+              fontWeight: 600,
+              border: 'none',
+              borderRadius: 12,
+              cursor: 'pointer',
+              background: category === cat.id ? '#00D4FF' : '#1a1a1a',
+              color: category === cat.id ? '#000' : '#888',
+              transition: 'all 0.2s',
+            }}
+          >
+            {cat.label}
+          </button>
+        ))}
+      </div>
       <div style={{ fontSize: 9, color: '#444', display: 'flex', padding: '4px 0', borderBottom: '1px solid #222' }}>
         <span style={{ flex: 2 }}>Coin</span>
         <span style={{ flex: 1, textAlign: 'right' }}>Price</span>
         <span style={{ flex: 1, textAlign: 'right' }}>24h</span>
       </div>
-      {displayCoins.map((coin, i) => {
-        const change = coin.price_change_percentage_24h || 0
-        const isPositive = change >= 0
-        return (
-          <div 
-            key={coin.id || i}
-            onClick={() => onCoinClick(coin)}
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              padding: '6px 0',
-              borderBottom: '1px solid #1a1a1a',
-              cursor: 'pointer',
-              transition: 'background 0.2s',
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.background = '#1a1a1a'}
-            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-          >
-            <div style={{ flex: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
-              {coin.image && (
-                <img src={coin.image} alt="" style={{ width: 18, height: 18, borderRadius: '50%' }} />
-              )}
-              <span style={{ fontSize: 11, fontWeight: 600, color: '#fff' }}>
-                {coin.symbol?.toUpperCase()}
-                {isFavorite(coin.symbol) && <span style={{ color: '#FFD700', marginLeft: 4 }}>★</span>}
-              </span>
+      <div style={{ flex: 1, overflowY: 'auto' }}>
+        {displayCoins.map((coin, i) => {
+          const change = coin.price_change_percentage_24h || 0
+          const isPositive = change >= 0
+          return (
+            <div 
+              key={coin.id || i}
+              onClick={() => onCoinClick(coin)}
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                padding: '6px 0',
+                borderBottom: '1px solid #1a1a1a',
+                cursor: 'pointer',
+                transition: 'background 0.2s',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = '#1a1a1a'}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+            >
+              <div style={{ flex: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+                {coin.image && (
+                  <img src={coin.image} alt="" style={{ width: 18, height: 18, borderRadius: '50%' }} />
+                )}
+                <span style={{ fontSize: 11, fontWeight: 600, color: '#fff' }}>
+                  {coin.symbol?.toUpperCase()}
+                  {isFavorite(coin.symbol) && <span style={{ color: '#FFD700', marginLeft: 4 }}>★</span>}
+                </span>
+              </div>
+              <div style={{ flex: 1, textAlign: 'right', fontSize: 11, color: '#fff' }}>
+                {formatPrice(coin.current_price)}
+              </div>
+              <div style={{ flex: 1, textAlign: 'right', fontSize: 11, fontWeight: 600, color: isPositive ? '#39FF14' : '#ff4444' }}>
+                {isPositive ? '+' : ''}{change.toFixed(1)}%
+              </div>
             </div>
-            <div style={{ flex: 1, textAlign: 'right', fontSize: 11, color: '#fff' }}>
-              {formatPrice(coin.current_price)}
-            </div>
-            <div style={{ flex: 1, textAlign: 'right', fontSize: 11, fontWeight: 600, color: isPositive ? '#39FF14' : '#ff4444' }}>
-              {isPositive ? '+' : ''}{change.toFixed(1)}%
-            </div>
-          </div>
-        )
-      })}
+          )
+        })}
+      </div>
     </div>
   )
 }
