@@ -14,8 +14,8 @@ packages = ["freetype", "imagemagick", "jq", "lcms2", "libimagequant", "libjpeg"
 MASTRA_HIDE_CLOUD_CTA = "true"
 
 [deployment]
-build = ["npm", "install"]
-run = ["npm", "run", "start"]
+build = ["npm", "--prefix", "darkwave-web", "run", "build"]
+run = ["bash", "-c", "npm run start & npm --prefix darkwave-web run preview"]
 deploymentTarget = "autoscale"
 publicDir = "darkwave-web/dist"
 
