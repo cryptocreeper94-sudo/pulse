@@ -143,3 +143,58 @@ The platform features a solid dark theme (`#0f0f0f`, `#1a1a1a`, `#141414`) with 
 - Jan 25-Feb 1: Testing, whitelist validation
 - Feb 1-14: MARKETING PUSH
 - FEB 14: DWAV LAUNCH + STRIKEAGENT LIVE
+
+---
+
+## AI AGENT SYSTEM ROADMAP (Dec 2024)
+
+### WAVE 1: AGENT FOUNDATION
+**"Make the floating button show YOUR agent"**
+- Floating AI Chat button displays user's selected agent (full-body Pixar-style)
+- rembg treatment for transparent backgrounds
+- Glow effect around the agent
+- Agent pop-up system with sweep-in animations from any direction
+- Comic-style speech bubbles for dialogue
+- 100+ random tips/quotes database
+- Appears ~2 times per page randomly
+
+### WAVE 2: AGENT DIVERSITY SYSTEM
+**"50+ diverse Pixar-style agents to choose from"**
+
+| Category | Options |
+|----------|---------|
+| Gender | Male, Female, Non-binary |
+| Race | Caucasian, Black, Asian, Hispanic, Middle Eastern, Indian, Mixed |
+| Age | Young (20s), Middle (30-40s), Senior (50+) |
+| Hair | Black, Brown, Blonde, Red, Gray, White, Bald |
+| Facial Hair | Clean-shaven, Beard, Mustache, Goatee |
+| Style | All in sharp "Men in Black" suits - professional but fun |
+
+- Full-body poses (standing, hands on hips, pointing, etc.)
+- Filter/search by category
+- Custom avatar upload option (uses rembg to remove background)
+
+### WAVE 3: VOICE AI CONTROL FOR STRIKEAGENT
+**"Talk to your StrikeAgent - the killer differentiator"**
+
+1. User speaks command: "Buy ETH at $3,050, sell at $3,150"
+2. AI processes: Speech-to-text → Validates command → Checks market
+3. AI responds (voice): Confirms order with market context
+4. DOUBLE CONFIRMATION required before execution
+5. Voice matches agent gender (male/female based on avatar)
+6. Audit logging for all voice commands
+7. Worth +$5/month subscription increase
+
+### SUBSCRIPTION MODEL
+| Tier | Access | Trial? |
+|------|--------|--------|
+| Free | Dashboard, Markets, Basic Analysis | - |
+| 3-Day Trial | All predictive analysis tools | Auto-expires |
+| RM+ | Everything + StrikeAgent + Voice AI | - |
+| DWAV Holder | Staking features (when live) | - |
+
+**Key Design Rules:**
+- NO frames or boxes around agents
+- Agents appear like walking in front of a movie screen
+- Full-body, rembg-treated, Pixar/MIB style
+- Sweep-in animations from any angle/corner
