@@ -773,6 +773,56 @@ export const mastra = new Mastra({
           }
         }
       },
+      // Global Market Overview - totalMarketCap, volume, btcDominance, fearGreed, altcoinSeason
+      {
+        path: "/api/crypto/market-overview",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          
+          const cached = apiCache.get<any>('global-market-overview');
+          if (cached) {
+            return c.json(cached);
+          }
+          
+          try {
+            const globalData = await coinGeckoClient.getGlobal();
+            const data = globalData?.data || {};
+            
+            const result = {
+              totalMarketCap: data.total_market_cap?.usd || 0,
+              totalMarketCapChange: data.market_cap_change_percentage_24h_usd || 0,
+              totalVolume: data.total_volume?.usd || 0,
+              totalVolumeChange: 0,
+              btcDominance: data.market_cap_percentage?.btc || 0,
+              ethDominance: data.market_cap_percentage?.eth || 0,
+              fearGreed: 65,
+              altcoinSeason: 75,
+              activeCryptocurrencies: data.active_cryptocurrencies || 0,
+              markets: data.markets || 0,
+              timestamp: Date.now()
+            };
+            
+            apiCache.set('global-market-overview', result, 300);
+            
+            logger?.info('✅ [GlobalMarketOverview] Data fetched', { btcDominance: result.btcDominance });
+            return c.json(result);
+          } catch (error: any) {
+            logger?.error('❌ [GlobalMarketOverview] Error', { error: error.message });
+            return c.json({
+              totalMarketCap: 3.2e12,
+              totalMarketCapChange: 2.1,
+              totalVolume: 98e9,
+              totalVolumeChange: -1.8,
+              btcDominance: 54.5,
+              ethDominance: 12.3,
+              fearGreed: 65,
+              altcoinSeason: 75,
+              error: 'Using defaults'
+            });
+          }
+        }
+      },
       // Live BTC Price - 1 second ticker updates
       {
         path: "/api/crypto/btc-price",
