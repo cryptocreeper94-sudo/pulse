@@ -8,6 +8,8 @@ export type TradeStatus = 'pending' | 'executed' | 'partial' | 'cancelled' | 'fa
 export type TradeType = 'buy' | 'sell';
 export type TradeSource = 'strikeagent_auto' | 'strikeagent_manual' | 'limit_order' | 'watchlist';
 
+export type TimeHorizon = '1h' | '4h' | '24h' | '7d';
+
 export interface Trade {
   id: string;
   userId: string;
@@ -36,6 +38,9 @@ export interface Trade {
   profitLoss?: number;
   profitLossPercent?: number;
   isWin?: boolean;
+  
+  predictionId?: string;
+  horizon?: TimeHorizon;
   
   aiPrediction?: {
     signal: string;
@@ -93,7 +98,8 @@ class TradeLedgerService {
           id, user_id, chain, token_address, token_symbol, token_name,
           trade_type, source, entry_price, amount, amount_usd,
           safety_score, safety_grade, status, tx_hash, gas_fee_usd,
-          entry_timestamp, ai_prediction, indicators, notes
+          entry_timestamp, ai_prediction, indicators, notes,
+          prediction_id, horizon
         ) VALUES (
           ${id}, ${trade.userId}, ${trade.chain}, ${trade.tokenAddress},
           ${trade.tokenSymbol}, ${trade.tokenName || null}, ${trade.tradeType},
@@ -101,7 +107,8 @@ class TradeLedgerService {
           ${trade.safetyScore || null}, ${trade.safetyGrade || null},
           ${trade.status}, ${trade.txHash || null}, ${trade.gasFeeUsd || null},
           ${trade.entryTimestamp}, ${JSON.stringify(trade.aiPrediction) || null},
-          ${JSON.stringify(trade.indicators) || null}, ${trade.notes || null}
+          ${JSON.stringify(trade.indicators) || null}, ${trade.notes || null},
+          ${trade.predictionId || null}, ${trade.horizon || null}
         )
       `);
     } catch (error) {
@@ -145,30 +152,92 @@ class TradeLedgerService {
   }
 
   private async feedToAdaptiveAI(tradeId: string): Promise<void> {
-    const trade = this.trades.get(tradeId);
-    if (!trade || !trade.indicators || trade.isWin === undefined) return;
+    let trade = this.trades.get(tradeId);
+    
+    if (!trade) {
+      try {
+        const result = await db.execute(sql`
+          SELECT * FROM strike_agent_trades WHERE id = ${tradeId}
+        `);
+        if (result.rows && result.rows.length > 0) {
+          const row: any = result.rows[0];
+          trade = {
+            id: row.id,
+            userId: row.user_id,
+            chain: row.chain,
+            tokenAddress: row.token_address,
+            tokenSymbol: row.token_symbol,
+            tokenName: row.token_name,
+            tradeType: row.trade_type,
+            source: row.source,
+            entryPrice: parseFloat(row.entry_price),
+            exitPrice: row.exit_price ? parseFloat(row.exit_price) : undefined,
+            amount: parseFloat(row.amount),
+            amountUsd: parseFloat(row.amount_usd),
+            safetyScore: row.safety_score,
+            safetyGrade: row.safety_grade,
+            status: row.status,
+            txHash: row.tx_hash,
+            gasFeeUsd: row.gas_fee_usd ? parseFloat(row.gas_fee_usd) : undefined,
+            entryTimestamp: new Date(row.entry_timestamp),
+            exitTimestamp: row.exit_timestamp ? new Date(row.exit_timestamp) : undefined,
+            profitLoss: row.profit_loss ? parseFloat(row.profit_loss) : undefined,
+            profitLossPercent: row.profit_loss_percent ? parseFloat(row.profit_loss_percent) : undefined,
+            isWin: row.is_win,
+            predictionId: row.prediction_id,
+            horizon: row.horizon,
+            aiPrediction: row.ai_prediction ? JSON.parse(row.ai_prediction) : undefined,
+            indicators: row.indicators ? JSON.parse(row.indicators) : undefined,
+            notes: row.notes,
+          };
+          this.trades.set(tradeId, trade);
+        }
+      } catch (error) {
+        console.error('[TradeLedger] Error loading trade from DB:', error);
+      }
+    }
+    
+    if (!trade || trade.isWin === undefined) {
+      console.log(`[TradeLedger] Skipping AI feed for trade ${tradeId}: missing trade data or outcome`);
+      return;
+    }
 
     try {
-      const horizons: Array<'1h' | '4h' | '24h' | '7d'> = ['1h', '4h', '24h', '7d'];
-      const holdTimeHours = trade.exitTimestamp && trade.entryTimestamp
-        ? (trade.exitTimestamp.getTime() - trade.entryTimestamp.getTime()) / (1000 * 60 * 60)
-        : 0;
-
-      let horizon: '1h' | '4h' | '24h' | '7d' = '1h';
-      if (holdTimeHours >= 24 * 7) horizon = '7d';
-      else if (holdTimeHours >= 24) horizon = '24h';
-      else if (holdTimeHours >= 4) horizon = '4h';
-
-      console.log(`[TradeLedger] Feeding trade ${tradeId} to Adaptive AI (horizon: ${horizon})`);
-
-      const mockPredictionId = `pred_${tradeId}`;
+      let horizon: TimeHorizon = trade.horizon || '1h';
       
-      await predictionLearningService.extractFeatures(
-        mockPredictionId,
-        horizon,
-        trade.profitLossPercent || 0,
-        trade.isWin
-      );
+      if (!trade.horizon && trade.exitTimestamp && trade.entryTimestamp) {
+        const holdTimeHours = (trade.exitTimestamp.getTime() - trade.entryTimestamp.getTime()) / (1000 * 60 * 60);
+        if (holdTimeHours >= 24 * 7) horizon = '7d';
+        else if (holdTimeHours >= 24) horizon = '24h';
+        else if (holdTimeHours >= 4) horizon = '4h';
+      }
+
+      const predictionId = trade.predictionId;
+      
+      if (predictionId) {
+        console.log(`[TradeLedger] Feeding trade ${tradeId} to Adaptive AI with prediction ${predictionId} (horizon: ${horizon})`);
+        
+        await predictionLearningService.extractFeatures(
+          predictionId,
+          horizon,
+          trade.profitLossPercent || 0,
+          trade.isWin
+        );
+        
+        console.log(`[TradeLedger] Successfully linked trade ${tradeId} to prediction learning system`);
+      } else if (trade.indicators) {
+        console.log(`[TradeLedger] Trade ${tradeId} has no prediction ID, creating standalone features (horizon: ${horizon})`);
+        
+        const standalonePredictionId = `standalone_${tradeId}`;
+        await predictionLearningService.extractFeatures(
+          standalonePredictionId,
+          horizon,
+          trade.profitLossPercent || 0,
+          trade.isWin
+        );
+      } else {
+        console.log(`[TradeLedger] Trade ${tradeId} has no prediction ID or indicators, skipping AI feed`);
+      }
 
     } catch (error) {
       console.error('[TradeLedger] Error feeding to Adaptive AI:', error);

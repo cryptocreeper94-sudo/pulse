@@ -844,6 +844,9 @@ export const strikeAgentTrades = pgTable('strike_agent_trades', {
   indicators: text('indicators'), // JSON: technical indicators at entry
   notes: text('notes'),
   
+  predictionId: varchar('prediction_id', { length: 255 }), // Links to prediction_events for adaptive AI learning
+  horizon: varchar('horizon', { length: 10 }), // 1h, 4h, 24h, 7d - time horizon for prediction learning
+  
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
