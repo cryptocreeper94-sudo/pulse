@@ -1462,3 +1462,501 @@
     justify-content: space-between;
   }
 }
+
+/* ============================================ */
+/* SAFETY BADGE                                 */
+/* ============================================ */
+
+.sniper-safety-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid var(--grade-color, #888);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 0 10px color-mix(in srgb, var(--grade-color, #888) 40%, transparent);
+}
+
+.sniper-grade-value {
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--grade-color, #888);
+  line-height: 1;
+}
+
+.sniper-grade-score {
+  font-size: 9px;
+  color: #888;
+  margin-top: 2px;
+}
+
+.sniper-token-fullname {
+  font-size: 9px;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100px;
+}
+
+.sniper-token-price {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  font-family: monospace;
+}
+
+.sniper-token-change {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.sniper-token-change.green { color: #39FF14; }
+.sniper-token-change.red { color: #FF4444; }
+
+.sniper-token-risks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.sniper-risk-tag {
+  padding: 3px 8px;
+  font-size: 9px;
+  background: rgba(255, 68, 68, 0.1);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  border-radius: 4px;
+  color: #FF6B6B;
+}
+
+/* ============================================ */
+/* DEMO TABS                                    */
+/* ============================================ */
+
+.demo-section-tabs {
+  padding: 8px !important;
+}
+
+.demo-tabs-header {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.demo-tab-btn {
+  flex: 1;
+  min-width: 80px;
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(0, 0, 0, 0.4);
+  color: #888;
+  border: 1px solid #333;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.demo-tab-btn.active {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(157, 78, 221, 0.1));
+  border-color: #00D4FF;
+  color: #00D4FF;
+}
+
+.demo-tab-btn:hover:not(.active) {
+  border-color: rgba(0, 212, 255, 0.4);
+  color: #aaa;
+}
+
+/* ============================================ */
+/* DISCOVER BUTTON                              */
+/* ============================================ */
+
+.discovery-btn-group {
+  display: flex;
+  gap: 8px;
+}
+
+.sniper-discover-btn {
+  padding: 10px 20px;
+  font-size: 12px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #00D4FF, #9D4EDD);
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+}
+
+.sniper-discover-btn:hover:not(:disabled) {
+  transform: scale(1.02);
+  box-shadow: 0 0 25px rgba(0, 212, 255, 0.5);
+}
+
+.sniper-discover-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sniper-discover-btn.discovering {
+  animation: pulse 1s infinite;
+}
+
+/* ============================================ */
+/* DEMO POSITION CARD                           */
+/* ============================================ */
+
+.demo-positions-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.demo-position-card {
+  padding: 14px;
+}
+
+.demo-position-card.profit {
+  border-color: rgba(57, 255, 20, 0.3);
+  box-shadow: 0 0 15px rgba(57, 255, 20, 0.1);
+}
+
+.demo-position-card.loss {
+  border-color: rgba(255, 68, 68, 0.3);
+  box-shadow: 0 0 15px rgba(255, 68, 68, 0.1);
+}
+
+.demo-position-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.demo-position-token {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.demo-position-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #00D4FF, #9D4EDD);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.demo-position-info {
+  min-width: 0;
+}
+
+.demo-position-symbol {
+  font-weight: 700;
+  font-size: 15px;
+  color: #fff;
+}
+
+.demo-position-name {
+  font-size: 10px;
+  color: #888;
+}
+
+.demo-position-pnl {
+  text-align: right;
+}
+
+.demo-pnl-percent {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.demo-pnl-percent.green {
+  color: #39FF14;
+  text-shadow: 0 0 10px rgba(57, 255, 20, 0.4);
+}
+
+.demo-pnl-percent.red {
+  color: #FF4444;
+  text-shadow: 0 0 10px rgba(255, 68, 68, 0.4);
+}
+
+.demo-pnl-amount {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.demo-pnl-amount.green { color: #39FF14; }
+.demo-pnl-amount.red { color: #FF4444; }
+
+.demo-position-prices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.demo-price-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.demo-price-label {
+  font-size: 9px;
+  color: #666;
+  text-transform: uppercase;
+}
+
+.demo-price-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  font-family: monospace;
+}
+
+.demo-sell-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #FF4444, #FF6B6B);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(255, 68, 68, 0.3);
+}
+
+.demo-sell-btn:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 25px rgba(255, 68, 68, 0.5);
+}
+
+.positions-live-indicator {
+  font-size: 11px;
+  color: #39FF14;
+  font-weight: 600;
+  animation: pulse 2s infinite;
+}
+
+/* ============================================ */
+/* TRADE HISTORY                                */
+/* ============================================ */
+
+.demo-trade-history {
+  padding: 16px;
+  background: #0f0f0f;
+  border-radius: 8px;
+}
+
+.demo-history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.demo-history-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #00D4FF;
+  margin: 0;
+}
+
+.demo-history-close {
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #888;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.demo-history-close:hover {
+  border-color: #FF4444;
+  color: #FF4444;
+}
+
+.demo-stats-summary {
+  margin-bottom: 20px;
+}
+
+.demo-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+@media (min-width: 480px) {
+  .demo-stats-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+.demo-stat-card {
+  padding: 12px;
+  background: #1a1a1a;
+  border: 1px solid #222;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.demo-stat-label {
+  font-size: 9px;
+  color: #666;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.demo-stat-value {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.demo-stat-value.cyan { color: #00D4FF; }
+.demo-stat-value.green { color: #39FF14; }
+.demo-stat-value.red { color: #FF4444; }
+
+.demo-trades-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.demo-loading {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+  font-size: 13px;
+}
+
+.demo-trade-item {
+  padding: 12px;
+  background: #1a1a1a;
+  border: 1px solid #222;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.demo-trade-item.profit {
+  border-left: 3px solid #39FF14;
+}
+
+.demo-trade-item.loss {
+  border-left: 3px solid #FF4444;
+}
+
+.demo-trade-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.demo-trade-token {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.demo-trade-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #00D4FF, #9D4EDD);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 10px;
+}
+
+.demo-trade-info {
+  min-width: 0;
+}
+
+.demo-trade-symbol {
+  font-weight: 700;
+  font-size: 13px;
+  color: #fff;
+}
+
+.demo-trade-time {
+  font-size: 10px;
+  color: #666;
+}
+
+.demo-trade-pnl {
+  text-align: right;
+}
+
+.demo-trade-pnl-percent {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.demo-trade-pnl-percent.green { color: #39FF14; }
+.demo-trade-pnl-percent.red { color: #FF4444; }
+
+.demo-trade-pnl-amount {
+  font-size: 11px;
+}
+
+.demo-trade-pnl-amount.green { color: #39FF14; }
+.demo-trade-pnl-amount.red { color: #FF4444; }
+
+.demo-trade-prices {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.demo-trade-price {
+  display: flex;
+  flex-direction: column;
+}
+
+.demo-trade-arrow {
+  color: #666;
+  font-size: 12px;
+}
+
+.demo-empty-trades {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.demo-empty-icon {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.demo-empty-text {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.demo-empty-hint {
+  font-size: 11px;
+  color: #555;
+}

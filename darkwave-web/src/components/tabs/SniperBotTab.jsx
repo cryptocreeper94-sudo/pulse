@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { createChart } from 'lightweight-charts'
 import BentoGrid, { BentoItem } from '../ui/BentoGrid'
 import { useWalletState } from '../../context/WalletContext'
 import { useBuiltInWallet } from '../../context/BuiltInWalletContext'
 import ManualWatchlist from '../trading/ManualWatchlist'
 import SafetyReport from '../trading/SafetyReport'
+import DemoTradeHistory from './DemoTradeHistory'
 import './SniperBotTab.css'
 
 const API_BASE = ''
@@ -249,53 +250,72 @@ function ActivePositionCard({ position, onClose }) {
   )
 }
 
-function DiscoveredTokenCard({ token, onSnipe, onWatch, onSafetyCheck, disabled }) {
-  const scoreColor = token.aiScore >= 70 ? '#39FF14' : token.aiScore >= 50 ? '#FFD700' : '#FF4444'
-  const dexColor = token.dex === 'pumpfun' ? '#FF69B4' : '#9D4EDD'
+function getSafetyGradeColor(grade) {
+  switch(grade) {
+    case 'A': return '#39FF14'
+    case 'B': return '#7CFC00'
+    case 'C': return '#FFD700'
+    case 'D': return '#FF8C00'
+    case 'F': return '#FF4444'
+    default: return '#888'
+  }
+}
+
+function DiscoveredTokenCard({ token, onSnipe, onWatch, onSafetyCheck, disabled, isDemoMode }) {
+  const gradeColor = getSafetyGradeColor(token.safetyGrade)
+  const dexColor = token.dex === 'pumpfun' ? '#FF69B4' : token.dex === 'raydium' ? '#9D4EDD' : '#00D4FF'
 
   return (
     <div className="section-box sniper-token-card">
       <div className="sniper-token-row">
         <div className="sniper-token-left">
-          <div className="sniper-ai-score" style={{ '--score-color': scoreColor }}>
-            <span className="sniper-score-value">{token.aiScore}</span>
+          <div className="sniper-safety-badge" style={{ '--grade-color': gradeColor }}>
+            <span className="sniper-grade-value">{token.safetyGrade || '?'}</span>
+            <span className="sniper-grade-score">{token.safetyScore || 0}</span>
           </div>
           <div className="sniper-token-details">
             <div className="sniper-token-name">{token.symbol}</div>
+            <div className="sniper-token-fullname">{token.name?.slice(0, 20)}</div>
             <div className="sniper-token-dex" style={{ color: dexColor }}>{token.dex}</div>
           </div>
         </div>
         <div className="sniper-token-right">
-          <span className={`sniper-recommendation ${token.recommendation?.toLowerCase()}`}>
-            {token.recommendation}
-          </span>
+          <div className="sniper-token-price">${token.price < 0.01 ? token.price.toExponential(2) : token.price?.toFixed(4)}</div>
+          <div className={`sniper-token-change ${(token.priceChange24h || 0) >= 0 ? 'green' : 'red'}`}>
+            {(token.priceChange24h || 0) >= 0 ? '+' : ''}{(token.priceChange24h || 0).toFixed(1)}%
+          </div>
         </div>
       </div>
       <div className="sniper-token-metrics">
         <div className="sniper-metric">
           <span className="sniper-metric-label">Liq</span>
-          <span className="sniper-metric-value">${(token.liquidity / 1000).toFixed(1)}K</span>
+          <span className="sniper-metric-value">${((token.liquidity || 0) / 1000).toFixed(1)}K</span>
         </div>
         <div className="sniper-metric">
-          <span className="sniper-metric-label">5m</span>
-          <span className={`sniper-metric-value ${token.priceChange5m >= 0 ? 'green' : 'red'}`}>
-            {token.priceChange5m >= 0 ? '+' : ''}{token.priceChange5m?.toFixed(1)}%
-          </span>
+          <span className="sniper-metric-label">24h Vol</span>
+          <span className="sniper-metric-value">${((token.volume || 0) / 1000).toFixed(1)}K</span>
         </div>
         <div className="sniper-metric">
-          <span className="sniper-metric-label">Vol</span>
-          <span className="sniper-metric-value">{token.volumeMultiplier?.toFixed(1)}x</span>
+          <span className="sniper-metric-label">FDV</span>
+          <span className="sniper-metric-value">${((token.fdv || 0) / 1000000).toFixed(2)}M</span>
         </div>
       </div>
+      {token.risks && token.risks.length > 0 && (
+        <div className="sniper-token-risks">
+          {token.risks.slice(0, 2).map((risk, i) => (
+            <span key={i} className="sniper-risk-tag">⚠️ {risk}</span>
+          ))}
+        </div>
+      )}
       <div className="sniper-token-actions">
         <button 
           className="sniper-btn-snipe" 
           onClick={() => onSnipe(token)}
-          disabled={disabled}
+          disabled={disabled && !isDemoMode}
         >
-          {disabled ? 'Connect Wallet' : 'Strike'}
+          {disabled && !isDemoMode ? 'Connect Wallet' : '🎯 BUY'}
         </button>
-        <button className="sniper-btn-watch" onClick={() => onWatch(token)}>Watch</button>
+        <button className="sniper-btn-watch" onClick={() => onWatch(token)}>👁️</button>
         <button 
           className="sniper-btn-safety" 
           onClick={() => onSafetyCheck && onSafetyCheck(token)}
@@ -304,6 +324,57 @@ function DiscoveredTokenCard({ token, onSnipe, onWatch, onSafetyCheck, disabled 
           🛡️
         </button>
       </div>
+    </div>
+  )
+}
+
+function DemoPositionCard({ position, onSell, currentPrice }) {
+  const pnlPercent = position.pnlPercent || ((currentPrice - position.entryPriceUsd) / position.entryPriceUsd) * 100
+  const isProfit = pnlPercent >= 0
+  const currentValue = position.tokenAmount * (currentPrice || position.currentPriceUsd || position.entryPriceUsd)
+  const pnlAmount = currentValue - position.entryPriceSol
+
+  return (
+    <div className={`section-box demo-position-card ${isProfit ? 'profit' : 'loss'}`}>
+      <div className="demo-position-header">
+        <div className="demo-position-token">
+          <div className="demo-position-icon">
+            {position.tokenSymbol?.slice(0, 2) || '??'}
+          </div>
+          <div className="demo-position-info">
+            <div className="demo-position-symbol">{position.tokenSymbol}</div>
+            <div className="demo-position-name">{position.tokenName?.slice(0, 15)}</div>
+          </div>
+        </div>
+        <div className="demo-position-pnl">
+          <div className={`demo-pnl-percent ${isProfit ? 'green' : 'red'}`}>
+            {isProfit ? '+' : ''}{pnlPercent.toFixed(2)}%
+          </div>
+          <div className={`demo-pnl-amount ${isProfit ? 'green' : 'red'}`}>
+            {isProfit ? '+' : ''}${pnlAmount.toFixed(2)}
+          </div>
+        </div>
+      </div>
+      <div className="demo-position-prices">
+        <div className="demo-price-item">
+          <span className="demo-price-label">Entry</span>
+          <span className="demo-price-value">${position.entryPriceUsd < 0.01 ? position.entryPriceUsd.toExponential(2) : position.entryPriceUsd?.toFixed(6)}</span>
+        </div>
+        <div className="demo-price-item">
+          <span className="demo-price-label">Current</span>
+          <span className="demo-price-value">${(currentPrice || position.currentPriceUsd || position.entryPriceUsd) < 0.01 ? (currentPrice || position.currentPriceUsd || position.entryPriceUsd).toExponential(2) : (currentPrice || position.currentPriceUsd || position.entryPriceUsd)?.toFixed(6)}</span>
+        </div>
+        <div className="demo-price-item">
+          <span className="demo-price-label">Value</span>
+          <span className="demo-price-value">${currentValue.toFixed(2)}</span>
+        </div>
+      </div>
+      <button 
+        className="demo-sell-btn"
+        onClick={() => onSell(position, currentPrice || position.currentPriceUsd || position.entryPriceUsd)}
+      >
+        💰 SELL
+      </button>
     </div>
   )
 }
@@ -655,8 +726,23 @@ export default function SniperBotTab() {
   
   const isDemoMode = sessionStorage.getItem('dwp_demo_mode') === 'true'
   const [demoBalance, setDemoBalance] = useState(parseFloat(sessionStorage.getItem('dwp_demo_balance') || '10000'))
-  const [demoPositions, setDemoPositions] = useState([])
-  const [demoSessionId] = useState(() => `demo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`)
+  const [demoPositions, setDemoPositions] = useState(() => {
+    try {
+      return JSON.parse(sessionStorage.getItem('dwp_demo_positions') || '[]')
+    } catch { return [] }
+  })
+  const [demoSessionId] = useState(() => {
+    const stored = sessionStorage.getItem('dwp_demo_session_id')
+    if (stored) return stored
+    const newId = `demo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    sessionStorage.setItem('dwp_demo_session_id', newId)
+    return newId
+  })
+  const [showTradeHistory, setShowTradeHistory] = useState(false)
+  const [isDiscovering, setIsDiscovering] = useState(false)
+  const [livePrices, setLivePrices] = useState({})
+  const [activeSubTab, setActiveSubTab] = useState('discovery')
+  const [historyRefreshKey, setHistoryRefreshKey] = useState(0)
   
   const wallet = isDemoMode
     ? {
@@ -690,6 +776,20 @@ export default function SniperBotTab() {
       clearInterval(rpcInterval)
     }
   }, [])
+
+  useEffect(() => {
+    if (isDemoMode && demoPositions.length > 0) {
+      fetchLivePrices()
+      const priceInterval = setInterval(fetchLivePrices, 10000)
+      return () => clearInterval(priceInterval)
+    }
+  }, [isDemoMode, demoPositions.length])
+
+  useEffect(() => {
+    if (isDemoMode) {
+      sessionStorage.setItem('dwp_demo_positions', JSON.stringify(demoPositions))
+    }
+  }, [demoPositions, isDemoMode])
 
   useEffect(() => {
     if (!wallet.connected && autoModeActive) {
@@ -766,6 +866,39 @@ export default function SniperBotTab() {
     setIsScanning(false)
   }
 
+  const discoverAITokens = async () => {
+    setIsDiscovering(true)
+    try {
+      const res = await fetch(`${API_BASE}/api/demo/discover`)
+      const data = await res.json()
+      if (data.success) {
+        setDiscoveredTokens(data.tokens || [])
+        console.log('🔍 AI Discovery found', data.tokens?.length, 'tokens')
+      }
+    } catch (err) {
+      console.error('AI Discovery error:', err)
+    }
+    setIsDiscovering(false)
+  }
+
+  const fetchLivePrices = async () => {
+    if (demoPositions.length === 0) return
+    try {
+      const addresses = demoPositions.map(p => p.tokenAddress)
+      const res = await fetch(`${API_BASE}/api/demo/prices`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ addresses })
+      })
+      const data = await res.json()
+      if (data.success && data.prices) {
+        setLivePrices(data.prices)
+      }
+    } catch (err) {
+      console.error('Price fetch error:', err)
+    }
+  }
+
   const handleSnipe = async (token) => {
     if (!wallet.connected && !isDemoMode) {
       alert('Please connect your wallet first')
@@ -807,6 +940,7 @@ export default function SniperBotTab() {
             totalPnl: data.portfolio.stats.totalPnlSol
           }))
           sessionStorage.setItem('dwp_demo_balance', data.portfolio.balanceSol.toString())
+          setHistoryRefreshKey(prev => prev + 1)
           console.log('📊 Demo buy executed:', token.symbol, buyAmountUsd)
         } else {
           alert(data.error || 'Demo trade failed')
@@ -821,8 +955,10 @@ export default function SniperBotTab() {
     console.log('StrikeAgent executing on token:', token, 'from wallet:', wallet.address)
   }
   
-  const handleDemoSell = async (position) => {
+  const handleDemoSell = async (position, currentPrice) => {
     if (!isDemoMode) return
+    
+    const sellPrice = currentPrice || livePrices[position.tokenAddress] || position.currentPriceUsd || position.entryPriceUsd * 1.05
     
     try {
       const res = await fetch(`${API_BASE}/api/demo/sell`, {
@@ -831,7 +967,7 @@ export default function SniperBotTab() {
         body: JSON.stringify({
           sessionId: demoSessionId,
           positionId: position.id,
-          currentPriceUsd: position.currentPriceUsd || position.entryPriceUsd * 1.05
+          currentPriceUsd: sellPrice
         })
       })
       const data = await res.json()
@@ -845,6 +981,8 @@ export default function SniperBotTab() {
           totalPnl: data.portfolio.stats.totalPnlSol
         }))
         sessionStorage.setItem('dwp_demo_balance', data.portfolio.balanceSol.toString())
+        sessionStorage.setItem('dwp_demo_positions', JSON.stringify(data.portfolio.positions))
+        setHistoryRefreshKey(prev => prev + 1)
         console.log('📊 Demo sell executed, P&L:', data.pnl)
       }
     } catch (err) {
@@ -1020,71 +1158,156 @@ export default function SniperBotTab() {
           />
         </BentoItem>
 
-        <BentoItem span={2} className="sniper-positions-section">
-          <div className="section-box">
-            <div className="sniper-section-header">
-              <h3 className="sniper-section-title">Active Positions ({activePositions.length})</h3>
+        {isDemoMode && (
+          <BentoItem span={2} className="sniper-demo-tabs-section">
+            <div className="section-box demo-section-tabs">
+              <div className="demo-tabs-header">
+                <button 
+                  className={`demo-tab-btn ${activeSubTab === 'discovery' ? 'active' : ''}`}
+                  onClick={() => setActiveSubTab('discovery')}
+                >
+                  🔍 Discover
+                </button>
+                <button 
+                  className={`demo-tab-btn ${activeSubTab === 'positions' ? 'active' : ''}`}
+                  onClick={() => setActiveSubTab('positions')}
+                >
+                  📊 Positions ({demoPositions.length})
+                </button>
+                <button 
+                  className={`demo-tab-btn ${activeSubTab === 'history' ? 'active' : ''}`}
+                  onClick={() => setActiveSubTab('history')}
+                >
+                  📜 History
+                </button>
+              </div>
             </div>
-            <div className="sniper-positions-content">
-              {activePositions.length > 0 ? (
-                activePositions.map(pos => (
-                  <ActivePositionCard 
-                    key={pos.id} 
-                    position={pos} 
-                    onClose={(id, reason) => console.log('Close position', id, reason)}
-                  />
-                ))
-              ) : (
-                <div className="sniper-empty-state">
-                  <div className="sniper-empty-icon">🎯</div>
-                  <div className="sniper-empty-text">No active positions</div>
-                  <div className="sniper-empty-hint">Strike a token to see live tracking here</div>
-                </div>
-              )}
-            </div>
-          </div>
-        </BentoItem>
+          </BentoItem>
+        )}
 
-        <BentoItem span={2} className="sniper-watchlist-section">
-          <ManualWatchlist />
-        </BentoItem>
+        {(!isDemoMode || activeSubTab === 'positions') && (
+          <BentoItem span={2} className="sniper-positions-section">
+            <div className="section-box">
+              <div className="sniper-section-header">
+                <h3 className="sniper-section-title">
+                  {isDemoMode ? 'My Positions' : 'Active Positions'} ({isDemoMode ? demoPositions.length : activePositions.length})
+                </h3>
+                {isDemoMode && demoPositions.length > 0 && (
+                  <span className="positions-live-indicator">● Live</span>
+                )}
+              </div>
+              <div className="sniper-positions-content">
+                {isDemoMode ? (
+                  demoPositions.length > 0 ? (
+                    <div className="demo-positions-grid">
+                      {demoPositions.map(pos => (
+                        <DemoPositionCard 
+                          key={pos.id} 
+                          position={pos} 
+                          onSell={handleDemoSell}
+                          currentPrice={livePrices[pos.tokenAddress] || pos.currentPriceUsd}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="sniper-empty-state">
+                      <div className="sniper-empty-icon">💼</div>
+                      <div className="sniper-empty-text">No open positions</div>
+                      <div className="sniper-empty-hint">Discover tokens and buy to start trading</div>
+                    </div>
+                  )
+                ) : (
+                  activePositions.length > 0 ? (
+                    activePositions.map(pos => (
+                      <ActivePositionCard 
+                        key={pos.id} 
+                        position={pos} 
+                        onClose={(id, reason) => console.log('Close position', id, reason)}
+                      />
+                    ))
+                  ) : (
+                    <div className="sniper-empty-state">
+                      <div className="sniper-empty-icon">🎯</div>
+                      <div className="sniper-empty-text">No active positions</div>
+                      <div className="sniper-empty-hint">Strike a token to see live tracking here</div>
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+          </BentoItem>
+        )}
 
-        <BentoItem span={2} className="sniper-discovery-section">
-          <div className="section-box">
-            <div className="sniper-section-header">
-              <h3 className="sniper-section-title">Token Discovery</h3>
-              <button 
-                className={`sniper-scan-btn ${isScanning ? 'scanning' : ''}`}
-                onClick={discoverTokens}
-                disabled={isScanning}
-              >
-                {isScanning ? 'Scanning...' : 'Scan Now'}
-              </button>
+        {isDemoMode && activeSubTab === 'history' && (
+          <BentoItem span={2} className="sniper-history-section">
+            <div className="section-box">
+              <DemoTradeHistory sessionId={demoSessionId} refreshKey={historyRefreshKey} />
             </div>
-            <div className="sniper-discovery-content">
-              {discoveredTokens.length > 0 ? (
-                <div className="sniper-token-list">
-                  {discoveredTokens.map((token, i) => (
-                    <DiscoveredTokenCard 
-                      key={token.address || i}
-                      token={token}
-                      onSnipe={handleSnipe}
-                      onWatch={handleWatch}
-                      onSafetyCheck={(t) => setSafetyCheckToken(t.address)}
-                      disabled={!wallet.connected}
-                    />
-                  ))}
+          </BentoItem>
+        )}
+
+        {!isDemoMode && (
+          <BentoItem span={2} className="sniper-watchlist-section">
+            <ManualWatchlist />
+          </BentoItem>
+        )}
+
+        {(!isDemoMode || activeSubTab === 'discovery') && (
+          <BentoItem span={2} className="sniper-discovery-section">
+            <div className="section-box">
+              <div className="sniper-section-header">
+                <h3 className="sniper-section-title">
+                  {isDemoMode ? '🤖 AI Token Discovery' : 'Token Discovery'}
+                </h3>
+                <div className="discovery-btn-group">
+                  {isDemoMode && (
+                    <button 
+                      className={`sniper-discover-btn ${isDiscovering ? 'discovering' : ''}`}
+                      onClick={discoverAITokens}
+                      disabled={isDiscovering}
+                    >
+                      {isDiscovering ? '⏳ Discovering...' : '✨ Discover Tokens'}
+                    </button>
+                  )}
+                  {!isDemoMode && (
+                    <button 
+                      className={`sniper-scan-btn ${isScanning ? 'scanning' : ''}`}
+                      onClick={discoverTokens}
+                      disabled={isScanning}
+                    >
+                      {isScanning ? 'Scanning...' : 'Scan Now'}
+                    </button>
+                  )}
                 </div>
-              ) : (
-                <div className="sniper-empty-state">
-                  <div className="sniper-empty-icon">🔍</div>
-                  <div className="sniper-empty-text">No tokens discovered</div>
-                  <div className="sniper-empty-hint">Click "Scan Now" or enable Auto Mode</div>
-                </div>
-              )}
+              </div>
+              <div className="sniper-discovery-content">
+                {discoveredTokens.length > 0 ? (
+                  <div className="sniper-token-list">
+                    {discoveredTokens.map((token, i) => (
+                      <DiscoveredTokenCard 
+                        key={token.address || i}
+                        token={token}
+                        onSnipe={handleSnipe}
+                        onWatch={handleWatch}
+                        onSafetyCheck={(t) => setSafetyCheckToken(t.address)}
+                        disabled={!wallet.connected}
+                        isDemoMode={isDemoMode}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="sniper-empty-state">
+                    <div className="sniper-empty-icon">🔍</div>
+                    <div className="sniper-empty-text">No tokens discovered</div>
+                    <div className="sniper-empty-hint">
+                      {isDemoMode ? 'Click "Discover Tokens" to find trending coins' : 'Click "Scan Now" or enable Auto Mode'}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        </BentoItem>
+          </BentoItem>
+        )}
 
         {safetyCheckToken && (
           <BentoItem span={2} className="sniper-safety-section">
