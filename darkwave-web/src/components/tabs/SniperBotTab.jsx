@@ -627,13 +627,29 @@ export default function SniperBotTab() {
   const [customRPC, setCustomRPC] = useState('')
   const [safetyCheckToken, setSafetyCheckToken] = useState(null)
   const [selectedChain, setSelectedChain] = useState('solana')
-  const [availableChains, setAvailableChains] = useState([
+  const [availableChains] = useState([
     { id: 'solana', name: 'Solana', symbol: 'SOL', isEvm: false },
     { id: 'ethereum', name: 'Ethereum', symbol: 'ETH', isEvm: true },
     { id: 'base', name: 'Base', symbol: 'ETH', isEvm: true },
     { id: 'polygon', name: 'Polygon', symbol: 'MATIC', isEvm: true },
     { id: 'arbitrum', name: 'Arbitrum', symbol: 'ETH', isEvm: true },
     { id: 'bsc', name: 'BSC', symbol: 'BNB', isEvm: true },
+    { id: 'avalanche', name: 'Avalanche', symbol: 'AVAX', isEvm: true },
+    { id: 'fantom', name: 'Fantom', symbol: 'FTM', isEvm: true },
+    { id: 'optimism', name: 'Optimism', symbol: 'ETH', isEvm: true },
+    { id: 'cronos', name: 'Cronos', symbol: 'CRO', isEvm: true },
+    { id: 'gnosis', name: 'Gnosis', symbol: 'xDAI', isEvm: true },
+    { id: 'celo', name: 'Celo', symbol: 'CELO', isEvm: true },
+    { id: 'moonbeam', name: 'Moonbeam', symbol: 'GLMR', isEvm: true },
+    { id: 'moonriver', name: 'Moonriver', symbol: 'MOVR', isEvm: true },
+    { id: 'harmony', name: 'Harmony', symbol: 'ONE', isEvm: true },
+    { id: 'metis', name: 'Metis', symbol: 'METIS', isEvm: true },
+    { id: 'aurora', name: 'Aurora', symbol: 'ETH', isEvm: true },
+    { id: 'zksync', name: 'zkSync', symbol: 'ETH', isEvm: true },
+    { id: 'linea', name: 'Linea', symbol: 'ETH', isEvm: true },
+    { id: 'scroll', name: 'Scroll', symbol: 'ETH', isEvm: true },
+    { id: 'mantle', name: 'Mantle', symbol: 'MNT', isEvm: true },
+    { id: 'blast', name: 'Blast', symbol: 'ETH', isEvm: true },
   ])
   
   const isDemoMode = sessionStorage.getItem('dwp_demo_mode') === 'true'

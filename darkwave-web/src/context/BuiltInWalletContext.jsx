@@ -4,6 +4,8 @@ import clientWalletService from '../services/clientWalletService'
 const BuiltInWalletContext = createContext(null)
 
 export function BuiltInWalletProvider({ children }) {
+  const [wallets, setWallets] = useState([])
+  const [activeWalletId, setActiveWalletId] = useState(null)
   const [hasWallet, setHasWallet] = useState(false)
   const [isUnlocked, setIsUnlocked] = useState(false)
   const [addresses, setAddresses] = useState(null)
@@ -12,42 +14,57 @@ export function BuiltInWalletProvider({ children }) {
   const [loading, setLoading] = useState(false)
   
   useEffect(() => {
-    setHasWallet(clientWalletService.hasWallet())
+    const loadedWallets = clientWalletService.getWallets()
+    setWallets(loadedWallets)
+    setHasWallet(loadedWallets.length > 0)
+    const active = loadedWallets.find(w => w.isActive)
+    if (active) setActiveWalletId(active.id)
   }, [])
   
-  const createWallet = useCallback(async (password, wordCount = 12) => {
+  const refreshWalletList = useCallback(() => {
+    const loadedWallets = clientWalletService.getWallets()
+    setWallets(loadedWallets)
+    setHasWallet(loadedWallets.length > 0)
+  }, [])
+  
+  const createWallet = useCallback(async (password, name, wordCount = 12) => {
     setLoading(true)
     try {
-      const result = await clientWalletService.createWallet(password, wordCount)
+      const result = await clientWalletService.createWallet(password, name, wordCount)
       setHasWallet(true)
       setAddresses(result.addresses)
+      setActiveWalletId(result.walletId)
       setIsUnlocked(true)
+      refreshWalletList()
       fetchBalances(result.addresses)
       return result.mnemonic
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [refreshWalletList])
   
-  const importWallet = useCallback(async (mnemonic, password) => {
+  const importWallet = useCallback(async (mnemonic, password, name) => {
     setLoading(true)
     try {
-      const result = await clientWalletService.importWallet(mnemonic, password)
+      const result = await clientWalletService.importWallet(mnemonic, password, name)
       setHasWallet(true)
       setAddresses(result.addresses)
+      setActiveWalletId(result.walletId)
       setIsUnlocked(true)
+      refreshWalletList()
       fetchBalances(result.addresses)
       return true
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [refreshWalletList])
   
-  const unlock = useCallback(async (password) => {
+  const unlock = useCallback(async (password, walletId = null) => {
     setLoading(true)
     try {
-      const result = await clientWalletService.unlock(password)
+      const result = await clientWalletService.unlock(password, walletId)
       setAddresses(result.addresses)
+      setActiveWalletId(result.walletId)
       setIsUnlocked(true)
       fetchBalances(result.addresses)
       return true
@@ -58,6 +75,41 @@ export function BuiltInWalletProvider({ children }) {
     }
   }, [])
   
+  const switchWallet = useCallback(async (walletId, password) => {
+    setLoading(true)
+    try {
+      clientWalletService.switchWallet(walletId)
+      const result = await clientWalletService.unlock(password, walletId)
+      setAddresses(result.addresses)
+      setActiveWalletId(walletId)
+      setIsUnlocked(true)
+      refreshWalletList()
+      fetchBalances(result.addresses)
+      return true
+    } catch (err) {
+      throw err
+    } finally {
+      setLoading(false)
+    }
+  }, [refreshWalletList])
+  
+  const renameWallet = useCallback((walletId, newName) => {
+    clientWalletService.renameWallet(walletId, newName)
+    refreshWalletList()
+  }, [refreshWalletList])
+  
+  const deleteWallet = useCallback((walletId) => {
+    const remainingCount = clientWalletService.deleteWallet(walletId)
+    refreshWalletList()
+    if (remainingCount === 0) {
+      setHasWallet(false)
+      setIsUnlocked(false)
+      setAddresses(null)
+      setBalances({})
+      setTotalUsd(0)
+    }
+  }, [refreshWalletList])
+  
   const lock = useCallback(() => {
     setAddresses(null)
     setBalances({})
@@ -65,8 +117,9 @@ export function BuiltInWalletProvider({ children }) {
     setIsUnlocked(false)
   }, [])
   
-  const deleteWallet = useCallback(() => {
-    clientWalletService.deleteWallet()
+  const deleteAllWallets = useCallback(() => {
+    clientWalletService.deleteAllWallets()
+    setWallets([])
     setHasWallet(false)
     lock()
   }, [lock])
@@ -133,18 +186,25 @@ export function BuiltInWalletProvider({ children }) {
   }, [signAndSend])
   
   const value = {
+    wallets,
+    activeWalletId,
     hasWallet,
     isUnlocked,
     loading,
     addresses,
     balances,
     totalUsd,
+    supportedChains: clientWalletService.SUPPORTED_CHAINS,
     createWallet,
     importWallet,
     unlock,
-    lock,
+    switchWallet,
+    renameWallet,
     deleteWallet,
+    deleteAllWallets,
+    lock,
     refreshBalances,
+    refreshWalletList,
     getSolanaAddress,
     getEvmAddress,
     getSolanaBalance,
@@ -165,20 +225,27 @@ export function useBuiltInWallet() {
   const context = useContext(BuiltInWalletContext)
   if (!context) {
     return {
+      wallets: [],
+      activeWalletId: null,
       hasWallet: false,
       isUnlocked: false,
       addresses: null,
       balances: {},
       totalUsd: 0,
       loading: false,
+      supportedChains: {},
       solanaAddress: null,
       solanaBalance: 0,
       createWallet: async () => {},
       importWallet: async () => {},
       unlock: async () => {},
-      lock: () => {},
+      switchWallet: async () => {},
+      renameWallet: () => {},
       deleteWallet: () => {},
+      deleteAllWallets: () => {},
+      lock: () => {},
       refreshBalances: async () => {},
+      refreshWalletList: () => {},
       signSolanaTransaction: async () => null,
       signEvmTransaction: async () => null,
     }

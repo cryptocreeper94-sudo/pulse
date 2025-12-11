@@ -1371,20 +1371,32 @@
 .sniper-chain-buttons {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
+  max-height: 120px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.sniper-chain-buttons::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sniper-chain-buttons::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 255, 0.3);
+  border-radius: 4px;
 }
 
 .sniper-chain-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  font-size: 12px;
+  gap: 4px;
+  padding: 6px 10px;
+  font-size: 11px;
   font-weight: 500;
   background: rgba(0, 0, 0, 0.4);
   color: #666;
   border: 1px solid #333;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
