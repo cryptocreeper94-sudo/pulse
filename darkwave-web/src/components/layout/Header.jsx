@@ -33,9 +33,9 @@ export default function Header({ onMenuToggle, isMenuOpen, onAvatarClick, active
         )}
       </div>
       
-      <h1 className="header-title" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>PULSE</h1>
+      <h1 className="header-title">PULSE</h1>
       
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, justifyContent: 'flex-end' }}>
+      <div className="header-right">
         <WalletMultiButton />
         <MiniAvatar 
           size={32} 

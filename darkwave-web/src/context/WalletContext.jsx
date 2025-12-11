@@ -99,6 +99,7 @@ function SimpleWalletButton() {
 
   return (
     <button 
+      className="wallet-connect-btn"
       onClick={handleClick}
       disabled={connecting}
       style={buttonStyle}
