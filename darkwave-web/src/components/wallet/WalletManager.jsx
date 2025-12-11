@@ -42,6 +42,7 @@ export default function WalletManager({ userId }) {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [unlockPassword, setUnlockPassword] = useState('')
   const [showMnemonic, setShowMnemonic] = useState(false)
+  const [walletName, setWalletName] = useState('')
   
   const [sendChain, setSendChain] = useState('solana')
   const [sendTo, setSendTo] = useState('')
@@ -78,10 +79,12 @@ export default function WalletManager({ userId }) {
     }
     
     try {
-      const newMnemonic = await builtInWallet.createWallet(password, 12)
+      const name = walletName.trim() || `Wallet ${builtInWallet.wallets.length + 1}`
+      const newMnemonic = await builtInWallet.createWallet(password, name, 12)
       setMnemonic(newMnemonic)
       setShowMnemonic(true)
       setView('backup')
+      setWalletName('')
       setSuccess('Wallet created! Save your recovery phrase now.')
     } catch (err) {
       setError(err.message)
@@ -104,8 +107,10 @@ export default function WalletManager({ userId }) {
     }
     
     try {
-      await builtInWallet.importWallet(importPhrase.trim(), password)
+      const name = walletName.trim() || `Imported Wallet ${builtInWallet.wallets.length + 1}`
+      await builtInWallet.importWallet(importPhrase.trim(), password, name)
       setView('main')
+      setWalletName('')
       setSuccess('Wallet imported successfully!')
     } catch (err) {
       setError(err.message)
@@ -185,8 +190,12 @@ export default function WalletManager({ userId }) {
   
   const handleDeleteWallet = () => {
     if (confirm('Are you sure? This will remove your wallet from this device. Make sure you have your recovery phrase saved!')) {
-      builtInWallet.deleteWallet()
-      setView('landing')
+      if (builtInWallet.activeWalletId) {
+        builtInWallet.deleteWallet(builtInWallet.activeWalletId)
+      }
+      if (!builtInWallet.hasWallet) {
+        setView('landing')
+      }
     }
   }
   
@@ -286,6 +295,17 @@ export default function WalletManager({ userId }) {
       </div>
       
       <div className="form-fields">
+        <div className="form-field">
+          <label>Wallet Name (optional)</label>
+          <input
+            type="text"
+            value={walletName}
+            onChange={(e) => setWalletName(e.target.value)}
+            placeholder="My Trading Wallet"
+          />
+          <span className="field-hint">Give your wallet a memorable name</span>
+        </div>
+        
         <div className="form-field">
           <label>Password</label>
           <input
@@ -396,6 +416,16 @@ export default function WalletManager({ userId }) {
         </div>
         
         <div className="form-field">
+          <label>Wallet Name (optional)</label>
+          <input
+            type="text"
+            value={walletName}
+            onChange={(e) => setWalletName(e.target.value)}
+            placeholder="Imported Wallet"
+          />
+        </div>
+        
+        <div className="form-field">
           <label>New Password</label>
           <input
             type="password"
@@ -467,8 +497,132 @@ export default function WalletManager({ userId }) {
     </div>
   )
   
+  const [showWalletMenu, setShowWalletMenu] = useState(false)
+  const [editingWalletId, setEditingWalletId] = useState(null)
+  const [newWalletName, setNewWalletName] = useState('')
+  const [switchingWalletId, setSwitchingWalletId] = useState(null)
+  const [switchPassword, setSwitchPassword] = useState('')
+  
+  const handleSwitchWallet = async () => {
+    if (!switchingWalletId || !switchPassword) return
+    try {
+      await builtInWallet.switchWallet(switchingWalletId, switchPassword)
+      setSwitchingWalletId(null)
+      setSwitchPassword('')
+      setSuccess('Wallet switched!')
+    } catch (err) {
+      setError(err.message || 'Failed to switch wallet')
+    }
+  }
+  
+  const handleRenameWallet = (walletId) => {
+    if (!newWalletName.trim()) return
+    builtInWallet.renameWallet(walletId, newWalletName.trim())
+    setEditingWalletId(null)
+    setNewWalletName('')
+    setSuccess('Wallet renamed!')
+  }
+  
+  const handleDeleteSpecificWallet = (walletId) => {
+    const wallet = builtInWallet.wallets.find(w => w.id === walletId)
+    if (confirm(`Delete wallet "${wallet?.name}"? Make sure you have your recovery phrase saved!`)) {
+      builtInWallet.deleteWallet(walletId)
+      setShowWalletMenu(false)
+    }
+  }
+  
+  const activeWallet = builtInWallet.wallets.find(w => w.id === builtInWallet.activeWalletId)
+  
   const renderMain = () => (
     <div className="wallet-main-v2">
+      <div className="wallet-selector-bar">
+        <div className="wallet-selector" onClick={() => setShowWalletMenu(!showWalletMenu)}>
+          <span className="wallet-selector-icon">💼</span>
+          <span className="wallet-selector-name">{activeWallet?.name || 'My Wallet'}</span>
+          <span className="wallet-selector-arrow">{showWalletMenu ? '▲' : '▼'}</span>
+        </div>
+        
+        {showWalletMenu && (
+          <div className="wallet-dropdown">
+            <div className="wallet-dropdown-header">Your Wallets</div>
+            {builtInWallet.wallets.map(wallet => (
+              <div 
+                key={wallet.id} 
+                className={`wallet-dropdown-item ${wallet.id === builtInWallet.activeWalletId ? 'active' : ''}`}
+              >
+                {editingWalletId === wallet.id ? (
+                  <div className="wallet-rename-inline">
+                    <input
+                      type="text"
+                      value={newWalletName}
+                      onChange={(e) => setNewWalletName(e.target.value)}
+                      placeholder={wallet.name}
+                      autoFocus
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleRenameWallet(wallet.id)
+                        if (e.key === 'Escape') { setEditingWalletId(null); setNewWalletName('') }
+                      }}
+                    />
+                    <button onClick={() => handleRenameWallet(wallet.id)}>✓</button>
+                    <button onClick={() => { setEditingWalletId(null); setNewWalletName('') }}>✕</button>
+                  </div>
+                ) : (
+                  <>
+                    <span 
+                      className="wallet-item-name"
+                      onClick={() => {
+                        if (wallet.id !== builtInWallet.activeWalletId) {
+                          setSwitchingWalletId(wallet.id)
+                          setShowWalletMenu(false)
+                        }
+                      }}
+                    >
+                      {wallet.name}
+                      {wallet.id === builtInWallet.activeWalletId && <span className="active-badge">Active</span>}
+                    </span>
+                    <div className="wallet-item-actions">
+                      <button title="Rename" onClick={(e) => { e.stopPropagation(); setEditingWalletId(wallet.id); setNewWalletName(wallet.name) }}>✏️</button>
+                      {builtInWallet.wallets.length > 1 && (
+                        <button title="Delete" onClick={(e) => { e.stopPropagation(); handleDeleteSpecificWallet(wallet.id) }}>🗑️</button>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            ))}
+            <div className="wallet-dropdown-divider"></div>
+            <button className="wallet-dropdown-add" onClick={() => { setShowWalletMenu(false); setView('create') }}>
+              <span>+</span> Add New Wallet
+            </button>
+            <button className="wallet-dropdown-add import" onClick={() => { setShowWalletMenu(false); setView('import') }}>
+              <span>↓</span> Import Wallet
+            </button>
+          </div>
+        )}
+      </div>
+      
+      {switchingWalletId && (
+        <div className="wallet-switch-modal">
+          <div className="wallet-switch-content">
+            <h3>Switch Wallet</h3>
+            <p>Enter password for "{builtInWallet.wallets.find(w => w.id === switchingWalletId)?.name}"</p>
+            <input
+              type="password"
+              value={switchPassword}
+              onChange={(e) => setSwitchPassword(e.target.value)}
+              placeholder="Enter wallet password"
+              autoFocus
+              onKeyDown={(e) => e.key === 'Enter' && handleSwitchWallet()}
+            />
+            {error && <div className="form-error">{error}</div>}
+            <div className="wallet-switch-actions">
+              <button className="wallet-cta secondary" onClick={() => { setSwitchingWalletId(null); setSwitchPassword(''); setError('') }}>Cancel</button>
+              <button className="wallet-cta primary" onClick={handleSwitchWallet}>Unlock & Switch</button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div className="wallet-main-header">
         <div className="wallet-total-card">
           <span className="total-label">Total Balance</span>
@@ -1278,6 +1432,239 @@ export default function WalletManager({ userId }) {
           display: flex;
           align-items: center;
           gap: 6px;
+        }
+
+        /* Wallet Selector */
+        .wallet-selector-bar {
+          position: relative;
+          margin-bottom: 20px;
+        }
+        
+        .wallet-selector {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 12px 16px;
+          background: #1a1a1a;
+          border: 1px solid #333;
+          border-radius: 12px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        
+        .wallet-selector:hover {
+          border-color: #00D4FF;
+        }
+        
+        .wallet-selector-icon {
+          font-size: 20px;
+        }
+        
+        .wallet-selector-name {
+          flex: 1;
+          font-size: 16px;
+          font-weight: 600;
+          color: #fff;
+        }
+        
+        .wallet-selector-arrow {
+          color: #666;
+          font-size: 10px;
+        }
+        
+        .wallet-dropdown {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          margin-top: 8px;
+          background: #1a1a1a;
+          border: 1px solid #333;
+          border-radius: 12px;
+          overflow: hidden;
+          z-index: 100;
+          box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        
+        .wallet-dropdown-header {
+          padding: 12px 16px;
+          font-size: 12px;
+          color: #666;
+          text-transform: uppercase;
+          font-weight: 600;
+          border-bottom: 1px solid #252525;
+        }
+        
+        .wallet-dropdown-item {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 12px 16px;
+          border-bottom: 1px solid #252525;
+          transition: background 0.2s ease;
+        }
+        
+        .wallet-dropdown-item:hover {
+          background: #252525;
+        }
+        
+        .wallet-dropdown-item.active {
+          background: rgba(0, 212, 255, 0.1);
+        }
+        
+        .wallet-item-name {
+          flex: 1;
+          color: #fff;
+          font-size: 14px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        
+        .active-badge {
+          font-size: 10px;
+          padding: 2px 8px;
+          background: rgba(0, 212, 255, 0.2);
+          color: #00D4FF;
+          border-radius: 10px;
+        }
+        
+        .wallet-item-actions {
+          display: flex;
+          gap: 4px;
+        }
+        
+        .wallet-item-actions button {
+          background: none;
+          border: none;
+          font-size: 14px;
+          cursor: pointer;
+          padding: 4px 8px;
+          border-radius: 4px;
+          transition: background 0.2s ease;
+        }
+        
+        .wallet-item-actions button:hover {
+          background: #333;
+        }
+        
+        .wallet-rename-inline {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          width: 100%;
+        }
+        
+        .wallet-rename-inline input {
+          flex: 1;
+          padding: 6px 10px;
+          background: #0f0f0f;
+          border: 1px solid #333;
+          border-radius: 6px;
+          color: #fff;
+          font-size: 14px;
+        }
+        
+        .wallet-rename-inline button {
+          background: none;
+          border: none;
+          color: #888;
+          font-size: 16px;
+          cursor: pointer;
+          padding: 4px 8px;
+        }
+        
+        .wallet-rename-inline button:hover {
+          color: #fff;
+        }
+        
+        .wallet-dropdown-divider {
+          height: 1px;
+          background: #333;
+        }
+        
+        .wallet-dropdown-add {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          width: 100%;
+          padding: 12px 16px;
+          background: none;
+          border: none;
+          color: #00D4FF;
+          font-size: 14px;
+          cursor: pointer;
+          transition: background 0.2s ease;
+          text-align: left;
+        }
+        
+        .wallet-dropdown-add:hover {
+          background: rgba(0, 212, 255, 0.1);
+        }
+        
+        .wallet-dropdown-add.import {
+          color: #9D4EDD;
+        }
+        
+        .wallet-dropdown-add.import:hover {
+          background: rgba(157, 78, 221, 0.1);
+        }
+        
+        .wallet-switch-modal {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0,0,0,0.8);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+        }
+        
+        .wallet-switch-content {
+          background: #1a1a1a;
+          padding: 24px;
+          border-radius: 16px;
+          border: 1px solid #333;
+          width: 90%;
+          max-width: 400px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+        
+        .wallet-switch-content h3 {
+          margin: 0;
+          color: #fff;
+          font-size: 20px;
+        }
+        
+        .wallet-switch-content p {
+          margin: 0;
+          color: #888;
+          font-size: 14px;
+        }
+        
+        .wallet-switch-content input {
+          padding: 12px 16px;
+          background: #0f0f0f;
+          border: 1px solid #333;
+          border-radius: 10px;
+          color: #fff;
+          font-size: 16px;
+        }
+        
+        .wallet-switch-actions {
+          display: flex;
+          gap: 12px;
+          margin-top: 8px;
+        }
+        
+        .wallet-switch-actions button {
+          flex: 1;
         }
 
         @media (max-width: 480px) {
