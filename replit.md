@@ -58,7 +58,15 @@ Pulse (powered by DarkWave Studios, LLC) is a predictive trading platform built 
   - Favorites persist to database per user
   - Quick access to analysis modal from favorites
   - FavoritesContext for app-wide state management
-- **Manual Token Watchlist / Limit Orders (NEW)** - Set-and-forget limit order system:
+- **StrikeAgent (formerly Sniper Bot)** - AI-powered predictive trading tool:
+  - Rebranded from "Sniper Bot" to "StrikeAgent" for professional positioning
+  - Domain: strikeagent.io (reserved for future standalone product)
+  - Real-time token discovery with AI scoring
+  - Safety filters (bot %, bundle %, liquidity checks)
+  - Smart Auto Mode with configurable limits
+  - RPC configuration (Helius premium or custom)
+  - Wallet integration (external Phantom/Solflare or built-in)
+- **Manual Token Watchlist / Limit Orders** - Set-and-forget limit order system:
   - 4 token slots with entry/exit/stop-loss fields
   - Backend monitors prices every minute via Inngest cron
   - Flag-based execution: orders flagged READY_TO_EXECUTE/EXIT/STOP when targets hit

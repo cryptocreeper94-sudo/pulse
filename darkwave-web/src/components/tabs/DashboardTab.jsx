@@ -394,7 +394,7 @@ export default function DashboardTab({ userId, userConfig, onNavigate }) {
   const isFavorite = (symbol) => favorites?.some(f => f.symbol?.toUpperCase() === symbol?.toUpperCase())
 
   const quickActions = [
-    { icon: '🎯', title: 'Sniper Bot', subtitle: 'AI trading', color: '#00D4FF', tab: 'sniper' },
+    { icon: '🎯', title: 'StrikeAgent', subtitle: 'AI Predictive Trading', color: '#00D4FF', tab: 'sniper' },
     { icon: '💼', title: 'Wallet', subtitle: 'Multi-chain', color: '#9D4EDD', tab: 'wallet' },
     { icon: '📋', title: 'Watchlist', subtitle: 'Limit orders', color: '#39FF14', tab: 'watchlist' },
     { icon: '📊', title: 'Markets', subtitle: 'Live prices', color: '#FF006E', tab: 'markets' },

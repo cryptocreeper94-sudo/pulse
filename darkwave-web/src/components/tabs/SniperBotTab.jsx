@@ -292,7 +292,7 @@ function DiscoveredTokenCard({ token, onSnipe, onWatch, disabled }) {
           onClick={() => onSnipe(token)}
           disabled={disabled}
         >
-          {disabled ? 'Connect Wallet' : 'Snipe'}
+          {disabled ? 'Connect Wallet' : 'Strike'}
         </button>
         <button className="sniper-btn-watch" onClick={() => onWatch(token)}>Watch</button>
       </div>
@@ -723,7 +723,7 @@ export default function SniperBotTab() {
       alert('Please connect your wallet first')
       return
     }
-    console.log('Sniping token:', token, 'from wallet:', wallet.address)
+    console.log('StrikeAgent executing on token:', token, 'from wallet:', wallet.address)
   }
 
   const handleWatch = async (token) => {
@@ -744,8 +744,8 @@ export default function SniperBotTab() {
     <div className="sniper-tab">
       <div className="sniper-header section-box">
         <div className="sniper-header-left">
-          <h1 className="sniper-title">AI SNIPER BOT</h1>
-          <p className="sniper-subtitle">Real-time token discovery</p>
+          <h1 className="sniper-title">STRIKEAGENT</h1>
+          <p className="sniper-subtitle">AI-Powered Predictive Trading</p>
         </div>
         <div className="sniper-header-right">
           <div className="sniper-sol-price">
@@ -855,7 +855,7 @@ export default function SniperBotTab() {
                 <div className="sniper-empty-state">
                   <div className="sniper-empty-icon">🎯</div>
                   <div className="sniper-empty-text">No active positions</div>
-                  <div className="sniper-empty-hint">Snipe a token to see live tracking here</div>
+                  <div className="sniper-empty-hint">Strike a token to see live tracking here</div>
                 </div>
               )}
             </div>

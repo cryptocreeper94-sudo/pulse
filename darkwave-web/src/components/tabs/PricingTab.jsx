@@ -16,7 +16,7 @@ const PLANS = [
     ],
     notIncluded: [
       'Advanced AI predictions',
-      'Sniper Bot access',
+      'StrikeAgent access',
       'DWAV token rewards',
       'Priority support'
     ],
@@ -38,7 +38,7 @@ const PLANS = [
       'Knowledge Base access'
     ],
     notIncluded: [
-      'Sniper Bot access',
+      'StrikeAgent access',
       'DWAV token rewards',
       'Priority support'
     ],
@@ -57,7 +57,7 @@ const PLANS = [
       'Everything in Base',
       '6 months full access',
       '35,000 DWAV tokens (Feb 14)',
-      'Sniper Bot access',
+      'StrikeAgent access',
       'Built-in multi-chain wallet',
       'Priority support',
       'Early feature access',
@@ -78,7 +78,7 @@ const PLANS = [
     features: [
       'Everything in Base',
       '2 months FREE',
-      'Sniper Bot access',
+      'StrikeAgent access',
       'Built-in wallet',
       'Guardian Bot access',
       'Priority support'

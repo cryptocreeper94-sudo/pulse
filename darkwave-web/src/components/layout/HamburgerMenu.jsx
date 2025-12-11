@@ -2,7 +2,7 @@ const menuItems = [
   { id: 'dashboard', icon: '🏠', label: 'My Dashboard' },
   { id: 'markets', icon: '📊', label: 'Markets' },
   { id: 'wallet', icon: '💼', label: 'Wallet', highlight: true },
-  { id: 'sniper', icon: '🎯', label: 'Sniper Bot', highlight: true },
+  { id: 'sniper', icon: '🎯', label: 'StrikeAgent', highlight: true },
   { id: 'pricing', icon: '💳', label: 'Pricing', highlight: true },
   { id: 'projects', icon: '🚀', label: 'Projects' },
   { id: 'learn', icon: '💡', label: 'Learn' },
