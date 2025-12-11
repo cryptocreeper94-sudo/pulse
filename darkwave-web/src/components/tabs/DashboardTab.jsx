@@ -123,6 +123,7 @@ function QuickActionContent({ action }) {
 
 function MetricContent({ title, value, change }) {
   const isPositive = change >= 0
+  const hasChange = change !== null && change !== undefined
   return (
     <div style={{ 
       display: 'flex', 
@@ -130,27 +131,30 @@ function MetricContent({ title, value, change }) {
       alignItems: 'center',
       justifyContent: 'center',
       height: '100%',
-      padding: 8,
+      minHeight: 140,
+      padding: 16,
       textAlign: 'center',
     }}>
-      <div style={{ fontSize: 10, color: '#666', fontWeight: 600, textTransform: 'uppercase', marginBottom: 8 }}>
+      <div style={{ fontSize: 11, color: '#888', fontWeight: 600, textTransform: 'uppercase', marginBottom: 12, letterSpacing: 1 }}>
         {title}
       </div>
-      <div style={{ fontSize: 22, fontWeight: 800, color: '#fff', marginBottom: 6 }}>
+      <div style={{ fontSize: 28, fontWeight: 800, color: '#fff', marginBottom: hasChange ? 8 : 0 }}>
         {value}
       </div>
-      <div style={{ 
-        fontSize: 12, 
-        fontWeight: 600, 
-        color: isPositive ? '#39FF14' : '#ff4444',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 4,
-      }}>
-        <span>{isPositive ? '▲' : '▼'}</span>
-        <span>{Math.abs(change).toFixed(1)}%</span>
-      </div>
+      {hasChange && (
+        <div style={{ 
+          fontSize: 14, 
+          fontWeight: 600, 
+          color: isPositive ? '#39FF14' : '#ff4444',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 4,
+        }}>
+          <span>{isPositive ? '▲' : '▼'}</span>
+          <span>{Math.abs(change).toFixed(1)}%</span>
+        </div>
+      )}
     </div>
   )
 }
@@ -163,11 +167,12 @@ function GaugeContent({ title, value, type, accentColor }) {
       alignItems: 'center',
       justifyContent: 'center',
       height: '100%',
-      padding: 8,
+      minHeight: 140,
+      padding: 16,
     }}>
       <div style={{ 
         color: accentColor, 
-        fontSize: 10, 
+        fontSize: 11, 
         fontWeight: 700, 
         textTransform: 'uppercase', 
         letterSpacing: 1,
@@ -175,8 +180,8 @@ function GaugeContent({ title, value, type, accentColor }) {
       }}>
         {title}
       </div>
-      <div style={{ width: '100%', maxWidth: 120 }}>
-        <Gauge value={value} type={type} size={120} showLabels={false} />
+      <div style={{ width: '100%', maxWidth: 100, display: 'flex', justifyContent: 'center' }}>
+        <Gauge value={value} type={type} size={100} showLabels={false} />
       </div>
     </div>
   )
@@ -807,10 +812,16 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
           background: #0f0f0f;
           border: 1px solid #222;
           border-radius: 12px;
-          padding: 16px;
-          min-height: 280px;
+          padding: 12px;
+          min-height: 220px;
           display: flex;
           flex-direction: column;
+        }
+        .mobile-category-card .market-item-wrapper {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
       `}</style>
       <div className="bento-dashboard">
