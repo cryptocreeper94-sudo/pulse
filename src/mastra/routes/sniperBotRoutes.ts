@@ -996,4 +996,27 @@ export const sniperBotRoutes = [
       }
     }
   },
+  {
+    path: "/api/sniper/ai/drift",
+    method: "GET",
+    createHandler: async ({ mastra }: any) => async (c: any) => {
+      const logger = mastra.getLogger();
+      try {
+        const windowDays = parseInt(c.req.query('windowDays') || '7');
+        const { predictionLearningService } = await import('../../services/predictionLearningService');
+        
+        const driftReport = await predictionLearningService.checkAllHorizonsDrift(windowDays);
+        
+        logger?.info('📊 [AdaptiveAI] Drift detection complete', { 
+          hasAnyDrift: driftReport.hasAnyDrift,
+          recommendation: driftReport.overallRecommendation 
+        });
+        
+        return c.json(driftReport);
+      } catch (error: any) {
+        logger?.error('❌ [AdaptiveAI] Drift detection error', { error: error.message });
+        return c.json({ error: 'Failed to detect drift' }, 500);
+      }
+    }
+  },
 ];

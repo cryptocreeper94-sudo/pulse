@@ -533,6 +533,133 @@ class PredictionLearningService {
     }
     return shuffled;
   }
+
+  async detectDrift(horizon: TimeHorizon, windowDays: number = 7): Promise<{
+    hasDrift: boolean;
+    severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+    metrics: {
+      recentAccuracy: number;
+      historicalAccuracy: number;
+      accuracyDrop: number;
+      recentSamples: number;
+      historicalSamples: number;
+    };
+    recommendation: string;
+  }> {
+    const now = new Date();
+    const windowStart = new Date(now.getTime() - windowDays * 24 * 60 * 60 * 1000);
+    const historicalStart = new Date(windowStart.getTime() - windowDays * 24 * 60 * 60 * 1000);
+
+    const recentFeatures = await db.select()
+      .from(predictionFeatures)
+      .where(and(
+        eq(predictionFeatures.horizon, horizon),
+        isNotNull(predictionFeatures.isWin),
+        gte(predictionFeatures.createdAt, windowStart)
+      ));
+
+    const historicalFeatures = await db.select()
+      .from(predictionFeatures)
+      .where(and(
+        eq(predictionFeatures.horizon, horizon),
+        isNotNull(predictionFeatures.isWin),
+        gte(predictionFeatures.createdAt, historicalStart),
+        lte(predictionFeatures.createdAt, windowStart)
+      ));
+
+    const recentWins = recentFeatures.filter(f => f.isWin).length;
+    const recentTotal = recentFeatures.length;
+    const historicalWins = historicalFeatures.filter(f => f.isWin).length;
+    const historicalTotal = historicalFeatures.length;
+
+    const recentAccuracy = recentTotal > 0 ? (recentWins / recentTotal) * 100 : 50;
+    const historicalAccuracy = historicalTotal > 0 ? (historicalWins / historicalTotal) * 100 : 50;
+    const accuracyDrop = historicalAccuracy - recentAccuracy;
+
+    let severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL' = 'LOW';
+    let hasDrift = false;
+    let recommendation = 'Model performing within expected parameters';
+
+    if (accuracyDrop > 5 && recentTotal >= 10) {
+      hasDrift = true;
+      if (accuracyDrop > 20) {
+        severity = 'CRITICAL';
+        recommendation = 'Immediate retraining required - significant performance degradation detected';
+      } else if (accuracyDrop > 15) {
+        severity = 'HIGH';
+        recommendation = 'Schedule retraining soon - notable performance decline';
+      } else if (accuracyDrop > 10) {
+        severity = 'MEDIUM';
+        recommendation = 'Monitor closely - moderate performance decline observed';
+      } else {
+        severity = 'LOW';
+        recommendation = 'Minor drift detected - continue monitoring';
+      }
+    }
+
+    if (recentAccuracy < 45 && recentTotal >= 10) {
+      hasDrift = true;
+      severity = severity === 'CRITICAL' ? 'CRITICAL' : 'HIGH';
+      recommendation = 'Model accuracy below threshold - retraining recommended';
+    }
+
+    return {
+      hasDrift,
+      severity,
+      metrics: {
+        recentAccuracy: Math.round(recentAccuracy * 10) / 10,
+        historicalAccuracy: Math.round(historicalAccuracy * 10) / 10,
+        accuracyDrop: Math.round(accuracyDrop * 10) / 10,
+        recentSamples: recentTotal,
+        historicalSamples: historicalTotal,
+      },
+      recommendation,
+    };
+  }
+
+  async checkAllHorizonsDrift(windowDays: number = 7): Promise<{
+    hasAnyDrift: boolean;
+    horizonStatus: Record<TimeHorizon, {
+      hasDrift: boolean;
+      severity: string;
+      recentAccuracy: number;
+      recommendation: string;
+    }>;
+    overallRecommendation: string;
+  }> {
+    const horizons: TimeHorizon[] = ['1h', '4h', '24h', '7d'];
+    const results: any = { hasAnyDrift: false, horizonStatus: {}, overallRecommendation: '' };
+    let highestSeverity = 'LOW';
+
+    for (const horizon of horizons) {
+      const drift = await this.detectDrift(horizon, windowDays);
+      results.horizonStatus[horizon] = {
+        hasDrift: drift.hasDrift,
+        severity: drift.severity,
+        recentAccuracy: drift.metrics.recentAccuracy,
+        recommendation: drift.recommendation,
+      };
+
+      if (drift.hasDrift) {
+        results.hasAnyDrift = true;
+        if (drift.severity === 'CRITICAL' || (drift.severity === 'HIGH' && highestSeverity !== 'CRITICAL')) {
+          highestSeverity = drift.severity;
+        }
+      }
+    }
+
+    if (highestSeverity === 'CRITICAL') {
+      results.overallRecommendation = 'Immediate action needed: Critical drift detected in one or more models';
+    } else if (highestSeverity === 'HIGH') {
+      results.overallRecommendation = 'Schedule retraining: High drift detected';
+    } else if (results.hasAnyDrift) {
+      results.overallRecommendation = 'Monitor: Minor drift detected in some models';
+    } else {
+      results.overallRecommendation = 'All models performing within expected parameters';
+    }
+
+    return results;
+  }
 }
 
 export const predictionLearningService = new PredictionLearningService();

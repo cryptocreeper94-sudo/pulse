@@ -1345,3 +1345,108 @@
   font-size: 11px;
   color: var(--accent-red);
 }
+
+/* ============================================ */
+/* CHAIN SELECTOR                               */
+/* ============================================ */
+
+.sniper-chain-selector {
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.sniper-chain-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sniper-chain-label {
+  font-size: 11px;
+  color: #666;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.sniper-chain-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sniper-chain-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  background: rgba(0, 0, 0, 0.4);
+  color: #666;
+  border: 1px solid #333;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sniper-chain-btn .chain-icon {
+  font-size: 14px;
+}
+
+.sniper-chain-btn.solana .chain-icon {
+  color: #9D4EDD;
+}
+
+.sniper-chain-btn.evm .chain-icon {
+  color: #00D4FF;
+}
+
+.sniper-chain-btn.active {
+  background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(157,78,221,0.1));
+  border-color: rgba(0,212,255,0.5);
+  color: #fff;
+}
+
+.sniper-chain-btn.active.solana {
+  border-color: #9D4EDD;
+  box-shadow: 0 0 12px rgba(157, 78, 221, 0.3);
+}
+
+.sniper-chain-btn.active.evm {
+  border-color: #00D4FF;
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.3);
+}
+
+.sniper-chain-btn:hover:not(.active) {
+  border-color: rgba(0, 212, 255, 0.3);
+  color: #999;
+}
+
+.sniper-chain-notice {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: rgba(255, 215, 0, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sniper-chain-notice .notice-icon {
+  font-size: 16px;
+}
+
+.sniper-chain-notice .notice-text {
+  font-size: 11px;
+  color: #FFD700;
+  line-height: 1.4;
+}
+
+@media (min-width: 480px) {
+  .sniper-chain-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}

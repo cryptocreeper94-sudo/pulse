@@ -626,6 +626,15 @@ export default function SniperBotTab() {
   const [rpcStatus, setRpcStatus] = useState(null)
   const [customRPC, setCustomRPC] = useState('')
   const [safetyCheckToken, setSafetyCheckToken] = useState(null)
+  const [selectedChain, setSelectedChain] = useState('solana')
+  const [availableChains, setAvailableChains] = useState([
+    { id: 'solana', name: 'Solana', symbol: 'SOL', isEvm: false },
+    { id: 'ethereum', name: 'Ethereum', symbol: 'ETH', isEvm: true },
+    { id: 'base', name: 'Base', symbol: 'ETH', isEvm: true },
+    { id: 'polygon', name: 'Polygon', symbol: 'MATIC', isEvm: true },
+    { id: 'arbitrum', name: 'Arbitrum', symbol: 'ETH', isEvm: true },
+    { id: 'bsc', name: 'BSC', symbol: 'BNB', isEvm: true },
+  ])
   
   const wallet = walletSource === 'external' 
     ? { 
@@ -784,6 +793,34 @@ export default function SniperBotTab() {
             </button>
           </div>
         </div>
+      </div>
+
+      <div className="sniper-chain-selector section-box">
+        <div className="sniper-chain-header">
+          <span className="sniper-chain-label">Target Chain</span>
+          <div className="sniper-chain-buttons">
+            {availableChains.map(chain => (
+              <button
+                key={chain.id}
+                className={`sniper-chain-btn ${selectedChain === chain.id ? 'active' : ''} ${chain.isEvm ? 'evm' : 'solana'}`}
+                onClick={() => setSelectedChain(chain.id)}
+                title={`${chain.name} (${chain.symbol})`}
+              >
+                <span className="chain-icon">{chain.isEvm ? '⬡' : '◎'}</span>
+                <span className="chain-name">{chain.name}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+        {selectedChain !== 'solana' && (
+          <div className="sniper-chain-notice">
+            <span className="notice-icon">🔮</span>
+            <span className="notice-text">
+              {availableChains.find(c => c.id === selectedChain)?.name} support coming soon. 
+              Safety analysis available, trading in development.
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="sniper-wallet-source section-box">
