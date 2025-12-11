@@ -15,6 +15,7 @@ import {
   AnalysisTab
 } from './components/tabs'
 import { GlossaryPopup } from './components/ui'
+import SubscriptionGate from './components/ui/SubscriptionGate'
 import { GlossaryProvider } from './context/GlossaryContext'
 import { AvatarProvider } from './context/AvatarContext'
 import { FavoritesProvider } from './context/FavoritesContext'
@@ -111,11 +112,23 @@ function TelegramAppContent() {
       case 'portfolio':
         return <PortfolioTab isTelegram={true} />
       case 'staking':
-        return <StakingTab isTelegram={true} />
+        return (
+          <SubscriptionGate requiredTier="rm-plus" featureName="Staking" mode="overlay" currentTier={userConfig?.subscriptionTier}>
+            <StakingTab isTelegram={true} />
+          </SubscriptionGate>
+        )
       case 'sniper':
-        return <SniperBotTab isTelegram={true} />
+        return (
+          <SubscriptionGate requiredTier="rm-plus" featureName="StrikeAgent AI Trading" mode="overlay" currentTier={userConfig?.subscriptionTier}>
+            <SniperBotTab isTelegram={true} />
+          </SubscriptionGate>
+        )
       case 'wallet':
-        return <WalletTab userId={userId} isTelegram={true} />
+        return (
+          <SubscriptionGate requiredTier="rm-plus" featureName="Wallet Transactions" mode="overlay" currentTier={userConfig?.subscriptionTier}>
+            <WalletTab userId={userId} isTelegram={true} />
+          </SubscriptionGate>
+        )
       case 'settings':
         return <SettingsTab userId={userId} userConfig={userConfig} setUserConfig={setUserConfig} isTelegram={true} />
       case 'v2-details':
