@@ -636,19 +636,32 @@ export default function SniperBotTab() {
     { id: 'bsc', name: 'BSC', symbol: 'BNB', isEvm: true },
   ])
   
-  const wallet = walletSource === 'external' 
-    ? { 
-        connected: externalWallet.connected, 
-        address: externalWallet.address,
-        shortAddress: externalWallet.shortAddress,
-        balance: externalWallet.balance 
+  const isDemoMode = sessionStorage.getItem('dwp_demo_mode') === 'true'
+  const [demoBalance, setDemoBalance] = useState(parseFloat(sessionStorage.getItem('dwp_demo_balance') || '10000'))
+  const [demoPositions, setDemoPositions] = useState([])
+  const [demoSessionId] = useState(() => `demo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`)
+  
+  const wallet = isDemoMode
+    ? {
+        connected: true,
+        address: 'DEMO_WALLET_' + demoSessionId.slice(0, 8),
+        shortAddress: 'DEMO...' + demoSessionId.slice(-4),
+        balance: (demoBalance / (solPrice || 1)).toFixed(4),
+        isDemoWallet: true
       }
-    : { 
-        connected: builtInWallet.isUnlocked, 
-        address: builtInWallet.solanaAddress,
-        shortAddress: builtInWallet.solanaAddress?.slice(0, 4) + '...' + builtInWallet.solanaAddress?.slice(-4),
-        balance: builtInWallet.solanaBalance?.toFixed(4)
-      }
+    : walletSource === 'external' 
+      ? { 
+          connected: externalWallet.connected, 
+          address: externalWallet.address,
+          shortAddress: externalWallet.shortAddress,
+          balance: externalWallet.balance 
+        }
+      : { 
+          connected: builtInWallet.isUnlocked, 
+          address: builtInWallet.solanaAddress,
+          shortAddress: builtInWallet.solanaAddress?.slice(0, 4) + '...' + builtInWallet.solanaAddress?.slice(-4),
+          balance: builtInWallet.solanaBalance?.toFixed(4)
+        }
 
   useEffect(() => {
     fetchSolPrice()
@@ -737,11 +750,89 @@ export default function SniperBotTab() {
   }
 
   const handleSnipe = async (token) => {
-    if (!wallet.connected) {
+    if (!wallet.connected && !isDemoMode) {
       alert('Please connect your wallet first')
       return
     }
+    
+    if (isDemoMode) {
+      const buyAmount = config.tradeControls?.buyAmountSol || 0.5
+      const buyAmountUsd = buyAmount * solPrice
+      
+      if (buyAmountUsd > demoBalance) {
+        alert('Insufficient demo balance')
+        return
+      }
+      
+      try {
+        const res = await fetch(`${API_BASE}/api/demo/buy`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId: demoSessionId,
+            token: {
+              address: token.address || token.mint,
+              symbol: token.symbol,
+              name: token.name,
+              priceUsd: token.priceUsd || token.price || 0.001,
+              priceSol: (token.priceUsd || token.price || 0.001) / solPrice
+            },
+            amountUsd: buyAmountUsd
+          })
+        })
+        const data = await res.json()
+        if (data.success) {
+          setDemoBalance(data.portfolio.balanceSol)
+          setDemoPositions(data.portfolio.positions)
+          setStats(prev => ({
+            ...prev,
+            tradesExecuted: data.portfolio.stats.totalTrades,
+            totalPnl: data.portfolio.stats.totalPnlSol
+          }))
+          sessionStorage.setItem('dwp_demo_balance', data.portfolio.balanceSol.toString())
+          console.log('📊 Demo buy executed:', token.symbol, buyAmountUsd)
+        } else {
+          alert(data.error || 'Demo trade failed')
+        }
+      } catch (err) {
+        console.error('Demo buy error:', err)
+        alert('Failed to execute demo trade')
+      }
+      return
+    }
+    
     console.log('StrikeAgent executing on token:', token, 'from wallet:', wallet.address)
+  }
+  
+  const handleDemoSell = async (position) => {
+    if (!isDemoMode) return
+    
+    try {
+      const res = await fetch(`${API_BASE}/api/demo/sell`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId: demoSessionId,
+          positionId: position.id,
+          currentPriceUsd: position.currentPriceUsd || position.entryPriceUsd * 1.05
+        })
+      })
+      const data = await res.json()
+      if (data.success) {
+        setDemoBalance(data.portfolio.balanceSol)
+        setDemoPositions(data.portfolio.positions)
+        setStats(prev => ({
+          ...prev,
+          tradesExecuted: data.portfolio.stats.totalTrades,
+          winRate: data.portfolio.stats.winRate,
+          totalPnl: data.portfolio.stats.totalPnlSol
+        }))
+        sessionStorage.setItem('dwp_demo_balance', data.portfolio.balanceSol.toString())
+        console.log('📊 Demo sell executed, P&L:', data.pnl)
+      }
+    } catch (err) {
+      console.error('Demo sell error:', err)
+    }
   }
 
   const handleWatch = async (token) => {
@@ -774,7 +865,7 @@ export default function SniperBotTab() {
             <div className="sniper-wallet-balance">
               <span className="sniper-wallet-label">Balance</span>
               <span className="sniper-wallet-value">
-                {wallet.balanceLoading ? '...' : `${(wallet.balance || 0).toFixed(4)} SOL`}
+                {wallet.balanceLoading ? '...' : `${parseFloat(wallet.balance || 0).toFixed(4)} SOL`}
               </span>
             </div>
           )}
@@ -851,7 +942,36 @@ export default function SniperBotTab() {
         )}
       </div>
 
-      {!wallet.connected && (
+      {isDemoMode && (
+        <div className="sniper-demo-banner section-box" style={{
+          background: 'linear-gradient(135deg, rgba(0, 212, 255, 0.15) 0%, rgba(138, 43, 226, 0.15) 100%)',
+          border: '1px solid rgba(0, 212, 255, 0.4)',
+          padding: '12px 16px',
+          borderRadius: '8px',
+          marginBottom: '16px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span style={{ fontSize: '20px' }}>🎮</span>
+            <div>
+              <strong style={{ color: '#00D4FF' }}>Demo Mode Active</strong>
+              <p style={{ fontSize: '12px', color: '#888', margin: 0 }}>
+                Paper trading with ${demoBalance.toLocaleString()} virtual balance
+              </p>
+            </div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#00D4FF' }}>
+              ${demoBalance.toLocaleString()}
+            </div>
+            <div style={{ fontSize: '10px', color: '#666' }}>Demo Balance</div>
+          </div>
+        </div>
+      )}
+
+      {!wallet.connected && !isDemoMode && (
         <div className="sniper-wallet-warning section-box">
           <div className="sniper-warning-icon">⚠️</div>
           <div className="sniper-warning-text">

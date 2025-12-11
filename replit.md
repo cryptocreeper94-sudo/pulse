@@ -141,19 +141,27 @@ The platform features a solid dark theme (`#0f0f0f`, `#1a1a1a`, `#141414`) with 
 | Wave | Feature | Status |
 |------|---------|--------|
 | 5.1 | Standalone landing page (bypass Pulse login) | DONE ✅ |
-| 5.2 | Live market data feed with real prices | PENDING |
+| 5.2 | Live market data feed with real prices | DONE ✅ |
 | 5.3 | AI coin discovery using safety engine | PENDING |
-| 5.4 | Paper trading with $10K demo balance | PENDING |
+| 5.4 | Paper trading with $10K demo balance | DONE ✅ |
 | 5.5 | Simulated buy/sell with live price tracking | PENDING |
 | 5.6 | Demo trade history + P&L dashboard | PENDING |
 | 5.7 | Email/Telegram capture for leads | PENDING |
 | 5.8 | Conversion CTA → Pulse subscription | PENDING |
 
+**Demo Mode Implementation (Dec 11, 2024):**
+- Demo accessed via `/demo` path or `strikeagent.io` domain
+- Uses sessionStorage (not localStorage) for security - clears when leaving demo
+- Auto-navigates to StrikeAgent tab after 500ms initialization
+- Shows $10,000 virtual balance with Demo Mode Active banner
+- Includes error boundary for graceful error handling
+- Multi-chain selector available (Solana, Ethereum, Base, Polygon, Arbitrum, BSC)
+
 **Key Files:**
 - `public/app.js` - Demo mode bypass logic (vanilla JS)
-- `darkwave-web/src/App.jsx` - Demo mode bypass logic (React)
-- `src/services/demoTradeService.ts` - Paper trading logic (to be created)
-- `src/mastra/routes/demoRoutes.ts` - Demo API endpoints (to be created)
+- `darkwave-web/src/App.jsx` - Demo mode bypass logic (React) + SniperBotErrorBoundary
+- `src/services/demoTradeService.ts` - Paper trading logic
+- `src/mastra/routes/demoRoutes.ts` - Demo API endpoints
 
 ---
 

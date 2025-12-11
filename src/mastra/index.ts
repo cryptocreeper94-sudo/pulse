@@ -47,6 +47,7 @@ import { sniperBotRoutes } from "./routes/sniperBotRoutes";
 import { limitOrderRoutes } from "./routes/limitOrderRoutes";
 import { walletRoutes } from "./routes/walletRoutes";
 import { paymentRoutes } from "./routes/paymentRoutes";
+import { demoRoutes } from "./routes/demoRoutes";
 
 class ProductionPinoLogger extends MastraLogger {
   protected logger: pino.Logger;
@@ -5786,6 +5787,9 @@ export const mastra = new Mastra({
       
       // Sniper Bot API Routes (MUST be before catch-all)
       ...sniperBotRoutes,
+      
+      // Demo Trading Routes (no auth required)
+      ...demoRoutes,
       
       // Limit Order API Routes
       ...limitOrderRoutes,

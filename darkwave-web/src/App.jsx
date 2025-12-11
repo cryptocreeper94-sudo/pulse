@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Component } from 'react'
 import Layout from './components/layout/Layout'
 import { 
   MarketsTab, 
@@ -25,12 +25,70 @@ import CryptoCatPopup from './components/engagement/CryptoCatPopup'
 import AgentPopup from './components/engagement/AgentPopup'
 import './styles/components.css'
 
+class SniperBotErrorBoundary extends Component {
+  constructor(props) {
+    super(props)
+    this.state = { hasError: false }
+  }
+  
+  static getDerivedStateFromError() {
+    return { hasError: true }
+  }
+  
+  componentDidCatch(error, errorInfo) {
+    console.error('SniperBotTab error:', error, errorInfo)
+  }
+  
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: '40px', textAlign: 'center' }}>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
+          <h2 style={{ color: '#fff', marginBottom: '12px' }}>StrikeAgent Loading Error</h2>
+          <p style={{ color: '#888', marginBottom: '24px' }}>
+            There was an issue loading StrikeAgent. Please try again.
+          </p>
+          <button
+            onClick={() => this.setState({ hasError: false })}
+            style={{
+              padding: '12px 24px',
+              background: 'linear-gradient(135deg, #00D4FF, #00A0CC)',
+              color: '#000',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: 600,
+              marginRight: '12px'
+            }}
+          >
+            Try Again
+          </button>
+          <button
+            onClick={() => window.location.href = '/'}
+            style={{
+              padding: '12px 24px',
+              background: '#333',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer'
+            }}
+          >
+            Go to Dashboard
+          </button>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
+
 function App() {
   const isStrikeAgentDomain = window.location.hostname.includes('strikeagent')
   const isDemoPath = window.location.pathname.startsWith('/demo')
   const isDemoMode = isStrikeAgentDomain || isDemoPath
   
-  const [activeTab, setActiveTab] = useState(isDemoMode ? 'sniper' : 'dashboard')
+  const [activeTab, setActiveTab] = useState('dashboard')
   const [userId, setUserId] = useState(isDemoMode ? 'demo-user' : null)
   const [userConfig, setUserConfig] = useState(isDemoMode ? { isDemoMode: true, demoBalance: 10000 } : null)
   const [selectedCoinForAnalysis, setSelectedCoinForAnalysis] = useState(null)
@@ -56,6 +114,9 @@ function App() {
       console.log('🎯 StrikeAgent Demo Mode - bypassing login')
       sessionStorage.setItem('dwp_demo_mode', 'true')
       sessionStorage.setItem('dwp_demo_balance', '10000')
+      
+      // Switch to sniper tab after a delay to allow wallet contexts to initialize
+      setTimeout(() => setActiveTab('sniper'), 500)
       return
     }
     
@@ -103,7 +164,7 @@ function App() {
       case 'staking':
         return <StakingTab />
       case 'sniper':
-        return <SniperBotTab />
+        return <SniperBotErrorBoundary><SniperBotTab /></SniperBotErrorBoundary>
       case 'wallet':
         return <WalletTab userId={userId} />
       case 'settings':

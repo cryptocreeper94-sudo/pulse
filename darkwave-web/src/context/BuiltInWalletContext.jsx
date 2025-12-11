@@ -164,7 +164,24 @@ export function BuiltInWalletProvider({ children }) {
 export function useBuiltInWallet() {
   const context = useContext(BuiltInWalletContext)
   if (!context) {
-    throw new Error('useBuiltInWallet must be used within BuiltInWalletProvider')
+    return {
+      hasWallet: false,
+      isUnlocked: false,
+      addresses: null,
+      balances: {},
+      totalUsd: 0,
+      loading: false,
+      solanaAddress: null,
+      solanaBalance: 0,
+      createWallet: async () => {},
+      importWallet: async () => {},
+      unlock: async () => {},
+      lock: () => {},
+      deleteWallet: () => {},
+      refreshBalances: async () => {},
+      signSolanaTransaction: async () => null,
+      signEvmTransaction: async () => null,
+    }
   }
   return context
 }
