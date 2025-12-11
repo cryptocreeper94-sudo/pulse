@@ -22,7 +22,8 @@ import CryptoCatPopup from './components/engagement/CryptoCatPopup'
 import './styles/components.css'
 
 function App() {
-  const [activeTab, setActiveTab] = useState('dashboard')
+  const isStrikeAgentDomain = window.location.hostname.includes('strikeagent')
+  const [activeTab, setActiveTab] = useState(isStrikeAgentDomain ? 'sniper' : 'dashboard')
   const [userId, setUserId] = useState(null)
   const [userConfig, setUserConfig] = useState(null)
   
@@ -38,7 +39,7 @@ function App() {
             if (configRes.ok) {
               const config = await configRes.json()
               setUserConfig(config)
-              if (config.defaultLandingTab) {
+              if (config.defaultLandingTab && !isStrikeAgentDomain) {
                 setActiveTab(config.defaultLandingTab)
               }
             }
