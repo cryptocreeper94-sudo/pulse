@@ -105,20 +105,19 @@ export default function AIChatButton({ isSubscribed = false, selectedAgentId = 1
       <style>{`
         .ai-chat-fab {
           position: fixed;
-          bottom: 80px;
+          bottom: 70px;
           right: 20px;
-          width: 70px;
-          height: 70px;
-          border-radius: 50%;
-          background: #1a1a1a;
-          border: 2px solid #00d4ff;
+          width: 100px;
+          height: 140px;
+          background: transparent;
+          border: none;
           cursor: pointer;
           display: flex;
-          align-items: center;
+          align-items: flex-end;
           justify-content: center;
           overflow: visible;
           z-index: 1000;
-          transition: transform 0.2s, box-shadow 0.2s;
+          transition: transform 0.2s;
           padding: 0;
         }
 
@@ -127,19 +126,24 @@ export default function AIChatButton({ isSubscribed = false, selectedAgentId = 1
         }
 
         .ai-fab-agent-image {
-          width: 90px;
-          height: 110px;
+          width: 100px;
+          height: 140px;
           object-fit: contain;
           object-position: center bottom;
-          margin-bottom: -20px;
-          filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+          filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
           position: relative;
           z-index: 2;
+          animation: agentFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes agentFloat {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-6px); }
         }
 
         .ai-fab-fallback {
-          width: 100%;
-          height: 100%;
+          width: 60px;
+          height: 60px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -152,30 +156,25 @@ export default function AIChatButton({ isSubscribed = false, selectedAgentId = 1
 
         .ai-chat-fab-glow {
           position: absolute;
-          bottom: -5px;
+          bottom: 0;
           left: 50%;
           transform: translateX(-50%);
-          width: 60px;
-          height: 30px;
-          background: radial-gradient(ellipse, rgba(0, 212, 255, 0.6) 0%, transparent 70%);
-          filter: blur(8px);
+          width: 80px;
+          height: 40px;
+          background: radial-gradient(ellipse, rgba(0, 212, 255, 0.7) 0%, rgba(0, 153, 255, 0.3) 40%, transparent 70%);
+          filter: blur(12px);
           pointer-events: none;
           z-index: 1;
+          animation: glowPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes glowPulse {
+          0%, 100% { opacity: 0.8; transform: translateX(-50%) scale(1); }
+          50% { opacity: 1; transform: translateX(-50%) scale(1.15); }
         }
 
         .ai-chat-fab-pulse {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          border-radius: 50%;
-          border: 2px solid rgba(0, 212, 255, 0.4);
-          animation: fabPulse 2s infinite;
-          pointer-events: none;
-        }
-
-        @keyframes fabPulse {
-          0% { transform: scale(1); opacity: 1; }
-          100% { transform: scale(1.5); opacity: 0; }
+          display: none;
         }
 
         .ai-chat-panel {
