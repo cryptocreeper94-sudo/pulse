@@ -62,6 +62,12 @@ outputType = "webview"
 [userenv]
 
 [userenv.shared]
+BASE_PRICE_ID = "price_1SdIrPPQpkkF93FKzRU0JkpS"
+STRIPE_BASE_MONTHLY_PRICE = "price_1SdIrPPQpkkF93FKzRU0JkpS"
+ANNUAL_SUBSCRIPTION_PRICE_ID = "price_1SdIrQPQpkkF93FKmkOk8KC9"
+STRIPE_ANNUAL_PRICE = "price_1SdIrQPQpkkF93FKmkOk8KC9"
+LEGACY_FOUNDER_6MONTH_PRICE_ID = "price_1SdIrQPQpkkF93FK07iEC0tf"
+STRIPE_LEGACY_FOUNDER_PRICE = "price_1SdIrQPQpkkF93FK07iEC0tf"
 
 [[ports]]
 localPort = 3001
