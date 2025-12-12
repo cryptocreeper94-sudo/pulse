@@ -1,6 +1,6 @@
 import { db } from '../../db/client.js';
-import { predictionEvents, predictionOutcomes, predictionModelVersions } from '../../db/schema';
-import { desc } from 'drizzle-orm';
+import { predictionEvents, predictionOutcomes, predictionModelVersions, strikeagentPredictions } from '../../db/schema';
+import { desc, gte, sql } from 'drizzle-orm';
 
 export const mlRoutes = [
   {
@@ -99,6 +99,103 @@ export const mlRoutes = [
           activeModels: 0,
           totalModels: 0,
           models: []
+        });
+      }
+    }
+  },
+  {
+    path: "/api/ml/api-usage",
+    method: "GET",
+    createHandler: async ({ mastra }: any) => async (c: any) => {
+      const logger = mastra.getLogger();
+      try {
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        
+        const monthlyPredictions = await db.select({ count: sql<number>`count(*)` })
+          .from(predictionEvents)
+          .where(gte(predictionEvents.createdAt, startOfMonth));
+        
+        const dailyPredictions = await db.select({ count: sql<number>`count(*)` })
+          .from(predictionEvents)
+          .where(gte(predictionEvents.createdAt, startOfDay));
+
+        let monthlyTokenScans = 0;
+        let dailyTokenScans = 0;
+        try {
+          const monthlyScans = await db.select({ count: sql<number>`count(*)` })
+            .from(strikeagentPredictions)
+            .where(gte(strikeagentPredictions.createdAt, startOfMonth));
+          monthlyTokenScans = Number(monthlyScans[0]?.count || 0);
+          
+          const dailyScans = await db.select({ count: sql<number>`count(*)` })
+            .from(strikeagentPredictions)
+            .where(gte(strikeagentPredictions.createdAt, startOfDay));
+          dailyTokenScans = Number(dailyScans[0]?.count || 0);
+        } catch (e) {
+        }
+
+        const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+        const dayOfMonth = now.getDate();
+        
+        const outcomeChecksPerHour = 2;
+        const hoursThisMonth = dayOfMonth * 24;
+        const estimatedOutcomeChecks = hoursThisMonth * outcomeChecksPerHour;
+        
+        const monthlyPredCount = Number(monthlyPredictions[0]?.count || 0);
+        const dailyPredCount = Number(dailyPredictions[0]?.count || 0);
+        
+        const coingeckoCallsMonthly = monthlyPredCount + monthlyTokenScans + estimatedOutcomeChecks;
+        const coingeckoCallsDaily = dailyPredCount + dailyTokenScans + (24 * outcomeChecksPerHour);
+        
+        const heliusCallsMonthly = monthlyTokenScans * 3;
+        const heliusCallsDaily = dailyTokenScans * 3;
+
+        const coingeckoLimit = 500000;
+        const heliusFreeLimit = 100000;
+        
+        return c.json({
+          period: {
+            month: now.toLocaleString('default', { month: 'long' }),
+            year: now.getFullYear(),
+            dayOfMonth,
+            daysInMonth
+          },
+          coingecko: {
+            callsToday: coingeckoCallsDaily,
+            callsThisMonth: coingeckoCallsMonthly,
+            monthlyLimit: coingeckoLimit,
+            percentUsed: ((coingeckoCallsMonthly / coingeckoLimit) * 100).toFixed(2),
+            estimatedMonthlyCost: '$0',
+            status: coingeckoCallsMonthly < coingeckoLimit * 0.8 ? 'healthy' : 'warning'
+          },
+          helius: {
+            callsToday: heliusCallsDaily,
+            callsThisMonth: heliusCallsMonthly,
+            monthlyLimit: heliusFreeLimit,
+            percentUsed: ((heliusCallsMonthly / heliusFreeLimit) * 100).toFixed(2),
+            estimatedMonthlyCost: heliusCallsMonthly < heliusFreeLimit ? '$0 (free tier)' : '~$49/mo',
+            status: heliusCallsMonthly < heliusFreeLimit * 0.8 ? 'healthy' : 'warning'
+          },
+          breakdown: {
+            predictions: monthlyPredCount,
+            tokenScans: monthlyTokenScans,
+            outcomeChecks: estimatedOutcomeChecks
+          },
+          summary: {
+            totalApiCalls: coingeckoCallsMonthly + heliusCallsMonthly,
+            estimatedTotalCost: heliusCallsMonthly < heliusFreeLimit ? '$0/month' : '~$49/month'
+          }
+        });
+      } catch (error: any) {
+        logger?.error('❌ [MLStats] Error fetching API usage', { error: error.message });
+        return c.json({
+          period: { month: 'Unknown', year: 2025, dayOfMonth: 1, daysInMonth: 30 },
+          coingecko: { callsToday: 0, callsThisMonth: 0, monthlyLimit: 500000, percentUsed: '0', estimatedMonthlyCost: '$0', status: 'unknown' },
+          helius: { callsToday: 0, callsThisMonth: 0, monthlyLimit: 100000, percentUsed: '0', estimatedMonthlyCost: '$0', status: 'unknown' },
+          breakdown: { predictions: 0, tokenScans: 0, outcomeChecks: 0 },
+          summary: { totalApiCalls: 0, estimatedTotalCost: '$0/month' }
         });
       }
     }
