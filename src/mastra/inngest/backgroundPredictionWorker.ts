@@ -16,15 +16,31 @@ interface IndicatorSnapshot {
   ema9: number;
   ema21: number;
   ema50: number;
-  ema200: number;
+  sma20: number;
   sma50: number;
-  sma200: number;
   bollingerBands: { upper: number; middle: number; lower: number; bandwidth: number };
   support: number;
   resistance: number;
   volumeDelta: { buyVolume: number; sellVolume: number; delta: number; buySellRatio: number };
   spikeScore: { score: number; signal: string; prediction: string };
   volatility: number;
+}
+
+function safeNumber(value: number | undefined | null, fallback: number = 0): number {
+  if (value === undefined || value === null || isNaN(value) || !isFinite(value)) {
+    return fallback;
+  }
+  return value;
+}
+
+function safeFixed(value: number | undefined | null, decimals: number, fallback: number = 0): number {
+  const safeVal = safeNumber(value, fallback);
+  return parseFloat(safeVal.toFixed(decimals));
+}
+
+function getLastValue<T>(arr: T[] | undefined | null, fallback: T): T {
+  if (!arr || arr.length === 0) return fallback;
+  return arr[arr.length - 1] ?? fallback;
 }
 
 function calculateIndicators(
@@ -41,61 +57,112 @@ function calculateIndicators(
   bearishCount: number;
   recommendation: 'BUY' | 'SELL' | 'HOLD' | 'STRONG_BUY' | 'STRONG_SELL';
 } {
-  const rsiValues = RSI.calculate({ values: closePrices, period: 14 });
-  const currentRSI = rsiValues[rsiValues.length - 1] || 50;
+  const dataLength = closePrices.length;
+  const safePrices = closePrices.filter(p => typeof p === 'number' && !isNaN(p) && isFinite(p));
+  const safeCurrentPrice = safeNumber(currentPrice, safePrices[safePrices.length - 1] || 1);
+  const safePriceChange = safeNumber(priceChangePercent24h, 0);
 
-  const macdValues = MACD.calculate({
-    values: closePrices,
-    fastPeriod: 12,
-    slowPeriod: 26,
-    signalPeriod: 9,
-    SimpleMAOscillator: false,
-    SimpleMASignal: false,
-  });
-  const currentMACD = macdValues[macdValues.length - 1] || { MACD: 0, signal: 0, histogram: 0 };
+  let currentRSI = 50;
+  if (safePrices.length >= 15) {
+    const rsiValues = RSI.calculate({ values: safePrices, period: 14 });
+    currentRSI = safeNumber(getLastValue(rsiValues, 50), 50);
+  }
 
-  const ema9Values = EMA.calculate({ values: closePrices, period: 9 });
-  const ema21Values = EMA.calculate({ values: closePrices, period: 21 });
-  const ema50Values = EMA.calculate({ values: closePrices, period: 50 });
-  const ema200Values = EMA.calculate({ values: closePrices, period: 200 });
-  const currentEMA9 = ema9Values[ema9Values.length - 1] || currentPrice;
-  const currentEMA21 = ema21Values[ema21Values.length - 1] || currentPrice;
-  const currentEMA50 = ema50Values[ema50Values.length - 1] || currentPrice;
-  const currentEMA200 = ema200Values[ema200Values.length - 1] || currentPrice;
+  let currentMACD = { MACD: 0, signal: 0, histogram: 0 };
+  if (safePrices.length >= 35) {
+    const macdValues = MACD.calculate({
+      values: safePrices,
+      fastPeriod: 12,
+      slowPeriod: 26,
+      signalPeriod: 9,
+      SimpleMAOscillator: false,
+      SimpleMASignal: false,
+    });
+    const lastMACD = getLastValue(macdValues, null);
+    if (lastMACD) {
+      currentMACD = {
+        MACD: safeNumber(lastMACD.MACD, 0),
+        signal: safeNumber(lastMACD.signal, 0),
+        histogram: safeNumber(lastMACD.histogram, 0),
+      };
+    }
+  }
 
-  const sma50Values = SMA.calculate({ values: closePrices, period: 50 });
-  const sma200Values = SMA.calculate({ values: closePrices, period: 200 });
-  const currentSMA50 = sma50Values[sma50Values.length - 1] || currentPrice;
-  const currentSMA200 = sma200Values[sma200Values.length - 1] || currentPrice;
+  let currentEMA9 = safeCurrentPrice;
+  let currentEMA21 = safeCurrentPrice;
+  let currentEMA50 = safeCurrentPrice;
+  
+  if (safePrices.length >= 10) {
+    const ema9Values = EMA.calculate({ values: safePrices, period: 9 });
+    currentEMA9 = safeNumber(getLastValue(ema9Values, safeCurrentPrice), safeCurrentPrice);
+  }
+  if (safePrices.length >= 22) {
+    const ema21Values = EMA.calculate({ values: safePrices, period: 21 });
+    currentEMA21 = safeNumber(getLastValue(ema21Values, safeCurrentPrice), safeCurrentPrice);
+  }
+  if (safePrices.length >= 51) {
+    const ema50Values = EMA.calculate({ values: safePrices, period: 50 });
+    currentEMA50 = safeNumber(getLastValue(ema50Values, safeCurrentPrice), safeCurrentPrice);
+  }
 
-  const bbValues = BollingerBands.calculate({
-    values: closePrices,
-    period: 20,
-    stdDev: 2,
-  });
-  const currentBB = bbValues[bbValues.length - 1] || { upper: currentPrice * 1.05, middle: currentPrice, lower: currentPrice * 0.95 };
+  let currentSMA20 = safeCurrentPrice;
+  let currentSMA50 = safeCurrentPrice;
+  
+  if (safePrices.length >= 21) {
+    const sma20Values = SMA.calculate({ values: safePrices, period: 20 });
+    currentSMA20 = safeNumber(getLastValue(sma20Values, safeCurrentPrice), safeCurrentPrice);
+  }
+  if (safePrices.length >= 51) {
+    const sma50Values = SMA.calculate({ values: safePrices, period: 50 });
+    currentSMA50 = safeNumber(getLastValue(sma50Values, safeCurrentPrice), safeCurrentPrice);
+  }
+
+  let currentBB = { upper: safeCurrentPrice * 1.05, middle: safeCurrentPrice, lower: safeCurrentPrice * 0.95 };
+  if (safePrices.length >= 21) {
+    const bbValues = BollingerBands.calculate({
+      values: safePrices,
+      period: 20,
+      stdDev: 2,
+    });
+    const lastBB = getLastValue(bbValues, null);
+    if (lastBB) {
+      currentBB = {
+        upper: safeNumber(lastBB.upper, safeCurrentPrice * 1.05),
+        middle: safeNumber(lastBB.middle, safeCurrentPrice),
+        lower: safeNumber(lastBB.lower, safeCurrentPrice * 0.95),
+      };
+    }
+  }
   const bandwidth = currentBB.middle > 0 ? ((currentBB.upper - currentBB.lower) / currentBB.middle) * 100 : 0;
 
-  const recentHighs = highPrices.slice(-30);
-  const recentLows = lowPrices.slice(-30);
-  const support = Math.min(...recentLows.filter(l => l < currentPrice)) || currentPrice * 0.95;
-  const resistance = Math.max(...recentHighs.filter(h => h > currentPrice)) || currentPrice * 1.05;
+  const safeHighs = highPrices.filter(h => typeof h === 'number' && !isNaN(h) && isFinite(h));
+  const safeLows = lowPrices.filter(l => typeof l === 'number' && !isNaN(l) && isFinite(l));
+  const recentHighs = safeHighs.slice(-30);
+  const recentLows = safeLows.slice(-30);
+  
+  const lowsBelow = recentLows.filter(l => l < safeCurrentPrice);
+  const highsAbove = recentHighs.filter(h => h > safeCurrentPrice);
+  const support = lowsBelow.length > 0 ? Math.min(...lowsBelow) : safeCurrentPrice * 0.95;
+  const resistance = highsAbove.length > 0 ? Math.max(...highsAbove) : safeCurrentPrice * 1.05;
 
-  const avgVolume = volumes.slice(-20).reduce((a, b) => a + b, 0) / Math.max(volumes.slice(-20).length, 1);
-  const currentVolume = volumes[volumes.length - 1] || 0;
+  const safeVolumes = volumes.filter(v => typeof v === 'number' && !isNaN(v) && isFinite(v) && v > 0);
+  const avgVolume = safeVolumes.length > 0 
+    ? safeVolumes.slice(-20).reduce((a, b) => a + b, 0) / Math.max(safeVolumes.slice(-20).length, 1)
+    : 0;
+  const currentVolume = safeVolumes.length > 0 ? safeVolumes[safeVolumes.length - 1] : 0;
   const volumeChangePercent = avgVolume > 0 ? ((currentVolume - avgVolume) / avgVolume) * 100 : 0;
 
-  const returns = [];
-  for (let i = 1; i < Math.min(closePrices.length, 30); i++) {
-    if (closePrices[i - 1] > 0) {
-      returns.push((closePrices[i] - closePrices[i - 1]) / closePrices[i - 1]);
+  const returns: number[] = [];
+  for (let i = 1; i < Math.min(safePrices.length, 30); i++) {
+    if (safePrices[i - 1] > 0) {
+      returns.push((safePrices[i] - safePrices[i - 1]) / safePrices[i - 1]);
     }
   }
   const mean = returns.length > 0 ? returns.reduce((a, b) => a + b, 0) / returns.length : 0;
   const variance = returns.length > 0 ? returns.reduce((sum, r) => sum + Math.pow(r - mean, 2), 0) / returns.length : 0;
   const volatility = Math.sqrt(variance) * 100;
 
-  const buyRatio = priceChangePercent24h > 0 ? 0.5 + (priceChangePercent24h / 100) : 0.5 - Math.abs(priceChangePercent24h / 100);
+  const buyRatio = safePriceChange > 0 ? 0.5 + (safePriceChange / 100) : 0.5 - Math.abs(safePriceChange / 100);
   const clampedBuyRatio = Math.max(0.1, Math.min(0.9, buyRatio));
   const buyVolume = currentVolume * clampedBuyRatio;
   const sellVolume = currentVolume * (1 - clampedBuyRatio);
@@ -108,10 +175,10 @@ function calculateIndicators(
 
   let spikeScore = 0;
   if (volumeChangePercent > 50) spikeScore += 25;
-  if (Math.abs(priceChangePercent24h) > 5) spikeScore += 20;
+  if (Math.abs(safePriceChange) > 5) spikeScore += 20;
   if (currentRSI < 30 || currentRSI > 70) spikeScore += 15;
   if (volumeDelta.buySellRatio > 1.5 || volumeDelta.buySellRatio < 0.67) spikeScore += 15;
-  const trendStrength = Math.abs(currentEMA50 - currentEMA200) / currentPrice * 100;
+  const trendStrength = safeCurrentPrice > 0 ? Math.abs(currentEMA21 - currentEMA50) / safeCurrentPrice * 100 : 0;
   if (trendStrength > 5) spikeScore += 15;
   spikeScore = Math.min(100, spikeScore);
 
@@ -122,7 +189,7 @@ function calculateIndicators(
   if (currentRSI < 30) { signals.push('RSI oversold (bullish)'); bullishCount++; }
   else if (currentRSI > 70) { signals.push('RSI overbought (bearish)'); bearishCount++; }
 
-  if (currentMACD.histogram && currentMACD.MACD && currentMACD.signal) {
+  if (currentMACD.histogram !== 0 && currentMACD.MACD !== 0 && currentMACD.signal !== 0) {
     if (currentMACD.histogram > 0 && currentMACD.MACD > currentMACD.signal) {
       signals.push('MACD bullish crossover'); bullishCount++;
     } else if (currentMACD.histogram < 0 && currentMACD.MACD < currentMACD.signal) {
@@ -130,26 +197,26 @@ function calculateIndicators(
     }
   }
 
-  if (currentPrice > currentEMA50 && currentEMA50 > currentEMA200) {
-    signals.push('Golden cross pattern (bullish)'); bullishCount++;
-  } else if (currentPrice < currentEMA50 && currentEMA50 < currentEMA200) {
-    signals.push('Death cross pattern (bearish)'); bearishCount++;
+  if (safeCurrentPrice > currentEMA21 && currentEMA21 > currentEMA50) {
+    signals.push('Bullish EMA alignment'); bullishCount++;
+  } else if (safeCurrentPrice < currentEMA21 && currentEMA21 < currentEMA50) {
+    signals.push('Bearish EMA alignment'); bearishCount++;
   }
 
-  if (currentPrice > currentSMA50) bullishCount++; else bearishCount++;
-  if (currentPrice > currentSMA200) bullishCount++; else bearishCount++;
+  if (safeCurrentPrice > currentSMA20) bullishCount++; else bearishCount++;
+  if (safeCurrentPrice > currentSMA50) bullishCount++; else bearishCount++;
 
-  if (currentPrice < currentBB.lower) { signals.push('Price below lower Bollinger Band (bullish)'); bullishCount++; }
-  else if (currentPrice > currentBB.upper) { signals.push('Price above upper Bollinger Band (bearish)'); bearishCount++; }
+  if (safeCurrentPrice < currentBB.lower) { signals.push('Price below lower Bollinger Band (bullish)'); bullishCount++; }
+  else if (safeCurrentPrice > currentBB.upper) { signals.push('Price above upper Bollinger Band (bearish)'); bearishCount++; }
 
-  const distanceToSupport = ((currentPrice - support) / support) * 100;
-  const distanceToResistance = ((resistance - currentPrice) / currentPrice) * 100;
+  const distanceToSupport = support > 0 ? ((safeCurrentPrice - support) / support) * 100 : 100;
+  const distanceToResistance = safeCurrentPrice > 0 ? ((resistance - safeCurrentPrice) / safeCurrentPrice) * 100 : 100;
   if (distanceToSupport < 2) { signals.push('Near support level (potential bounce)'); bullishCount++; }
   if (distanceToResistance < 2) { signals.push('Near resistance level (potential rejection)'); bearishCount++; }
 
-  if (volumeChangePercent > 50 && priceChangePercent24h > 0) {
+  if (volumeChangePercent > 50 && safePriceChange > 0) {
     signals.push('High volume breakout (bullish)'); bullishCount++;
-  } else if (volumeChangePercent > 50 && priceChangePercent24h < 0) {
+  } else if (volumeChangePercent > 50 && safePriceChange < 0) {
     signals.push('High volume selloff (bearish)'); bearishCount++;
   }
 
@@ -162,38 +229,37 @@ function calculateIndicators(
   else recommendation = 'HOLD';
 
   const indicators: IndicatorSnapshot = {
-    rsi: parseFloat(currentRSI.toFixed(1)),
+    rsi: safeFixed(currentRSI, 1, 50),
     macd: {
-      value: parseFloat((currentMACD.MACD || 0).toFixed(4)),
-      signal: parseFloat((currentMACD.signal || 0).toFixed(4)),
-      histogram: parseFloat((currentMACD.histogram || 0).toFixed(4)),
+      value: safeFixed(currentMACD.MACD, 4, 0),
+      signal: safeFixed(currentMACD.signal, 4, 0),
+      histogram: safeFixed(currentMACD.histogram, 4, 0),
     },
-    ema9: parseFloat(currentEMA9.toFixed(4)),
-    ema21: parseFloat(currentEMA21.toFixed(4)),
-    ema50: parseFloat(currentEMA50.toFixed(4)),
-    ema200: parseFloat(currentEMA200.toFixed(4)),
-    sma50: parseFloat(currentSMA50.toFixed(4)),
-    sma200: parseFloat(currentSMA200.toFixed(4)),
+    ema9: safeFixed(currentEMA9, 4, safeCurrentPrice),
+    ema21: safeFixed(currentEMA21, 4, safeCurrentPrice),
+    ema50: safeFixed(currentEMA50, 4, safeCurrentPrice),
+    sma20: safeFixed(currentSMA20, 4, safeCurrentPrice),
+    sma50: safeFixed(currentSMA50, 4, safeCurrentPrice),
     bollingerBands: {
-      upper: parseFloat(currentBB.upper.toFixed(4)),
-      middle: parseFloat(currentBB.middle.toFixed(4)),
-      lower: parseFloat(currentBB.lower.toFixed(4)),
-      bandwidth: parseFloat(bandwidth.toFixed(2)),
+      upper: safeFixed(currentBB.upper, 4, safeCurrentPrice * 1.05),
+      middle: safeFixed(currentBB.middle, 4, safeCurrentPrice),
+      lower: safeFixed(currentBB.lower, 4, safeCurrentPrice * 0.95),
+      bandwidth: safeFixed(bandwidth, 2, 0),
     },
-    support: parseFloat(support.toFixed(4)),
-    resistance: parseFloat(resistance.toFixed(4)),
+    support: safeFixed(support, 4, safeCurrentPrice * 0.95),
+    resistance: safeFixed(resistance, 4, safeCurrentPrice * 1.05),
     volumeDelta: {
-      buyVolume: parseFloat(volumeDelta.buyVolume.toFixed(2)),
-      sellVolume: parseFloat(volumeDelta.sellVolume.toFixed(2)),
-      delta: parseFloat(volumeDelta.delta.toFixed(2)),
-      buySellRatio: parseFloat(volumeDelta.buySellRatio.toFixed(2)),
+      buyVolume: safeFixed(volumeDelta.buyVolume, 2, 0),
+      sellVolume: safeFixed(volumeDelta.sellVolume, 2, 0),
+      delta: safeFixed(volumeDelta.delta, 2, 0),
+      buySellRatio: safeFixed(volumeDelta.buySellRatio, 2, 1),
     },
     spikeScore: {
       score: spikeScore,
       signal: spikeScore >= 60 ? 'SPIKE_SIGNAL' : spikeScore >= 40 ? 'WATCHLIST' : 'NO_SIGNAL',
       prediction: spikeScore >= 60 ? 'High probability of significant move' : 'Normal market conditions',
     },
-    volatility: parseFloat(volatility.toFixed(2)),
+    volatility: safeFixed(volatility, 2, 0),
   };
 
   return { indicators, signals, bullishCount, bearishCount, recommendation };
@@ -230,8 +296,8 @@ export const backgroundPredictionWorker = inngest.createFunction(
           }
         );
 
-        if (!ohlcData || ohlcData.length < 50) {
-          console.warn(`⚠️ [BackgroundPredictionWorker] Insufficient data for ${coinId}`);
+        if (!ohlcData || !Array.isArray(ohlcData) || ohlcData.length < 20) {
+          console.warn(`⚠️ [BackgroundPredictionWorker] Insufficient data for ${coinId} (got ${ohlcData?.length || 0} points, need 20+)`);
           errorCount++;
           continue;
         }
@@ -243,13 +309,14 @@ export const backgroundPredictionWorker = inngest.createFunction(
               const data = await coinGeckoClient.getSimplePrice(coinId, 'usd', true, true, true);
               return data[coinId];
             } catch (err: any) {
+              console.warn(`⚠️ [BackgroundPredictionWorker] Failed to fetch price for ${coinId}: ${err.message}`);
               return null;
             }
           }
         );
 
-        if (!priceData || !priceData.usd) {
-          console.warn(`⚠️ [BackgroundPredictionWorker] No price data for ${coinId}`);
+        if (!priceData || typeof priceData.usd !== 'number' || isNaN(priceData.usd)) {
+          console.warn(`⚠️ [BackgroundPredictionWorker] No valid price data for ${coinId}`);
           errorCount++;
           continue;
         }
@@ -257,40 +324,63 @@ export const backgroundPredictionWorker = inngest.createFunction(
         const result = await step.run(
           `analyze-${coinId}`,
           async () => {
-            const closePrices = ohlcData.map((d: number[]) => d[4]);
-            const highPrices = ohlcData.map((d: number[]) => d[2]);
-            const lowPrices = ohlcData.map((d: number[]) => d[3]);
-            const volumes = ohlcData.map(() => priceData.usd_24h_vol || 0);
-            const currentPrice = priceData.usd;
-            const priceChangePercent24h = priceData.usd_24h_change || 0;
+            try {
+              const closePrices = ohlcData
+                .map((d: number[]) => d[4])
+                .filter((p: number) => typeof p === 'number' && !isNaN(p) && isFinite(p));
+              const highPrices = ohlcData
+                .map((d: number[]) => d[2])
+                .filter((p: number) => typeof p === 'number' && !isNaN(p) && isFinite(p));
+              const lowPrices = ohlcData
+                .map((d: number[]) => d[3])
+                .filter((p: number) => typeof p === 'number' && !isNaN(p) && isFinite(p));
+              
+              const volume24h = typeof priceData.usd_24h_vol === 'number' && !isNaN(priceData.usd_24h_vol) 
+                ? priceData.usd_24h_vol 
+                : 0;
+              const volumes = ohlcData.map(() => volume24h);
+              
+              const currentPrice = priceData.usd;
+              const priceChangePercent24h = typeof priceData.usd_24h_change === 'number' && !isNaN(priceData.usd_24h_change)
+                ? priceData.usd_24h_change
+                : 0;
 
-            const { indicators, signals, bullishCount, bearishCount, recommendation } = calculateIndicators(
-              closePrices,
-              highPrices,
-              lowPrices,
-              volumes,
-              currentPrice,
-              priceChangePercent24h
-            );
+              if (closePrices.length < 15) {
+                console.warn(`⚠️ [BackgroundPredictionWorker] Not enough valid close prices for ${coinId} (${closePrices.length})`);
+                return { id: '', coinId, signal: 'HOLD', success: false };
+              }
 
-            const predResult = await predictionTrackingService.logPrediction({
-              ticker: coinId.toUpperCase(),
-              assetType: 'crypto',
-              priceAtPrediction: currentPrice,
-              signal: recommendation,
-              indicators,
-              bullishSignals: bullishCount,
-              bearishSignals: bearishCount,
-              signalsList: signals,
-              userId: 'system-background-worker',
-            });
+              const { indicators, signals, bullishCount, bearishCount, recommendation } = calculateIndicators(
+                closePrices,
+                highPrices,
+                lowPrices,
+                volumes,
+                currentPrice,
+                priceChangePercent24h
+              );
 
-            return {
-              id: predResult.id,
-              coinId,
-              signal: recommendation,
-              success: predResult.success,
-            };
+              const predResult = await predictionTrackingService.logPrediction({
+                ticker: coinId.toUpperCase(),
+                assetType: 'crypto',
+                priceAtPrediction: currentPrice,
+                signal: recommendation,
+                indicators,
+                bullishSignals: bullishCount,
+                bearishSignals: bearishCount,
+                signalsList: signals,
+                userId: 'system-background-worker',
+              });
+
+              return {
+                id: predResult.id || '',
+                coinId,
+                signal: recommendation,
+                success: predResult.success,
+              };
+            } catch (indicatorError: any) {
+              console.error(`❌ [BackgroundPredictionWorker] Indicator calculation failed for ${coinId}:`, indicatorError.message);
+              return { id: '', coinId, signal: 'HOLD', success: false };
+            }
           }
         );
 
