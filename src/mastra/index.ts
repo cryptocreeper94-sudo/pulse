@@ -460,7 +460,7 @@ export const mastra = new Mastra({
           }
         }
       },
-      // Analyze endpoint - Technical analysis for any ticker
+      // Analyze endpoint - Technical analysis for any ticker with prediction tracking
       {
         path: "/api/analyze",
         method: "POST",
@@ -475,13 +475,84 @@ export const mastra = new Mastra({
               return c.json({ error: 'Ticker is required' }, 400);
             }
             
-            // Call technical analysis tool via workflow execution
-            const result = await technicalAnalysisTool.execute(
-              { context: { ticker: ticker.toUpperCase() }, mastra }
-            );
+            // Step 1: Get market data
+            const marketData = await marketDataTool.execute({
+              context: { ticker, days: 90 },
+              mastra,
+              runtimeContext: null as any
+            });
             
-            logger?.info('✅ [Analyze] Analysis completed', { ticker });
-            return c.json(result);
+            if (!marketData || !marketData.prices) {
+              return c.json({ error: 'Failed to fetch market data' }, 404);
+            }
+            
+            // Step 2: Run technical analysis with proper context
+            const analysis = await technicalAnalysisTool.execute({
+              context: { 
+                ticker: ticker.toUpperCase(),
+                prices: marketData.prices,
+                currentPrice: marketData.currentPrice,
+                priceChange24h: marketData.priceChange24h,
+                priceChangePercent24h: marketData.priceChangePercent24h
+              },
+              mastra,
+              runtimeContext: { resourceId: userId || 'anonymous' } as any
+            });
+            
+            if (!analysis) {
+              return c.json({ error: 'Technical analysis failed' }, 500);
+            }
+            
+            // Step 3: Log prediction for ML tracking (async, non-blocking)
+            try {
+              const predictionResult = await predictionTrackingService.logPrediction({
+                ticker: ticker.toUpperCase(),
+                assetType: marketData.type === 'crypto' ? 'crypto' : 'stock',
+                priceAtPrediction: analysis.currentPrice || marketData.currentPrice,
+                signal: analysis.recommendation || 'HOLD',
+                indicators: {
+                  rsi: analysis.rsi || 50,
+                  macd: analysis.macd || { value: 0, signal: 0, histogram: 0 },
+                  ema9: analysis.ema9 || 0,
+                  ema21: analysis.ema21 || 0,
+                  ema50: analysis.ema50 || 0,
+                  ema200: analysis.ema200 || 0,
+                  sma50: analysis.sma50 || 0,
+                  sma200: analysis.sma200 || 0,
+                  bollingerBands: analysis.bollingerBands || { upper: 0, middle: 0, lower: 0, bandwidth: 0 },
+                  support: analysis.support || 0,
+                  resistance: analysis.resistance || 0,
+                  volumeDelta: analysis.volumeDelta || { buyVolume: 0, sellVolume: 0, delta: 0, buySellRatio: 1 },
+                  spikeScore: analysis.spikeScore || { score: 0, signal: 'NO_SIGNAL', prediction: '' },
+                  volatility: analysis.volatility || 0,
+                },
+                bullishSignals: analysis.signalCount?.bullish || 0,
+                bearishSignals: analysis.signalCount?.bearish || 0,
+                signalsList: analysis.signals || [],
+                userId: userId || undefined,
+              });
+              
+              if (predictionResult.success) {
+                logger?.info('📊 [Prediction] Logged prediction', { 
+                  predictionId: predictionResult.id,
+                  ticker: ticker.toUpperCase(),
+                  signal: analysis.recommendation
+                });
+                
+                // Trigger Inngest workflow for outcome tracking
+                inngestClient.send({
+                  name: 'prediction/created',
+                  data: { predictionId: predictionResult.id },
+                }).catch(err => {
+                  logger?.warn('⚠️ [Prediction] Failed to trigger outcome workflow', { error: err.message });
+                });
+              }
+            } catch (predictionError: any) {
+              logger?.warn('⚠️ [Prediction] Failed to log prediction (non-critical)', { error: predictionError.message });
+            }
+            
+            logger?.info('✅ [Analyze] Analysis completed', { ticker, recommendation: analysis.recommendation });
+            return c.json(analysis);
           } catch (error: any) {
             logger?.error('❌ [Analyze] Error', { error: error.message });
             return c.json({ error: error.message || 'Analysis failed' }, 500);
