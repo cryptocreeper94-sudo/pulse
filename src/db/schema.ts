@@ -959,3 +959,31 @@ export const strikeagentOutcomes = pgTable('strikeagent_outcomes', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
   evaluatedAt: timestamp('evaluated_at').defaultNow().notNull(),
 });
+
+// ============================================
+// DUST BUSTER SYSTEM
+// Wallet cleanup tool for closing empty token accounts
+// ============================================
+
+// Dust Buster History - tracks each cleanup session
+export const dustBusterHistory = pgTable('dust_buster_history', {
+  id: serial('id').primaryKey(),
+  userId: varchar('user_id', { length: 255 }),
+  walletAddress: varchar('wallet_address', { length: 64 }).notNull(),
+  accountsClosed: integer('accounts_closed').default(0),
+  tokensBurned: integer('tokens_burned').default(0),
+  solRecovered: numeric('sol_recovered', { precision: 18, scale: 9 }).default('0'),
+  feePaid: numeric('fee_paid', { precision: 18, scale: 9 }).default('0'),
+  txSignatures: text('tx_signatures'), // JSON array of signatures
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// Dust Buster Stats - user lifetime stats
+export const dustBusterStats = pgTable('dust_buster_stats', {
+  userId: varchar('user_id', { length: 255 }).primaryKey(),
+  totalSolRecovered: numeric('total_sol_recovered', { precision: 18, scale: 9 }).default('0'),
+  totalFeePaid: numeric('total_fee_paid', { precision: 18, scale: 9 }).default('0'),
+  totalAccountsClosed: integer('total_accounts_closed').default(0),
+  totalTokensBurned: integer('total_tokens_burned').default(0),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
