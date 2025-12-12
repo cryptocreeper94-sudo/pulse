@@ -5,6 +5,7 @@ import { type Mastra } from "@mastra/core";
 import { type Inngest, InngestFunction, NonRetriableError } from "inngest";
 import { predictionWorkerFunctions } from "./predictionWorker.js";
 import { limitOrderMonitorWorker } from "./limitOrderWorker.js";
+import { backgroundPredictionWorkerFunctions } from "./backgroundPredictionWorker.js";
 
 // Initialize Inngest with Mastra to get Inngest-compatible workflow helpers
 const {
@@ -114,7 +115,7 @@ export function inngestServe({
   return originalInngestServe({
     mastra,
     inngest,
-    functions: [...inngestFunctions, ...predictionWorkerFunctions, limitOrderMonitorWorker],
+    functions: [...inngestFunctions, ...predictionWorkerFunctions, ...backgroundPredictionWorkerFunctions, limitOrderMonitorWorker],
     registerOptions: { serveHost },
   });
 }

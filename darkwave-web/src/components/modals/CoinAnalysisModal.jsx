@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { fetchCoinAnalysis } from '../../services/api'
 import AnalysisChart from '../charts/AnalysisChart'
+import { METRIC_EXPLANATIONS, SIGNAL_EXPLANATIONS } from '../../data/metricExplanations'
 
 function formatNumber(num) {
   if (!num && num !== 0) return '—'
@@ -17,6 +18,267 @@ function formatPrice(price) {
   if (price < 0.01) return `$${price.toFixed(6)}`
   if (price < 1) return `$${price.toFixed(4)}`
   return `$${formatNumber(price)}`
+}
+
+const tooltipStyles = {
+  overlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: 'rgba(0, 0, 0, 0.7)',
+    backdropFilter: 'blur(4px)',
+    zIndex: 10000,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '20px',
+    animation: 'fadeIn 0.2s ease',
+  },
+  container: {
+    background: '#0f0f0f',
+    border: '1px solid rgba(0, 212, 255, 0.3)',
+    borderRadius: '16px',
+    maxWidth: '400px',
+    width: '100%',
+    maxHeight: '80vh',
+    overflow: 'auto',
+    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 212, 255, 0.1)',
+    animation: 'slideUp 0.3s ease',
+  },
+  header: {
+    padding: '16px 20px',
+    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    background: 'rgba(0, 212, 255, 0.05)',
+  },
+  title: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    margin: 0,
+    fontSize: '16px',
+    fontWeight: '600',
+    color: '#fff',
+  },
+  emoji: {
+    fontSize: '20px',
+  },
+  closeBtn: {
+    background: 'transparent',
+    border: 'none',
+    color: 'rgba(255, 255, 255, 0.5)',
+    fontSize: '20px',
+    cursor: 'pointer',
+    padding: '4px 8px',
+    borderRadius: '8px',
+    transition: 'all 0.2s ease',
+  },
+  body: {
+    padding: '16px 20px',
+  },
+  description: {
+    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: '14px',
+    lineHeight: '1.6',
+    marginBottom: '16px',
+  },
+  sectionTitle: {
+    color: '#00D4FF',
+    fontSize: '12px',
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+    marginBottom: '8px',
+    marginTop: '16px',
+  },
+  rangeList: {
+    listStyle: 'none',
+    padding: 0,
+    margin: 0,
+  },
+  rangeItem: {
+    padding: '10px 12px',
+    background: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: '8px',
+    marginBottom: '6px',
+    borderLeft: '3px solid',
+  },
+  rangeLabel: {
+    fontSize: '12px',
+    fontWeight: '600',
+    marginBottom: '4px',
+  },
+  rangeMeaning: {
+    fontSize: '13px',
+    color: 'rgba(255, 255, 255, 0.7)',
+  },
+  infoBox: {
+    background: 'rgba(0, 212, 255, 0.08)',
+    border: '1px solid rgba(0, 212, 255, 0.2)',
+    borderRadius: '10px',
+    padding: '12px 14px',
+    marginTop: '12px',
+  },
+  infoText: {
+    fontSize: '13px',
+    color: 'rgba(255, 255, 255, 0.8)',
+    lineHeight: '1.5',
+    margin: 0,
+  },
+  tipBox: {
+    background: 'rgba(57, 255, 20, 0.08)',
+    border: '1px solid rgba(57, 255, 20, 0.2)',
+    borderRadius: '10px',
+    padding: '12px 14px',
+    marginTop: '12px',
+  },
+  tipLabel: {
+    fontSize: '11px',
+    fontWeight: '700',
+    color: '#39FF14',
+    marginBottom: '6px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+  },
+  tipText: {
+    fontSize: '13px',
+    color: 'rgba(255, 255, 255, 0.8)',
+    lineHeight: '1.5',
+    margin: 0,
+  },
+}
+
+function MetricTooltip({ metricKey, isOpen, onClose }) {
+  const metric = METRIC_EXPLANATIONS[metricKey]
+  
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') onClose()
+    }
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape)
+    }
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [isOpen, onClose])
+  
+  if (!isOpen || !metric) return null
+  
+  const getSignalColor = (signal) => {
+    if (signal === 'bullish') return '#39FF14'
+    if (signal === 'bearish') return '#FF4444'
+    return 'rgba(255, 255, 255, 0.4)'
+  }
+  
+  return (
+    <div style={tooltipStyles.overlay} onClick={onClose}>
+      <div style={tooltipStyles.container} onClick={(e) => e.stopPropagation()}>
+        <div style={tooltipStyles.header}>
+          <h3 style={tooltipStyles.title}>
+            <span style={tooltipStyles.emoji}>{metric.emoji}</span>
+            {metric.name}
+          </h3>
+          <button style={tooltipStyles.closeBtn} onClick={onClose}>✕</button>
+        </div>
+        
+        <div style={tooltipStyles.body}>
+          <p style={tooltipStyles.description}>{metric.description}</p>
+          
+          <div style={tooltipStyles.sectionTitle}>📖 How to Read</div>
+          <ul style={tooltipStyles.rangeList}>
+            {metric.howToRead.map((item, idx) => (
+              <li 
+                key={idx} 
+                style={{
+                  ...tooltipStyles.rangeItem,
+                  borderLeftColor: getSignalColor(item.signal),
+                }}
+              >
+                <div style={{ ...tooltipStyles.rangeLabel, color: getSignalColor(item.signal) }}>
+                  {item.range}
+                </div>
+                <div style={tooltipStyles.rangeMeaning}>{item.meaning}</div>
+              </li>
+            ))}
+          </ul>
+          
+          <div style={tooltipStyles.infoBox}>
+            <div style={{ ...tooltipStyles.sectionTitle, marginTop: 0, marginBottom: '8px' }}>
+              💡 Why It Matters
+            </div>
+            <p style={tooltipStyles.infoText}>{metric.whyItMatters}</p>
+          </div>
+          
+          <div style={tooltipStyles.tipBox}>
+            <div style={tooltipStyles.tipLabel}>
+              🎯 Trading Tip
+            </div>
+            <p style={tooltipStyles.tipText}>{metric.tradingTip}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function SignalTooltip({ signal, isOpen, onClose }) {
+  const signalInfo = SIGNAL_EXPLANATIONS[signal?.toUpperCase()]
+  
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') onClose()
+    }
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape)
+    }
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [isOpen, onClose])
+  
+  if (!isOpen || !signalInfo) return null
+  
+  return (
+    <div style={tooltipStyles.overlay} onClick={onClose}>
+      <div style={tooltipStyles.container} onClick={(e) => e.stopPropagation()}>
+        <div style={tooltipStyles.header}>
+          <h3 style={tooltipStyles.title}>
+            <span style={tooltipStyles.emoji}>{signalInfo.emoji}</span>
+            {signalInfo.name} Signal
+          </h3>
+          <button style={tooltipStyles.closeBtn} onClick={onClose}>✕</button>
+        </div>
+        
+        <div style={tooltipStyles.body}>
+          <p style={tooltipStyles.description}>{signalInfo.description}</p>
+          
+          <div style={{
+            ...tooltipStyles.tipBox,
+            background: `${signalInfo.color}15`,
+            borderColor: `${signalInfo.color}40`,
+          }}>
+            <div style={{ ...tooltipStyles.tipLabel, color: signalInfo.color }}>
+              🎯 Suggested Action
+            </div>
+            <p style={tooltipStyles.tipText}>{signalInfo.action}</p>
+          </div>
+          
+          <div style={tooltipStyles.infoBox}>
+            <div style={{ ...tooltipStyles.sectionTitle, marginTop: 0, marginBottom: '8px' }}>
+              ⚠️ Important Disclaimer
+            </div>
+            <p style={tooltipStyles.infoText}>
+              AI predictions are based on technical analysis and historical patterns. 
+              They are not financial advice. Always do your own research and never 
+              invest more than you can afford to lose.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 function generateMockIndicators(coin) {
@@ -66,7 +328,7 @@ function generateMockLevels(price) {
   }
 }
 
-function IndicatorToggle({ label, value, status, isActive, onToggle, canToggle }) {
+function IndicatorToggle({ label, value, status, isActive, onToggle, canToggle, onInfoClick }) {
   let statusColor = 'var(--text-secondary)'
   if (status === 'bullish') statusColor = '#39FF14'
   if (status === 'bearish') statusColor = '#FF4444'
@@ -75,6 +337,13 @@ function IndicatorToggle({ label, value, status, isActive, onToggle, canToggle }
   const handleClick = () => {
     if (canToggle && onToggle) {
       onToggle()
+    }
+  }
+  
+  const handleInfoClick = (e) => {
+    e.stopPropagation()
+    if (onInfoClick) {
+      onInfoClick()
     }
   }
   
@@ -110,6 +379,30 @@ function IndicatorToggle({ label, value, status, isActive, onToggle, canToggle }
           </span>
         )}
         {label}
+        {onInfoClick && (
+          <button
+            onClick={handleInfoClick}
+            style={{
+              background: 'rgba(0, 212, 255, 0.15)',
+              border: '1px solid rgba(0, 212, 255, 0.3)',
+              borderRadius: '50%',
+              width: '20px',
+              height: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              fontSize: '11px',
+              color: '#00D4FF',
+              padding: 0,
+              transition: 'all 0.2s ease',
+              flexShrink: 0,
+            }}
+            title="Learn more"
+          >
+            ℹ️
+          </button>
+        )}
       </span>
       <span className="analysis-indicator-value" style={{ color: statusColor }}>{value}</span>
     </div>
@@ -291,6 +584,8 @@ export default function CoinAnalysisModal({ coin, isOpen, onClose }) {
     sma: false,
     ema: false,
   })
+  const [activeTooltip, setActiveTooltip] = useState(null)
+  const [showSignalTooltip, setShowSignalTooltip] = useState(false)
   
   useEffect(() => {
     if (isOpen) {
@@ -454,6 +749,7 @@ export default function CoinAnalysisModal({ coin, isOpen, onClose }) {
                     isActive={activeIndicators.rsi}
                     onToggle={() => toggleIndicator('rsi')}
                     canToggle={false}
+                    onInfoClick={() => setActiveTooltip('rsi')}
                   />
                   <IndicatorToggle 
                     label="MACD" 
@@ -462,6 +758,7 @@ export default function CoinAnalysisModal({ coin, isOpen, onClose }) {
                     isActive={activeIndicators.macd}
                     onToggle={() => toggleIndicator('macd')}
                     canToggle={false}
+                    onInfoClick={() => setActiveTooltip('macd')}
                   />
                   <IndicatorToggle 
                     label="SMA (20)" 
@@ -470,6 +767,7 @@ export default function CoinAnalysisModal({ coin, isOpen, onClose }) {
                     isActive={activeIndicators.sma}
                     onToggle={() => toggleIndicator('sma')}
                     canToggle={true}
+                    onInfoClick={() => setActiveTooltip('sma')}
                   />
                   <IndicatorToggle 
                     label="EMA (12)" 
@@ -478,14 +776,43 @@ export default function CoinAnalysisModal({ coin, isOpen, onClose }) {
                     isActive={activeIndicators.ema}
                     onToggle={() => toggleIndicator('ema')}
                     canToggle={true}
+                    onInfoClick={() => setActiveTooltip('ema')}
                   />
                 </div>
               </div>
               
               <div className="analysis-section">
-                <h3 className="analysis-section-title">🤖 AI Prediction</h3>
+                <h3 className="analysis-section-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  🤖 AI Prediction
+                  <button
+                    onClick={() => setShowSignalTooltip(true)}
+                    style={{
+                      background: 'rgba(0, 212, 255, 0.15)',
+                      border: '1px solid rgba(0, 212, 255, 0.3)',
+                      borderRadius: '50%',
+                      width: '22px',
+                      height: '22px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                      color: '#00D4FF',
+                      padding: 0,
+                      transition: 'all 0.2s ease',
+                      flexShrink: 0,
+                    }}
+                    title="Learn what this signal means"
+                  >
+                    ℹ️
+                  </button>
+                </h3>
                 <div className="analysis-prediction-card">
-                  <div className={`analysis-signal-badge ${prediction?.signal?.toLowerCase() || 'hold'}`}>
+                  <div 
+                    className={`analysis-signal-badge ${prediction?.signal?.toLowerCase() || 'hold'}`}
+                    onClick={() => setShowSignalTooltip(true)}
+                    style={{ cursor: 'pointer' }}
+                  >
                     {prediction?.signal || 'HOLD'}
                   </div>
                   <div className="analysis-confidence">
@@ -502,6 +829,14 @@ export default function CoinAnalysisModal({ coin, isOpen, onClose }) {
                       }}
                     />
                   </div>
+                  <p style={{
+                    fontSize: '11px',
+                    color: 'rgba(255, 255, 255, 0.5)',
+                    marginTop: '10px',
+                    textAlign: 'center',
+                  }}>
+                    Tap signal badge to learn more
+                  </p>
                 </div>
               </div>
               
@@ -550,6 +885,18 @@ export default function CoinAnalysisModal({ coin, isOpen, onClose }) {
           </button>
         </div>
       </div>
+      
+      <MetricTooltip 
+        metricKey={activeTooltip}
+        isOpen={!!activeTooltip}
+        onClose={() => setActiveTooltip(null)}
+      />
+      
+      <SignalTooltip
+        signal={prediction?.signal}
+        isOpen={showSignalTooltip}
+        onClose={() => setShowSignalTooltip(false)}
+      />
     </div>
   )
 }
