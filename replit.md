@@ -17,7 +17,7 @@ Pulse, by DarkWave Studios, LLC, is an AI-driven trading platform that leverages
 The platform features a solid dark theme (`#0f0f0f`, `#1a1a1a`, `#141414`) with free-floating elements and glow effects, explicitly avoiding glassmorphism, transparency, and backdrop-filters. The design includes a slim 50px header with a hamburger menu, a dynamic footer, SVG gauge components for market sentiment, metric cards for market cap and volume, and a customizable Bitcoin chart using `lightweight-charts`. UI elements should avoid frames or boxes, with agents appearing as if walking in front of a screen, using full-body, rembg-treated, Pixar/MIB style with sweep-in animations. The color palette strictly avoids orange, yellow, and brown. A light mode theme with softer blue-tinted grays and enhanced contrast is also implemented.
 
 ### Technical Implementations
-- **Frontend**: React 19 and Vite 7, with a React Native + Expo mobile app in development.
+- **Frontend**: React 19 and Vite 7 web app, plus React Native + Expo mobile app (darkwave-mobile/) with tab navigation (Markets, StrikeAgent, Portfolio, Settings).
 - **Backend**: Mastra AI framework with an Express server, powered by the DarkWave-V2 AI agent supporting tool calling and memory.
 - **Database**: PostgreSQL, specifically Neon-backed.
 - **Authentication**: Session-based, using an email whitelist and access codes.
@@ -30,7 +30,8 @@ The platform features a solid dark theme (`#0f0f0f`, `#1a1a1a`, `#141414`) with 
 - **Multi-Chain Built-in Wallet**: Custom HD wallet with Trust Wallet-style UX, supporting Solana and 22 EVM chains. Features BIP39 mnemonic generation, AES-256-GCM encrypted storage, client-side crypto operations, and multi-wallet support.
 - **Automatic Versioning System**: Manages `version.json` for frontend and backend, with scripts for auto-incrementing patch versions.
 - **ORBIT Ecosystem Integration**: Cross-app communication for activity logging, code snippet sharing, metrics reporting, and alerts.
-- **Feature Specifications**: Includes user authentication, real-time crypto price tracking, AI prediction/analysis modals, admin dashboard, Telegram bot integration, 18 AI Agent personas with NFT Trading Cards, a comprehensive Knowledge Base, and a custom Avatar Creator with DiceBear integration supporting 5 professional avatar styles. A Skins System offers 304 customizable themes across 14 categories, with free and subscriber-exclusive options.
+- **Feature Specifications**: Includes user authentication, real-time crypto price tracking, AI prediction/analysis modals, admin dashboard, Telegram bot integration with StrikeAgent notifications, 54 diverse AI Agent personas (balanced by gender, age, race with NFT Trading Cards), a comprehensive Knowledge Base, and a custom Avatar Creator with DiceBear integration supporting 5 professional avatar styles. A Skins System offers 304 customizable themes across 14 categories, with free and subscriber-exclusive options.
+- **Stripe Integration**: 3 pricing tiers (RM+ Monthly $8/mo, RM+ Annual $80/yr, Legacy Founder $24 one-time) with 3-day free trials for subscriptions.
 
 ## External Dependencies
 
