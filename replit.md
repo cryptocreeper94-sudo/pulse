@@ -60,3 +60,178 @@ The platform features a solid dark theme (`#0f0f0f`, `#1a1a1a`, `#141414`) with 
 
 ### Supporting Libraries
 - `axios`, `zod`, React 19, Vite 7
+
+---
+
+## 🎯 PRIORITY: AI Autonomous Trading System Roadmap
+
+**Goal:** Build a self-learning AI that can autonomously trigger StrikeAgent trades based on proven prediction accuracy.
+
+### Phase 1: Data Collection ✅ ACTIVE (December 2025)
+**Status:** Fixed and collecting data as of Dec 12, 2025
+
+**What's Working:**
+- Every `/api/analyze` call logs predictions to `prediction_events` table
+- Full indicator snapshots saved (RSI, MACD, EMAs, Bollinger, volume, volatility)
+- Inngest workers check outcomes at 1h, 4h, 24h, 7d horizons
+- Feature extraction for ML training (`prediction_features` table)
+- Prediction hashing for blockchain stamping
+
+**Key Files:**
+- `src/services/predictionTrackingService.ts` - Logs predictions, records outcomes
+- `src/services/predictionLearningService.ts` - Feature extraction, model training
+- `src/mastra/inngest/predictionWorker.ts` - Outcome checking, weekly training cron
+
+**Database Tables:**
+- `prediction_events` - Every signal with indicators
+- `prediction_outcomes` - Results at each time horizon
+- `prediction_features` - Normalized features for ML
+- `prediction_model_versions` - Trained model coefficients
+- `prediction_accuracy_stats` - Win rates per ticker/signal/horizon
+
+**Minimum Data Needed:** 50+ samples per time horizon before ML can train
+
+---
+
+### Phase 2: Model Training & Accuracy Tracking (After 50+ samples)
+**Status:** Ready - runs automatically every Sunday 3 AM
+
+**What It Does:**
+- Logistic regression training on collected features
+- 80/20 train/validation split
+- Calculates accuracy, precision, recall, F1, AUROC
+- Auto-activates models with >55% accuracy
+- Drift detection alerts when performance degrades
+
+**Confidence Levels:**
+- Probability >= 0.7 → BUY with HIGH confidence
+- Probability >= 0.6 → BUY with MEDIUM confidence
+- Probability <= 0.3 → SELL with HIGH confidence
+- Probability <= 0.4 → SELL with MEDIUM confidence
+- Otherwise → HOLD
+
+**Training Triggers:**
+- Automatic: Every Sunday 3 AM via Inngest cron
+- Manual: Send `model/train` event to Inngest
+
+---
+
+### Phase 3: StrikeAgent Integration (TO BUILD)
+**Status:** Not started
+
+**Tasks:**
+1. Add prediction logging to StrikeAgent token discoveries
+2. Log every token flagged with safety scores and indicators
+3. Track actual outcomes (pump vs rug) at 1h, 4h, 24h, 7d
+4. Build specialized ML model for DEX/memecoin patterns
+5. Create `strikeagent_predictions` table for sniper-specific data
+
+**Integration Points:**
+- `src/services/sniperBotService.ts` - Add prediction logging
+- `src/mastra/routes/sniperBotRoutes.ts` - Log on scan/discovery
+- New: `src/services/strikeAgentLearningService.ts` - Sniper-specific ML
+
+**Features to Extract for Memecoins:**
+- Token age (minutes since creation)
+- Holder concentration (top 10 %)
+- Bot holder percentage
+- Liquidity depth
+- Volume momentum (5m, 15m, 1h)
+- Social buzz score
+- Creator wallet history
+- Bundle detection score
+
+---
+
+### Phase 4: Autonomous Trading (TO BUILD - After Phase 3)
+**Status:** Not started - requires proven accuracy first
+
+**Prerequisites:**
+- Phase 1-3 complete
+- 100+ predictions with tracked outcomes
+- Model accuracy proven >55% across 30+ days
+- User opt-in for auto-trading
+
+**Safety Layers:**
+1. **Confidence Gate:** Only trade when model confidence > threshold (configurable: 60/70/80%)
+2. **Accuracy Gate:** Only trade when historical accuracy > threshold (55/60/65%)
+3. **Position Limits:** Max $ per trade, max $ per day, max open positions
+4. **Kill Switch:** Instant stop button, auto-pause on consecutive losses
+5. **Approval Mode:** First notify user, wait for confirmation (training wheels)
+
+**Trading Modes:**
+- **Observer:** Log recommendations only, don't execute
+- **Approval:** Send notification, wait for user to approve
+- **Semi-Auto:** Execute small positions, notify user
+- **Full Auto:** Execute within limits, log everything
+
+**Configuration Schema:**
+```typescript
+interface AutoTradeConfig {
+  enabled: boolean;
+  mode: 'observer' | 'approval' | 'semi-auto' | 'full-auto';
+  confidenceThreshold: number; // 0.6 - 0.9
+  accuracyThreshold: number; // 0.55 - 0.75
+  maxPerTrade: number; // USD
+  maxPerDay: number; // USD
+  maxOpenPositions: number;
+  stopAfterLosses: number; // Pause after X consecutive losses
+  allowedSignals: ('BUY' | 'STRONG_BUY')[]; // Which signals trigger trades
+  allowedHorizons: ('1h' | '4h' | '24h')[]; // Which time horizons
+  notifyOnTrade: boolean;
+  notifyChannel: 'telegram' | 'email' | 'both';
+}
+```
+
+**Gradual Autonomy Path:**
+1. Week 1-4: Observer mode (learn patterns)
+2. Week 5-8: Approval mode (user confirms each trade)
+3. Week 9-12: Semi-auto with tiny positions ($5-10 max)
+4. Week 13+: Full auto if accuracy stays >60%
+
+---
+
+### Current Progress Tracking
+
+**Phase 1 Checklist:**
+- [x] Prediction logging integrated into `/api/analyze`
+- [x] Outcome tracking workers running (hourly checks)
+- [x] Feature extraction working
+- [x] Weekly model training cron configured
+- [x] Database tables created and synced
+- [ ] Collect 50+ samples for 1h horizon
+- [ ] Collect 50+ samples for 4h horizon
+- [ ] Collect 50+ samples for 24h horizon
+- [ ] First model trained with >55% accuracy
+
+**Phase 2 Checklist:**
+- [x] Training algorithm implemented (logistic regression)
+- [x] Model versioning system
+- [x] Drift detection
+- [ ] Accuracy dashboard UI
+- [ ] Model comparison tools
+- [ ] Alert on performance drop
+
+**Phase 3 Checklist:**
+- [ ] StrikeAgent prediction logging
+- [ ] Memecoin-specific feature extraction
+- [ ] Sniper model training
+- [ ] Token outcome tracking
+
+**Phase 4 Checklist:**
+- [ ] Auto-trade config schema
+- [ ] Trading mode selector
+- [ ] Position management
+- [ ] Kill switch
+- [ ] Notification integration
+- [ ] Risk dashboard
+
+---
+
+### Key Metrics to Track
+- Total predictions logged
+- Predictions with outcomes
+- Accuracy by signal type (BUY/SELL/HOLD)
+- Accuracy by time horizon (1h/4h/24h/7d)
+- Model drift score
+- Auto-trade P&L (when enabled)
