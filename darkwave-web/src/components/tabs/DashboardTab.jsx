@@ -876,7 +876,7 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
             min-height: 280px;
           }
           .mobile-categories-wrapper {
-            display: block;
+            display: block !important;
           }
         }
         
