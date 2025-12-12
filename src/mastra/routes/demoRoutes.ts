@@ -1,5 +1,7 @@
 import { demoTradeService, DemoPortfolio } from '../../services/demoTradeService';
 import { telegramNotificationService } from '../../services/telegramNotificationService';
+import { agentAvatarService } from '../../services/agentAvatarService';
+import { agentPersonas, AgentPersonaId } from '../ai/agentPersonas';
 import axios from 'axios';
 import Stripe from 'stripe';
 
@@ -509,6 +511,89 @@ export const demoRoutes = [
       } catch (error: any) {
         logger?.error('❌ [Telegram] Test error', { error: error.message });
         return c.json({ success: false, error: 'Failed to send test' }, 500);
+      }
+    }
+  },
+  {
+    path: "/api/agents/avatars",
+    method: "GET",
+    createHandler: async ({ mastra }: any) => async (c: any) => {
+      const logger = mastra.getLogger();
+      try {
+        const size = parseInt(c.req.query('size') || '200');
+        const avatars = agentAvatarService.generateAllAgentAvatars(size);
+        
+        logger?.info('🎨 [Agents] Generated all avatars', { count: avatars.length });
+        return c.json({ success: true, avatars });
+      } catch (error: any) {
+        logger?.error('❌ [Agents] Avatar generation error', { error: error.message });
+        return c.json({ success: false, error: 'Failed to generate avatars' }, 500);
+      }
+    }
+  },
+  {
+    path: "/api/agents/:agentId/avatar",
+    method: "GET",
+    createHandler: async ({ mastra }: any) => async (c: any) => {
+      const logger = mastra.getLogger();
+      try {
+        const agentId = c.req.param('agentId') as AgentPersonaId;
+        const size = parseInt(c.req.query('size') || '200');
+        
+        if (!agentPersonas[agentId]) {
+          return c.json({ success: false, error: 'Agent not found' }, 404);
+        }
+        
+        const avatar = agentAvatarService.generateAgentAvatar(agentId, size);
+        const agent = agentPersonas[agentId];
+        
+        logger?.info('🎨 [Agents] Generated avatar', { agentId });
+        return c.json({ 
+          success: true, 
+          avatar: {
+            ...avatar,
+            tradingStyle: agent.tradingStyle,
+            specialization: agent.specialization,
+            personality: agent.personality,
+            catchphrase: agent.catchphrase,
+            age: agent.age,
+            gender: agent.gender,
+            race: agent.race,
+            hairColor: agent.hairColor
+          }
+        });
+      } catch (error: any) {
+        logger?.error('❌ [Agents] Avatar error', { error: error.message });
+        return c.json({ success: false, error: 'Failed to get avatar' }, 500);
+      }
+    }
+  },
+  {
+    path: "/api/agents",
+    method: "GET",
+    createHandler: async ({ mastra }: any) => async (c: any) => {
+      const logger = mastra.getLogger();
+      try {
+        const agents = Object.values(agentPersonas).map(agent => ({
+          id: agent.id,
+          name: agent.name,
+          displayName: agent.displayName,
+          tradingStyle: agent.tradingStyle,
+          specialization: agent.specialization,
+          age: agent.age,
+          gender: agent.gender,
+          race: agent.race,
+          hairColor: agent.hairColor,
+          personality: agent.personality,
+          catchphrase: agent.catchphrase,
+          avatarUrl: agentAvatarService.getAgentAvatarUrl(agent.id, 200)
+        }));
+        
+        logger?.info('👥 [Agents] Retrieved all agents', { count: agents.length });
+        return c.json({ success: true, agents });
+      } catch (error: any) {
+        logger?.error('❌ [Agents] List error', { error: error.message });
+        return c.json({ success: false, error: 'Failed to list agents' }, 500);
       }
     }
   },
