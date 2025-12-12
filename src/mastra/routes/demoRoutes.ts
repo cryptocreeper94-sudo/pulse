@@ -1,6 +1,5 @@
 import { demoTradeService, DemoPortfolio } from '../../services/demoTradeService';
 import { telegramNotificationService } from '../../services/telegramNotificationService';
-import { userAvatarService, AVATAR_STYLES } from '../../services/userAvatarService';
 import { referralService } from '../../services/referralService';
 import axios from 'axios';
 import Stripe from 'stripe';
@@ -511,94 +510,6 @@ export const demoRoutes = [
       } catch (error: any) {
         logger?.error('❌ [Telegram] Test error', { error: error.message });
         return c.json({ success: false, error: 'Failed to send test' }, 500);
-      }
-    }
-  },
-  {
-    path: "/api/user/avatar/styles",
-    method: "GET",
-    createHandler: async ({ mastra }: any) => async (c: any) => {
-      const logger = mastra.getLogger();
-      try {
-        const isSubscriber = c.req.query('subscriber') === 'true';
-        const styles = userAvatarService.getAvailableStyles(isSubscriber);
-        
-        logger?.info('🎨 [Avatar] Retrieved styles', { count: styles.length, isSubscriber });
-        return c.json({ success: true, styles, allStyles: AVATAR_STYLES });
-      } catch (error: any) {
-        logger?.error('❌ [Avatar] Styles error', { error: error.message });
-        return c.json({ success: false, error: 'Failed to get avatar styles' }, 500);
-      }
-    }
-  },
-  {
-    path: "/api/user/avatar/generate",
-    method: "POST",
-    createHandler: async ({ mastra }: any) => async (c: any) => {
-      const logger = mastra.getLogger();
-      try {
-        const body = await c.req.json();
-        const { style, seed, backgroundColor, size = 200 } = body;
-        
-        if (!style || !seed) {
-          return c.json({ success: false, error: 'Style and seed required' }, 400);
-        }
-        
-        const styleInfo = userAvatarService.getStyleById(style);
-        if (!styleInfo) {
-          return c.json({ success: false, error: 'Invalid style' }, 400);
-        }
-        
-        const avatarUrl = userAvatarService.generateUserAvatarUrl({
-          style,
-          seed,
-          backgroundColor: backgroundColor || '0f0f0f'
-        }, size);
-        
-        logger?.info('🎨 [Avatar] Generated user avatar', { style, seed });
-        return c.json({ 
-          success: true, 
-          avatar: {
-            style,
-            seed,
-            backgroundColor,
-            avatarUrl,
-            styleName: styleInfo.name
-          }
-        });
-      } catch (error: any) {
-        logger?.error('❌ [Avatar] Generation error', { error: error.message });
-        return c.json({ success: false, error: 'Failed to generate avatar' }, 500);
-      }
-    }
-  },
-  {
-    path: "/api/user/avatar/random",
-    method: "GET",
-    createHandler: async ({ mastra }: any) => async (c: any) => {
-      const logger = mastra.getLogger();
-      try {
-        const style = c.req.query('style') || 'thumbs';
-        const seed = userAvatarService.getRandomSeed();
-        
-        const avatarUrl = userAvatarService.generateUserAvatarUrl({
-          style,
-          seed,
-          backgroundColor: '0f0f0f'
-        }, 200);
-        
-        logger?.info('🎨 [Avatar] Generated random avatar', { style, seed });
-        return c.json({ 
-          success: true, 
-          avatar: {
-            style,
-            seed,
-            avatarUrl
-          }
-        });
-      } catch (error: any) {
-        logger?.error('❌ [Avatar] Random error', { error: error.message });
-        return c.json({ success: false, error: 'Failed to generate random avatar' }, 500);
       }
     }
   },
