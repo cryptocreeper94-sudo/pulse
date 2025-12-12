@@ -1,4 +1,5 @@
 import { demoTradeService, DemoPortfolio } from '../../services/demoTradeService';
+import { telegramNotificationService } from '../../services/telegramNotificationService';
 import axios from 'axios';
 import Stripe from 'stripe';
 
@@ -452,6 +453,62 @@ export const demoRoutes = [
         }
         
         return c.json({ success: false, error: 'Checkout failed. Please try again.' }, 500);
+      }
+    }
+  },
+  {
+    path: "/api/demo/telegram/register",
+    method: "POST",
+    createHandler: async ({ mastra }: any) => async (c: any) => {
+      const logger = mastra.getLogger();
+      try {
+        const body = await c.req.json();
+        const { chatId, sessionId, userName } = body;
+        
+        if (!chatId) {
+          return c.json({ success: false, error: 'Chat ID required' }, 400);
+        }
+        
+        await telegramNotificationService.sendWelcomeMessage(chatId, userName);
+        
+        logger?.info('📱 [Telegram] User registered', { chatId, sessionId });
+        return c.json({ success: true, message: 'Telegram notifications enabled' });
+      } catch (error: any) {
+        logger?.error('❌ [Telegram] Registration error', { error: error.message });
+        return c.json({ success: false, error: 'Failed to register Telegram' }, 500);
+      }
+    }
+  },
+  {
+    path: "/api/demo/telegram/test",
+    method: "POST",
+    createHandler: async ({ mastra }: any) => async (c: any) => {
+      const logger = mastra.getLogger();
+      try {
+        const body = await c.req.json();
+        const { chatId } = body;
+        
+        if (!chatId) {
+          return c.json({ success: false, error: 'Chat ID required' }, 400);
+        }
+        
+        const testToken = {
+          symbol: 'TEST',
+          name: 'Test Token',
+          price: 0.001234,
+          priceChange24h: 42.5,
+          volume24h: 150000,
+          safetyScore: 'B',
+          chain: 'Solana'
+        };
+        
+        await telegramNotificationService.sendHotTokenAlert(chatId, testToken);
+        
+        logger?.info('📱 [Telegram] Test notification sent', { chatId });
+        return c.json({ success: true, message: 'Test notification sent' });
+      } catch (error: any) {
+        logger?.error('❌ [Telegram] Test error', { error: error.message });
+        return c.json({ success: false, error: 'Failed to send test' }, 500);
       }
     }
   },
