@@ -978,7 +978,39 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
             margin-top: 20px;
             margin-bottom: 80px;
           }
-          .mobile-news-card {
+        }
+        
+        .news-arrow-btn {
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          border: 1px solid #333;
+          background: #1a1a1a;
+          color: #fff;
+          font-size: 20px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s ease;
+        }
+        .news-arrow-btn:hover {
+          border-color: #00D4FF;
+          background: rgba(0, 212, 255, 0.1);
+          box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+        .news-scroll-container::-webkit-scrollbar {
+          display: none;
+        }
+        .desktop-news-card:hover {
+          border-color: #00D4FF !important;
+          box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+          transform: translateY(-2px);
+        }
+        .desktop-news-section {
+          margin-bottom: 60px;
+        }
+        .mobile-news-card {
             cursor: pointer;
             border-radius: 16px;
             overflow: hidden;
@@ -1189,6 +1221,77 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
           <BitcoinChart compact={false} coinId={selectedCoin?.id} />
         </div>
       </div>
+
+      {!isMobile && news.length > 0 && (
+        <div className="desktop-news-section" style={{
+          marginTop: 20,
+          padding: '16px 0',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <TileLabel color="#00D4FF">Latest News</TileLabel>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                className="news-arrow-btn"
+                onClick={() => {
+                  const container = document.querySelector('.news-scroll-container');
+                  if (container) container.scrollBy({ left: -320, behavior: 'smooth' });
+                }}
+              >
+                ‹
+              </button>
+              <button
+                className="news-arrow-btn"
+                onClick={() => {
+                  const container = document.querySelector('.news-scroll-container');
+                  if (container) container.scrollBy({ left: 320, behavior: 'smooth' });
+                }}
+              >
+                ›
+              </button>
+            </div>
+          </div>
+          <div 
+            className="news-scroll-container"
+            style={{
+              display: 'flex',
+              gap: 16,
+              overflowX: 'auto',
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+              paddingBottom: 8,
+            }}
+          >
+            {news.map((item, idx) => (
+              <a
+                key={idx}
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="desktop-news-card"
+                style={{
+                  flex: '0 0 300px',
+                  background: '#0f0f0f',
+                  border: '1px solid #222',
+                  borderRadius: 12,
+                  padding: 16,
+                  textDecoration: 'none',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#00D4FF', textTransform: 'uppercase', marginBottom: 8 }}>
+                  {item.source}
+                </div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', lineHeight: 1.4, marginBottom: 10, minHeight: 40 }}>
+                  {item.title}
+                </div>
+                <div style={{ fontSize: 11, color: '#666' }}>
+                  {item.time}
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
 
       {isMobile && news.length > 0 && (
         <div className="mobile-news-section">

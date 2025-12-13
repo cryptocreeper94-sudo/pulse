@@ -1,6 +1,175 @@
 import { useState } from 'react'
+import { safetyExplanations, gradeExplanations } from '../../data/safetyExplanations'
 
 const API_BASE = ''
+
+function SafetyTooltip({ content, children }) {
+  const [show, setShow] = useState(false)
+  
+  return (
+    <div 
+      style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}
+      onMouseEnter={() => setShow(true)}
+      onMouseLeave={() => setShow(false)}
+    >
+      {children}
+      {show && (
+        <div style={{
+          position: 'absolute',
+          bottom: '100%',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          marginBottom: 8,
+          padding: '12px 16px',
+          background: '#1a1a1a',
+          border: '1px solid #333',
+          borderRadius: 10,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+          zIndex: 1000,
+          width: 280,
+          textAlign: 'left',
+        }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#00D4FF', marginBottom: 6 }}>
+            {content.name}
+          </div>
+          <div style={{ fontSize: 11, color: '#ccc', marginBottom: 8, lineHeight: 1.5 }}>
+            {content.description}
+          </div>
+          <div style={{ 
+            fontSize: 10, 
+            color: '#888', 
+            fontStyle: 'italic',
+            padding: '8px 10px',
+            background: 'rgba(0,212,255,0.05)',
+            borderRadius: 6,
+            borderLeft: '2px solid #00D4FF'
+          }}>
+            <span style={{ fontWeight: 600, color: '#00D4FF' }}>Why it matters: </span>
+            {content.whyItMatters}
+          </div>
+          <div style={{
+            position: 'absolute',
+            bottom: -6,
+            left: '50%',
+            transform: 'translateX(-50%) rotate(45deg)',
+            width: 12,
+            height: 12,
+            background: '#1a1a1a',
+            border: '1px solid #333',
+            borderTop: 'none',
+            borderLeft: 'none',
+          }} />
+        </div>
+      )}
+    </div>
+  )
+}
+
+function InfoIcon({ size = 14 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="16" x2="12" y2="12" />
+      <line x1="12" y1="8" x2="12.01" y2="8" />
+    </svg>
+  )
+}
+
+function ScoreBreakdownBar({ report }) {
+  const riskCount = report.risks?.length || 0
+  const warningCount = report.warnings?.length || 0
+  const riskDeduction = riskCount * 20
+  const warningDeduction = warningCount * 5
+  const totalDeduction = riskDeduction + warningDeduction
+  const actualScore = report.safetyScore ?? Math.max(0, 100 - totalDeduction)
+  
+  const scaleFactor = totalDeduction > 100 ? 100 / totalDeduction : 1
+  const scaledRiskWidth = Math.min(riskDeduction * scaleFactor, 100 - actualScore)
+  const scaledWarningWidth = Math.min(warningDeduction * scaleFactor, 100 - actualScore - scaledRiskWidth)
+  
+  return (
+    <div style={{ marginBottom: 20 }}>
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        marginBottom: 8 
+      }}>
+        <span style={{ fontSize: 11, color: '#888', textTransform: 'uppercase' }}>Score Breakdown</span>
+        <span style={{ fontSize: 11, color: '#666' }}>
+          100 - {Math.min(totalDeduction, 100)} deductions = {actualScore}
+        </span>
+      </div>
+      
+      <div style={{
+        height: 24,
+        background: '#1a1a1a',
+        borderRadius: 12,
+        overflow: 'hidden',
+        display: 'flex',
+        border: '1px solid #222'
+      }}>
+        <div style={{
+          width: `${actualScore}%`,
+          background: `linear-gradient(90deg, 
+            ${actualScore >= 80 ? '#39FF14' : actualScore >= 60 ? '#00D4FF' : actualScore >= 40 ? '#FFD700' : '#FF4444'} 0%, 
+            ${actualScore >= 80 ? '#2ECC71' : actualScore >= 60 ? '#0099CC' : actualScore >= 40 ? '#FF8C00' : '#CC3333'} 100%)`,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: 'width 0.5s ease'
+        }}>
+          <span style={{ fontSize: 11, fontWeight: 700, color: '#000' }}>
+            {actualScore > 20 ? `${actualScore} pts` : ''}
+          </span>
+        </div>
+        
+        {riskDeduction > 0 && (
+          <div style={{
+            width: `${scaledRiskWidth}%`,
+            background: 'rgba(255, 68, 68, 0.6)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            <span style={{ fontSize: 9, fontWeight: 600, color: '#fff' }}>
+              {riskDeduction > 10 ? `-${riskDeduction}` : ''}
+            </span>
+          </div>
+        )}
+        
+        {warningDeduction > 0 && (
+          <div style={{
+            width: `${scaledWarningWidth}%`,
+            background: 'rgba(255, 215, 0, 0.4)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            <span style={{ fontSize: 9, fontWeight: 600, color: '#fff' }}>
+              {warningDeduction > 3 ? `-${warningDeduction}` : ''}
+            </span>
+          </div>
+        )}
+      </div>
+      
+      <div style={{ display: 'flex', gap: 16, marginTop: 8, justifyContent: 'center' }}>
+        {riskCount > 0 && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ width: 10, height: 10, borderRadius: 2, background: 'rgba(255, 68, 68, 0.6)' }} />
+            <span style={{ fontSize: 10, color: '#888' }}>{riskCount} risks (-{riskDeduction} pts)</span>
+          </div>
+        )}
+        {warningCount > 0 && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ width: 10, height: 10, borderRadius: 2, background: 'rgba(255, 215, 0, 0.4)' }} />
+            <span style={{ fontSize: 10, color: '#888' }}>{warningCount} warnings (-{warningDeduction} pts)</span>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
 
 export default function SafetyReport({ tokenAddress, onClose }) {
   const [loading, setLoading] = useState(false)
@@ -93,17 +262,26 @@ export default function SafetyReport({ tokenAddress, onClose }) {
               </span>
               <span className="score-label">/ 100</span>
             </div>
-            <div className="grade-badge" style={{ backgroundColor: getGradeColor(report.safetyGrade) }}>
-              Grade {report.safetyGrade}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div className="grade-badge" style={{ backgroundColor: getGradeColor(report.safetyGrade) }}>
+                Grade {report.safetyGrade}
+              </div>
+              {gradeExplanations[report.safetyGrade] && (
+                <div style={{ fontSize: 10, color: '#888', maxWidth: 180 }}>
+                  {gradeExplanations[report.safetyGrade].recommendation}
+                </div>
+              )}
             </div>
             <div className={`pass-status ${report.passesAllChecks ? 'pass' : 'fail'}`}>
               {report.passesAllChecks ? '✓ PASSES ALL CHECKS' : '✗ HAS RISKS'}
             </div>
           </div>
 
-          {report.risks.length > 0 && (
+          <ScoreBreakdownBar report={report} />
+
+          {report.risks?.length > 0 && (
             <div className="risks-section">
-              <h4>Risks</h4>
+              <h4>Risks <span style={{ fontWeight: 400, color: '#FF4444' }}>(-20 pts each)</span></h4>
               {report.risks.map((risk, i) => (
                 <div key={i} className="risk-item">
                   <span className="risk-icon">⚠️</span>
@@ -113,9 +291,9 @@ export default function SafetyReport({ tokenAddress, onClose }) {
             </div>
           )}
 
-          {report.warnings.length > 0 && (
+          {report.warnings?.length > 0 && (
             <div className="warnings-section">
-              <h4>Warnings</h4>
+              <h4>Warnings <span style={{ fontWeight: 400, color: '#FFD700' }}>(-5 pts each)</span></h4>
               {report.warnings.map((warning, i) => (
                 <div key={i} className="warning-item">
                   <span className="warning-icon">⚡</span>
@@ -127,31 +305,70 @@ export default function SafetyReport({ tokenAddress, onClose }) {
 
           <div className="checks-grid">
             <div className="check-card">
-              <div className="check-title">Mint Authority</div>
+              <div className="check-title">
+                <SafetyTooltip content={safetyExplanations.mintAuthority}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'help' }}>
+                    Mint Authority
+                    <span style={{ color: '#00D4FF', opacity: 0.6 }}><InfoIcon size={12} /></span>
+                  </span>
+                </SafetyTooltip>
+              </div>
               <div className={`check-status ${!report.hasMintAuthority ? 'safe' : 'danger'}`}>
                 {!report.hasMintAuthority ? '✓ Disabled' : '✗ Active'}
               </div>
-            </div>
-
-            <div className="check-card">
-              <div className="check-title">Freeze Authority</div>
-              <div className={`check-status ${!report.hasFreezeAuthority ? 'safe' : 'danger'}`}>
-                {!report.hasFreezeAuthority ? '✓ Disabled' : '✗ Active'}
+              <div className="check-impact" style={{ color: !report.hasMintAuthority ? '#888' : '#FF4444' }}>
+                {!report.hasMintAuthority ? '0 deducted' : '-20 pts'}
               </div>
             </div>
 
             <div className="check-card">
-              <div className="check-title">Liquidity</div>
+              <div className="check-title">
+                <SafetyTooltip content={safetyExplanations.freezeAuthority}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'help' }}>
+                    Freeze Authority
+                    <span style={{ color: '#00D4FF', opacity: 0.6 }}><InfoIcon size={12} /></span>
+                  </span>
+                </SafetyTooltip>
+              </div>
+              <div className={`check-status ${!report.hasFreezeAuthority ? 'safe' : 'danger'}`}>
+                {!report.hasFreezeAuthority ? '✓ Disabled' : '✗ Active'}
+              </div>
+              <div className="check-impact" style={{ color: !report.hasFreezeAuthority ? '#888' : '#FF4444' }}>
+                {!report.hasFreezeAuthority ? '0 deducted' : '-20 pts'}
+              </div>
+            </div>
+
+            <div className="check-card">
+              <div className="check-title">
+                <SafetyTooltip content={safetyExplanations.liquidity}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'help' }}>
+                    Liquidity
+                    <span style={{ color: '#00D4FF', opacity: 0.6 }}><InfoIcon size={12} /></span>
+                  </span>
+                </SafetyTooltip>
+              </div>
               <div className={`check-status ${report.liquidityLocked || report.liquidityBurned ? 'safe' : 'warning'}`}>
                 {report.liquidityBurned ? '✓ Burned' : report.liquidityLocked ? '✓ Locked' : '⚠ Unlocked'}
               </div>
               {report.liquidityLockPlatform && (
                 <div className="check-detail">{report.liquidityLockPlatform}</div>
               )}
+              <div className="check-impact" style={{ 
+                color: report.liquidityLocked || report.liquidityBurned ? '#888' : '#FFD700' 
+              }}>
+                {report.liquidityLocked || report.liquidityBurned ? '0 deducted' : '-20 pts'}
+              </div>
             </div>
 
             <div className="check-card">
-              <div className="check-title">Honeypot</div>
+              <div className="check-title">
+                <SafetyTooltip content={safetyExplanations.honeypot}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'help' }}>
+                    Honeypot
+                    <span style={{ color: '#00D4FF', opacity: 0.6 }}><InfoIcon size={12} /></span>
+                  </span>
+                </SafetyTooltip>
+              </div>
               <div className={`check-status ${report.honeypotResult?.canSell && !report.honeypotResult?.isHoneypot ? 'safe' : 'danger'}`}>
                 {report.honeypotResult?.isHoneypot 
                   ? '✗ HONEYPOT' 
@@ -162,38 +379,98 @@ export default function SafetyReport({ tokenAddress, onClose }) {
               {report.honeypotResult?.sellTax > 0 && (
                 <div className="check-detail">Sell Tax: {report.honeypotResult.sellTax.toFixed(1)}%</div>
               )}
+              <div className="check-impact" style={{ 
+                color: report.honeypotResult?.canSell && !report.honeypotResult?.isHoneypot ? '#888' : '#FF4444' 
+              }}>
+                {report.honeypotResult?.canSell && !report.honeypotResult?.isHoneypot ? '0 deducted' : '-20 pts'}
+              </div>
             </div>
 
             <div className="check-card">
-              <div className="check-title">Token Age</div>
-              <div className="check-status neutral">
+              <div className="check-title">
+                <SafetyTooltip content={safetyExplanations.tokenAge}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'help' }}>
+                    Token Age
+                    <span style={{ color: '#00D4FF', opacity: 0.6 }}><InfoIcon size={12} /></span>
+                  </span>
+                </SafetyTooltip>
+              </div>
+              <div className={`check-status ${report.tokenAgeMinutes >= 1440 ? 'safe' : report.tokenAgeMinutes >= 60 ? 'warning' : 'danger'}`}>
                 {report.tokenAgeMinutes < 60 
                   ? `${report.tokenAgeMinutes}m` 
                   : report.tokenAgeMinutes < 1440 
                     ? `${Math.floor(report.tokenAgeMinutes / 60)}h` 
                     : `${Math.floor(report.tokenAgeMinutes / 1440)}d`}
               </div>
+              <div className="check-impact" style={{ 
+                color: report.tokenAgeMinutes >= 60 ? '#888' : '#FFD700' 
+              }}>
+                {report.tokenAgeMinutes < 60 ? '-5 pts' : '0 deducted'}
+              </div>
             </div>
 
             <div className="check-card">
-              <div className="check-title">Top 10 Holders</div>
+              <div className="check-title">
+                <SafetyTooltip content={safetyExplanations.holderDistribution}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'help' }}>
+                    Top 10 Holders
+                    <span style={{ color: '#00D4FF', opacity: 0.6 }}><InfoIcon size={12} /></span>
+                  </span>
+                </SafetyTooltip>
+              </div>
               <div className={`check-status ${report.top10HoldersPercent < 50 ? 'safe' : report.top10HoldersPercent < 70 ? 'warning' : 'danger'}`}>
                 {report.top10HoldersPercent?.toFixed(1)}%
               </div>
+              <div className="check-impact" style={{ 
+                color: report.top10HoldersPercent >= 50 ? '#FFD700' : '#888' 
+              }}>
+                {report.top10HoldersPercent >= 50 ? '-5 to -20 pts' : '0 deducted'}
+              </div>
             </div>
 
             <div className="check-card">
-              <div className="check-title">Holder Count</div>
+              <div className="check-title">
+                <SafetyTooltip content={safetyExplanations.holderCount}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'help' }}>
+                    Holder Count
+                    <span style={{ color: '#00D4FF', opacity: 0.6 }}><InfoIcon size={12} /></span>
+                  </span>
+                </SafetyTooltip>
+              </div>
               <div className={`check-status ${report.holderCount > 100 ? 'safe' : report.holderCount > 50 ? 'warning' : 'danger'}`}>
                 {report.holderCount?.toLocaleString()}
               </div>
+              <div className="check-impact" style={{ 
+                color: report.holderCount < 50 ? '#FFD700' : '#888' 
+              }}>
+                {report.holderCount < 50 ? '-5 pts' : '0 deducted'}
+              </div>
             </div>
 
             <div className="check-card">
-              <div className="check-title">Creator Risk</div>
+              <div className="check-title">
+                <SafetyTooltip content={safetyExplanations.creatorRisk}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'help' }}>
+                    Creator Risk
+                    <span style={{ color: '#00D4FF', opacity: 0.6 }}><InfoIcon size={12} /></span>
+                  </span>
+                </SafetyTooltip>
+              </div>
               <div className={`check-status ${report.creatorRiskScore < 40 ? 'safe' : report.creatorRiskScore < 70 ? 'warning' : 'danger'}`}>
                 {report.creatorRiskScore}/100
               </div>
+              <div className="check-impact" style={{ 
+                color: report.creatorRiskScore >= 70 ? '#FF4444' : report.creatorRiskScore >= 40 ? '#FFD700' : '#888' 
+              }}>
+                {report.creatorRiskScore >= 70 ? '-20 pts' : report.creatorRiskScore >= 40 ? '-5 pts' : '0 deducted'}
+              </div>
+            </div>
+          </div>
+
+          <div className="score-methodology">
+            <div style={{ fontSize: 10, color: '#666', textAlign: 'center', marginTop: 16 }}>
+              <strong style={{ color: '#888' }}>How scoring works:</strong> Start at 100 pts. Major risks deduct 20 pts each. Warnings deduct 5 pts each.
+              <br />Hover over any check title for detailed explanation.
             </div>
           </div>
         </div>
@@ -390,6 +667,8 @@ export default function SafetyReport({ tokenAddress, onClose }) {
           font-size: 11px;
           text-transform: uppercase;
           margin-bottom: 6px;
+          display: flex;
+          justify-content: center;
         }
         
         .check-status {
@@ -417,6 +696,12 @@ export default function SafetyReport({ tokenAddress, onClose }) {
           color: #666;
           font-size: 10px;
           margin-top: 4px;
+        }
+        
+        .check-impact {
+          font-size: 9px;
+          margin-top: 4px;
+          font-weight: 600;
         }
       `}</style>
     </div>
