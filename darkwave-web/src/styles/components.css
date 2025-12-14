@@ -192,6 +192,7 @@ body {
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 9999;
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .hamburger-menu.open {
