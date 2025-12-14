@@ -7,15 +7,22 @@ export default defineConfig({
   plugins: [
     react(),
     nodePolyfills({
-      include: ['buffer', 'crypto', 'stream', 'util'],
+      include: ['buffer', 'crypto', 'stream', 'util', 'process'],
       globals: {
         Buffer: true,
         global: true,
         process: true,
       },
       protocolImports: true,
+      overrides: {
+        fs: 'memfs',
+      },
     }),
   ],
+  define: {
+    'process.env': {},
+    global: 'globalThis',
+  },
   server: {
     port: 5000,
     host: '0.0.0.0',
@@ -34,19 +41,26 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
         telegram: resolve(__dirname, 'telegram.html'),
       },
-      external: [
-        'vite-plugin-node-polyfills/shims/global',
-      ],
     },
   },
   resolve: {
     alias: {
       '@assets': '/attached_assets',
+    },
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      define: {
+        global: 'globalThis',
+      },
     },
   },
 })
