@@ -1362,8 +1362,83 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
       `}</style>
       <div className="bento-dashboard">
       
-      <div style={{ marginBottom: '16px' }}>
+      <div style={{ 
+        gridColumn: '1 / 7', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        gap: 12 
+      }}>
         <AIStatusWidget />
+        
+        <BentoTile style={{ padding: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+            <div style={{
+              width: 48,
+              height: 48,
+              background: 'linear-gradient(135deg, #9D4EDD 0%, #00D4FF 100%)',
+              borderRadius: 12,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 24,
+              flexShrink: 0,
+              boxShadow: '0 0 20px rgba(157, 78, 221, 0.4)',
+            }}>
+              🧠
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 4 }}>
+                Predictive AI System
+              </div>
+              <div style={{ fontSize: 11, color: '#888', lineHeight: 1.5 }}>
+                Our AI learns from every analysis, tracking predictions at 1h, 4h, 24h, and 7d intervals. As accuracy improves beyond 55%, the system becomes eligible to power autonomous trading through StrikeAgent.
+              </div>
+            </div>
+          </div>
+          
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(4, 1fr)', 
+            gap: 10, 
+            marginTop: 14,
+            paddingTop: 14,
+            borderTop: '1px solid #222',
+          }}>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: '#00D4FF' }}>1H</div>
+              <div style={{ fontSize: 9, color: '#666', marginTop: 2 }}>Short-term</div>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: '#39FF14' }}>4H</div>
+              <div style={{ fontSize: 9, color: '#666', marginTop: 2 }}>Swing</div>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: '#FFD700' }}>24H</div>
+              <div style={{ fontSize: 9, color: '#666', marginTop: 2 }}>Daily</div>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: '#9D4EDD' }}>7D</div>
+              <div style={{ fontSize: 9, color: '#666', marginTop: 2 }}>Weekly</div>
+            </div>
+          </div>
+          
+          <div style={{
+            marginTop: 14,
+            padding: '10px 12px',
+            background: 'rgba(0, 212, 255, 0.08)',
+            borderRadius: 8,
+            border: '1px solid rgba(0, 212, 255, 0.15)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+          }}>
+            <span style={{ fontSize: 14 }}>🔗</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 11, color: '#00D4FF', fontWeight: 600 }}>Blockchain Verified</div>
+              <div style={{ fontSize: 10, color: '#666' }}>Every prediction is hashed on Solana for transparency</div>
+            </div>
+          </div>
+        </BentoTile>
       </div>
 
       {isMobile && (
@@ -1446,9 +1521,11 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
         </div>
       )}
       
-      <BentoTile className="bento-quick">
-        <TileLabel>Quick Actions</TileLabel>
-        <div style={{ flex: 1, minHeight: 160 }}>
+      <BentoTile className="bento-quick" style={{ padding: 0, overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: 10, left: 12, zIndex: 10 }}>
+          <TileLabel>Quick Actions</TileLabel>
+        </div>
+        <div style={{ flex: 1, height: '100%' }}>
           <FlipCarousel
             items={quickActions}
             renderItem={(action) => (
@@ -1456,7 +1533,7 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
                 onClick={() => onNavigate && onNavigate(action.tab)}
                 style={{ height: '100%', cursor: 'pointer' }}
               >
-                <QuickActionContent action={action} />
+                <QuickActionContent action={action} fullCard={true} />
               </div>
             )}
             showDots={true}
