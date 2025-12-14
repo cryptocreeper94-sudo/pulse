@@ -1013,23 +1013,22 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
           padding-top: 60px;
           display: grid;
           grid-template-columns: repeat(12, 1fr);
-          grid-template-rows: minmax(120px, auto) minmax(160px, auto) minmax(380px, auto) minmax(400px, auto);
+          grid-template-rows: minmax(180px, auto) minmax(380px, auto) minmax(400px, auto);
           gap: 12px;
           max-width: 1200px;
           margin: 0 auto;
         }
-        /* Row 1-2: AI Status + Predict stacked left, Quick Actions right */
-        .bento-ai-status { grid-area: 1 / 1 / 2 / 7; min-height: 100px; }
-        .bento-quick { grid-area: 1 / 7 / 3 / 13; }
-        /* Row 2: Predictive System left */
-        .bento-predict { grid-area: 2 / 1 / 3 / 7; min-height: 180px; }
+        /* Row 1: AI Status + Predictive side by side */
+        .bento-ai-status { grid-area: 1 / 1 / 2 / 5; min-height: 180px; }
+        .bento-predict { grid-area: 1 / 5 / 2 / 9; min-height: 180px; }
+        .bento-quick { grid-area: 1 / 9 / 2 / 13; min-height: 180px; }
         .bento-market { display: none; }
         .bento-trending { display: none; }
         .bento-news { display: none; }
-        /* Row 3: Table left, News right */
-        .bento-table { grid-area: 3 / 1 / 4 / 7; }
+        /* Row 2: Table left, News right */
+        .bento-table { grid-area: 2 / 1 / 3 / 7; }
         .desktop-news-grid { 
-          grid-area: 3 / 7 / 4 / 13;
+          grid-area: 2 / 7 / 3 / 13;
           background: #0f0f0f;
           border: 1px solid #222;
           border-radius: 12px;
@@ -1038,9 +1037,9 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
           display: flex;
           flex-direction: column;
         }
-        /* Row 4: Chart full width */
+        /* Row 3: Chart full width */
         .bento-chart-section { 
-          grid-area: 4 / 1 / 5 / 13;
+          grid-area: 3 / 1 / 4 / 13;
           display: grid;
           grid-template-columns: 280px 1fr;
           gap: 12px;
