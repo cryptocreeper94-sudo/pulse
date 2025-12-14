@@ -181,16 +181,18 @@ body {
 
 .hamburger-menu {
   position: fixed;
-  top: var(--header-height);
+  top: 50px;
   left: 0;
   width: 280px;
   max-width: 85vw;
-  height: calc(100vh - var(--header-height));
+  height: calc(100vh - 50px);
+  max-height: calc(100vh - 50px);
   background: var(--bg-surface);
   border-right: 1px solid var(--border-color);
   transform: translateX(-100%);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 9999;
+  overflow: hidden;
 }
 
 .hamburger-menu.open {
@@ -200,10 +202,12 @@ body {
 .menu-content {
   box-sizing: border-box;
   padding: 16px;
-  padding-bottom: 120px;
+  padding-bottom: 80px;
   width: 100%;
   height: 100%;
-  overflow: auto;
+  max-height: calc(100vh - 50px);
+  overflow-y: auto;
+  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
 }
 
