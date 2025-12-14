@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SkinsSelector from './SkinsSelector';
 
 const allMenuItems = [
@@ -37,6 +37,17 @@ export default function HamburgerMenu({ isOpen, activeTab, onTabChange, onClose,
   const quickActions = getQuickActions(isDarkMode)
   const menuItems = getMenuItems(accessLevel)
   const [showSkins, setShowSkins] = useState(false)
+  
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [isOpen])
   
   return (
     <>
