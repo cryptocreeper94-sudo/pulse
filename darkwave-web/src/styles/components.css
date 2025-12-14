@@ -191,7 +191,6 @@ body {
   transform: translateX(-100%);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 9999;
-  overflow: hidden;
 }
 
 .hamburger-menu.open {
@@ -199,15 +198,13 @@ body {
 }
 
 .menu-content {
+  box-sizing: border-box;
   padding: 16px;
-  padding-bottom: 100px;
-  height: calc(100vh - var(--header-height));
-  overflow-y: scroll;
-  overflow-x: hidden;
+  padding-bottom: 120px;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: var(--neon-blue) transparent;
 }
 
 .menu-content::-webkit-scrollbar {
