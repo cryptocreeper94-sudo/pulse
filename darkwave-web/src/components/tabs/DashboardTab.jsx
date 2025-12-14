@@ -1475,7 +1475,7 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
                     <div style={{ height: 180, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0f0f0f', borderRadius: 12 }}>
                       {item.type === 'metric' 
                         ? <MetricContent title={item.title} value={item.value} change={item.change} />
-                        : <GaugeContent title={item.title} value={item.value} type={item.gaugeType} accentColor={item.color} />
+                        : <GaugeContent title={item.title} value={item.value} type={item.gaugeType} accentColor={item.color} isMobile={true} />
                       }
                     </div>
                   )}
@@ -1550,7 +1550,7 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
             renderItem={(item) => (
               item.type === 'metric' 
                 ? <MetricContent title={item.title} value={item.value} change={item.change} />
-                : <GaugeContent title={item.title} value={item.value} type={item.gaugeType} accentColor={item.color} />
+                : <GaugeContent title={item.title} value={item.value} type={item.gaugeType} accentColor={item.color} isMobile={false} />
             )}
             showDots={true}
             autoPlay={true}
