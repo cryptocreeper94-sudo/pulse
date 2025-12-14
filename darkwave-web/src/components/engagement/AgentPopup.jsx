@@ -244,22 +244,35 @@ export default function AgentPopup({ enabled = true, interval = 90000, selectedA
           border-right-color: #00d4ff;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
           .agent-popup-container {
             flex-direction: column !important;
             align-items: center;
-            left: 50% !important;
-            right: auto !important;
-            transform: translateX(-50%) !important;
-            animation: none !important;
-            bottom: 80px !important;
-            width: calc(100vw - 24px);
-            max-width: 320px;
+            left: 12px !important;
+            right: 12px !important;
+            transform: none !important;
+            animation: fadeInUp 0.4s ease-out forwards !important;
+            bottom: 90px !important;
+            width: auto;
+            max-width: none;
+          }
+
+          @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
           }
 
           .agent-speech-bubble {
             max-width: 100%;
-            margin-bottom: 10px;
+            width: 100%;
+            margin-bottom: 8px;
+            left: 0 !important;
+            right: 0 !important;
+            padding: 12px 16px;
+          }
+
+          .agent-speech-bubble p {
+            font-size: 13px;
           }
 
           .bubble-tail {
@@ -267,8 +280,13 @@ export default function AgentPopup({ enabled = true, interval = 90000, selectedA
           }
 
           .agent-character {
-            width: 120px;
-            height: 180px;
+            width: 100px;
+            height: 150px;
+          }
+
+          .agent-name-tag {
+            font-size: 10px;
+            padding: 3px 10px;
           }
         }
       `}</style>
