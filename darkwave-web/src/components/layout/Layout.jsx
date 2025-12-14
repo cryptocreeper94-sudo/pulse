@@ -74,7 +74,7 @@ export default function Layout({ children, activeTab, onTabChange, userTier, acc
         {children}
       </main>
 
-      <FooterAgent />
+      {activeTab === 'dashboard' && <FooterAgent />}
 
       <BugReportModal 
         isOpen={isBugModalOpen} 
