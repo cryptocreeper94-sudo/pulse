@@ -1,9 +1,115 @@
 import { db } from '../../db/client.js';
 import { predictionEvents, predictionOutcomes, predictionModelVersions, strikeagentPredictions, strikeagentOutcomes } from '../../db/schema';
-import { desc, gte, lte, sql, and } from 'drizzle-orm';
+import { desc, gte, lte, sql, and, eq } from 'drizzle-orm';
 import { predictionLearningService } from '../../services/predictionLearningService';
 
 export const mlRoutes = [
+  {
+    path: "/api/ml/user-history",
+    method: "GET",
+    createHandler: async ({ mastra }: any) => async (c: any) => {
+      const logger = mastra.getLogger();
+      try {
+        const userId = c.req.query('userId');
+        const limit = Math.min(parseInt(c.req.query('limit') || '20'), 100);
+        const offset = parseInt(c.req.query('offset') || '0');
+
+        const countResult = await db.select({ count: sql<number>`count(*)` })
+          .from(predictionEvents)
+          .where(userId ? eq(predictionEvents.userId, userId) : undefined);
+        const totalCount = Number(countResult[0]?.count || 0);
+        
+        let paginatedPredictions;
+        if (userId) {
+          paginatedPredictions = await db.select()
+            .from(predictionEvents)
+            .where(eq(predictionEvents.userId, userId))
+            .orderBy(desc(predictionEvents.createdAt))
+            .limit(limit)
+            .offset(offset);
+        } else {
+          paginatedPredictions = await db.select()
+            .from(predictionEvents)
+            .orderBy(desc(predictionEvents.createdAt))
+            .limit(limit)
+            .offset(offset);
+        }
+        
+        const allOutcomes = await db.select().from(predictionOutcomes);
+        const outcomesByPrediction: Record<string, Record<string, { isCorrect: boolean; priceChangePercent: string }>> = {};
+        
+        for (const outcome of allOutcomes) {
+          if (!outcomesByPrediction[outcome.predictionId]) {
+            outcomesByPrediction[outcome.predictionId] = {};
+          }
+          outcomesByPrediction[outcome.predictionId][outcome.horizon] = {
+            isCorrect: outcome.isCorrect,
+            priceChangePercent: outcome.priceChangePercent
+          };
+        }
+        
+        const predictions = paginatedPredictions.map((p: any) => {
+          const horizons = ['1h', '4h', '24h', '7d'];
+          const outcomes: Record<string, string> = {};
+          
+          for (const h of horizons) {
+            const outcomeData = outcomesByPrediction[p.id]?.[h];
+            if (outcomeData) {
+              outcomes[h] = outcomeData.isCorrect ? 'correct' : 'incorrect';
+            } else {
+              outcomes[h] = 'pending';
+            }
+          }
+          
+          return {
+            id: p.id,
+            ticker: p.ticker,
+            signal: p.signal,
+            confidence: p.confidence,
+            price: p.priceAtPrediction,
+            createdAt: p.createdAt,
+            outcomes
+          };
+        });
+        
+        const horizons = ['1h', '4h', '24h', '7d'];
+        const accuracyByHorizon: Record<string, { total: number; correct: number; accuracy: string }> = {};
+        
+        for (const h of horizons) {
+          const relevantOutcomes = allOutcomes.filter((o: any) => o.horizon === h);
+          const correct = relevantOutcomes.filter((o: any) => o.isCorrect).length;
+          accuracyByHorizon[h] = {
+            total: relevantOutcomes.length,
+            correct,
+            accuracy: relevantOutcomes.length > 0 
+              ? ((correct / relevantOutcomes.length) * 100).toFixed(1) 
+              : '0'
+          };
+        }
+        
+        return c.json({
+          predictions,
+          pagination: {
+            total: totalCount,
+            limit,
+            offset,
+            hasMore: offset + limit < totalCount
+          },
+          summary: {
+            totalPredictions: totalCount,
+            accuracyByHorizon
+          }
+        });
+      } catch (error: any) {
+        logger?.error('❌ [MLStats] Error fetching user history', { error: error.message });
+        return c.json({
+          predictions: [],
+          pagination: { total: 0, limit: 20, offset: 0, hasMore: false },
+          summary: { totalPredictions: 0, accuracyByHorizon: {} }
+        });
+      }
+    }
+  },
   {
     path: "/api/ml/stats",
     method: "GET",
@@ -14,13 +120,13 @@ export const mlRoutes = [
         const outcomes = await db.select().from(predictionOutcomes);
 
         const buySignals = predictions.filter((p: any) => 
-          p.signalType === 'BUY' || p.signalType === 'STRONG_BUY'
+          p.signal === 'BUY' || p.signal === 'STRONG_BUY'
         ).length;
         const sellSignals = predictions.filter((p: any) => 
-          p.signalType === 'SELL' || p.signalType === 'STRONG_SELL'
+          p.signal === 'SELL' || p.signal === 'STRONG_SELL'
         ).length;
         const holdSignals = predictions.filter((p: any) => 
-          p.signalType === 'HOLD' || p.signalType === 'NEUTRAL'
+          p.signal === 'HOLD' || p.signal === 'NEUTRAL'
         ).length;
 
         const horizons = ['1h', '4h', '24h', '7d'];
