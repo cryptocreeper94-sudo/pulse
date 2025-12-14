@@ -18,6 +18,72 @@
   font-weight: 500;
 }
 
+.signals-chain-filter {
+  margin-bottom: 16px;
+}
+
+.chain-filter-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 2px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.chain-filter-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.chain-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: #1f1f1f;
+  border: 1px solid #333;
+  color: #888;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.chain-filter-btn:hover {
+  background: #252525;
+  border-color: var(--chain-color, #00D4FF);
+  color: var(--chain-color, #00D4FF);
+}
+
+.chain-filter-btn.active {
+  background: rgba(0, 0, 0, 0.4);
+  border-color: var(--chain-color, #00D4FF);
+  color: var(--chain-color, #00D4FF);
+  box-shadow: 0 0 15px var(--chain-glow, rgba(0, 212, 255, 0.25)),
+              inset 0 0 10px var(--chain-glow, rgba(0, 212, 255, 0.1));
+}
+
+.chain-filter-btn .chain-icon {
+  font-size: 14px;
+}
+
+.chain-filter-btn .chain-label {
+  font-size: 11px;
+}
+
+@media (max-width: 480px) {
+  .chain-filter-btn {
+    padding: 6px 10px;
+  }
+  
+  .chain-filter-btn .chain-label {
+    font-size: 10px;
+  }
+}
+
 .signals-header {
   display: flex;
   flex-direction: column;
@@ -310,6 +376,18 @@
   .signal-badges {
     grid-column: 2;
   }
+}
+
+.signal-chain-badge {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  border: 1px solid;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 3px;
 }
 
 .signal-category-badge {

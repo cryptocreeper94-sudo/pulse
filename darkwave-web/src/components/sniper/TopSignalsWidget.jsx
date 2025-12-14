@@ -3,6 +3,33 @@ import './TopSignalsWidget.css'
 
 const API_BASE = ''
 
+const CHAIN_CONFIG = {
+  all: { label: 'All Chains', icon: '🌐', color: '#00D4FF' },
+  solana: { label: 'Solana', icon: '◎', color: '#9945FF' },
+  ethereum: { label: 'Ethereum', icon: '⬡', color: '#627EEA' },
+  base: { label: 'Base', icon: '🔵', color: '#0052FF' },
+  polygon: { label: 'Polygon', icon: '⬡', color: '#8247E5' },
+  arbitrum: { label: 'Arbitrum', icon: '🔷', color: '#28A0F0' },
+  bsc: { label: 'BSC', icon: '⬡', color: '#F3BA2F' },
+}
+
+function getChainBadge(chain) {
+  const config = CHAIN_CONFIG[chain?.toLowerCase()] || CHAIN_CONFIG.solana
+  const shortLabels = {
+    solana: 'SOL',
+    ethereum: 'ETH',
+    base: 'BASE',
+    polygon: 'MATIC',
+    arbitrum: 'ARB',
+    bsc: 'BNB',
+  }
+  return {
+    icon: config.icon,
+    label: shortLabels[chain?.toLowerCase()] || 'SOL',
+    color: config.color,
+  }
+}
+
 function getScoreColor(score) {
   if (score >= 70) return '#39FF14'
   if (score >= 40) return '#FFD700'
@@ -67,11 +94,13 @@ export default function TopSignalsWidget({ onAnalyze }) {
   const [error, setError] = useState(null)
   const [lastUpdated, setLastUpdated] = useState(null)
   const [refreshCountdown, setRefreshCountdown] = useState(60)
+  const [selectedChain, setSelectedChain] = useState('all')
 
   const fetchSignals = useCallback(async () => {
     try {
       setError(null)
-      const res = await fetch(`${API_BASE}/api/strike-agent/top-signals`)
+      const chainParam = selectedChain !== 'all' ? `?chain=${selectedChain}` : ''
+      const res = await fetch(`${API_BASE}/api/strike-agent/top-signals${chainParam}`)
       if (!res.ok) {
         throw new Error(`HTTP ${res.status}`)
       }
@@ -89,13 +118,18 @@ export default function TopSignalsWidget({ onAnalyze }) {
       setLoading(false)
       setRefreshCountdown(60)
     }
-  }, [])
+  }, [selectedChain])
 
   useEffect(() => {
     fetchSignals()
     const interval = setInterval(fetchSignals, 60000)
     return () => clearInterval(interval)
   }, [fetchSignals])
+
+  const handleChainChange = (chain) => {
+    setSelectedChain(chain)
+    setLoading(true)
+  }
 
   useEffect(() => {
     const countdownInterval = setInterval(() => {
@@ -125,6 +159,25 @@ export default function TopSignalsWidget({ onAnalyze }) {
     <div className="top-signals-widget">
       <div className="signals-disclaimer">
         ⚠️ Not financial advice - Always DYOR (Do Your Own Research)
+      </div>
+
+      <div className="signals-chain-filter">
+        <div className="chain-filter-scroll">
+          {Object.entries(CHAIN_CONFIG).map(([key, config]) => (
+            <button
+              key={key}
+              className={`chain-filter-btn ${selectedChain === key ? 'active' : ''}`}
+              onClick={() => handleChainChange(key)}
+              style={{
+                '--chain-color': config.color,
+                '--chain-glow': `${config.color}40`,
+              }}
+            >
+              <span className="chain-icon">{config.icon}</span>
+              <span className="chain-label">{config.label}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="signals-header">
@@ -203,6 +256,21 @@ export default function TopSignalsWidget({ onAnalyze }) {
                 </div>
 
                 <div className="signal-badges">
+                  {(() => {
+                    const chainBadge = getChainBadge(signal.chain || 'solana')
+                    return (
+                      <span 
+                        className="signal-chain-badge"
+                        style={{
+                          background: `${chainBadge.color}15`,
+                          color: chainBadge.color,
+                          borderColor: `${chainBadge.color}40`
+                        }}
+                      >
+                        {chainBadge.icon} {chainBadge.label}
+                      </span>
+                    )
+                  })()}
                   <span 
                     className="signal-category-badge"
                     style={{
@@ -214,7 +282,7 @@ export default function TopSignalsWidget({ onAnalyze }) {
                     {getCategoryLabel(signal.category)}
                   </span>
                   
-                  {signal.indicators && signal.indicators.slice(0, 3).map((indicator, i) => {
+                  {signal.indicators && signal.indicators.slice(0, 2).map((indicator, i) => {
                     const indStyle = getIndicatorStyle(indicator)
                     return (
                       <span 
