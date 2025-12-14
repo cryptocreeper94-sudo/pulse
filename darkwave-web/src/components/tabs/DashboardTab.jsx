@@ -1387,10 +1387,10 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
             🧠
           </div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', marginBottom: 4 }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 6 }}>
               Predictive AI System
             </div>
-            <div style={{ fontSize: 11, color: '#888', lineHeight: 1.5 }}>
+            <div style={{ fontSize: 13, color: '#888', lineHeight: 1.5 }}>
               Our AI learns from every analysis, tracking predictions at multiple intervals. As accuracy improves beyond 55%, it powers autonomous trading.
             </div>
           </div>
