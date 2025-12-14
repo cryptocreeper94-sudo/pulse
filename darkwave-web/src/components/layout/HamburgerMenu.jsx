@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import SkinsSelector from './SkinsSelector';
 
 const allMenuItems = [
@@ -37,18 +37,32 @@ export default function HamburgerMenu({ isOpen, activeTab, onTabChange, onClose,
   const quickActions = getQuickActions(isDarkMode)
   const menuItems = getMenuItems(accessLevel)
   const [showSkins, setShowSkins] = useState(false)
+  const menuContentRef = useRef(null)
   
   useEffect(() => {
     if (isOpen) {
       document.documentElement.style.overflow = 'hidden'
       document.body.style.overflow = 'hidden'
+      document.body.style.position = 'fixed'
+      document.body.style.width = '100%'
+      document.body.style.top = `-${window.scrollY}px`
     } else {
+      const scrollY = document.body.style.top
       document.documentElement.style.overflow = ''
       document.body.style.overflow = ''
+      document.body.style.position = ''
+      document.body.style.width = ''
+      document.body.style.top = ''
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || '0') * -1)
+      }
     }
     return () => {
       document.documentElement.style.overflow = ''
       document.body.style.overflow = ''
+      document.body.style.position = ''
+      document.body.style.width = ''
+      document.body.style.top = ''
     }
   }, [isOpen])
   
@@ -61,9 +75,8 @@ export default function HamburgerMenu({ isOpen, activeTab, onTabChange, onClose,
       
       <nav className={`hamburger-menu ${isOpen ? 'open' : ''}`}>
         <div 
+          ref={menuContentRef}
           className="menu-content"
-          onWheel={(e) => e.stopPropagation()}
-          onTouchMove={(e) => e.stopPropagation()}
         >
           <button
             className="menu-home-btn"
