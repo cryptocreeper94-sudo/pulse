@@ -1,26 +1,24 @@
 import { useState, useEffect, useCallback } from 'react'
 import { getRandomTip } from '../../data/agentTips'
-import PIXAR_AGENTS from '../../data/agents'
+import PIXAR_AGENTS, { getRandomAgent } from '../../data/agents'
 
 const DIRECTIONS = ['left', 'right', 'bottom-left', 'bottom-right']
 
-export default function AgentPopup({ enabled = true, interval = 90000, selectedAgentId = 1 }) {
+export default function AgentPopup({ enabled = true, interval = 90000 }) {
   const [isVisible, setIsVisible] = useState(false)
   const [currentTip, setCurrentTip] = useState(null)
   const [direction, setDirection] = useState('right')
   const [agent, setAgent] = useState(null)
 
-  useEffect(() => {
-    const selectedAgent = PIXAR_AGENTS.find(a => a.id === selectedAgentId) || PIXAR_AGENTS[0]
-    setAgent(selectedAgent)
-  }, [selectedAgentId])
-
   const showPopup = useCallback(() => {
     if (!enabled) return
     
+    // Pick a random agent each time
+    const randomAgent = getRandomAgent()
     const tip = getRandomTip()
     const dir = DIRECTIONS[Math.floor(Math.random() * DIRECTIONS.length)]
     
+    setAgent(randomAgent)
     setCurrentTip(tip)
     setDirection(dir)
     setIsVisible(true)
@@ -287,6 +285,42 @@ export default function AgentPopup({ enabled = true, interval = 90000, selectedA
           .agent-name-tag {
             font-size: 10px;
             padding: 3px 10px;
+          }
+        }
+
+        /* Landscape mode on mobile */
+        @media (max-width: 900px) and (orientation: landscape) {
+          .agent-popup-container {
+            flex-direction: row !important;
+            bottom: 20px !important;
+            left: auto !important;
+            right: 20px !important;
+            animation: sweepFromRight 0.6s ease-out forwards !important;
+          }
+
+          .agent-character {
+            width: 100px;
+            height: 140px;
+          }
+
+          .agent-speech-bubble {
+            max-width: 220px;
+            width: auto;
+            margin-bottom: 0;
+            padding: 10px 14px;
+          }
+
+          .agent-speech-bubble p {
+            font-size: 12px;
+          }
+
+          .bubble-tail {
+            display: block;
+          }
+
+          .agent-name-tag {
+            font-size: 9px;
+            padding: 2px 8px;
           }
         }
       `}</style>

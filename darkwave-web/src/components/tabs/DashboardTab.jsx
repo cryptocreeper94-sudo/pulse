@@ -47,6 +47,7 @@ function formatSupply(value) {
 }
 
 function BentoTile({ children, className = '', style = {}, onClick }) {
+  const isTable = className.includes('bento-table')
   return (
     <div
       className={className}
@@ -61,6 +62,7 @@ function BentoTile({ children, className = '', style = {}, onClick }) {
         transition: 'border-color 0.2s, box-shadow 0.2s',
         display: 'flex',
         flexDirection: 'column',
+        overflow: isTable ? 'visible' : undefined,
         ...style,
       }}
       onMouseEnter={(e) => {
@@ -897,7 +899,11 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
           .bento-quick, .bento-market, .bento-trending, .bento-news { 
             display: none !important;
           }
-          .bento-table { min-height: 300px; }
+          .bento-table { 
+            min-height: 300px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+          }
           .bento-chart-section { 
             min-height: 500px;
             grid-template-columns: 1fr;
@@ -911,6 +917,44 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
           }
           .mobile-categories-wrapper {
             display: block !important;
+          }
+        }
+        
+        /* Landscape mode on mobile - show full table layout */
+        @media (max-height: 500px) and (orientation: landscape) {
+          .bento-dashboard {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: auto;
+            gap: 8px;
+            padding: 8px;
+          }
+          .bento-quick, .bento-market, .bento-trending, .bento-news { 
+            display: none !important;
+          }
+          .bento-table { 
+            grid-column: 1 / -1;
+            min-height: 200px;
+            max-height: 45vh;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+          }
+          .bento-chart-section { 
+            grid-column: 1 / -1;
+            min-height: 300px;
+            grid-template-columns: 1fr 2fr;
+          }
+          .chart-metrics {
+            padding: 8px;
+          }
+          .chart-container {
+            min-height: 200px;
+          }
+          .mobile-categories-wrapper {
+            display: none !important;
+          }
+          .mobile-news-section {
+            display: none !important;
           }
         }
         
