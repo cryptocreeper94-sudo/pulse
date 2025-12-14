@@ -250,7 +250,8 @@ function App() {
         return <StakingTab />
       case 'sniper':
         if (isDemoMode) {
-          return <SniperBotErrorBoundary><SniperBotTab /></SniperBotErrorBoundary>
+          // Demo mode from strikeagent.io - show upgrade CTA, not full access
+          return <StrikeAgentUpgradeCTA onNavigate={setActiveTab} />
         }
         if (!hasStrikeAgentAccess(userConfig)) {
           return <StrikeAgentUpgradeCTA onNavigate={setActiveTab} />
