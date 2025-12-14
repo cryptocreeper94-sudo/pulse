@@ -7,6 +7,7 @@ import { multiChainProvider, CHAIN_CONFIGS, ChainId } from '../../services/multi
 import { evmSafetyEngine, DEFAULT_EVM_SAFETY_CONFIG } from '../../services/evmSafetyEngine';
 import { tradeLedgerService } from '../../services/tradeLedgerService';
 import { strikeAgentTrackingService } from '../../services/strikeAgentTrackingService';
+import { topSignalsService } from '../../services/topSignalsService.js';
 
 export const sniperBotRoutes = [
   // ============================================
@@ -1105,6 +1106,35 @@ export const sniperBotRoutes = [
       } catch (error: any) {
         logger?.error('❌ [StrikeAgentML] Stats error', { error: error.message });
         return c.json({ error: 'Failed to get ML stats' }, 500);
+      }
+    }
+  },
+
+  // ============================================
+  // TOP SIGNALS - "Top 10 Tokens to Watch"
+  // ============================================
+  {
+    path: "/api/strike-agent/top-signals",
+    method: "GET",
+    createHandler: async ({ mastra }: any) => async (c: any) => {
+      const logger = mastra.getLogger();
+      try {
+        const limit = parseInt(c.req.query('limit') || '10');
+        const category = c.req.query('category');
+        
+        logger?.info('[TopSignals] Fetching top signals', { limit, category });
+        
+        const signals = await topSignalsService.getTopSignals(limit, category);
+        
+        return c.json({
+          signals,
+          count: signals.length,
+          disclaimer: 'This is not financial advice. Always do your own research.',
+          lastUpdated: new Date().toISOString()
+        });
+      } catch (error: any) {
+        logger?.error('[TopSignals] Error', { error: error.message });
+        return c.json({ error: 'Failed to fetch top signals' }, 500);
       }
     }
   },
