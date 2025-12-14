@@ -836,6 +836,7 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
       <style>{`
         .bento-dashboard {
           padding: 12px;
+          padding-top: 60px;
           display: grid;
           grid-template-columns: repeat(12, 1fr);
           grid-template-rows: minmax(150px, auto) minmax(150px, auto) minmax(280px, auto) minmax(350px, auto);
@@ -963,15 +964,14 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
         }
         
         .mobile-category-card {
-          background: linear-gradient(135deg, rgba(0, 40, 60, 0.9) 0%, rgba(0, 20, 40, 0.95) 50%, rgba(0, 60, 80, 0.9) 100%);
-          border: 1px solid rgba(0, 212, 255, 0.3);
+          background: #0f0f0f;
+          border: 1px solid #222;
           border-radius: 16px;
           padding: 16px;
           min-height: 220px;
           display: flex;
           flex-direction: column;
-          box-shadow: 0 4px 30px rgba(0, 212, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-          backdrop-filter: blur(10px);
+          box-shadow: 0 0 20px rgba(0, 212, 255, 0.15);
           position: relative;
           overflow: hidden;
         }

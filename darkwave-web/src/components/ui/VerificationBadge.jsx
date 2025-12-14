@@ -66,7 +66,10 @@ export default function VerificationBadge({
           .verification-badge {
             padding: 5px 8px;
             height: 28px;
-            gap: 4px;
+            gap: 0;
+            border-radius: 50%;
+            width: 28px;
+            justify-content: center;
           }
 
           .verification-shield {
@@ -74,21 +77,7 @@ export default function VerificationBadge({
           }
 
           .verification-id {
-            font-size: 9px;
-          }
-        }
-
-        @media (max-width: 360px) {
-          .verification-id {
             display: none;
-          }
-          
-          .verification-badge {
-            padding: 5px 8px;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            justify-content: center;
           }
         }
       `}</style>

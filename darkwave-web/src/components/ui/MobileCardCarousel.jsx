@@ -74,8 +74,8 @@ export default function MobileCardCarousel({ children }) {
           width: 36px;
           height: 36px;
           border-radius: 50%;
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          background: #1a1a1a;
+          border: 1px solid #333;
           color: #fff;
           font-size: 16px;
           display: flex;
@@ -86,8 +86,9 @@ export default function MobileCardCarousel({ children }) {
         }
         
         .carousel-arrow:hover {
-          background: rgba(0, 212, 255, 0.2);
+          background: #141414;
           border-color: #00D4FF;
+          box-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
         }
         
         .carousel-arrow:active {
@@ -103,7 +104,7 @@ export default function MobileCardCarousel({ children }) {
           width: 8px;
           height: 8px;
           border-radius: 50%;
-          background: rgba(255, 255, 255, 0.3);
+          background: #444;
           cursor: pointer;
           transition: all 0.2s;
         }

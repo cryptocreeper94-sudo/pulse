@@ -99,38 +99,6 @@ export default function FlipCarousel({
           }}
         >
           {renderItem(items[currentIndex], currentIndex)}
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              background: `linear-gradient(
-                135deg, 
-                rgba(255,255,255,0.15) 0%, 
-                rgba(255,255,255,0.05) 25%,
-                transparent 50%, 
-                rgba(255,255,255,0.03) 75%,
-                rgba(255,255,255,0.1) 100%
-              )`,
-              pointerEvents: 'none',
-              opacity: isFlipping ? 1 : 0,
-              transition: 'opacity 0.2s ease',
-              borderRadius: 12,
-              backdropFilter: isFlipping ? 'blur(2px) saturate(1.2)' : 'none',
-              WebkitBackdropFilter: isFlipping ? 'blur(2px) saturate(1.2)' : 'none',
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%)',
-              pointerEvents: 'none',
-              opacity: isFlipping ? 0.6 : 0,
-              transition: 'opacity 0.15s ease',
-              borderRadius: 12,
-              transform: 'skewX(-15deg)',
-            }}
-          />
         </div>
 
         <div
@@ -145,26 +113,6 @@ export default function FlipCarousel({
           }}
         >
           {isFlipping && renderItem(items[nextIndex], nextIndex)}
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              background: `linear-gradient(
-                -135deg, 
-                rgba(255,255,255,0.15) 0%, 
-                rgba(255,255,255,0.05) 25%,
-                transparent 50%, 
-                rgba(255,255,255,0.03) 75%,
-                rgba(255,255,255,0.1) 100%
-              )`,
-              pointerEvents: 'none',
-              opacity: isFlipping ? 1 : 0,
-              transition: 'opacity 0.2s ease',
-              borderRadius: 12,
-              backdropFilter: isFlipping ? 'blur(2px) saturate(1.2)' : 'none',
-              WebkitBackdropFilter: isFlipping ? 'blur(2px) saturate(1.2)' : 'none',
-            }}
-          />
         </div>
       </div>
 
@@ -181,7 +129,7 @@ export default function FlipCarousel({
               width: 32,
               height: 32,
               borderRadius: '50%',
-              background: 'rgba(20,20,20,0.9)',
+              background: '#141414',
               border: '1px solid #00D4FF',
               color: '#00D4FF',
               fontSize: 18,
@@ -209,7 +157,7 @@ export default function FlipCarousel({
               width: 32,
               height: 32,
               borderRadius: '50%',
-              background: 'rgba(20,20,20,0.9)',
+              background: '#141414',
               border: '1px solid #00D4FF',
               color: '#00D4FF',
               fontSize: 18,
