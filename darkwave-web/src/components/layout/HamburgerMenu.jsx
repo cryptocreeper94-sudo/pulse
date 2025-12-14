@@ -60,7 +60,11 @@ export default function HamburgerMenu({ isOpen, activeTab, onTabChange, onClose,
       />
       
       <nav className={`hamburger-menu ${isOpen ? 'open' : ''}`}>
-        <div className="menu-content">
+        <div 
+          className="menu-content"
+          onWheel={(e) => e.stopPropagation()}
+          onTouchMove={(e) => e.stopPropagation()}
+        >
           <button
             className="menu-home-btn"
             onClick={() => {

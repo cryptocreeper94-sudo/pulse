@@ -191,10 +191,9 @@ body {
   transform: translateX(-100%);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 9999;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .hamburger-menu.open {
@@ -203,6 +202,11 @@ body {
 
 .menu-content {
   padding: 16px;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .menu-section {
