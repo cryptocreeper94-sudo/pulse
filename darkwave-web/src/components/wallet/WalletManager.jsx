@@ -98,6 +98,23 @@ export default function WalletManager({ userId }) {
   const [buyError, setBuyError] = useState('')
   const [onrampSession, setOnrampSession] = useState(null)
   
+  const [showSwapModal, setShowSwapModal] = useState(false)
+  const [swapTokens, setSwapTokens] = useState([])
+  const [swapFromToken, setSwapFromToken] = useState({ address: 'So11111111111111111111111111111111111111112', symbol: 'SOL', name: 'Solana', decimals: 9, logoURI: null })
+  const [swapToToken, setSwapToToken] = useState(null)
+  const [swapAmount, setSwapAmount] = useState('')
+  const [swapSlippage, setSwapSlippage] = useState('50')
+  const [swapQuote, setSwapQuote] = useState(null)
+  const [swapLoading, setSwapLoading] = useState(false)
+  const [swapExecuting, setSwapExecuting] = useState(false)
+  const [swapPassword, setSwapPassword] = useState('')
+  const [swapError, setSwapError] = useState('')
+  const [swapSuccess, setSwapSuccess] = useState('')
+  const [swapFromSearch, setSwapFromSearch] = useState('')
+  const [swapToSearch, setSwapToSearch] = useState('')
+  const [showFromDropdown, setShowFromDropdown] = useState(false)
+  const [showToDropdown, setShowToDropdown] = useState(false)
+  
   useEffect(() => {
     if (builtInWallet.hasWallet) {
       if (builtInWallet.isUnlocked) {
@@ -331,6 +348,145 @@ export default function WalletManager({ userId }) {
     setBuyLoading(false)
     setOnrampSession(null)
   }
+  
+  const fetchSwapTokens = async () => {
+    try {
+      const res = await fetch('/api/swap/tokens')
+      const data = await res.json()
+      if (data.success && data.tokens) {
+        setSwapTokens(data.tokens)
+      }
+    } catch (err) {
+      console.error('Failed to fetch swap tokens:', err)
+    }
+  }
+  
+  const fetchSwapQuote = async () => {
+    if (!swapFromToken || !swapToToken || !swapAmount || parseFloat(swapAmount) <= 0) {
+      setSwapQuote(null)
+      return
+    }
+    
+    setSwapLoading(true)
+    setSwapError('')
+    
+    try {
+      const amountInBaseUnits = Math.floor(parseFloat(swapAmount) * Math.pow(10, swapFromToken.decimals)).toString()
+      
+      const params = new URLSearchParams({
+        inputMint: swapFromToken.address,
+        outputMint: swapToToken.address,
+        amount: amountInBaseUnits,
+        slippageBps: swapSlippage
+      })
+      
+      const res = await fetch(`/api/swap/quote?${params}`)
+      const data = await res.json()
+      
+      if (data.success) {
+        setSwapQuote(data)
+      } else {
+        setSwapError(data.error || 'Failed to get quote')
+        setSwapQuote(null)
+      }
+    } catch (err) {
+      setSwapError(err.message || 'Failed to get quote')
+      setSwapQuote(null)
+    } finally {
+      setSwapLoading(false)
+    }
+  }
+  
+  const handleSwapExecute = async () => {
+    if (!swapQuote || !swapPassword) {
+      setSwapError('Please enter your password')
+      return
+    }
+    
+    if (!swapQuote?.quoteResponse) {
+      setSwapError('Quote data is missing. Please get a new quote.')
+      return
+    }
+    
+    if (!builtInWallet?.addresses?.solana) {
+      setSwapError('Wallet not ready. Please unlock your wallet first.')
+      return
+    }
+    
+    setSwapExecuting(true)
+    setSwapError('')
+    setSwapSuccess('')
+    
+    try {
+      const prepareRes = await fetch('/api/swap/prepare', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          quoteResponse: swapQuote.quoteResponse,
+          userPublicKey: builtInWallet.addresses.solana
+        })
+      })
+      
+      const prepareData = await prepareRes.json()
+      
+      if (!prepareData.success) {
+        throw new Error(prepareData.error || 'Failed to prepare swap')
+      }
+      
+      const signedTransaction = await clientWalletService.signSolanaTransaction(
+        swapPassword,
+        prepareData.swapTransaction,
+        builtInWallet.activeWalletId
+      )
+      
+      const broadcastRes = await fetch('/api/swap/broadcast', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ signedTransaction })
+      })
+      
+      const broadcastData = await broadcastRes.json()
+      
+      if (broadcastData.success) {
+        setSwapSuccess(`Swap successful! View on explorer: ${broadcastData.explorerUrl}`)
+        setSwapQuote(null)
+        setSwapAmount('')
+        setSwapPassword('')
+      } else {
+        throw new Error(broadcastData.error || 'Failed to broadcast transaction')
+      }
+    } catch (err) {
+      setSwapError(err.message || 'Swap failed')
+    } finally {
+      setSwapExecuting(false)
+    }
+  }
+  
+  const closeSwapModal = () => {
+    setShowSwapModal(false)
+    setSwapTokens([])
+    setSwapFromToken({ address: 'So11111111111111111111111111111111111111112', symbol: 'SOL', name: 'Solana', decimals: 9, logoURI: null })
+    setSwapToToken(null)
+    setSwapAmount('')
+    setSwapSlippage('50')
+    setSwapQuote(null)
+    setSwapLoading(false)
+    setSwapExecuting(false)
+    setSwapPassword('')
+    setSwapError('')
+    setSwapSuccess('')
+    setSwapFromSearch('')
+    setSwapToSearch('')
+    setShowFromDropdown(false)
+    setShowToDropdown(false)
+  }
+  
+  useEffect(() => {
+    if (swapFromToken && swapToToken && swapAmount && parseFloat(swapAmount) > 0) {
+      const timer = setTimeout(fetchSwapQuote, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [swapFromToken, swapToToken, swapAmount, swapSlippage])
   
   const copyAddress = (address) => {
     navigator.clipboard.writeText(address)
@@ -917,6 +1073,17 @@ export default function WalletManager({ userId }) {
             </div>
             <span className="quick-action-label">Buy Crypto</span>
           </button>
+          <button className="quick-action-card swap" onClick={() => { setShowSwapModal(true); fetchSwapTokens(); }}>
+            <div className="quick-action-icon swap">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M16 3l4 4-4 4"/>
+                <path d="M20 7H4"/>
+                <path d="M8 21l-4-4 4-4"/>
+                <path d="M4 17h16"/>
+              </svg>
+            </div>
+            <span className="quick-action-label">Swap</span>
+          </button>
           {builtInWallet.addresses?.solana && (
             <button className="quick-action-card dust" onClick={() => setShowDustBuster(true)}>
               <div className="quick-action-icon dust">
@@ -1226,6 +1393,212 @@ export default function WalletManager({ userId }) {
             
             <p className="buy-disclaimer">
               Powered by Stripe. Available for US customers only.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {showSwapModal && (
+        <div className="swap-overlay" onClick={closeSwapModal}>
+          <div className="swap-panel" onClick={(e) => e.stopPropagation()}>
+            <div className="swap-header">
+              <h3>Swap Tokens</h3>
+              <button className="close-btn" onClick={closeSwapModal}>×</button>
+            </div>
+            
+            <div className="swap-info">
+              <div className="swap-info-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 16v-4M12 8h.01"/>
+                </svg>
+              </div>
+              <span>Swap tokens on Solana via Jupiter</span>
+            </div>
+            
+            <div className="swap-token-selector">
+              <label>From</label>
+              <div className="token-select-wrapper">
+                <button 
+                  className="token-select-btn"
+                  onClick={() => { setShowFromDropdown(!showFromDropdown); setShowToDropdown(false); }}
+                >
+                  {swapFromToken?.logoURI && <img src={swapFromToken.logoURI} alt="" className="token-logo" />}
+                  <span className="token-symbol">{swapFromToken?.symbol || 'Select token'}</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="6,9 12,15 18,9"/>
+                  </svg>
+                </button>
+                {showFromDropdown && (
+                  <div className="token-dropdown">
+                    <input
+                      type="text"
+                      placeholder="Search tokens..."
+                      value={swapFromSearch}
+                      onChange={(e) => setSwapFromSearch(e.target.value)}
+                      className="token-search"
+                    />
+                    <div className="token-list">
+                      {swapTokens
+                        .filter(t => t.symbol.toLowerCase().includes(swapFromSearch.toLowerCase()) || t.name.toLowerCase().includes(swapFromSearch.toLowerCase()))
+                        .map(token => (
+                          <button
+                            key={token.address}
+                            className={`token-option ${swapFromToken?.address === token.address ? 'selected' : ''}`}
+                            onClick={() => { setSwapFromToken(token); setShowFromDropdown(false); setSwapFromSearch(''); }}
+                          >
+                            {token.logoURI && <img src={token.logoURI} alt="" className="token-logo" />}
+                            <div className="token-info">
+                              <span className="token-symbol">{token.symbol}</span>
+                              <span className="token-name">{token.name}</span>
+                            </div>
+                          </button>
+                        ))
+                      }
+                    </div>
+                  </div>
+                )}
+              </div>
+              <input
+                type="number"
+                value={swapAmount}
+                onChange={(e) => setSwapAmount(e.target.value)}
+                placeholder="0.0"
+                className="swap-amount-input"
+              />
+            </div>
+            
+            <div className="swap-arrow">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 5v14M5 12l7 7 7-7"/>
+              </svg>
+            </div>
+            
+            <div className="swap-token-selector">
+              <label>To</label>
+              <div className="token-select-wrapper">
+                <button 
+                  className="token-select-btn"
+                  onClick={() => { setShowToDropdown(!showToDropdown); setShowFromDropdown(false); }}
+                >
+                  {swapToToken?.logoURI && <img src={swapToToken.logoURI} alt="" className="token-logo" />}
+                  <span className="token-symbol">{swapToToken?.symbol || 'Select token'}</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="6,9 12,15 18,9"/>
+                  </svg>
+                </button>
+                {showToDropdown && (
+                  <div className="token-dropdown">
+                    <input
+                      type="text"
+                      placeholder="Search tokens..."
+                      value={swapToSearch}
+                      onChange={(e) => setSwapToSearch(e.target.value)}
+                      className="token-search"
+                    />
+                    <div className="token-list">
+                      {swapTokens
+                        .filter(t => t.symbol.toLowerCase().includes(swapToSearch.toLowerCase()) || t.name.toLowerCase().includes(swapToSearch.toLowerCase()))
+                        .filter(t => t.address !== swapFromToken?.address)
+                        .map(token => (
+                          <button
+                            key={token.address}
+                            className={`token-option ${swapToToken?.address === token.address ? 'selected' : ''}`}
+                            onClick={() => { setSwapToToken(token); setShowToDropdown(false); setSwapToSearch(''); }}
+                          >
+                            {token.logoURI && <img src={token.logoURI} alt="" className="token-logo" />}
+                            <div className="token-info">
+                              <span className="token-symbol">{token.symbol}</span>
+                              <span className="token-name">{token.name}</span>
+                            </div>
+                          </button>
+                        ))
+                      }
+                    </div>
+                  </div>
+                )}
+              </div>
+              {swapQuote && (
+                <div className="swap-output-amount">
+                  ≈ {(parseFloat(swapQuote.outputAmount) / Math.pow(10, swapToToken?.decimals || 9)).toFixed(6)} {swapToToken?.symbol}
+                </div>
+              )}
+            </div>
+            
+            <div className="swap-slippage">
+              <label>Slippage Tolerance</label>
+              <div className="slippage-options">
+                <button className={`slippage-btn ${swapSlippage === '50' ? 'active' : ''}`} onClick={() => setSwapSlippage('50')}>0.5%</button>
+                <button className={`slippage-btn ${swapSlippage === '100' ? 'active' : ''}`} onClick={() => setSwapSlippage('100')}>1%</button>
+                <button className={`slippage-btn ${swapSlippage === '300' ? 'active' : ''}`} onClick={() => setSwapSlippage('300')}>3%</button>
+              </div>
+            </div>
+            
+            {swapLoading && (
+              <div className="swap-loading">
+                <div className="swap-spinner"></div>
+                <span>Fetching best route...</span>
+              </div>
+            )}
+            
+            {swapQuote && !swapLoading && (
+              <div className="swap-quote-details">
+                <div className="quote-row">
+                  <span>Rate</span>
+                  <span>1 {swapFromToken?.symbol} ≈ {(parseFloat(swapQuote.outputAmount) / parseFloat(swapQuote.inputAmount)).toFixed(6)} {swapToToken?.symbol}</span>
+                </div>
+                <div className="quote-row">
+                  <span>Price Impact</span>
+                  <span className={parseFloat(swapQuote.priceImpactPct) > 1 ? 'high-impact' : ''}>{swapQuote.priceImpactPct}%</span>
+                </div>
+              </div>
+            )}
+            
+            {swapQuote && !swapLoading && (
+              <div className="form-field">
+                <label>Wallet Password</label>
+                <input
+                  type="password"
+                  value={swapPassword}
+                  onChange={(e) => setSwapPassword(e.target.value)}
+                  placeholder="Enter password to sign"
+                />
+              </div>
+            )}
+            
+            {swapError && (
+              <div className="form-error swap-error">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 8v4M12 16h.01"/>
+                </svg>
+                <span>{swapError}</span>
+              </div>
+            )}
+            
+            {swapSuccess && (
+              <div className="form-success swap-success">
+                <span>{swapSuccess}</span>
+              </div>
+            )}
+            
+            <button 
+              className="wallet-cta primary full-width swap-execute-btn" 
+              onClick={handleSwapExecute}
+              disabled={!swapQuote || swapLoading || swapExecuting || !swapPassword}
+            >
+              {swapExecuting ? (
+                <>
+                  <div className="swap-spinner small"></div>
+                  Swapping...
+                </>
+              ) : (
+                'Execute Swap'
+              )}
+            </button>
+            
+            <p className="swap-disclaimer">
+              Powered by Jupiter. Swaps are executed on Solana.
             </p>
           </div>
         </div>
@@ -2885,6 +3258,353 @@ export default function WalletManager({ userId }) {
           font-size: 12px;
           color: #666;
           margin: 0;
+        }
+
+        /* Swap Modal Styles */
+        .swap-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.9);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+          padding: 20px;
+        }
+
+        .swap-panel {
+          background: #1a1a1a;
+          border: 1px solid #333;
+          border-radius: 20px;
+          padding: 24px;
+          width: 100%;
+          max-width: 420px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          max-height: 90vh;
+          overflow-y: auto;
+        }
+
+        .swap-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .swap-header h3 {
+          font-size: 20px;
+          color: #fff;
+          margin: 0;
+        }
+
+        .swap-info {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 14px 16px;
+          background: rgba(153, 69, 255, 0.1);
+          border: 1px solid rgba(153, 69, 255, 0.3);
+          border-radius: 12px;
+          color: #9945FF;
+          font-size: 13px;
+        }
+
+        .swap-info-icon {
+          flex-shrink: 0;
+        }
+
+        .swap-token-selector {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          padding: 16px;
+          background: #0f0f0f;
+          border: 1px solid #333;
+          border-radius: 12px;
+        }
+
+        .swap-token-selector label {
+          font-size: 12px;
+          color: #888;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .token-select-wrapper {
+          position: relative;
+        }
+
+        .token-select-btn {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 12px 16px;
+          background: #1a1a1a;
+          border: 1px solid #333;
+          border-radius: 10px;
+          color: #fff;
+          font-size: 15px;
+          cursor: pointer;
+          width: 100%;
+          transition: border-color 0.2s;
+        }
+
+        .token-select-btn:hover {
+          border-color: #9945FF;
+        }
+
+        .token-logo {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+        }
+
+        .token-symbol {
+          flex: 1;
+          text-align: left;
+          font-weight: 600;
+        }
+
+        .token-dropdown {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          margin-top: 8px;
+          background: #1a1a1a;
+          border: 1px solid #333;
+          border-radius: 12px;
+          z-index: 10;
+          max-height: 280px;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .token-search {
+          padding: 12px 16px;
+          background: #0f0f0f;
+          border: none;
+          border-bottom: 1px solid #333;
+          color: #fff;
+          font-size: 14px;
+        }
+
+        .token-search:focus {
+          outline: none;
+        }
+
+        .token-list {
+          overflow-y: auto;
+          max-height: 220px;
+        }
+
+        .token-option {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 12px 16px;
+          background: transparent;
+          border: none;
+          width: 100%;
+          color: #fff;
+          cursor: pointer;
+          transition: background 0.2s;
+        }
+
+        .token-option:hover {
+          background: rgba(153, 69, 255, 0.1);
+        }
+
+        .token-option.selected {
+          background: rgba(153, 69, 255, 0.2);
+        }
+
+        .token-info {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 2px;
+        }
+
+        .token-info .token-symbol {
+          font-weight: 600;
+          font-size: 14px;
+        }
+
+        .token-info .token-name {
+          font-size: 12px;
+          color: #888;
+        }
+
+        .swap-amount-input {
+          padding: 14px 16px;
+          background: #1a1a1a;
+          border: 1px solid #333;
+          border-radius: 10px;
+          color: #fff;
+          font-size: 18px;
+          font-weight: 600;
+        }
+
+        .swap-amount-input:focus {
+          outline: none;
+          border-color: #9945FF;
+        }
+
+        .swap-arrow {
+          display: flex;
+          justify-content: center;
+          color: #9945FF;
+          margin: -8px 0;
+        }
+
+        .swap-output-amount {
+          font-size: 18px;
+          font-weight: 600;
+          color: #14F195;
+          padding: 12px 16px;
+          background: rgba(20, 241, 149, 0.1);
+          border-radius: 10px;
+        }
+
+        .swap-slippage {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .swap-slippage label {
+          font-size: 13px;
+          color: #888;
+        }
+
+        .slippage-options {
+          display: flex;
+          gap: 8px;
+        }
+
+        .slippage-btn {
+          flex: 1;
+          padding: 10px 16px;
+          background: #1a1a1a;
+          border: 1px solid #333;
+          border-radius: 8px;
+          color: #888;
+          font-size: 14px;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .slippage-btn:hover {
+          border-color: #9945FF;
+          color: #fff;
+        }
+
+        .slippage-btn.active {
+          background: rgba(153, 69, 255, 0.2);
+          border-color: #9945FF;
+          color: #9945FF;
+        }
+
+        .swap-loading {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          padding: 16px;
+          color: #888;
+        }
+
+        .swap-spinner {
+          width: 24px;
+          height: 24px;
+          border: 3px solid #333;
+          border-top-color: #9945FF;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+
+        .swap-spinner.small {
+          width: 18px;
+          height: 18px;
+          border-width: 2px;
+        }
+
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+
+        .swap-quote-details {
+          padding: 16px;
+          background: #0f0f0f;
+          border: 1px solid #333;
+          border-radius: 12px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .quote-row {
+          display: flex;
+          justify-content: space-between;
+          font-size: 13px;
+        }
+
+        .quote-row span:first-child {
+          color: #888;
+        }
+
+        .quote-row span:last-child {
+          color: #fff;
+        }
+
+        .quote-row .high-impact {
+          color: #FF6B6B;
+        }
+
+        .swap-error {
+          display: flex;
+          align-items: flex-start;
+          gap: 10px;
+        }
+
+        .swap-error svg {
+          flex-shrink: 0;
+          margin-top: 2px;
+        }
+
+        .swap-success {
+          word-break: break-all;
+        }
+
+        .swap-execute-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+        }
+
+        .swap-disclaimer {
+          text-align: center;
+          font-size: 12px;
+          color: #666;
+          margin: 0;
+        }
+
+        .quick-action-icon.swap {
+          background: rgba(153, 69, 255, 0.1);
+          color: #9945FF;
+        }
+
+        .quick-action-card.swap::before {
+          background: linear-gradient(135deg, #9945FF, #14F195);
+        }
+
+        .quick-action-card.swap:hover {
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 20px rgba(153, 69, 255, 0.3);
         }
         
         .quick-action-card:hover .quick-action-icon {
