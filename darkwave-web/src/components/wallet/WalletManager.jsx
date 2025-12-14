@@ -2,8 +2,68 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import InfoTooltip from '../ui/InfoTooltip'
 import { useBuiltInWallet } from '../../context/BuiltInWalletContext'
 import DustBuster from './DustBuster'
-import FlipCarousel from '../ui/FlipCarousel'
 import clientWalletService from '../../services/clientWalletService'
+
+function BentoTile({ children, className = '', style = {}, onClick }) {
+  return (
+    <div
+      className={`wallet-bento-tile ${className}`}
+      onClick={onClick}
+      style={{
+        background: '#0f0f0f',
+        border: '1px solid #222',
+        borderRadius: 12,
+        padding: 16,
+        position: 'relative',
+        cursor: onClick ? 'pointer' : 'default',
+        transition: 'border-color 0.2s, box-shadow 0.2s',
+        display: 'flex',
+        flexDirection: 'column',
+        ...style,
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = '#333'
+        e.currentTarget.style.boxShadow = '0 0 20px rgba(0,212,255,0.1)'
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = '#222'
+        e.currentTarget.style.boxShadow = 'none'
+      }}
+    >
+      {children}
+    </div>
+  )
+}
+
+function TileLabel({ children, color = '#555' }) {
+  return (
+    <div style={{
+      fontSize: 10,
+      fontWeight: 700,
+      color,
+      textTransform: 'uppercase',
+      letterSpacing: 1,
+      marginBottom: 12,
+    }}>
+      {children}
+    </div>
+  )
+}
+
+const CHAIN_CATEGORIES = {
+  major: {
+    label: 'Major Networks',
+    chains: ['solana', 'ethereum', 'polygon', 'base', 'bsc']
+  },
+  layer2: {
+    label: 'Layer 2',
+    chains: ['arbitrum', 'optimism', 'zksync', 'linea', 'scroll', 'mantle']
+  },
+  other: {
+    label: 'Other Networks',
+    chains: ['avalanche', 'fantom', 'cronos', 'gnosis', 'celo', 'moonbeam', 'moonriver', 'harmony', 'metis', 'aurora', 'kava', 'evmos']
+  }
+}
 
 const WALLET_TIPS = [
   "Your portfolio is looking great!",
@@ -83,6 +143,7 @@ export default function WalletManager({ userId }) {
   const [showSendPanel, setShowSendPanel] = useState(false)
   const [activeChain, setActiveChain] = useState(null)
   const [showDustBuster, setShowDustBuster] = useState(false)
+  const [expandedCategory, setExpandedCategory] = useState('major')
   
   const [showRecoveryModal, setShowRecoveryModal] = useState(false)
   const [recoveryPassword, setRecoveryPassword] = useState('')
@@ -1020,91 +1081,164 @@ export default function WalletManager({ userId }) {
       {success && <div className="form-success">{success}</div>}
       {error && <div className="form-error">{error}</div>}
       
-      {/* CHAIN CAROUSEL */}
-      <div className="chain-carousel-container">
-        <h3 className="section-title">Your Assets</h3>
-        {chainSlides.length > 0 ? (
-          <FlipCarousel
-            items={chainSlides}
-            showArrows={true}
-            showDots={true}
-            autoPlay={false}
-            className="chain-carousel"
-            style={{ height: activeChain ? 280 : 160 }}
-            renderItem={(slide, idx) => (
-              <div className="chain-slide" key={idx}>
-                {slide.map(([chainKey, address]) => renderChainCard(chainKey, address))}
-              </div>
-            )}
-          />
-        ) : (
-          <div className="no-chains">Loading chains...</div>
-        )}
-      </div>
-      
-      {/* QUICK ACTIONS HUB */}
-      <div className="quick-actions-hub">
-        <h3 className="section-title">Quick Actions</h3>
-        <div className="quick-actions-grid">
-          <button className="quick-action-card" onClick={() => { setSendChain('solana'); setShowSendPanel(true); }}>
-            <div className="quick-action-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="22" y1="2" x2="11" y2="13"/>
-                <polygon points="22,2 15,22 11,13 2,9"/>
+      {/* BENTO GRID LAYOUT */}
+      <div className="wallet-bento-grid">
+        {/* CHAIN SELECTION TILE */}
+        <BentoTile className="chains-tile" style={{ gridColumn: 'span 8' }}>
+          <TileLabel color="#00D4FF">Your Networks</TileLabel>
+          <div className="chain-accordion">
+            {Object.entries(CHAIN_CATEGORIES).map(([catKey, category]) => {
+              const isExpanded = expandedCategory === catKey
+              const chainsInCategory = category.chains.filter(c => builtInWallet.addresses?.[c])
+              const categoryTotal = chainsInCategory.reduce((sum, c) => sum + (builtInWallet.balances[c]?.usd || 0), 0)
+              
+              return (
+                <div key={catKey} className="chain-category">
+                  <div 
+                    className={`chain-category-header ${isExpanded ? 'expanded' : ''}`}
+                    onClick={() => setExpandedCategory(isExpanded ? null : catKey)}
+                  >
+                    <div className="category-info">
+                      <span className="category-label">{category.label}</span>
+                      <span className="category-count">{chainsInCategory.length} networks</span>
+                    </div>
+                    <div className="category-right">
+                      <span className="category-total">${categoryTotal.toFixed(2)}</span>
+                      <span className="category-arrow">{isExpanded ? '▲' : '▼'}</span>
+                    </div>
+                  </div>
+                  
+                  {isExpanded && (
+                    <div className="chain-category-content">
+                      {chainsInCategory.map(chainKey => {
+                        const chain = CHAIN_INFO[chainKey]
+                        const address = builtInWallet.addresses[chainKey]
+                        const balance = builtInWallet.balances[chainKey]
+                        const isChainExpanded = activeChain === chainKey
+                        
+                        return (
+                          <div 
+                            key={chainKey}
+                            className={`chain-accordion-item ${isChainExpanded ? 'expanded' : ''}`}
+                            style={{ '--chain-color': chain.color }}
+                          >
+                            <div 
+                              className="chain-item-header"
+                              onClick={() => setActiveChain(isChainExpanded ? null : chainKey)}
+                            >
+                              <div className="chain-item-left">
+                                <span className="chain-icon" style={{ color: chain.color }}>{chain.icon}</span>
+                                <span className="chain-name">{chain.name}</span>
+                              </div>
+                              <div className="chain-item-right">
+                                <span className="chain-balance">{balance ? balance.balance : '0'} {chain.symbol}</span>
+                                <span className="chain-usd">${balance ? balance.usd.toFixed(2) : '0.00'}</span>
+                              </div>
+                            </div>
+                            
+                            {isChainExpanded && (
+                              <div className="chain-item-details">
+                                <div className="chain-address" onClick={(e) => { e.stopPropagation(); copyAddress(address); }}>
+                                  <span>{address?.slice(0, 12)}...{address?.slice(-8)}</span>
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2"/>
+                                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                  </svg>
+                                </div>
+                                <div className="chain-item-actions">
+                                  <button onClick={(e) => { e.stopPropagation(); openSendPanel(chainKey); }}>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                      <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/>
+                                    </svg>
+                                    Send
+                                  </button>
+                                  <button onClick={(e) => { e.stopPropagation(); copyAddress(address); }}>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                                    </svg>
+                                    Receive
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })}
+                      {chainsInCategory.length === 0 && (
+                        <div className="no-chains-message">No wallets in this category</div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </BentoTile>
+        
+        {/* QUICK ACTIONS TILE */}
+        <BentoTile className="quick-actions-tile" style={{ gridColumn: 'span 4' }}>
+          <TileLabel color="#00D4FF">Quick Actions</TileLabel>
+          <div className="quick-actions-bento">
+            <button className="quick-action-btn" onClick={() => { setSendChain('solana'); setShowSendPanel(true); }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/>
               </svg>
-            </div>
-            <span className="quick-action-label">Send</span>
-          </button>
-          <button className="quick-action-card" onClick={() => builtInWallet.addresses?.solana && copyAddress(builtInWallet.addresses.solana)}>
-            <div className="quick-action-icon receive">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                <polyline points="7,10 12,15 17,10"/>
-                <line x1="12" y1="15" x2="12" y2="3"/>
+              <span>Send</span>
+            </button>
+            <button className="quick-action-btn" onClick={() => builtInWallet.addresses?.solana && copyAddress(builtInWallet.addresses.solana)}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/>
               </svg>
-            </div>
-            <span className="quick-action-label">Receive</span>
-          </button>
-          <button className="quick-action-card buy" onClick={() => setShowBuyModal(true)}>
-            <div className="quick-action-icon buy">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <span>Receive</span>
+            </button>
+            <button className="quick-action-btn swap" onClick={() => { setShowSwapModal(true); fetchSwapTokens(); }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M16 3l4 4-4 4"/><path d="M20 7H4"/><path d="M8 21l-4-4 4-4"/><path d="M4 17h16"/>
+              </svg>
+              <span>Swap</span>
+            </button>
+            <button className="quick-action-btn buy" onClick={() => setShowBuyModal(true)}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
               </svg>
-            </div>
-            <span className="quick-action-label">Buy Crypto</span>
-          </button>
-          <button className="quick-action-card swap" onClick={() => { setShowSwapModal(true); fetchSwapTokens(); }}>
-            <div className="quick-action-icon swap">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M16 3l4 4-4 4"/>
-                <path d="M20 7H4"/>
-                <path d="M8 21l-4-4 4-4"/>
-                <path d="M4 17h16"/>
-              </svg>
-            </div>
-            <span className="quick-action-label">Swap</span>
-          </button>
-          {builtInWallet.addresses?.solana && (
-            <button className="quick-action-card dust" onClick={() => setShowDustBuster(true)}>
-              <div className="quick-action-icon dust">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M3 6h18M3 6l2 14h14l2-14M3 6l4-4h10l4 4"/>
-                  <path d="M9 10v6M12 10v6M15 10v6"/>
-                </svg>
-              </div>
-              <span className="quick-action-label">Dust Buster</span>
+              <span>Buy</span>
             </button>
-          )}
-          <button className="quick-action-card backup" onClick={() => setShowRecoveryModal(true)}>
-            <div className="quick-action-icon backup">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 15V3M12 3l-4 4M12 3l4 4"/>
-                <path d="M2 17l.621 2.485A2 2 0 004.561 21h14.878a2 2 0 001.94-1.515L22 17"/>
+            {builtInWallet.addresses?.solana && (
+              <button className="quick-action-btn dust" onClick={() => setShowDustBuster(true)}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M3 6h18M3 6l2 14h14l2-14M3 6l4-4h10l4 4"/><path d="M9 10v6M12 10v6M15 10v6"/>
+                </svg>
+                <span>Dust Buster</span>
+              </button>
+            )}
+            <button className="quick-action-btn backup" onClick={() => setShowRecoveryModal(true)}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 15V3M12 3l-4 4M12 3l4 4"/><path d="M2 17l.621 2.485A2 2 0 004.561 21h14.878a2 2 0 001.94-1.515L22 17"/>
+              </svg>
+              <span>Backup</span>
+            </button>
+          </div>
+        </BentoTile>
+        
+        {/* MULTI-SIG WALLET TILE */}
+        <BentoTile className="multisig-tile" style={{ gridColumn: 'span 12' }}>
+          <TileLabel color="#9945FF">Multi-Sig Wallets</TileLabel>
+          <div className="multisig-placeholder">
+            <div className="multisig-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9945FF" strokeWidth="1.5">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+                <path d="M16 3.13a4 4 0 010 7.75"/>
               </svg>
             </div>
-            <span className="quick-action-label">Backup Wallet</span>
-          </button>
-        </div>
+            <div className="multisig-info">
+              <h4>Team Vaults & Multi-Signature Wallets</h4>
+              <p>Create secure multi-sig wallets that require multiple approvals for transactions. Perfect for teams, DAOs, and organizations.</p>
+              <span className="coming-soon-badge">Coming Soon</span>
+            </div>
+          </div>
+        </BentoTile>
       </div>
 
       {showDustBuster && (
