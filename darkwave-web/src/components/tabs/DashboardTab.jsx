@@ -1395,14 +1395,47 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
         bottom: 0,
         left: 0,
         right: 0,
-        textAlign: 'center',
-        padding: '6px 0',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: '16px',
+        padding: '8px 16px',
         background: '#0a0a0a',
-        color: '#444',
-        fontSize: 10,
         borderTop: '1px solid #1a1a1a',
       }}>
-        Powered by DarkWave Studios, LLC © 2025 | v{versionData.version}
+        <span style={{ color: '#444', fontSize: 10 }}>
+          Powered by DarkWave Studios, LLC © 2025 | v{versionData.version}
+        </span>
+        {(userConfig?.accessLevel === 'admin' || userConfig?.accessLevel === 'owner') && (
+          <button
+            onClick={() => onNavigate('dev-portal')}
+            style={{
+              background: 'transparent',
+              border: '1px solid #2a2a2a',
+              borderRadius: '4px',
+              padding: '4px 10px',
+              color: '#00D4FF',
+              fontSize: '10px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = '#1a1a1a';
+              e.target.style.borderColor = '#00D4FF40';
+              e.target.style.boxShadow = '0 0 8px #00D4FF20';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'transparent';
+              e.target.style.borderColor = '#2a2a2a';
+              e.target.style.boxShadow = 'none';
+            }}
+          >
+            🛠️ Dev Portal
+          </button>
+        )}
       </div>
       
           </div>

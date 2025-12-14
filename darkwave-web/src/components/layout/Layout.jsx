@@ -73,7 +73,6 @@ export default function Layout({ children, activeTab, onTabChange, userTier, acc
         {children}
       </main>
 
-
       <BugReportModal 
         isOpen={isBugModalOpen} 
         onClose={() => setIsBugModalOpen(false)} 
