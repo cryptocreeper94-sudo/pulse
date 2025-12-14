@@ -122,7 +122,7 @@ export default function CryptoCatPopup({ enabled = true, interval = 120000 }) {
     : (sassMode ? '😾 CryptoCat says...' : '😺 CryptoCat says...')
   
   return (
-    <div style={{
+    <div className="crypto-cat-popup" style={{
       position: 'fixed',
       bottom: 70,
       right: 20,
@@ -209,6 +209,17 @@ export default function CryptoCatPopup({ enabled = true, interval = 120000 }) {
           to { 
             opacity: 1; 
             transform: translateX(0); 
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .crypto-cat-popup {
+            left: 50% !important;
+            right: auto !important;
+            transform: translateX(-50%) !important;
+            bottom: 80px !important;
+            max-width: calc(100vw - 24px) !important;
+            justify-content: center !important;
           }
         }
       `}</style>

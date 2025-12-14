@@ -250,11 +250,15 @@ export default function AgentPopup({ enabled = true, interval = 90000, selectedA
             align-items: center;
             left: 50% !important;
             right: auto !important;
-            transform: translateX(-50%);
+            transform: translateX(-50%) !important;
+            animation: none !important;
+            bottom: 80px !important;
+            width: calc(100vw - 24px);
+            max-width: 320px;
           }
 
           .agent-speech-bubble {
-            max-width: 90vw;
+            max-width: 100%;
             margin-bottom: 10px;
           }
 
@@ -263,8 +267,8 @@ export default function AgentPopup({ enabled = true, interval = 90000, selectedA
           }
 
           .agent-character {
-            width: 140px;
-            height: 220px;
+            width: 120px;
+            height: 180px;
           }
         }
       `}</style>
