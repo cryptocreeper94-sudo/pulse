@@ -175,26 +175,26 @@ export default function FlipCarousel({
             disabled={isFlipping}
             style={{
               position: 'absolute',
-              left: 4,
+              left: 8,
               top: '50%',
               transform: 'translateY(-50%)',
-              width: 24,
-              height: 24,
+              width: 32,
+              height: 32,
               borderRadius: '50%',
-              background: 'rgba(0,0,0,0.7)',
-              border: '1px solid #333',
-              color: '#fff',
-              fontSize: 14,
+              background: 'rgba(20,20,20,0.9)',
+              border: '1px solid #00D4FF',
+              color: '#00D4FF',
+              fontSize: 18,
+              fontWeight: 'bold',
               cursor: isFlipping ? 'default' : 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              zIndex: 10,
-              opacity: isFlipping ? 0.4 : 0.7,
-              transition: 'opacity 0.2s',
+              zIndex: 20,
+              opacity: isFlipping ? 0.5 : 1,
+              transition: 'all 0.2s',
+              boxShadow: '0 0 8px rgba(0, 212, 255, 0.4)',
             }}
-            onMouseEnter={(e) => !isFlipping && (e.currentTarget.style.opacity = '1')}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = isFlipping ? '0.4' : '0.7')}
           >
             ‹
           </button>
@@ -203,26 +203,26 @@ export default function FlipCarousel({
             disabled={isFlipping}
             style={{
               position: 'absolute',
-              right: 4,
+              right: 8,
               top: '50%',
               transform: 'translateY(-50%)',
-              width: 24,
-              height: 24,
+              width: 32,
+              height: 32,
               borderRadius: '50%',
-              background: 'rgba(0,0,0,0.7)',
-              border: '1px solid #333',
-              color: '#fff',
-              fontSize: 14,
+              background: 'rgba(20,20,20,0.9)',
+              border: '1px solid #00D4FF',
+              color: '#00D4FF',
+              fontSize: 18,
+              fontWeight: 'bold',
               cursor: isFlipping ? 'default' : 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              zIndex: 10,
-              opacity: isFlipping ? 0.4 : 0.7,
-              transition: 'opacity 0.2s',
+              zIndex: 20,
+              opacity: isFlipping ? 0.5 : 1,
+              transition: 'all 0.2s',
+              boxShadow: '0 0 8px rgba(0, 212, 255, 0.4)',
             }}
-            onMouseEnter={(e) => !isFlipping && (e.currentTarget.style.opacity = '1')}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = isFlipping ? '0.4' : '0.7')}
           >
             ›
           </button>

@@ -189,6 +189,22 @@ function GaugeContent({ title, value, type, accentColor }) {
 }
 
 function CoinContent({ coin, isFavorite }) {
+  if (!coin) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        height: '100%',
+        background: 'linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%)',
+        borderRadius: 12,
+        color: '#666',
+      }}>
+        No data
+      </div>
+    )
+  }
+  
   const change = coin.price_change_percentage_24h || 0
   const isPositive = change >= 0
   
@@ -201,22 +217,39 @@ function CoinContent({ coin, isFavorite }) {
       height: '100%',
       padding: 12,
       gap: 8,
+      background: 'linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%)',
+      borderRadius: 12,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        {coin.image && (
+        {coin.image ? (
           <img 
             src={coin.image} 
             alt="" 
             style={{ width: 36, height: 36, borderRadius: '50%' }}
             onError={(e) => e.target.style.display = 'none'}
           />
+        ) : (
+          <div style={{ 
+            width: 36, 
+            height: 36, 
+            borderRadius: '50%', 
+            background: '#333',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#00D4FF',
+            fontWeight: 'bold',
+            fontSize: 14,
+          }}>
+            {coin.symbol?.charAt(0) || '?'}
+          </div>
         )}
         <div>
           <div style={{ fontSize: 16, fontWeight: 700, color: '#fff' }}>
-            {coin.symbol?.toUpperCase()}
+            {coin.symbol?.toUpperCase() || 'UNKNOWN'}
             {isFavorite && <span style={{ color: '#FFD700', marginLeft: 6 }}>★</span>}
           </div>
-          <div style={{ fontSize: 11, color: '#666' }}>{coin.name}</div>
+          <div style={{ fontSize: 11, color: '#666' }}>{coin.name || 'Unknown'}</div>
         </div>
       </div>
       <div style={{ fontSize: 20, fontWeight: 700, color: '#fff' }}>
