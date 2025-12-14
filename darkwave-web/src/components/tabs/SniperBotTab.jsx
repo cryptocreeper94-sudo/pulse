@@ -1629,26 +1629,44 @@ export default function SniperBotTab() {
           border: '1px solid rgba(0, 212, 255, 0.4)',
           padding: '12px 16px',
           borderRadius: '8px',
-          marginBottom: '16px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
+          marginBottom: '16px'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ fontSize: '20px' }}>🎮</span>
-            <div>
-              <strong style={{ color: '#00D4FF' }}>Demo Mode Active</strong>
-              <p style={{ fontSize: '12px', color: '#888', margin: 0 }}>
-                Paper trading with ${demoBalance.toLocaleString()} virtual balance
-              </p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span style={{ fontSize: '20px' }}>🎮</span>
+              <div>
+                <strong style={{ color: '#00D4FF' }}>Demo Mode Active</strong>
+                <p style={{ fontSize: '12px', color: '#888', margin: 0 }}>
+                  Paper trading with ${demoBalance.toLocaleString()} virtual balance
+                </p>
+              </div>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#00D4FF' }}>
+                ${demoBalance.toLocaleString()}
+              </div>
+              <div style={{ fontSize: '10px', color: '#666' }}>Demo Balance</div>
             </div>
           </div>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#00D4FF' }}>
-              ${demoBalance.toLocaleString()}
-            </div>
-            <div style={{ fontSize: '10px', color: '#666' }}>Demo Balance</div>
-          </div>
+          <a 
+            href="https://darkwavepulse.com/app?tab=pricing"
+            style={{
+              display: 'block',
+              width: '100%',
+              padding: '10px 20px',
+              background: 'linear-gradient(135deg, #00D4FF 0%, #8B5CF6 100%)',
+              border: 'none',
+              borderRadius: '8px',
+              color: '#000',
+              fontWeight: 700,
+              fontSize: '14px',
+              textAlign: 'center',
+              textDecoration: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            Subscribe to Trade with Real Money - $30/mo
+          </a>
         </div>
       )}
 

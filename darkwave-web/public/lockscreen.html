@@ -697,6 +697,12 @@
   </div>
 
   <script>
+    // StrikeAgent.io bypass - redirect directly to app for demo mode
+    if (window.location.hostname.includes('strikeagent')) {
+      console.log('🎯 [Lockscreen] StrikeAgent domain detected, bypassing login');
+      window.location.href = '/app';
+    }
+
     const form = document.getElementById('authForm');
     const errorMessage = document.getElementById('errorMessage');
     const emailOrAccessInput = document.getElementById('emailOrAccess');

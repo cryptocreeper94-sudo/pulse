@@ -1,13 +1,17 @@
 import './SniperBotTab.css'
 
 export default function DemoUpgradeCTA({ onUpgrade }) {
+  const handleSubscribe = () => {
+    window.location.href = 'https://darkwavepulse.com/app?tab=pricing'
+  }
+
   return (
     <div className="demo-upgrade-cta">
-      <div className="upgrade-badge">Limited Time Offer</div>
+      <div className="upgrade-badge">StrikeAgent Elite</div>
       <div className="upgrade-icon">🎯</div>
-      <h3 className="upgrade-title">Unlock Full Trading Power</h3>
+      <h3 className="upgrade-title">Ready to Trade for Real?</h3>
       <p className="upgrade-desc">
-        You've seen what StrikeAgent can do. Now imagine executing real trades with AI-powered precision across 23 blockchains.
+        You've seen what StrikeAgent can do. Subscribe now to execute real trades with AI-powered precision across 23 blockchains.
       </p>
       
       <div className="upgrade-features">
@@ -33,15 +37,15 @@ export default function DemoUpgradeCTA({ onUpgrade }) {
         </div>
         <div className="upgrade-feature">
           <span className="upgrade-feature-icon">✓</span>
-          <span>3-day free trial - cancel anytime</span>
+          <span>2-day free trial - cancel anytime</span>
         </div>
       </div>
 
-      <button className="upgrade-btn" onClick={onUpgrade}>
-        View Pricing Plans
+      <button className="upgrade-btn" onClick={onUpgrade || handleSubscribe}>
+        Subscribe Now
       </button>
       <p className="upgrade-price">
-        Starting at <strong>$8/month</strong> - Try free for 3 days
+        <strong>$30/month</strong> or <strong>$300/year</strong> (save 17%)
       </p>
     </div>
   )
