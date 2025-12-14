@@ -1690,6 +1690,8 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
         padding: '8px 16px',
         background: '#0a0a0a',
         borderTop: '1px solid #1a1a1a',
+        maxHeight: '50px',
+        boxSizing: 'border-box',
       }}>
         <span style={{ color: '#444', fontSize: 10 }}>
           Powered by DarkWave Studios, LLC © 2025 | v{versionData.version}
