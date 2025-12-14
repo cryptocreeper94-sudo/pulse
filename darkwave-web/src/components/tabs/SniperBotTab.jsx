@@ -9,6 +9,7 @@ import DemoTradeHistory from './DemoTradeHistory'
 import DemoLeadCapture from './DemoLeadCapture'
 import DemoUpgradeCTA from './DemoUpgradeCTA'
 import StrikeAgentPricing from './StrikeAgentPricing'
+import TopSignalsWidget from '../sniper/TopSignalsWidget'
 import './SniperBotTab.css'
 
 const API_BASE = ''
@@ -1105,6 +1106,13 @@ export default function SniperBotTab() {
           </div>
         )}
       </div>
+
+      <TopSignalsWidget onAnalyze={(signal) => {
+        console.log('Analyzing signal:', signal)
+        if (signal.tokenAddress || signal.address) {
+          setSafetyCheckToken(signal.tokenAddress || signal.address)
+        }
+      }} />
 
       <div className="sniper-wallet-source section-box">
         <div className="sniper-wallet-source-header">
