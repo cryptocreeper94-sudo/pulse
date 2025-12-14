@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import SkinsSelector from './SkinsSelector';
 
-const menuItems = [
+const allMenuItems = [
   { id: 'dashboard', icon: '🏠', label: 'My Dashboard' },
   { id: 'markets', icon: '📊', label: 'Markets' },
   { id: 'wallet', icon: '💼', label: 'Wallet', highlight: true },
   { id: 'sniper', icon: '🎯', label: 'StrikeAgent', highlight: true },
-  { id: 'ml-dashboard', icon: '🧠', label: 'AI Learning', highlight: true },
+  { id: 'ml-dashboard', icon: '🧠', label: 'ML Dashboard', highlight: true, adminOnly: true },
   { id: 'pricing', icon: '💳', label: 'Pricing', highlight: true },
   { id: 'projects', icon: '🚀', label: 'Projects' },
   { id: 'learn', icon: '💡', label: 'Learn' },
@@ -16,6 +16,11 @@ const menuItems = [
   { id: 'v2-details', icon: '📅', label: 'V2 Details', highlight: true },
 ]
 
+const getMenuItems = (accessLevel) => {
+  const isAdmin = accessLevel === 'admin' || accessLevel === 'owner'
+  return allMenuItems.filter(item => !item.adminOnly || isAdmin)
+}
+
 const getQuickActions = (isDarkMode) => [
   { id: 'agent', icon: '👤', label: 'Agent Builder' },
   { id: 'theme', icon: isDarkMode ? '☀️' : '🌙', label: isDarkMode ? 'Light Mode' : 'Dark Mode' },
@@ -24,8 +29,9 @@ const getQuickActions = (isDarkMode) => [
   { id: 'logout', icon: '🚪', label: 'Logout', danger: true },
 ]
 
-export default function HamburgerMenu({ isOpen, activeTab, onTabChange, onClose, onAction, isDarkMode = true, userTier }) {
+export default function HamburgerMenu({ isOpen, activeTab, onTabChange, onClose, onAction, isDarkMode = true, userTier, accessLevel }) {
   const quickActions = getQuickActions(isDarkMode)
+  const menuItems = getMenuItems(accessLevel)
   const [showSkins, setShowSkins] = useState(false)
   
   return (

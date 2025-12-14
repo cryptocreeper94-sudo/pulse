@@ -5,6 +5,7 @@ import BitcoinChart from '../charts/BitcoinChart'
 import Gauge from '../ui/Gauge'
 import FlipCarousel from '../ui/FlipCarousel'
 import MobileCardCarousel from '../ui/MobileCardCarousel'
+import AIStatusWidget from '../ui/AIStatusWidget'
 import versionData from '../../data/version.json'
 
 function useIsMobile() {
@@ -1065,6 +1066,10 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
       `}</style>
       <div className="bento-dashboard">
       
+      <div style={{ marginBottom: '16px' }}>
+        <AIStatusWidget />
+      </div>
+
       {isMobile && (
         <div className="mobile-categories-wrapper">
           <MobileCardCarousel>

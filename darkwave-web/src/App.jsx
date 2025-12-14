@@ -193,7 +193,7 @@ function App() {
           <BuiltInWalletProvider>
             <FavoritesProvider userId={userId}>
               <GlossaryProvider>
-                <Layout activeTab={activeTab} onTabChange={setActiveTab} userTier={userConfig?.subscriptionTier}>
+                <Layout activeTab={activeTab} onTabChange={setActiveTab} userTier={userConfig?.subscriptionTier} accessLevel={userConfig?.accessLevel}>
                   <div style={{ padding: '0 12px' }}>
                     {renderTab()}
                   </div>

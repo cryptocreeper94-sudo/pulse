@@ -5731,6 +5731,20 @@ export const mastra = new Mastra({
             const { userDashboardConfigs } = await import('../db/schema.js');
             const { eq } = await import('drizzle-orm');
             
+            // Determine access level based on userId prefix or ADMIN_EMAIL match
+            const adminEmail = process.env.ADMIN_EMAIL;
+            let accessLevel: 'user' | 'admin' | 'owner' = 'user';
+            
+            // Sanitize admin email the same way login sanitizes emails for userId comparison
+            // Login uses: credential.replace(/[^a-zA-Z0-9]/g, '-') without lowercasing
+            const sanitizedAdminEmail = adminEmail?.replace(/[^a-zA-Z0-9]/g, '-');
+            
+            if (userId.startsWith('owner-') || (sanitizedAdminEmail && userId === sanitizedAdminEmail)) {
+              accessLevel = 'owner';
+            } else if (userId.startsWith('admin-')) {
+              accessLevel = 'admin';
+            }
+            
             const configs = await db
               .select()
               .from(userDashboardConfigs)
@@ -5738,7 +5752,7 @@ export const mastra = new Mastra({
             
             if (configs.length === 0) {
               // Return default config if none exists
-              logger?.info('📊 [Dashboard] No config found, returning defaults', { userId });
+              logger?.info('📊 [Dashboard] No config found, returning defaults', { userId, accessLevel });
               return c.json({
                 userId,
                 hallmarkId: null,
@@ -5752,11 +5766,12 @@ export const mastra = new Mastra({
                 pushNotifications: true,
                 avatarConfig: null,
                 avatarMode: 'custom',
+                accessLevel,
               });
             }
             
-            logger?.info('✅ [Dashboard] Retrieved', { userId });
-            return c.json(configs[0]);
+            logger?.info('✅ [Dashboard] Retrieved', { userId, accessLevel });
+            return c.json({ ...configs[0], accessLevel });
           } catch (error: any) {
             logger?.error('❌ [Dashboard] Error', { error: error.message });
             return c.json({ error: 'Failed to fetch dashboard config' }, 500);
