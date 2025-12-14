@@ -1366,7 +1366,7 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
       `}</style>
       <div className="bento-dashboard">
       
-      <div className="bento-ai-status">
+      <div className="bento-ai-status" style={{ display: 'flex', height: '100%' }}>
         <AIStatusWidget />
       </div>
 
