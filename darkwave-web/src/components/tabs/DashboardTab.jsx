@@ -995,7 +995,6 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
     { image: '/assets/generated_images/multi-chain_wallet_icon.png', title: 'Wallet', subtitle: 'Multi-chain', color: '#9D4EDD', tab: 'wallet' },
     { image: '/assets/generated_images/watchlist_limit_orders_icon.png', title: 'Watchlist', subtitle: 'Limit orders', color: '#39FF14', tab: 'watchlist' },
     { image: '/assets/generated_images/markets_live_prices_icon.png', title: 'Markets', subtitle: 'Live prices', color: '#FF006E', tab: 'markets' },
-    { image: '/assets/generated_images/settings_preferences_icon.png', title: 'Settings', subtitle: 'Preferences', color: '#888', tab: 'settings' },
   ]
 
   const marketOverviewItems = [
@@ -1019,13 +1018,13 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
           max-width: 1200px;
           margin: 0 auto;
         }
-        /* Row 1: AI Status left, Quick Actions right */
-        .bento-ai-status { grid-area: 1 / 1 / 2 / 7; }
-        .bento-quick { grid-area: 1 / 7 / 2 / 13; }
-        /* Row 2: Predictive System left, Market/Trending/News right */
-        .bento-predict { grid-area: 2 / 1 / 3 / 7; }
-        .bento-market { grid-area: 2 / 7 / 3 / 10; }
-        .bento-trending { grid-area: 2 / 10 / 3 / 13; }
+        /* Row 1-2: AI Status + Predict stacked left, Quick Actions right */
+        .bento-ai-status { grid-area: 1 / 1 / 2 / 7; min-height: 100px; }
+        .bento-quick { grid-area: 1 / 7 / 3 / 13; }
+        /* Row 2: Predictive System left */
+        .bento-predict { grid-area: 2 / 1 / 3 / 7; min-height: 180px; }
+        .bento-market { display: none; }
+        .bento-trending { display: none; }
         .bento-news { display: none; }
         /* Row 3: Table left, News right */
         .bento-table { grid-area: 3 / 1 / 4 / 7; }
