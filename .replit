@@ -15,7 +15,7 @@ MASTRA_HIDE_CLOUD_CTA = "true"
 
 [deployment]
 build = ["bash", "-c", "export NODE_OPTIONS='--max-old-space-size=4096' && npx tsx scripts/bumpVersion.ts patch && cd darkwave-web && npm run build && cd .. && rm -rf public/assets && cp -r darkwave-web/dist/* public/"]
-run = ["npm", "run"]
+run = ["npm", "run", "start"]
 deploymentTarget = "autoscale"
 publicDir = "darkwave-web/dist"
 
