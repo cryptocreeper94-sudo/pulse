@@ -762,12 +762,131 @@ function ChartMetricsPanel({ coin }) {
   )
 }
 
+function TrendingModal({ coins, onClose, onSelectCoin, favorites }) {
+  const isFavorite = (symbol) => favorites?.some(f => f.symbol?.toUpperCase() === symbol?.toUpperCase())
+  
+  return (
+    <div 
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'rgba(0, 0, 0, 0.85)',
+        zIndex: 9999,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 20,
+      }}
+      onClick={onClose}
+    >
+      <div 
+        style={{
+          background: '#141414',
+          borderRadius: 16,
+          border: '1px solid #333',
+          maxWidth: 500,
+          width: '100%',
+          maxHeight: '80vh',
+          overflow: 'hidden',
+          boxShadow: '0 0 40px rgba(0, 212, 255, 0.2)',
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div style={{
+          padding: '16px 20px',
+          borderBottom: '1px solid #333',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}>
+          <div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: '#fff' }}>Trending Coins</div>
+            <div style={{ fontSize: 12, color: '#888', marginTop: 4 }}>Top 10 by market cap</div>
+          </div>
+          <button
+            onClick={onClose}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#888',
+              fontSize: 24,
+              cursor: 'pointer',
+              padding: 4,
+            }}
+          >
+            ×
+          </button>
+        </div>
+        <div style={{ maxHeight: 'calc(80vh - 80px)', overflowY: 'auto', padding: '8px 0' }}>
+          {coins.slice(0, 10).map((coin, idx) => {
+            const change = coin.price_change_percentage_24h || 0
+            const isPositive = change >= 0
+            return (
+              <div
+                key={coin.id || idx}
+                onClick={() => onSelectCoin(coin)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '12px 20px',
+                  cursor: 'pointer',
+                  transition: 'background 0.2s',
+                  borderBottom: '1px solid #1a1a1a',
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = '#1a1a1a'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+              >
+                <div style={{ width: 28, fontSize: 12, color: '#666', fontWeight: 600 }}>
+                  {idx + 1}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1 }}>
+                  {coin.image && (
+                    <img src={coin.image} alt="" style={{ width: 32, height: 32, borderRadius: '50%' }} />
+                  )}
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      {coin.symbol?.toUpperCase()}
+                      {isFavorite(coin.symbol) && <span style={{ color: '#FFD700' }}>★</span>}
+                    </div>
+                    <div style={{ fontSize: 11, color: '#888' }}>{coin.name}</div>
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>
+                    ${coin.current_price?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </div>
+                  <div style={{ 
+                    fontSize: 12, 
+                    fontWeight: 600, 
+                    color: isPositive ? '#39FF14' : '#ff4444',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                    gap: 3,
+                  }}>
+                    <span>{isPositive ? '▲' : '▼'}</span>
+                    <span>{Math.abs(change).toFixed(2)}%</span>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyzeCoin }) {
   const { favorites } = useFavorites()
   const isMobile = useIsMobile()
   const [coins, setCoins] = useState([])
   const [coinsLoading, setCoinsLoading] = useState(true)
   const [selectedCoin, setSelectedCoin] = useState(null)
+  const [showTrendingModal, setShowTrendingModal] = useState(false)
   const [marketData, setMarketData] = useState({
     fearGreed: 65,
     altcoinSeason: 75,
@@ -1259,7 +1378,7 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
               </div>
             </div>
             
-            <div className="mobile-category-card">
+            <div className="mobile-category-card" onClick={() => setShowTrendingModal(true)} style={{ cursor: 'pointer' }}>
               <TileLabel color="#00D4FF">Trending</TileLabel>
               <div style={{ height: 180 }}>
                 {coinsLoading ? (
@@ -1271,8 +1390,11 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
                     items={coins.slice(0, 10)}
                     style={{ height: 180 }}
                     renderItem={(coin) => (
-                      <div onClick={() => handleCoinClick(coin)} style={{ height: 180, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0f0f0f', borderRadius: 12 }}>
+                      <div style={{ height: 180, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0f0f0f', borderRadius: 12, position: 'relative' }}>
                         <CoinContent coin={coin} isFavorite={isFavorite(coin.symbol)} />
+                        <div style={{ position: 'absolute', bottom: 8, left: 0, right: 0, textAlign: 'center', fontSize: 10, color: '#00D4FF' }}>
+                          Tap to see all trending
+                        </div>
                       </div>
                     )}
                     showDots={false}
@@ -1325,25 +1447,30 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
         </div>
       </BentoTile>
 
-      <BentoTile className="bento-trending">
+      <BentoTile className="bento-trending" onClick={() => setShowTrendingModal(true)} style={{ cursor: 'pointer' }}>
         <TileLabel>Trending</TileLabel>
-        <div style={{ flex: 1, minHeight: 160 }}>
+        <div style={{ flex: 1, minHeight: 160, position: 'relative' }}>
           {coinsLoading ? (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#666' }}>
               Loading...
             </div>
           ) : (
-            <FlipCarousel
-              items={coins.slice(0, 10)}
-              renderItem={(coin) => (
-                <div onClick={() => handleCoinClick(coin)} style={{ height: '100%', cursor: 'pointer' }}>
-                  <CoinContent coin={coin} isFavorite={isFavorite(coin.symbol)} />
-                </div>
-              )}
-              showDots={true}
-              autoPlay={true}
-              interval={4000}
-            />
+            <>
+              <FlipCarousel
+                items={coins.slice(0, 10)}
+                renderItem={(coin) => (
+                  <div style={{ height: '100%', cursor: 'pointer' }}>
+                    <CoinContent coin={coin} isFavorite={isFavorite(coin.symbol)} />
+                  </div>
+                )}
+                showDots={true}
+                autoPlay={true}
+                interval={4000}
+              />
+              <div style={{ position: 'absolute', bottom: 20, left: 0, right: 0, textAlign: 'center', fontSize: 10, color: '#00D4FF', pointerEvents: 'none' }}>
+                Click to see all trending
+              </div>
+            </>
           )}
         </div>
       </BentoTile>
@@ -1512,6 +1639,18 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
           </button>
         )}
       </div>
+
+      {showTrendingModal && (
+        <TrendingModal 
+          coins={coins}
+          favorites={favorites}
+          onClose={() => setShowTrendingModal(false)}
+          onSelectCoin={(coin) => {
+            setShowTrendingModal(false)
+            handleCoinClick(coin)
+          }}
+        />
+      )}
       
           </div>
     </>
