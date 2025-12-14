@@ -102,24 +102,37 @@ function QuickActionContent({ action }) {
       alignItems: 'center', 
       justifyContent: 'center',
       height: '100%',
-      gap: 6,
+      gap: 8,
       padding: 12,
     }}>
       <div style={{ 
-        fontSize: 28,
-        width: 48,
-        height: 48,
+        width: 64,
+        height: 64,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: `${action.color}20`,
-        borderRadius: 10,
-        boxShadow: `0 0 16px ${action.color}30`,
+        background: `${action.color}15`,
+        borderRadius: 16,
+        boxShadow: `0 0 20px ${action.color}30`,
+        overflow: 'hidden',
       }}>
-        {action.icon}
+        <img 
+          src={action.image} 
+          alt={action.title}
+          style={{ 
+            width: 56, 
+            height: 56, 
+            objectFit: 'cover',
+            borderRadius: 12,
+          }}
+          onError={(e) => {
+            e.target.style.display = 'none'
+            e.target.parentElement.innerHTML = '<span style="font-size: 28px">📊</span>'
+          }}
+        />
       </div>
-      <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>{action.title}</div>
-      <div style={{ fontSize: 10, color: '#666' }}>{action.subtitle}</div>
+      <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>{action.title}</div>
+      <div style={{ fontSize: 11, color: '#888' }}>{action.subtitle}</div>
     </div>
   )
 }
@@ -816,11 +829,11 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
   const isFavorite = (symbol) => favorites?.some(f => f.symbol?.toUpperCase() === symbol?.toUpperCase())
 
   const quickActions = [
-    { icon: '🎯', title: 'StrikeAgent', subtitle: 'AI Predictive Trading', color: '#00D4FF', tab: 'sniper' },
-    { icon: '💼', title: 'Wallet', subtitle: 'Multi-chain', color: '#9D4EDD', tab: 'wallet' },
-    { icon: '📋', title: 'Watchlist', subtitle: 'Limit orders', color: '#39FF14', tab: 'watchlist' },
-    { icon: '📊', title: 'Markets', subtitle: 'Live prices', color: '#FF006E', tab: 'markets' },
-    { icon: '⚙️', title: 'Settings', subtitle: 'Preferences', color: '#888', tab: 'settings' },
+    { image: '/assets/generated_images/ai_trading_strikeagent_icon.png', title: 'StrikeAgent', subtitle: 'AI Predictive Trading', color: '#00D4FF', tab: 'sniper' },
+    { image: '/assets/generated_images/multi-chain_wallet_icon.png', title: 'Wallet', subtitle: 'Multi-chain', color: '#9D4EDD', tab: 'wallet' },
+    { image: '/assets/generated_images/watchlist_limit_orders_icon.png', title: 'Watchlist', subtitle: 'Limit orders', color: '#39FF14', tab: 'watchlist' },
+    { image: '/assets/generated_images/markets_live_prices_icon.png', title: 'Markets', subtitle: 'Live prices', color: '#FF006E', tab: 'markets' },
+    { image: '/assets/generated_images/settings_preferences_icon.png', title: 'Settings', subtitle: 'Preferences', color: '#888', tab: 'settings' },
   ]
 
   const marketOverviewItems = [
