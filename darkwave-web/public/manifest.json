@@ -1,11 +1,11 @@
 {
-  "name": "DarkWave-V2 Technical Analysis",
-  "short_name": "DarkWave",
-  "description": "Advanced cryptocurrency and stock market technical analysis with real-time signals",
+  "name": "Pulse - AI Trading Analysis",
+  "short_name": "Pulse",
+  "description": "AI-powered predictive trading analysis for crypto and stocks",
   "start_url": "/mini-app",
   "display": "standalone",
   "background_color": "#0A0A0A",
-  "theme_color": "#8B0000",
+  "theme_color": "#00D4FF",
   "orientation": "portrait",
   "icons": [
     {
@@ -19,6 +19,15 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/pwa-splash.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Pulse AI Trading Agents"
     }
   ],
   "categories": ["finance", "productivity", "utilities"],
