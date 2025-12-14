@@ -4,10 +4,18 @@ import { coinGeckoClient } from "../../lib/coinGeckoClient.js";
 import { RSI, MACD, EMA, SMA, BollingerBands } from "technicalindicators";
 
 const TOP_COINS = [
+  // Top 20 by market cap
   'bitcoin', 'ethereum', 'solana', 'cardano', 'avalanche-2',
   'polkadot', 'chainlink', 'polygon', 'near', 'cosmos',
   'litecoin', 'uniswap', 'stellar', 'algorand', 'vechain',
-  'hedera', 'internet-computer', 'filecoin', 'the-graph', 'aave'
+  'hedera', 'internet-computer', 'filecoin', 'the-graph', 'aave',
+  // Additional 30 coins for broader coverage
+  'render-token', 'injective-protocol', 'aptos', 'sui', 'sei-network',
+  'celestia', 'optimism', 'arbitrum', 'stacks', 'immutable-x',
+  'fantom', 'theta-token', 'eos', 'tezos', 'neo',
+  'kava', 'zilliqa', 'iotex', 'flow', 'mina-protocol',
+  'arweave', 'akash-network', 'ocean-protocol', 'fetch-ai', 'singularitynet',
+  'bittensor', 'pepe', 'bonk', 'dogecoin', 'shiba-inu',
 ];
 
 interface IndicatorSnapshot {
@@ -271,7 +279,7 @@ export const backgroundPredictionWorker = inngest.createFunction(
     name: "Generate Background Predictions",
   },
   [
-    { cron: "0 */4 * * *" },
+    { cron: "*/10 * * * *" },  // Run every 10 minutes
     { event: "prediction/generate-background" },
   ],
   async ({ event, step }) => {
