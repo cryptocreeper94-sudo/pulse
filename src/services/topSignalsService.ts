@@ -7,6 +7,7 @@ import { safetyEngineService, TokenSafetyReport } from './safetyEngineService.js
 import { evmSafetyEngine, EvmTokenSafetyReport } from './evmSafetyEngine.js';
 import { ChainId, CHAIN_CONFIGS } from './multiChainProvider.js';
 import { randomBytes } from 'crypto';
+import { strikeAgentTrackingService } from './strikeAgentTrackingService.js';
 
 const DEX_SCREENER_API = 'https://api.dexscreener.com/latest/dex';
 
@@ -596,6 +597,49 @@ class TopSignalsService {
 
       await db.insert(strikeAgentSignals).values(records);
       console.log(`[TopSignals] Saved ${records.length} signals to database`);
+
+      // Log predictions for ML training (async, don't wait)
+      for (const signal of signals.slice(0, 20)) {
+        const aiRecommendation: 'snipe' | 'watch' | 'avoid' = 
+          signal.compositeScore >= 70 ? 'snipe' :
+          signal.compositeScore >= 50 ? 'watch' : 'avoid';
+
+        strikeAgentTrackingService.logPrediction({
+          tokenAddress: signal.tokenAddress,
+          tokenSymbol: signal.tokenSymbol,
+          tokenName: signal.tokenName,
+          dex: signal.dex,
+          chain: signal.chain,
+          priceUsd: signal.priceUsd,
+          marketCapUsd: signal.marketCapUsd,
+          liquidityUsd: signal.liquidityUsd,
+          aiRecommendation,
+          aiScore: signal.compositeScore,
+          aiReasoning: signal.reasoning,
+          safetyMetrics: {
+            botPercent: signal.indicators?.botPercent || 0,
+            bundlePercent: signal.indicators?.bundlePercent || 0,
+            top10HoldersPercent: signal.indicators?.top10HoldersPercent || 0,
+            liquidityUsd: signal.liquidityUsd,
+            holderCount: signal.indicators?.holderCount || 0,
+            creatorWalletRisky: signal.indicators?.creatorWalletRisky || false,
+            mintAuthorityActive: signal.indicators?.mintAuthorityActive,
+            freezeAuthorityActive: signal.indicators?.freezeAuthorityActive,
+            isHoneypot: signal.indicators?.isHoneypot,
+            liquidityLocked: signal.indicators?.liquidityLocked,
+            isPumpFun: signal.indicators?.isPumpFun,
+          },
+          movementMetrics: {
+            priceChangePercent: signal.indicators?.priceChange24h || 0,
+            volumeMultiplier: signal.indicators?.volumeMultiplier || 1,
+            tradesPerMinute: signal.indicators?.tradesPerMinute || 0,
+            buySellRatio: signal.indicators?.buySellRatio || 1,
+            holderGrowthPercent: signal.indicators?.holderGrowthPercent || 0,
+          },
+        }).catch(err => {
+          console.warn(`[TopSignals] Failed to log prediction for ${signal.tokenSymbol}:`, err.message);
+        });
+      }
     } catch (error) {
       console.error('[TopSignals] Error saving signals:', error);
       throw error;
