@@ -7,16 +7,14 @@ export default defineConfig({
   plugins: [
     react(),
     nodePolyfills({
-      include: ['buffer', 'crypto', 'stream', 'util', 'process'],
+      include: ['buffer', 'crypto', 'stream', 'util'],
+      exclude: ['process'],
       globals: {
         Buffer: true,
         global: true,
-        process: true,
+        process: false,
       },
       protocolImports: true,
-      overrides: {
-        fs: 'memfs',
-      },
     }),
   ],
   define: {
@@ -48,6 +46,10 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         telegram: resolve(__dirname, 'telegram.html'),
+      },
+      onwarn(warning, warn) {
+        if (warning.code === 'MODULE_LEVEL_DIRECTIVE') return;
+        warn(warning);
       },
     },
   },
