@@ -193,6 +193,8 @@ body {
   z-index: 9999;
   overflow-y: auto;
   overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
 
 .hamburger-menu.open {
