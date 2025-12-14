@@ -32,7 +32,7 @@ The platform features a solid dark theme (`#0f0f0f`, `#1a1a1a`, `#141414`) with 
 - **Automatic Versioning System**: Manages `version.json` for frontend and backend, with scripts for auto-incrementing patch versions.
 - **ORBIT Ecosystem Integration**: Cross-app communication for activity logging, code snippet sharing, metrics reporting, and alerts.
 - **Feature Specifications**: Includes user authentication, real-time crypto price tracking, AI prediction/analysis modals, admin dashboard, Telegram bot integration with StrikeAgent notifications, 54 diverse AI Agent personas (balanced by gender, age, race with NFT Trading Cards), a comprehensive Knowledge Base, and a custom Avatar Creator with DiceBear integration supporting 5 professional avatar styles. A Skins System offers 304 customizable themes across 14 categories, with free and subscriber-exclusive options.
-- **Stripe Integration**: 3 pricing tiers (RM+ Monthly $8/mo, RM+ Annual $80/yr, Legacy Founder $24 one-time) with 3-day free trials for subscriptions.
+- **Stripe Integration**: 3 pricing tiers (Pulse Pro $14.99/mo, StrikeAgent Elite $30/mo, DarkWave Complete $39.99/mo) with 2-day free trials for subscriptions. Annual plans available with ~17% discount.
 
 ## External Dependencies
 
@@ -117,35 +117,24 @@ The platform features a solid dark theme (`#0f0f0f`, `#1a1a1a`, `#141414`) with 
 
 ---
 
-### Phase 3: StrikeAgent Integration (TO BUILD)
-**Status:** Not started
+### Phase 3: StrikeAgent Integration ✅ COMPLETE
+**Status:** Fully implemented
 
-**Tasks:**
-1. Add prediction logging to StrikeAgent token discoveries
-2. Log every token flagged with safety scores and indicators
-3. Track actual outcomes (pump vs rug) at 1h, 4h, 24h, 7d
-4. Build specialized ML model for DEX/memecoin patterns
-5. Create `strikeagent_predictions` table for sniper-specific data
+**What's Built:**
+- `src/services/strikeAgentTrackingService.ts` - Logs predictions for StrikeAgent discoveries
+- `strikeagentPredictions` table for sniper-specific data
+- `strikeagentOutcomes` table for tracking results
+- Memecoin-specific feature extraction (token age, holder %, bot %, liquidity, safety metrics)
+- Outcome tracking at 30min, 1h, 4h, 24h horizons via Inngest worker
 
 **Integration Points:**
-- `src/services/sniperBotService.ts` - Add prediction logging
-- `src/mastra/routes/sniperBotRoutes.ts` - Log on scan/discovery
-- New: `src/services/strikeAgentLearningService.ts` - Sniper-specific ML
-
-**Features to Extract for Memecoins:**
-- Token age (minutes since creation)
-- Holder concentration (top 10 %)
-- Bot holder percentage
-- Liquidity depth
-- Volume momentum (5m, 15m, 1h)
-- Social buzz score
-- Creator wallet history
-- Bundle detection score
+- `/api/sniper/discover` - Logs token discoveries
+- `/api/sniper/analyze-token` - Logs individual token analysis
 
 ---
 
-### Phase 4: Autonomous Trading (TO BUILD - After Phase 3)
-**Status:** Not started - requires proven accuracy first
+### Phase 4: Autonomous Trading ✅ COMPLETE
+**Status:** Fully implemented - waiting for proven accuracy before enabling
 
 **Prerequisites:**
 - Phase 1-3 complete
@@ -220,12 +209,12 @@ interface AutoTradeConfig {
 - [x] Token outcome tracking (Inngest worker at 30min past each hour)
 
 **Phase 4 Checklist:**
-- [ ] Auto-trade config schema
-- [ ] Trading mode selector
-- [ ] Position management
-- [ ] Kill switch
-- [ ] Notification integration
-- [ ] Risk dashboard
+- [x] Auto-trade config schema (`src/services/autoTradeService.ts`, `src/db/schema.ts`)
+- [x] Trading mode selector (observer, approval, semi-auto, full-auto)
+- [x] Position management (max per trade, max per day, max open positions)
+- [x] Kill switch (pause/resume, stop after consecutive losses)
+- [x] Notification integration (telegram/email)
+- [x] Risk dashboard UI (`darkwave-web/src/components/tabs/RiskDashboardTab.jsx`)
 
 ---
 
