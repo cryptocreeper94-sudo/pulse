@@ -90,6 +90,14 @@ export default function WalletManager({ userId }) {
   const [showRecoveryWords, setShowRecoveryWords] = useState(false)
   const [recoveryLoading, setRecoveryLoading] = useState(false)
   
+  const [showBuyModal, setShowBuyModal] = useState(false)
+  const [buyNetwork, setBuyNetwork] = useState('solana')
+  const [buyCurrency, setBuyCurrency] = useState('sol')
+  const [buyAmount, setBuyAmount] = useState('')
+  const [buyLoading, setBuyLoading] = useState(false)
+  const [buyError, setBuyError] = useState('')
+  const [onrampSession, setOnrampSession] = useState(null)
+  
   useEffect(() => {
     if (builtInWallet.hasWallet) {
       if (builtInWallet.isUnlocked) {
@@ -263,6 +271,65 @@ export default function WalletManager({ userId }) {
     setRecoveryMnemonic('')
     setShowRecoveryWords(false)
     setError('')
+  }
+  
+  const handleBuyCrypto = async () => {
+    setBuyLoading(true)
+    setBuyError('')
+    
+    try {
+      const walletAddress = buyNetwork === 'solana' 
+        ? builtInWallet.addresses?.solana 
+        : builtInWallet.addresses?.ethereum
+      
+      if (!walletAddress) {
+        setBuyError('Wallet address not available')
+        return
+      }
+      
+      const res = await fetch('/api/crypto/onramp/create-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          walletAddress,
+          network: buyNetwork,
+          currency: buyCurrency,
+          amount: buyAmount ? parseFloat(buyAmount) : undefined,
+        }),
+      })
+      
+      const data = await res.json()
+      
+      if (!res.ok) {
+        if (data.needsSetup) {
+          setBuyError('Stripe Crypto Onramp is not enabled. To enable it, visit your Stripe Dashboard and apply for access to the Crypto Onramp feature.')
+        } else {
+          setBuyError(data.error || 'Failed to create onramp session')
+        }
+        return
+      }
+      
+      if (data.redirectUrl) {
+        window.open(data.redirectUrl, '_blank')
+        closeBuyModal()
+      } else if (data.clientSecret) {
+        setOnrampSession(data)
+      }
+    } catch (err) {
+      setBuyError(err.message || 'Failed to connect to onramp service')
+    } finally {
+      setBuyLoading(false)
+    }
+  }
+  
+  const closeBuyModal = () => {
+    setShowBuyModal(false)
+    setBuyNetwork('solana')
+    setBuyCurrency('sol')
+    setBuyAmount('')
+    setBuyError('')
+    setBuyLoading(false)
+    setOnrampSession(null)
   }
   
   const copyAddress = (address) => {
@@ -842,6 +909,14 @@ export default function WalletManager({ userId }) {
             </div>
             <span className="quick-action-label">Receive</span>
           </button>
+          <button className="quick-action-card buy" onClick={() => setShowBuyModal(true)}>
+            <div className="quick-action-icon buy">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+              </svg>
+            </div>
+            <span className="quick-action-label">Buy Crypto</span>
+          </button>
           {builtInWallet.addresses?.solana && (
             <button className="quick-action-card dust" onClick={() => setShowDustBuster(true)}>
               <div className="quick-action-icon dust">
@@ -1036,6 +1111,122 @@ export default function WalletManager({ userId }) {
                 </button>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {showBuyModal && (
+        <div className="buy-overlay" onClick={closeBuyModal}>
+          <div className="buy-panel" onClick={(e) => e.stopPropagation()}>
+            <div className="buy-header">
+              <h3>Buy Crypto</h3>
+              <button className="close-btn" onClick={closeBuyModal}>×</button>
+            </div>
+            
+            <div className="buy-info">
+              <div className="buy-info-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 16v-4M12 8h.01"/>
+                </svg>
+              </div>
+              <span>Purchase crypto directly with your card via Stripe</span>
+            </div>
+            
+            <div className="form-field">
+              <label>Network</label>
+              <select
+                value={buyNetwork}
+                onChange={(e) => {
+                  setBuyNetwork(e.target.value)
+                  setBuyCurrency(e.target.value === 'solana' ? 'sol' : 'eth')
+                }}
+              >
+                <option value="solana">Solana</option>
+                <option value="ethereum">Ethereum</option>
+                <option value="polygon">Polygon</option>
+                <option value="base">Base</option>
+                <option value="arbitrum">Arbitrum</option>
+              </select>
+            </div>
+            
+            <div className="form-field">
+              <label>Currency</label>
+              <select
+                value={buyCurrency}
+                onChange={(e) => setBuyCurrency(e.target.value)}
+              >
+                {buyNetwork === 'solana' ? (
+                  <>
+                    <option value="sol">SOL</option>
+                    <option value="usdc">USDC</option>
+                  </>
+                ) : (
+                  <>
+                    <option value="eth">ETH</option>
+                    <option value="usdc">USDC</option>
+                  </>
+                )}
+              </select>
+            </div>
+            
+            <div className="form-field">
+              <label>Amount (USD)</label>
+              <input
+                type="number"
+                value={buyAmount}
+                onChange={(e) => setBuyAmount(e.target.value)}
+                placeholder="Enter amount in USD (optional)"
+                min="1"
+                step="1"
+              />
+              <span className="field-hint">Leave empty to choose amount on Stripe</span>
+            </div>
+            
+            <div className="buy-destination">
+              <label>Destination Wallet</label>
+              <div className="destination-address">
+                <span className="destination-network">{CHAIN_INFO[buyNetwork]?.icon}</span>
+                <span className="destination-addr">
+                  {buyNetwork === 'solana' 
+                    ? builtInWallet.addresses?.solana?.slice(0, 8) + '...' + builtInWallet.addresses?.solana?.slice(-6)
+                    : builtInWallet.addresses?.ethereum?.slice(0, 8) + '...' + builtInWallet.addresses?.ethereum?.slice(-6)
+                  }
+                </span>
+              </div>
+            </div>
+            
+            {buyError && (
+              <div className="form-error buy-error">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 8v4M12 16h.01"/>
+                </svg>
+                <span>{buyError}</span>
+              </div>
+            )}
+            
+            <button 
+              className="wallet-cta primary full-width stripe-btn" 
+              onClick={handleBuyCrypto}
+              disabled={buyLoading}
+            >
+              {buyLoading ? (
+                'Connecting to Stripe...'
+              ) : (
+                <>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="1" y="4" width="22" height="16" rx="2"/>
+                    <line x1="1" y1="10" x2="23" y2="10"/>
+                  </svg>
+                  Buy with Stripe
+                </>
+              )}
+            </button>
+            
+            <p className="buy-disclaimer">
+              Powered by Stripe. Available for US customers only.
+            </p>
           </div>
         </div>
       )}
@@ -2567,6 +2758,133 @@ export default function WalletManager({ userId }) {
         .quick-action-icon.dust {
           background: rgba(153, 69, 255, 0.1);
           color: #9945FF;
+        }
+        
+        .quick-action-icon.buy {
+          background: rgba(57, 255, 20, 0.1);
+          color: #39FF14;
+        }
+        
+        .quick-action-card.buy::before {
+          background: linear-gradient(135deg, #39FF14, #00D4FF);
+        }
+        
+        .quick-action-card.buy:hover {
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 20px rgba(57, 255, 20, 0.2);
+        }
+
+        /* Buy Crypto Modal */
+        .buy-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.9);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+          padding: 20px;
+        }
+
+        .buy-panel {
+          background: #1a1a1a;
+          border: 1px solid #333;
+          border-radius: 20px;
+          padding: 24px;
+          width: 100%;
+          max-width: 420px;
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+          max-height: 90vh;
+          overflow-y: auto;
+        }
+
+        .buy-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .buy-header h3 {
+          font-size: 20px;
+          color: #fff;
+          margin: 0;
+        }
+
+        .buy-info {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 14px 16px;
+          background: rgba(0, 212, 255, 0.1);
+          border: 1px solid rgba(0, 212, 255, 0.2);
+          border-radius: 12px;
+          color: #00D4FF;
+          font-size: 13px;
+        }
+
+        .buy-info-icon {
+          flex-shrink: 0;
+        }
+
+        .buy-destination {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .buy-destination label {
+          color: #888;
+          font-size: 13px;
+        }
+
+        .destination-address {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 12px 16px;
+          background: #0f0f0f;
+          border: 1px solid #333;
+          border-radius: 10px;
+        }
+
+        .destination-network {
+          font-size: 18px;
+        }
+
+        .destination-addr {
+          font-family: monospace;
+          font-size: 14px;
+          color: #888;
+        }
+
+        .buy-error {
+          display: flex;
+          align-items: flex-start;
+          gap: 10px;
+        }
+
+        .buy-error svg {
+          flex-shrink: 0;
+          margin-top: 2px;
+        }
+
+        .stripe-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+        }
+
+        .stripe-btn svg {
+          flex-shrink: 0;
+        }
+
+        .buy-disclaimer {
+          text-align: center;
+          font-size: 12px;
+          color: #666;
+          margin: 0;
         }
         
         .quick-action-card:hover .quick-action-icon {
