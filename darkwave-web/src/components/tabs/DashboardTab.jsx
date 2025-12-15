@@ -1067,9 +1067,14 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
             padding: 10px;
             padding-top: 60px;
           }
-          .bento-ai-status, .bento-quick, .bento-predict, .bento-market, .bento-trending, .bento-news {
+          .bento-ai-status, .bento-quick, .bento-predict {
             grid-area: auto;
             min-height: 140px;
+          }
+          .bento-market, .bento-trending, .bento-news {
+            grid-area: auto;
+            min-height: 140px;
+            display: flex;
           }
           .bento-table { grid-column: 1 / -1; min-height: 350px; }
           .desktop-news-grid { display: none; }
@@ -1094,8 +1099,8 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
           .bento-ai-status { min-height: 100px; }
           .bento-predict { min-height: 140px; }
           .bento-quick { min-height: 160px; }
-          .bento-market { min-height: 160px; }
-          .bento-trending { min-height: 160px; }
+          .bento-market { min-height: 160px; display: flex; }
+          .bento-trending { min-height: 160px; display: flex; }
           .bento-news { min-height: 160px; display: flex; }
           .bento-table { min-height: 350px; grid-column: 1 / -1; }
           .desktop-news-grid { display: none; }
