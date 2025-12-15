@@ -1009,6 +1009,19 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
 
   return (
     <>
+      {/* Market Overview Strip - TOP of page */}
+      <div className="market-overview-strip">
+        {marketOverviewItems.map((item, index) => (
+          <div key={index} className="market-overview-card">
+            {item.type === 'metric' ? (
+              <MetricContent title={item.title} value={item.value} change={item.change} />
+            ) : (
+              <GaugeContent title={item.title} value={item.value} type={item.gaugeType} accentColor={item.color} isMobile={false} />
+            )}
+          </div>
+        ))}
+      </div>
+      
       <div className="bento-dashboard">
       
       <div className="bento-ai-status" style={{ display: 'flex', height: '100%' }}>
