@@ -1062,25 +1062,27 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
         @media (max-width: 1200px) {
           .bento-dashboard {
             grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: auto auto auto auto auto;
+            grid-template-rows: auto auto auto auto auto auto auto;
+            grid-auto-rows: minmax(140px, auto);
             gap: 10px;
             padding: 10px;
             padding-top: 60px;
           }
           .bento-ai-status, .bento-quick, .bento-predict {
             grid-area: auto;
-            min-height: 140px;
+            min-height: 140px !important;
           }
           .bento-market, .bento-trending, .bento-news {
             grid-area: auto;
-            min-height: 140px;
-            display: flex;
+            min-height: 140px !important;
+            display: flex !important;
+            flex-direction: column;
           }
-          .bento-table { grid-column: 1 / -1; min-height: 350px; }
+          .bento-table { grid-column: 1 / -1; min-height: 350px !important; }
           .desktop-news-grid { display: none; }
           .bento-chart-section { 
             grid-column: 1 / -1;
-            min-height: 400px;
+            min-height: 400px !important;
             grid-template-columns: 1fr 2fr;
           }
         }
@@ -1088,7 +1090,8 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
         @media (max-width: 1024px) {
           .bento-dashboard {
             grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: auto;
+            grid-template-rows: auto auto auto auto auto auto auto;
+            grid-auto-rows: minmax(140px, auto);
             gap: 8px;
             padding: 10px;
             padding-top: 60px;
@@ -1096,16 +1099,16 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
           .bento-ai-status, .bento-quick, .bento-predict, .bento-market, .bento-trending, .bento-news {
             grid-area: auto;
           }
-          .bento-ai-status { min-height: 100px; }
-          .bento-predict { min-height: 140px; }
-          .bento-quick { min-height: 160px; }
-          .bento-market { min-height: 160px; display: flex; }
-          .bento-trending { min-height: 160px; display: flex; }
-          .bento-news { min-height: 160px; display: flex; }
-          .bento-table { min-height: 350px; grid-column: 1 / -1; }
+          .bento-ai-status { min-height: 100px !important; }
+          .bento-predict { min-height: 140px !important; }
+          .bento-quick { min-height: 160px !important; }
+          .bento-market { min-height: 160px !important; display: flex !important; flex-direction: column; }
+          .bento-trending { min-height: 160px !important; display: flex !important; flex-direction: column; }
+          .bento-news { min-height: 160px !important; display: flex !important; flex-direction: column; }
+          .bento-table { min-height: 350px !important; grid-column: 1 / -1; }
           .desktop-news-grid { display: none; }
           .bento-chart-section { 
-            min-height: 400px; 
+            min-height: 400px !important; 
             grid-column: 1 / -1;
             grid-template-columns: 1fr 2fr;
           }
