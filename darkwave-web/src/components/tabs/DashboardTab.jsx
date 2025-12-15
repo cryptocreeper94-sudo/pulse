@@ -1448,7 +1448,8 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
         </div>
       </BentoTile>
 
-      <div className="mobile-categories-wrapper">
+      {isMobile && (
+        <div className="mobile-categories-wrapper">
           <MobileCardCarousel>
             <div className="mobile-category-card" style={{ padding: 0, overflow: 'hidden' }}>
               <div style={{ height: 220 }}>
@@ -1525,6 +1526,7 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
             </div>
           </MobileCardCarousel>
         </div>
+      )}
       
       <BentoTile className="bento-quick" style={{ padding: 0, overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: 10, left: 12, zIndex: 10 }}>
