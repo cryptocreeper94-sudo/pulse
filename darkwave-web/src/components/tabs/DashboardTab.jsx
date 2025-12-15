@@ -1550,9 +1550,9 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
         </div>
       </BentoTile>
 
-      <BentoTile className="bento-market">
+      <BentoTile className="bento-market" style={{ minHeight: 180, height: 'auto' }}>
         <TileLabel>Market Overview</TileLabel>
-        <div style={{ flex: 1, minHeight: 160 }}>
+        <div style={{ flex: 1, minHeight: 140 }}>
           <FlipCarousel
             items={marketOverviewItems}
             renderItem={(item) => (
@@ -1567,9 +1567,9 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
         </div>
       </BentoTile>
 
-      <BentoTile className="bento-trending" onClick={() => setShowTrendingModal(true)} style={{ cursor: 'pointer' }}>
+      <BentoTile className="bento-trending" onClick={() => setShowTrendingModal(true)} style={{ cursor: 'pointer', minHeight: 180, height: 'auto' }}>
         <TileLabel>Trending</TileLabel>
-        <div style={{ flex: 1, minHeight: 160, position: 'relative' }}>
+        <div style={{ flex: 1, minHeight: 140, position: 'relative' }}>
           {coinsLoading ? (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#666' }}>
               Loading...
@@ -1595,9 +1595,9 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
         </div>
       </BentoTile>
 
-      <BentoTile className="bento-news">
+      <BentoTile className="bento-news" style={{ minHeight: 180, height: 'auto' }}>
         <TileLabel>News</TileLabel>
-        <div style={{ flex: 1, minHeight: 160 }}>
+        <div style={{ flex: 1, minHeight: 140 }}>
           <FlipCarousel
             items={news}
             renderItem={(item) => <NewsContent news={item} />}
