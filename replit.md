@@ -16,6 +16,13 @@ Pulse, by DarkWave Studios, LLC, is an AI-driven trading platform that leverages
 ### UI/UX Decisions
 The platform features a solid dark theme (`#0f0f0f`, `#1a1a1a`, `#141414`) with free-floating elements and glow effects. Glassmorphism (backdrop-filter blur + semi-transparent backgrounds) is used for cards site-wide, but NOT for backgrounds, buttons, or other non-card elements. The design includes a slim 50px header with a hamburger menu, a dynamic footer, SVG gauge components for market sentiment, metric cards for market cap and volume, and a customizable Bitcoin chart using `lightweight-charts`. UI elements should avoid frames or boxes, with agents appearing as if walking in front of a screen, using full-body, rembg-treated, Pixar/MIB style with sweep-in animations. The color palette strictly avoids orange, yellow, and brown. A light mode theme with softer blue-tinted grays and enhanced contrast is also implemented.
 
+### Coin Table System (Updated Dec 2025)
+- **Categories**: Top, Gainers, Losers, Meme, DeFi, DEX - each fetches 20 coins from CoinGecko API
+- **Timeframe Toggle**: 1H/24H buttons to switch between hourly and daily price changes
+- **Category Ranking**: Shows 1-20 within each category (not overall market rank)
+- **API Endpoint**: `/api/crypto/category/:category?timeframe=1h|24h`
+- **Mobile Responsive**: Simplified columns (#, Coin, Price, Change, Volume) for all screen sizes
+
 ### Technical Implementations
 - **Frontend**: React 19 and Vite 7 web app, plus React Native + Expo mobile app (darkwave-mobile/) with tab navigation (Markets, StrikeAgent, Portfolio, Settings).
 - **Backend**: Mastra AI framework with an Express server, powered by the DarkWave-V2 AI agent supporting tool calling and memory.
