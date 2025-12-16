@@ -1747,3 +1747,102 @@ export const exchangeBalanceSnapshots = pgTable('exchange_balance_snapshots', {
   
   snapshotAt: timestamp('snapshot_at').defaultNow().notNull(),
 });
+
+// ============================================
+// AUTONOMOUS TRADING SYSTEM
+// Trading profiles, suggestions, executions, risk management
+// ============================================
+
+export const tradingProfiles = pgTable('trading_profiles', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  mode: varchar('mode', { length: 50 }).notNull().default('observer'),
+  
+  maxPositionSizeUsd: decimal('max_position_size_usd', { precision: 18, scale: 2 }).default('100'),
+  maxDailyLossUsd: decimal('max_daily_loss_usd', { precision: 18, scale: 2 }).default('50'),
+  maxSimultaneousTrades: integer('max_simultaneous_trades').default(3),
+  minConfidenceThreshold: decimal('min_confidence_threshold', { precision: 5, scale: 2 }).default('0.65'),
+  
+  killSwitchActive: boolean('kill_switch_active').default(false),
+  killSwitchReason: text('kill_switch_reason'),
+  
+  fullAutoUnlocked: boolean('full_auto_unlocked').default(false),
+  evaluatedOutcomesAtUnlock: integer('evaluated_outcomes_at_unlock'),
+  
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const tradeSuggestions = pgTable('trade_suggestions', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  predictionId: varchar('prediction_id', { length: 255 }),
+  
+  ticker: varchar('ticker', { length: 50 }).notNull(),
+  chain: varchar('chain', { length: 50 }).notNull().default('solana'),
+  signal: varchar('signal', { length: 50 }).notNull(),
+  confidence: decimal('confidence', { precision: 5, scale: 4 }),
+  suggestedSizeUsd: decimal('suggested_size_usd', { precision: 18, scale: 2 }),
+  entryPrice: decimal('entry_price', { precision: 24, scale: 12 }),
+  rationale: text('rationale'),
+  
+  status: varchar('status', { length: 50 }).notNull().default('pending'),
+  expiresAt: timestamp('expires_at'),
+  approvedAt: timestamp('approved_at'),
+  rejectedAt: timestamp('rejected_at'),
+  
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const tradeExecutions = pgTable('trade_executions', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  suggestionId: varchar('suggestion_id', { length: 255 }),
+  exchangeConnectionId: varchar('exchange_connection_id', { length: 255 }),
+  
+  ticker: varchar('ticker', { length: 50 }).notNull(),
+  chain: varchar('chain', { length: 50 }).notNull(),
+  side: varchar('side', { length: 10 }).notNull(),
+  sizeUsd: decimal('size_usd', { precision: 18, scale: 2 }),
+  entryPrice: decimal('entry_price', { precision: 24, scale: 12 }),
+  exitPrice: decimal('exit_price', { precision: 24, scale: 12 }),
+  
+  status: varchar('status', { length: 50 }).notNull().default('open'),
+  mode: varchar('mode', { length: 50 }).notNull(),
+  
+  realizedPnlUsd: decimal('realized_pnl_usd', { precision: 18, scale: 2 }),
+  realizedPnlPercent: decimal('realized_pnl_percent', { precision: 10, scale: 4 }),
+  
+  exchangeOrderId: varchar('exchange_order_id', { length: 255 }),
+  errorMessage: text('error_message'),
+  
+  openedAt: timestamp('opened_at').defaultNow().notNull(),
+  closedAt: timestamp('closed_at'),
+});
+
+export const dailyRiskSnapshots = pgTable('daily_risk_snapshots', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  snapshotDate: timestamp('snapshot_date').notNull(),
+  
+  totalExposureUsd: decimal('total_exposure_usd', { precision: 18, scale: 2 }).default('0'),
+  realizedPnlUsd: decimal('realized_pnl_usd', { precision: 18, scale: 2 }).default('0'),
+  unrealizedPnlUsd: decimal('unrealized_pnl_usd', { precision: 18, scale: 2 }).default('0'),
+  tradesExecuted: integer('trades_executed').default(0),
+  
+  killSwitchTriggered: boolean('kill_switch_triggered').default(false),
+  killSwitchReason: text('kill_switch_reason'),
+  
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const tradingMilestones = pgTable('trading_milestones', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  milestoneName: varchar('milestone_name', { length: 100 }).notNull(),
+  targetValue: integer('target_value').notNull(),
+  currentValue: integer('current_value').default(0),
+  isCompleted: boolean('is_completed').default(false),
+  completedAt: timestamp('completed_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
