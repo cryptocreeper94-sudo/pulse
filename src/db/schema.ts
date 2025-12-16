@@ -1489,6 +1489,91 @@ export const vaultActivityLog = pgTable('vault_activity_log', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
+// ============================================
+// PUBLIC API KEY MANAGEMENT SYSTEM
+// ============================================
+
+// API Keys - For external developers to access Pulse API
+export const apiKeys = pgTable('api_keys', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  
+  // Key Details
+  name: varchar('name', { length: 255 }).notNull(),
+  keyPrefix: varchar('key_prefix', { length: 20 }).notNull(),
+  keyHash: varchar('key_hash', { length: 255 }).notNull(),
+  
+  // Tier & Limits
+  tier: varchar('tier', { length: 50 }).notNull().default('free'),
+  rateLimit: integer('rate_limit').notNull().default(60),
+  dailyLimit: integer('daily_limit').notNull().default(2000),
+  
+  // Status
+  status: varchar('status', { length: 50 }).notNull().default('active'),
+  lastUsedAt: timestamp('last_used_at'),
+  
+  // Permissions (JSON array of allowed endpoints)
+  permissions: text('permissions'),
+  
+  // Metadata
+  description: text('description'),
+  webhookUrl: text('webhook_url'),
+  
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  expiresAt: timestamp('expires_at'),
+  revokedAt: timestamp('revoked_at'),
+});
+
+// API Usage Tracking - Daily usage per API key
+export const apiUsageDaily = pgTable('api_usage_daily', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  keyId: varchar('key_id', { length: 255 }).notNull(),
+  
+  // Date (stored as YYYY-MM-DD string for easy grouping)
+  date: varchar('date', { length: 10 }).notNull(),
+  
+  // Usage Counts
+  requestCount: integer('request_count').notNull().default(0),
+  successCount: integer('success_count').notNull().default(0),
+  errorCount: integer('error_count').notNull().default(0),
+  
+  // Endpoint Breakdown (JSON object with counts per endpoint)
+  endpointBreakdown: text('endpoint_breakdown'),
+  
+  // Rate Limit Hits
+  rateLimitHits: integer('rate_limit_hits').notNull().default(0),
+  
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// API Request Logs - Individual request logs (optional, for debugging)
+export const apiRequestLogs = pgTable('api_request_logs', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  keyId: varchar('key_id', { length: 255 }).notNull(),
+  
+  // Request Details
+  endpoint: varchar('endpoint', { length: 255 }).notNull(),
+  method: varchar('method', { length: 10 }).notNull(),
+  statusCode: integer('status_code').notNull(),
+  
+  // Performance
+  latencyMs: integer('latency_ms'),
+  
+  // Request/Response (truncated for storage)
+  requestParams: text('request_params'),
+  responsePreview: text('response_preview'),
+  
+  // Error Details
+  errorMessage: text('error_message'),
+  
+  // Client Info
+  ipHash: varchar('ip_hash', { length: 64 }),
+  userAgent: text('user_agent'),
+  
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
 // Analytics - Page Views tracking for Developers Portal
 export const pageViews = pgTable('page_views', {
   id: varchar('id', { length: 255 }).primaryKey(),
