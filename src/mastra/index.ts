@@ -951,6 +951,67 @@ export const mastra = new Mastra({
           }
         }
       },
+      // Live Coin Price - for any coin by symbol (for live charts)
+      {
+        path: "/api/crypto/coin-price",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          const symbol = (c.req.query('symbol') || 'BTC').toUpperCase();
+          
+          // Common symbol to CoinGecko ID mapping
+          const symbolToId: Record<string, string> = {
+            'BTC': 'bitcoin', 'ETH': 'ethereum', 'USDT': 'tether', 'BNB': 'binancecoin',
+            'XRP': 'ripple', 'USDC': 'usd-coin', 'ADA': 'cardano', 'DOGE': 'dogecoin',
+            'SOL': 'solana', 'TRX': 'tron', 'DOT': 'polkadot', 'MATIC': 'matic-network',
+            'LTC': 'litecoin', 'SHIB': 'shiba-inu', 'AVAX': 'avalanche-2', 'LINK': 'chainlink',
+            'ATOM': 'cosmos', 'UNI': 'uniswap', 'XMR': 'monero', 'ETC': 'ethereum-classic',
+            'XLM': 'stellar', 'BCH': 'bitcoin-cash', 'FIL': 'filecoin', 'NEAR': 'near',
+            'APT': 'aptos', 'ARB': 'arbitrum', 'OP': 'optimism', 'INJ': 'injective-protocol',
+            'PEPE': 'pepe', 'WIF': 'dogwifcoin', 'BONK': 'bonk', 'FLOKI': 'floki',
+            'TRUMP': 'official-trump', 'PENGU': 'pudgy-penguins', 'HASH': 'provenance-blockchain'
+          };
+          
+          const coinId = symbolToId[symbol] || symbol.toLowerCase();
+          const cacheKey = `live-price:${coinId}`;
+          
+          // Check cache (5 second TTL for live price)
+          const cached = apiCache.get<any>(cacheKey);
+          if (cached) {
+            return c.json(cached);
+          }
+          
+          try {
+            const data = await coinGeckoClient.getSimplePrice(coinId, 'usd');
+            const coinData = data?.[coinId];
+            
+            if (!coinData) {
+              // Fallback: try searching for the coin
+              logger?.warn(`⚠️ [CoinPrice] Coin not found: ${symbol} (${coinId})`);
+              return c.json({ error: 'Coin not found', symbol, coinId }, 404);
+            }
+            
+            const price = coinData?.usd || 0;
+            const change24h = coinData?.usd_24h_change || 0;
+            
+            const result = {
+              price,
+              change24h,
+              symbol,
+              coinId,
+              timestamp: Date.now()
+            };
+            
+            // Cache for 5 seconds
+            apiCache.set(cacheKey, result, 5);
+            
+            return c.json(result);
+          } catch (error: any) {
+            logger?.error('❌ [CoinPrice] Error', { error: error.message, symbol });
+            return c.json({ price: 0, change24h: 0, error: 'Failed to fetch price' }, 500);
+          }
+        }
+      },
       // BTC History - OHLC data for chart
       {
         path: "/api/crypto/btc-history",
