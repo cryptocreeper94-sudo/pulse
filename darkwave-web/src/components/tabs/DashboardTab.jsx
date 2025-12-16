@@ -1263,13 +1263,15 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
           <div style={{ marginBottom: 12, paddingLeft: 4 }}>
             <TileLabel color="#00D4FF">Latest News</TileLabel>
           </div>
-          <FlipCarousel
-            items={news}
-            renderItem={(item) => <MobileNewsCard news={item} />}
-            showDots={true}
-            autoPlay={true}
-            interval={8000}
-          />
+          <div style={{ height: 260, width: '100%' }}>
+            <FlipCarousel
+              items={news}
+              renderItem={(item) => <MobileNewsCard news={item} />}
+              showDots={true}
+              autoPlay={true}
+              interval={8000}
+            />
+          </div>
         </div>
       )}
 
