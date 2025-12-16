@@ -6243,6 +6243,546 @@ export const mastra = new Mastra({
           return c.text('File not found', 404);
         }
       },
+      
+      // ============================================
+      // PUBLIC API v1 - For External Developers
+      // ============================================
+      
+      // API Key Management - Generate new API key (requires authentication)
+      {
+        path: "/api/developer/keys",
+        method: "POST",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          try {
+            const body = await c.req.json();
+            const { sessionToken, name, tier = 'free', description } = body;
+            
+            if (!sessionToken || !name) {
+              return c.json({ error: 'sessionToken and name are required' }, 400);
+            }
+            
+            // Verify session token and get user
+            const { db } = await import('../db/client.js');
+            const { sessions } = await import('../db/schema.js');
+            const { eq } = await import('drizzle-orm');
+            
+            const sessionRecords = await db.select().from(sessions).where(eq(sessions.token, sessionToken));
+            
+            if (sessionRecords.length === 0) {
+              logger?.warn('🔒 [API Keys] Invalid session token attempted');
+              return c.json({ error: 'Invalid or expired session' }, 401);
+            }
+            
+            const session = sessionRecords[0];
+            
+            // Check if session is expired
+            if (session.expiresAt && new Date(session.expiresAt) < new Date()) {
+              logger?.warn('🔒 [API Keys] Expired session token used');
+              return c.json({ error: 'Session has expired, please log in again' }, 401);
+            }
+            
+            // Use the userId from the verified session
+            const userId = session.userId || session.email || 'anonymous';
+            
+            const { apiKeyService } = await import('../services/apiKeyService.js');
+            const result = await apiKeyService.generateApiKey(userId, name, tier, description);
+            
+            logger?.info('🔑 [API Keys] New key generated', { userId, name, tier });
+            
+            return c.json({
+              success: true,
+              apiKey: result.key,
+              keyId: result.keyId,
+              prefix: result.prefix,
+              message: 'Store this API key securely - it cannot be retrieved again'
+            });
+          } catch (error: any) {
+            logger?.error('❌ [API Keys] Error generating key', { error: error.message });
+            return c.json({ error: 'Failed to generate API key' }, 500);
+          }
+        }
+      },
+      
+      // API Key Management - Get user's API keys
+      {
+        path: "/api/developer/list-keys",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          try {
+            const userId = c.req.query('userId');
+            
+            if (!userId) {
+              return c.json({ error: 'userId is required' }, 400);
+            }
+            
+            const { apiKeyService } = await import('../services/apiKeyService.js');
+            const keys = await apiKeyService.getUserApiKeys(userId);
+            
+            return c.json({ keys });
+          } catch (error: any) {
+            logger?.error('❌ [API Keys] Error fetching keys', { error: error.message });
+            return c.json({ error: 'Failed to fetch API keys' }, 500);
+          }
+        }
+      },
+      
+      // API Key Management - Revoke API key
+      {
+        path: "/api/developer/keys/:keyId",
+        method: "DELETE",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          try {
+            const keyId = c.req.param('keyId');
+            const userId = c.req.query('userId');
+            
+            if (!userId) {
+              return c.json({ error: 'userId is required' }, 400);
+            }
+            
+            const { apiKeyService } = await import('../services/apiKeyService.js');
+            await apiKeyService.revokeApiKey(keyId, userId);
+            
+            logger?.info('🔒 [API Keys] Key revoked', { keyId, userId });
+            
+            return c.json({ success: true, message: 'API key revoked' });
+          } catch (error: any) {
+            logger?.error('❌ [API Keys] Error revoking key', { error: error.message });
+            return c.json({ error: 'Failed to revoke API key' }, 500);
+          }
+        }
+      },
+      
+      // API Key Management - Get usage stats
+      {
+        path: "/api/developer/keys/:keyId/usage",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          try {
+            const keyId = c.req.param('keyId');
+            const days = parseInt(c.req.query('days') || '30');
+            
+            const { apiKeyService } = await import('../services/apiKeyService.js');
+            const usage = await apiKeyService.getKeyUsageStats(keyId, days);
+            
+            return c.json({ usage });
+          } catch (error: any) {
+            logger?.error('❌ [API Keys] Error fetching usage', { error: error.message });
+            return c.json({ error: 'Failed to fetch usage stats' }, 500);
+          }
+        }
+      },
+      
+      // ============================================
+      // PUBLIC API v1 - Market Data Endpoints
+      // ============================================
+      
+      // Public API - Market Overview
+      {
+        path: "/api/v1/market-overview",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          const startTime = Date.now();
+          
+          // Validate API key
+          const apiKey = c.req.header('X-Pulse-Api-Key');
+          if (!apiKey) {
+            return c.json({ 
+              error: 'Missing API key', 
+              code: 'MISSING_API_KEY',
+              docs: '/developers#api-docs' 
+            }, 401);
+          }
+          
+          const { apiKeyService } = await import('../services/apiKeyService.js');
+          const validation = await apiKeyService.validateApiKey(apiKey);
+          
+          if (!validation.valid) {
+            return c.json({ 
+              error: validation.error, 
+              code: 'INVALID_API_KEY',
+              docs: '/developers#api-docs' 
+            }, 401);
+          }
+          
+          const keyRecord = validation.keyRecord;
+          
+          // Check rate limit
+          const rateCheck = await apiKeyService.checkRateLimit(keyRecord.id, keyRecord.rateLimit);
+          if (!rateCheck.allowed) {
+            await apiKeyService.recordUsage(keyRecord.id, '/api/v1/market-overview', 429);
+            return c.json({ 
+              error: 'Rate limit exceeded', 
+              code: 'RATE_LIMIT_EXCEEDED',
+              retryAfter: Math.ceil(rateCheck.resetIn / 1000) 
+            }, 429);
+          }
+          
+          // Check daily limit
+          const dailyCheck = await apiKeyService.checkDailyLimit(keyRecord.id, keyRecord.dailyLimit);
+          if (!dailyCheck.allowed) {
+            await apiKeyService.recordUsage(keyRecord.id, '/api/v1/market-overview', 429);
+            return c.json({ 
+              error: 'Daily limit exceeded', 
+              code: 'DAILY_LIMIT_EXCEEDED',
+              used: dailyCheck.used,
+              limit: keyRecord.dailyLimit 
+            }, 429);
+          }
+          
+          try {
+            const category = c.req.query('category') || 'top';
+            const { fetchCryptoOverview } = await import('./tools/helpers/marketOverview.js');
+            const data = await fetchCryptoOverview(category, logger);
+            
+            const latency = Date.now() - startTime;
+            await apiKeyService.recordUsage(keyRecord.id, '/api/v1/market-overview', 200, latency);
+            
+            // Add rate limit headers
+            c.header('X-RateLimit-Limit', keyRecord.rateLimit.toString());
+            c.header('X-RateLimit-Remaining', rateCheck.remaining.toString());
+            c.header('X-DailyLimit-Remaining', dailyCheck.remaining.toString());
+            
+            return c.json({
+              success: true,
+              data,
+              meta: {
+                category,
+                count: data.length,
+                timestamp: new Date().toISOString()
+              }
+            });
+          } catch (error: any) {
+            const latency = Date.now() - startTime;
+            await apiKeyService.recordUsage(keyRecord.id, '/api/v1/market-overview', 500, latency, error.message);
+            return c.json({ error: 'Failed to fetch market data', code: 'INTERNAL_ERROR' }, 500);
+          }
+        }
+      },
+      
+      // Public API - Coin Price
+      {
+        path: "/api/v1/price/:symbol",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          const startTime = Date.now();
+          
+          // Validate API key
+          const apiKey = c.req.header('X-Pulse-Api-Key');
+          if (!apiKey) {
+            return c.json({ error: 'Missing API key', code: 'MISSING_API_KEY' }, 401);
+          }
+          
+          const { apiKeyService } = await import('../services/apiKeyService.js');
+          const validation = await apiKeyService.validateApiKey(apiKey);
+          
+          if (!validation.valid) {
+            return c.json({ error: validation.error, code: 'INVALID_API_KEY' }, 401);
+          }
+          
+          const keyRecord = validation.keyRecord;
+          
+          // Check rate limit
+          const rateCheck = await apiKeyService.checkRateLimit(keyRecord.id, keyRecord.rateLimit);
+          if (!rateCheck.allowed) {
+            return c.json({ error: 'Rate limit exceeded', retryAfter: Math.ceil(rateCheck.resetIn / 1000) }, 429);
+          }
+          
+          try {
+            const symbol = c.req.param('symbol')?.toUpperCase();
+            
+            if (!symbol) {
+              return c.json({ error: 'Symbol is required', code: 'MISSING_SYMBOL' }, 400);
+            }
+            
+            // Symbol to CoinGecko ID mapping
+            const symbolToId: Record<string, string> = {
+              'BTC': 'bitcoin', 'ETH': 'ethereum', 'USDT': 'tether', 'BNB': 'binancecoin',
+              'SOL': 'solana', 'XRP': 'ripple', 'USDC': 'usd-coin', 'ADA': 'cardano',
+              'AVAX': 'avalanche-2', 'DOGE': 'dogecoin', 'DOT': 'polkadot', 'LINK': 'chainlink',
+              'MATIC': 'matic-network', 'SHIB': 'shiba-inu', 'LTC': 'litecoin', 'TRX': 'tron'
+            };
+            
+            const coinId = symbolToId[symbol] || symbol.toLowerCase();
+            const response = await fetch(
+              `https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=usd&include_24hr_change=true`
+            );
+            
+            if (!response.ok) {
+              throw new Error('CoinGecko API error');
+            }
+            
+            const data = await response.json();
+            const coinData = data[coinId];
+            
+            if (!coinData) {
+              return c.json({ error: 'Coin not found', code: 'COIN_NOT_FOUND' }, 404);
+            }
+            
+            const latency = Date.now() - startTime;
+            await apiKeyService.recordUsage(keyRecord.id, '/api/v1/price', 200, latency);
+            
+            return c.json({
+              success: true,
+              data: {
+                symbol,
+                coinId,
+                price: coinData.usd,
+                change24h: coinData.usd_24h_change,
+                timestamp: new Date().toISOString()
+              }
+            });
+          } catch (error: any) {
+            const latency = Date.now() - startTime;
+            await apiKeyService.recordUsage(keyRecord.id, '/api/v1/price', 500, latency, error.message);
+            return c.json({ error: 'Failed to fetch price', code: 'INTERNAL_ERROR' }, 500);
+          }
+        }
+      },
+      
+      // Public API - AI Signals
+      {
+        path: "/api/v1/signals",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          const startTime = Date.now();
+          
+          // Validate API key
+          const apiKey = c.req.header('X-Pulse-Api-Key');
+          if (!apiKey) {
+            return c.json({ error: 'Missing API key', code: 'MISSING_API_KEY' }, 401);
+          }
+          
+          const { apiKeyService, API_TIERS } = await import('../services/apiKeyService.js');
+          const validation = await apiKeyService.validateApiKey(apiKey);
+          
+          if (!validation.valid) {
+            return c.json({ error: validation.error, code: 'INVALID_API_KEY' }, 401);
+          }
+          
+          const keyRecord = validation.keyRecord;
+          
+          // Check permissions - signals require at least 'signals' permission
+          const permissions = keyRecord.permissions ? JSON.parse(keyRecord.permissions) : [];
+          if (!permissions.includes('signals')) {
+            return c.json({ 
+              error: 'Insufficient permissions - signals access required', 
+              code: 'INSUFFICIENT_PERMISSIONS',
+              currentTier: keyRecord.tier,
+              requiredTier: 'free+'
+            }, 403);
+          }
+          
+          // Check rate limit
+          const rateCheck = await apiKeyService.checkRateLimit(keyRecord.id, keyRecord.rateLimit);
+          if (!rateCheck.allowed) {
+            return c.json({ error: 'Rate limit exceeded', retryAfter: Math.ceil(rateCheck.resetIn / 1000) }, 429);
+          }
+          
+          try {
+            const symbol = c.req.query('symbol')?.toUpperCase();
+            
+            if (!symbol) {
+              return c.json({ error: 'Symbol is required', code: 'MISSING_SYMBOL' }, 400);
+            }
+            
+            // Symbol to CoinGecko ID mapping
+            const symbolToId: Record<string, string> = {
+              'BTC': 'bitcoin', 'ETH': 'ethereum', 'USDT': 'tether', 'BNB': 'binancecoin',
+              'SOL': 'solana', 'XRP': 'ripple', 'USDC': 'usd-coin', 'ADA': 'cardano',
+              'AVAX': 'avalanche-2', 'DOGE': 'dogecoin', 'DOT': 'polkadot', 'LINK': 'chainlink'
+            };
+            
+            const coinId = symbolToId[symbol] || symbol.toLowerCase();
+            
+            // Fetch market data from CoinGecko
+            const response = await fetch(
+              `https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false`
+            );
+            
+            if (!response.ok) {
+              throw new Error('Failed to fetch coin data');
+            }
+            
+            const data = await response.json();
+            const marketData = data.market_data;
+            
+            // Generate simple signal based on price changes
+            let signal = 'HOLD';
+            let confidence = 0.5;
+            
+            const change24h = marketData?.price_change_percentage_24h || 0;
+            const change7d = marketData?.price_change_percentage_7d || 0;
+            
+            if (change24h > 5 && change7d > 10) {
+              signal = 'STRONG_BUY';
+              confidence = 0.8;
+            } else if (change24h > 2) {
+              signal = 'BUY';
+              confidence = 0.65;
+            } else if (change24h < -5 && change7d < -10) {
+              signal = 'STRONG_SELL';
+              confidence = 0.8;
+            } else if (change24h < -2) {
+              signal = 'SELL';
+              confidence = 0.65;
+            }
+            
+            const latency = Date.now() - startTime;
+            await apiKeyService.recordUsage(keyRecord.id, '/api/v1/signals', 200, latency);
+            
+            return c.json({
+              success: true,
+              data: {
+                symbol,
+                coinId,
+                signal,
+                confidence,
+                price: marketData?.current_price?.usd,
+                change24h,
+                change7d,
+                marketCap: marketData?.market_cap?.usd,
+                volume24h: marketData?.total_volume?.usd,
+                timestamp: new Date().toISOString()
+              }
+            });
+          } catch (error: any) {
+            const latency = Date.now() - startTime;
+            await apiKeyService.recordUsage(keyRecord.id, '/api/v1/signals', 500, latency, error.message);
+            return c.json({ error: 'Failed to analyze', code: 'INTERNAL_ERROR' }, 500);
+          }
+        }
+      },
+      
+      // Public API - ML Predictions
+      {
+        path: "/api/v1/predictions/:symbol",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const logger = mastra.getLogger();
+          const startTime = Date.now();
+          
+          // Validate API key
+          const apiKey = c.req.header('X-Pulse-Api-Key');
+          if (!apiKey) {
+            return c.json({ error: 'Missing API key', code: 'MISSING_API_KEY' }, 401);
+          }
+          
+          const { apiKeyService } = await import('../services/apiKeyService.js');
+          const validation = await apiKeyService.validateApiKey(apiKey);
+          
+          if (!validation.valid) {
+            return c.json({ error: validation.error, code: 'INVALID_API_KEY' }, 401);
+          }
+          
+          const keyRecord = validation.keyRecord;
+          
+          // Check permissions - predictions require 'predictions' permission (Pro+ tier)
+          const permissions = keyRecord.permissions ? JSON.parse(keyRecord.permissions) : [];
+          if (!permissions.includes('predictions')) {
+            return c.json({ 
+              error: 'Insufficient permissions - Pro tier required for predictions', 
+              code: 'INSUFFICIENT_PERMISSIONS',
+              currentTier: keyRecord.tier,
+              requiredTier: 'pro'
+            }, 403);
+          }
+          
+          try {
+            const symbol = c.req.param('symbol')?.toUpperCase();
+            const horizon = c.req.query('horizon') || '24h';
+            
+            if (!symbol) {
+              return c.json({ error: 'Symbol is required', code: 'MISSING_SYMBOL' }, 400);
+            }
+            
+            // Get ML prediction (simplified - would connect to actual ML service)
+            const { db } = await import('../db/client.js');
+            const { predictionEvents, predictionAccuracyStats } = await import('../db/schema.js');
+            const { eq, desc } = await import('drizzle-orm');
+            
+            // Get latest prediction for this symbol
+            const predictions = await db.select()
+              .from(predictionEvents)
+              .where(eq(predictionEvents.ticker, symbol))
+              .orderBy(desc(predictionEvents.timestamp))
+              .limit(1);
+            
+            // Get accuracy stats
+            const stats = await db.select()
+              .from(predictionAccuracyStats)
+              .where(eq(predictionAccuracyStats.ticker, symbol))
+              .limit(1);
+            
+            const latency = Date.now() - startTime;
+            await apiKeyService.recordUsage(keyRecord.id, '/api/v1/predictions', 200, latency);
+            
+            return c.json({
+              success: true,
+              data: {
+                symbol,
+                horizon,
+                prediction: predictions.length > 0 ? {
+                  signal: predictions[0].signalType,
+                  confidence: predictions[0].confidence,
+                  timestamp: predictions[0].timestamp
+                } : null,
+                accuracy: stats.length > 0 ? {
+                  winRate: stats[0].winRate,
+                  totalPredictions: stats[0].totalPredictions
+                } : null,
+                timestamp: new Date().toISOString()
+              }
+            });
+          } catch (error: any) {
+            const latency = Date.now() - startTime;
+            await apiKeyService.recordUsage(keyRecord.id, '/api/v1/predictions', 500, latency, error.message);
+            return c.json({ error: 'Failed to fetch predictions', code: 'INTERNAL_ERROR' }, 500);
+          }
+        }
+      },
+      
+      // Public API - API Documentation
+      {
+        path: "/api/v1/docs",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          return c.json({
+            name: 'Pulse Public API',
+            version: 'v1',
+            baseUrl: '/api/v1',
+            authentication: {
+              type: 'API Key',
+              header: 'X-Pulse-Api-Key',
+              format: 'pk_live_XXXX...'
+            },
+            tiers: {
+              free: { rateLimit: '60/min', dailyLimit: 2000, endpoints: ['market', 'signals'] },
+              pro: { rateLimit: '600/min', dailyLimit: 100000, endpoints: ['market', 'signals', 'predictions', 'strikeagent'] },
+              enterprise: { rateLimit: '3000/min', dailyLimit: 1000000, endpoints: ['all + webhooks'] }
+            },
+            endpoints: [
+              { path: '/market-overview', method: 'GET', description: 'Get market overview by category', params: ['category'] },
+              { path: '/price/:symbol', method: 'GET', description: 'Get current price for a coin' },
+              { path: '/signals', method: 'GET', description: 'Get AI analysis for a coin', params: ['symbol'] },
+              { path: '/predictions/:symbol', method: 'GET', description: 'Get ML predictions (Pro+)', params: ['horizon'] }
+            ],
+            errors: {
+              MISSING_API_KEY: 'No API key provided in X-Pulse-Api-Key header',
+              INVALID_API_KEY: 'API key is invalid or expired',
+              RATE_LIMIT_EXCEEDED: 'Too many requests - slow down',
+              DAILY_LIMIT_EXCEEDED: 'Daily request limit reached',
+              INSUFFICIENT_PERMISSIONS: 'Upgrade tier for this endpoint'
+            }
+          });
+        }
+      },
     ],
   },
   logger:

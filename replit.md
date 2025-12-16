@@ -40,6 +40,16 @@ The platform features a solid dark theme (`#0f0f0f`, `#1a1a1a`, `#141414`) with 
 - **ORBIT Ecosystem Integration**: Cross-app communication for activity logging, code snippet sharing, metrics reporting, and alerts.
 - **Feature Specifications**: Includes user authentication, real-time crypto price tracking, AI prediction/analysis modals, admin dashboard, Telegram bot integration with StrikeAgent notifications, 54 diverse AI Agent personas (balanced by gender, age, race with NFT Trading Cards), a comprehensive Knowledge Base, and a custom Avatar Creator with DiceBear integration supporting 5 professional avatar styles. A Skins System offers 304 customizable themes across 14 categories, with free and subscriber-exclusive options.
 - **Stripe Integration**: 3 pricing tiers (Pulse Pro $14.99/mo, StrikeAgent Elite $30/mo, DarkWave Complete $39.99/mo) with 2-day free trials for subscriptions. Annual plans available with ~17% discount.
+- **Developer API System** (Dec 2025): Public REST API for external developers to access Pulse's AI signals, market data, and predictions. Features include:
+  - API key management with secure hashed storage (bcrypt)
+  - Three-tier rate limiting: Free (60 req/min, 2K daily), Pro (600 req/min, 100K daily), Enterprise (3K req/min, 1M daily)
+  - Endpoints: `/api/developer/keys` (POST) for key generation
+  - Public API endpoints: `/api/v1/market-overview`, `/api/v1/price/:symbol`, `/api/v1/signals`, `/api/v1/predictions/:symbol`
+  - Authentication via `X-Pulse-Api-Key` header
+  - Usage tracking per endpoint and key
+  - Developer Portal UI tab in admin dashboard for key generation and API documentation
+  - Database tables: `api_keys`, `api_usage`, `api_clients`
+  - Service: `src/services/apiKeyService.ts`
 
 ## External Dependencies
 

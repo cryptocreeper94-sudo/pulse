@@ -1,7 +1,10 @@
 import crypto from 'crypto';
+import bcrypt from 'bcrypt';
 import { db } from '../db/client';
 import { apiKeys, apiUsageDaily, apiRequestLogs } from '../db/schema';
 import { eq, and, sql } from 'drizzle-orm';
+
+const BCRYPT_SALT_ROUNDS = 12;
 
 // Tier definitions with rate limits
 export const API_TIERS = {
@@ -39,8 +42,8 @@ export class ApiKeyService {
     const key = `pk_live_${randomPart}`;
     const prefix = key.substring(0, 12); // pk_live_xxxx for display
     
-    // Hash the key for storage
-    const keyHash = crypto.createHash('sha256').update(key).digest('hex');
+    // Hash the key securely with bcrypt
+    const keyHash = await bcrypt.hash(key, BCRYPT_SALT_ROUNDS);
     
     const tierConfig = API_TIERS[tier];
     
@@ -68,30 +71,39 @@ export class ApiKeyService {
       return { valid: false, error: 'Invalid API key format' };
     }
     
-    const keyHash = crypto.createHash('sha256').update(key).digest('hex');
+    // Extract prefix from the key for lookup (first 12 chars: pk_live_xxxx)
+    const prefix = key.substring(0, 12);
     
-    const records = await db.select().from(apiKeys).where(eq(apiKeys.keyHash, keyHash));
+    // Find keys by prefix first
+    const records = await db.select().from(apiKeys).where(eq(apiKeys.keyPrefix, prefix));
     
     if (records.length === 0) {
       return { valid: false, error: 'API key not found' };
     }
     
-    const keyRecord = records[0];
-    
-    if (keyRecord.status !== 'active') {
-      return { valid: false, error: `API key is ${keyRecord.status}` };
+    // Check each matching record with bcrypt.compare
+    for (const keyRecord of records) {
+      const isMatch = await bcrypt.compare(key, keyRecord.keyHash);
+      
+      if (isMatch) {
+        if (keyRecord.status !== 'active') {
+          return { valid: false, error: `API key is ${keyRecord.status}` };
+        }
+        
+        if (keyRecord.expiresAt && new Date(keyRecord.expiresAt) < new Date()) {
+          return { valid: false, error: 'API key has expired' };
+        }
+        
+        // Update last used timestamp
+        await db.update(apiKeys)
+          .set({ lastUsedAt: new Date() })
+          .where(eq(apiKeys.id, keyRecord.id));
+        
+        return { valid: true, keyRecord };
+      }
     }
     
-    if (keyRecord.expiresAt && new Date(keyRecord.expiresAt) < new Date()) {
-      return { valid: false, error: 'API key has expired' };
-    }
-    
-    // Update last used timestamp
-    await db.update(apiKeys)
-      .set({ lastUsedAt: new Date() })
-      .where(eq(apiKeys.id, keyRecord.id));
-    
-    return { valid: true, keyRecord };
+    return { valid: false, error: 'API key not found' };
   }
   
   // Check rate limit for a key

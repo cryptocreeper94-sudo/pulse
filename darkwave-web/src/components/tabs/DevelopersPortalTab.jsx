@@ -279,6 +279,11 @@ export default function DevelopersPortalTab() {
   });
   const [viewingDoc, setViewingDoc] = useState(null);
   const [docContent, setDocContent] = useState('');
+  const [apiKeys, setApiKeys] = useState([]);
+  const [apiLoading, setApiLoading] = useState(false);
+  const [newKeyName, setNewKeyName] = useState('');
+  const [newKeyGenerated, setNewKeyGenerated] = useState(null);
+  const [apiKeysCopied, setApiKeysCopied] = useState({});
   
   useEffect(() => {
     localStorage.setItem('adminTasks', JSON.stringify(tasks));
@@ -337,10 +342,60 @@ export default function DevelopersPortalTab() {
   
   const tabs = [
     { id: 'overview', label: 'Overview', icon: '📊' },
+    { id: 'api', label: 'API', icon: '🔑' },
     { id: 'documents', label: 'Documents', icon: '📁' },
     { id: 'tasks', label: 'Tasks', icon: '✅' },
     { id: 'analytics', label: 'Analytics', icon: '📈' },
   ];
+
+  const handleGenerateApiKey = async () => {
+    if (!newKeyName.trim()) return;
+    setApiLoading(true);
+    try {
+      const session = JSON.parse(localStorage.getItem('userSession') || '{}');
+      const sessionToken = session.sessionToken || session.token;
+      
+      if (!sessionToken) {
+        console.error('No session token found - user not authenticated');
+        return;
+      }
+      
+      const res = await fetch('/api/developer/keys', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionToken, name: newKeyName.trim() }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setNewKeyGenerated({
+          key: data.apiKey,
+          keyId: data.keyId,
+          prefix: data.prefix,
+          name: newKeyName.trim(),
+        });
+        setNewKeyName('');
+        setApiKeys(prev => [...prev, {
+          id: data.keyId,
+          name: newKeyName.trim(),
+          prefix: data.prefix,
+          createdAt: new Date().toISOString(),
+          status: 'active',
+        }]);
+      } else if (data.error) {
+        console.error('API key generation failed:', data.error);
+      }
+    } catch (e) {
+      console.error('Failed to generate API key:', e);
+    } finally {
+      setApiLoading(false);
+    }
+  };
+
+  const copyToClipboard = (text, id) => {
+    navigator.clipboard.writeText(text);
+    setApiKeysCopied(prev => ({ ...prev, [id]: true }));
+    setTimeout(() => setApiKeysCopied(prev => ({ ...prev, [id]: false })), 2000);
+  };
   
   return (
     <div style={{ padding: '20px 0', paddingBottom: '100px' }}>
@@ -467,6 +522,218 @@ export default function DevelopersPortalTab() {
               >
                 View All Docs →
               </button>
+            </div>
+          </SectionCard>
+        </div>
+      )}
+      
+      {activeTab === 'api' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{
+            background: 'linear-gradient(135deg, #0f0f0f, #1a1a1a)',
+            borderRadius: '16px',
+            padding: '24px',
+            border: '1px solid #00D4FF30',
+            boxShadow: '0 0 30px #00D4FF15',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+              <span style={{ fontSize: '24px' }}>🚀</span>
+              <div>
+                <h3 style={{ margin: 0, color: '#fff', fontSize: '18px' }}>Pulse Developer API</h3>
+                <p style={{ margin: '4px 0 0', color: '#888', fontSize: '13px' }}>Access AI signals, market data & safety scanning</p>
+              </div>
+            </div>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px', marginTop: '16px' }}>
+              <div style={{ textAlign: 'center', padding: '16px', background: '#0f0f0f', borderRadius: '10px', border: '1px solid #2a2a2a' }}>
+                <div style={{ fontSize: '24px', fontWeight: '700', color: '#00D4FF' }}>Free</div>
+                <div style={{ fontSize: '11px', color: '#888', marginTop: '4px' }}>60 req/min</div>
+                <div style={{ fontSize: '10px', color: '#666', marginTop: '2px' }}>Market + Signals</div>
+              </div>
+              <div style={{ textAlign: 'center', padding: '16px', background: '#0f0f0f', borderRadius: '10px', border: '1px solid #39FF1430' }}>
+                <div style={{ fontSize: '24px', fontWeight: '700', color: '#39FF14' }}>Pro</div>
+                <div style={{ fontSize: '11px', color: '#888', marginTop: '4px' }}>600 req/min</div>
+                <div style={{ fontSize: '10px', color: '#666', marginTop: '2px' }}>+ Predictions</div>
+              </div>
+              <div style={{ textAlign: 'center', padding: '16px', background: '#0f0f0f', borderRadius: '10px', border: '1px solid #8B5CF630' }}>
+                <div style={{ fontSize: '24px', fontWeight: '700', color: '#8B5CF6' }}>Enterprise</div>
+                <div style={{ fontSize: '11px', color: '#888', marginTop: '4px' }}>3000 req/min</div>
+                <div style={{ fontSize: '10px', color: '#666', marginTop: '2px' }}>+ Webhooks</div>
+              </div>
+            </div>
+          </div>
+          
+          <SectionCard title="Generate API Key" icon="🔐">
+            <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
+              <input
+                type="text"
+                value={newKeyName}
+                onChange={(e) => setNewKeyName(e.target.value)}
+                placeholder="Key name (e.g., My Trading Bot)"
+                style={{
+                  flex: 1,
+                  background: '#0f0f0f',
+                  border: '1px solid #333',
+                  borderRadius: '8px',
+                  padding: '12px',
+                  color: '#fff',
+                  fontSize: '14px',
+                }}
+              />
+              <button
+                onClick={handleGenerateApiKey}
+                disabled={apiLoading || !newKeyName.trim()}
+                style={{
+                  background: apiLoading ? '#333' : 'linear-gradient(135deg, #00D4FF, #0099CC)',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '12px 20px',
+                  color: '#fff',
+                  cursor: apiLoading ? 'wait' : 'pointer',
+                  fontWeight: '600',
+                  opacity: !newKeyName.trim() ? 0.5 : 1,
+                }}
+              >
+                {apiLoading ? 'Generating...' : 'Generate Key'}
+              </button>
+            </div>
+            
+            {newKeyGenerated && (
+              <div style={{
+                background: '#0a1a0a',
+                border: '1px solid #39FF1440',
+                borderRadius: '10px',
+                padding: '16px',
+                marginTop: '12px',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                  <span style={{ color: '#39FF14', fontSize: '16px' }}>✓</span>
+                  <span style={{ color: '#39FF14', fontWeight: '600' }}>API Key Generated!</span>
+                </div>
+                <p style={{ color: '#888', fontSize: '12px', margin: '0 0 12px' }}>
+                  Copy this key now - it won't be shown again!
+                </p>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  background: '#0f0f0f',
+                  padding: '12px',
+                  borderRadius: '8px',
+                  fontFamily: 'monospace',
+                }}>
+                  <code style={{ flex: 1, color: '#00D4FF', fontSize: '13px', wordBreak: 'break-all' }}>
+                    {newKeyGenerated.key}
+                  </code>
+                  <button
+                    onClick={() => copyToClipboard(newKeyGenerated.key, 'newKey')}
+                    style={{
+                      background: apiKeysCopied['newKey'] ? '#39FF14' : '#333',
+                      border: 'none',
+                      borderRadius: '6px',
+                      padding: '8px 12px',
+                      color: apiKeysCopied['newKey'] ? '#000' : '#fff',
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                    }}
+                  >
+                    {apiKeysCopied['newKey'] ? 'Copied!' : 'Copy'}
+                  </button>
+                </div>
+                <button
+                  onClick={() => setNewKeyGenerated(null)}
+                  style={{
+                    marginTop: '12px',
+                    background: '#2a2a2a',
+                    border: 'none',
+                    borderRadius: '6px',
+                    padding: '8px 16px',
+                    color: '#888',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                  }}
+                >
+                  Dismiss
+                </button>
+              </div>
+            )}
+          </SectionCard>
+          
+          {apiKeys.length > 0 && (
+            <SectionCard title="Your API Keys" icon="📋">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {apiKeys.map((key) => (
+                  <div
+                    key={key.id}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '12px',
+                      background: '#0f0f0f',
+                      borderRadius: '8px',
+                      border: '1px solid #2a2a2a',
+                    }}
+                  >
+                    <div>
+                      <div style={{ color: '#fff', fontWeight: '500', fontSize: '14px' }}>{key.name}</div>
+                      <div style={{ color: '#666', fontSize: '12px', fontFamily: 'monospace' }}>{key.prefix}...</div>
+                    </div>
+                    <div style={{
+                      padding: '4px 10px',
+                      borderRadius: '12px',
+                      background: key.status === 'active' ? '#39FF1420' : '#FF6B3520',
+                      color: key.status === 'active' ? '#39FF14' : '#FF6B35',
+                      fontSize: '11px',
+                      fontWeight: '600',
+                    }}>
+                      {key.status === 'active' ? 'Active' : 'Revoked'}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </SectionCard>
+          )}
+          
+          <SectionCard title="API Documentation" icon="📖" fullWidth>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ padding: '12px', background: '#0f0f0f', borderRadius: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                  <span style={{ background: '#39FF14', color: '#000', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600' }}>GET</span>
+                  <code style={{ color: '#ccc', fontSize: '13px' }}>/api/v1/market-overview?category=top</code>
+                </div>
+                <p style={{ color: '#888', fontSize: '12px', margin: 0 }}>Get market overview with top coins, BTC dominance, and sentiment</p>
+              </div>
+              
+              <div style={{ padding: '12px', background: '#0f0f0f', borderRadius: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                  <span style={{ background: '#39FF14', color: '#000', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600' }}>GET</span>
+                  <code style={{ color: '#ccc', fontSize: '13px' }}>/api/v1/price/:symbol</code>
+                </div>
+                <p style={{ color: '#888', fontSize: '12px', margin: 0 }}>Get current price for a cryptocurrency (e.g., BTC, ETH, SOL)</p>
+              </div>
+              
+              <div style={{ padding: '12px', background: '#0f0f0f', borderRadius: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                  <span style={{ background: '#39FF14', color: '#000', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600' }}>GET</span>
+                  <code style={{ color: '#ccc', fontSize: '13px' }}>/api/v1/signals?symbol=BTC</code>
+                </div>
+                <p style={{ color: '#888', fontSize: '12px', margin: 0 }}>Get AI analysis signals for a coin (BUY/SELL/HOLD with confidence)</p>
+              </div>
+              
+              <div style={{ padding: '12px', background: '#0f0f0f', borderRadius: '8px', border: '1px solid #8B5CF630' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                  <span style={{ background: '#8B5CF6', color: '#fff', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600' }}>PRO</span>
+                  <code style={{ color: '#ccc', fontSize: '13px' }}>/api/v1/predictions/:symbol?horizon=4h</code>
+                </div>
+                <p style={{ color: '#888', fontSize: '12px', margin: 0 }}>Get ML predictions with probability scores (Pro tier required)</p>
+              </div>
+              
+              <div style={{ marginTop: '8px', padding: '12px', background: '#1a1a2a', borderRadius: '8px', border: '1px solid #00D4FF30' }}>
+                <p style={{ color: '#00D4FF', fontSize: '12px', margin: 0 }}>
+                  <strong>Authentication:</strong> Include your API key in the <code style={{ background: '#0f0f0f', padding: '2px 6px', borderRadius: '4px' }}>X-Pulse-Api-Key</code> header
+                </p>
+              </div>
             </div>
           </SectionCard>
         </div>
