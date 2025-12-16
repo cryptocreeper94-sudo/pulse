@@ -6256,10 +6256,15 @@ export const mastra = new Mastra({
           const logger = mastra.getLogger();
           try {
             const body = await c.req.json();
-            const { sessionToken, name, tier = 'free', description } = body;
+            const { sessionToken, name, tier = 'free', description, environment = 'live' } = body;
             
             if (!sessionToken || !name) {
               return c.json({ error: 'sessionToken and name are required' }, 400);
+            }
+            
+            // Validate environment
+            if (environment !== 'live' && environment !== 'test') {
+              return c.json({ error: 'environment must be "live" or "test"' }, 400);
             }
             
             // Verify session token and get user
@@ -6286,15 +6291,16 @@ export const mastra = new Mastra({
             const userId = session.userId || session.email || 'anonymous';
             
             const { apiKeyService } = await import('../services/apiKeyService.js');
-            const result = await apiKeyService.generateApiKey(userId, name, tier, description);
+            const result = await apiKeyService.generateApiKey(userId, name, tier, description, environment);
             
-            logger?.info('🔑 [API Keys] New key generated', { userId, name, tier });
+            logger?.info('🔑 [API Keys] New key generated', { userId, name, tier, environment });
             
             return c.json({
               success: true,
               apiKey: result.key,
               keyId: result.keyId,
               prefix: result.prefix,
+              environment: result.environment,
               message: 'Store this API key securely - it cannot be retrieved again'
             });
           } catch (error: any) {

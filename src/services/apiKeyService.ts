@@ -1,32 +1,48 @@
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import { db } from '../db/client';
-import { apiKeys, apiUsageDaily, apiRequestLogs } from '../db/schema';
+import { apiKeys, apiUsageDaily, apiRequestLogs, API_SCOPES } from '../db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 
 const BCRYPT_SALT_ROUNDS = 12;
+const IP_HASH_SALT = process.env.SESSION_SECRET || 'darkwave-api-ip-salt-fallback-2024';
 
-// Tier definitions with rate limits
+const LEGACY_SCOPE_MAP: Record<string, string> = {
+  'market': 'market:read',
+  'signals': 'signals:read',
+  'predictions': 'predictions:read',
+  'accuracy': 'accuracy:read',
+  'strikeagent': 'strikeagent:read',
+  'webhooks': 'webhooks:write',
+};
+
+// Environment types
+export type ApiEnvironment = 'live' | 'test';
+
+// Tier definitions with rate limits and scoped permissions
 export const API_TIERS = {
   free: {
     name: 'Free',
     rateLimit: 60,      // requests per minute
     dailyLimit: 2000,   // requests per day
-    permissions: ['market', 'signals'],
+    scopes: ['market:read', 'signals:read'],
   },
   pro: {
     name: 'Pro',
     rateLimit: 600,     // requests per minute
     dailyLimit: 100000, // requests per day
-    permissions: ['market', 'signals', 'predictions', 'strikeagent'],
+    scopes: ['market:read', 'signals:read', 'predictions:read', 'accuracy:read', 'strikeagent:read'],
   },
   enterprise: {
     name: 'Enterprise',
     rateLimit: 3000,    // requests per minute
     dailyLimit: 1000000, // requests per day
-    permissions: ['market', 'signals', 'predictions', 'strikeagent', 'webhooks'],
+    scopes: ['market:read', 'signals:read', 'predictions:read', 'accuracy:read', 'strikeagent:read', 'webhooks:write'],
   },
 };
+
+// Export scopes for external use
+export { API_SCOPES };
 
 // In-memory rate limiting (simple implementation - could upgrade to Redis later)
 const rateLimitStore: Map<string, { count: number; resetAt: number }> = new Map();
@@ -34,18 +50,28 @@ const rateLimitStore: Map<string, { count: number; resetAt: number }> = new Map(
 export class ApiKeyService {
   
   // Generate a new API key for a user
-  async generateApiKey(userId: string, name: string, tier: keyof typeof API_TIERS = 'free', description?: string): Promise<{ key: string; keyId: string; prefix: string }> {
+  async generateApiKey(
+    userId: string, 
+    name: string, 
+    tier: keyof typeof API_TIERS = 'free', 
+    description?: string,
+    environment: ApiEnvironment = 'live',
+    customScopes?: string[]
+  ): Promise<{ key: string; keyId: string; prefix: string; environment: ApiEnvironment }> {
     const keyId = crypto.randomUUID();
     
-    // Generate key: pk_live_<random 32 chars>
+    // Generate key with environment prefix: pk_live_ or pk_test_
     const randomPart = crypto.randomBytes(24).toString('base64url');
-    const key = `pk_live_${randomPart}`;
-    const prefix = key.substring(0, 12); // pk_live_xxxx for display
+    const key = `pk_${environment}_${randomPart}`;
+    const prefix = key.substring(0, 13); // pk_live_xxxx or pk_test_xxxx for display
     
     // Hash the key securely with bcrypt
     const keyHash = await bcrypt.hash(key, BCRYPT_SALT_ROUNDS);
     
     const tierConfig = API_TIERS[tier];
+    
+    // Use custom scopes if provided, otherwise use tier defaults
+    const scopes = customScopes || tierConfig.scopes;
     
     await db.insert(apiKeys).values({
       id: keyId,
@@ -53,26 +79,31 @@ export class ApiKeyService {
       name,
       keyPrefix: prefix,
       keyHash,
+      environment,
       tier,
       rateLimit: tierConfig.rateLimit,
       dailyLimit: tierConfig.dailyLimit,
       status: 'active',
-      permissions: JSON.stringify(tierConfig.permissions),
+      permissions: JSON.stringify(scopes),
       description,
       createdAt: new Date(),
     });
     
-    return { key, keyId, prefix };
+    return { key, keyId, prefix, environment };
   }
   
   // Validate an API key and return the key record
-  async validateApiKey(key: string): Promise<{ valid: boolean; keyRecord?: any; error?: string }> {
-    if (!key || !key.startsWith('pk_live_')) {
+  async validateApiKey(key: string): Promise<{ valid: boolean; keyRecord?: any; error?: string; environment?: ApiEnvironment }> {
+    // Support both pk_live_ and pk_test_ prefixes
+    if (!key || (!key.startsWith('pk_live_') && !key.startsWith('pk_test_'))) {
       return { valid: false, error: 'Invalid API key format' };
     }
     
-    // Extract prefix from the key for lookup (first 12 chars: pk_live_xxxx)
-    const prefix = key.substring(0, 12);
+    // Determine environment from prefix
+    const environment: ApiEnvironment = key.startsWith('pk_test_') ? 'test' : 'live';
+    
+    // Extract prefix from the key for lookup (first 13 chars: pk_live_xxxx or pk_test_xxxx)
+    const prefix = key.substring(0, 13);
     
     // Find keys by prefix first
     const records = await db.select().from(apiKeys).where(eq(apiKeys.keyPrefix, prefix));
@@ -99,11 +130,71 @@ export class ApiKeyService {
           .set({ lastUsedAt: new Date() })
           .where(eq(apiKeys.id, keyRecord.id));
         
-        return { valid: true, keyRecord };
+        // Use stored environment if available, fallback to prefix detection for legacy records
+        const resolvedEnvironment: ApiEnvironment = keyRecord.environment || environment;
+        
+        // Handle backward-compatible scopes
+        let scopes: string[] = [];
+        try {
+          const parsedPermissions = keyRecord.permissions ? JSON.parse(keyRecord.permissions) : [];
+          if (Array.isArray(parsedPermissions) && parsedPermissions.length > 0) {
+            scopes = parsedPermissions.map((scope: string) => {
+              return LEGACY_SCOPE_MAP[scope] || scope;
+            });
+          } else {
+            const tierConfig = API_TIERS[keyRecord.tier as keyof typeof API_TIERS];
+            scopes = tierConfig?.scopes || API_TIERS.free.scopes;
+          }
+        } catch {
+          const tierConfig = API_TIERS[keyRecord.tier as keyof typeof API_TIERS];
+          scopes = tierConfig?.scopes || API_TIERS.free.scopes;
+        }
+        
+        const enrichedKeyRecord = { ...keyRecord, scopes };
+        
+        return { valid: true, keyRecord: enrichedKeyRecord, environment: resolvedEnvironment };
       }
     }
     
     return { valid: false, error: 'API key not found' };
+  }
+  
+  // Log a detailed API request for debugging and analytics
+  async logRequest(params: {
+    keyId: string;
+    endpoint: string;
+    method: string;
+    statusCode: number;
+    latencyMs: number;
+    ipAddress?: string;
+    userAgent?: string;
+    requestParams?: string;
+    responsePreview?: string;
+    errorMessage?: string;
+  }) {
+    try {
+      // Hash IP for privacy using HMAC-SHA256 with secret salt
+      const ipHash = params.ipAddress 
+        ? crypto.createHmac('sha256', IP_HASH_SALT).update(params.ipAddress).digest('hex').substring(0, 16)
+        : null;
+      
+      await db.insert(apiRequestLogs).values({
+        id: crypto.randomUUID(),
+        keyId: params.keyId,
+        endpoint: params.endpoint,
+        method: params.method,
+        statusCode: params.statusCode,
+        latencyMs: params.latencyMs,
+        ipHash,
+        userAgent: params.userAgent?.substring(0, 500), // Truncate long user agents
+        requestParams: params.requestParams?.substring(0, 1000),
+        responsePreview: params.responsePreview?.substring(0, 500),
+        errorMessage: params.errorMessage,
+        createdAt: new Date(),
+      });
+    } catch (error) {
+      console.error('[API Logging] Failed to log request:', error);
+    }
   }
   
   // Check rate limit for a key

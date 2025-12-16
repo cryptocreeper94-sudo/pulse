@@ -282,6 +282,7 @@ export default function DevelopersPortalTab() {
   const [apiKeys, setApiKeys] = useState([]);
   const [apiLoading, setApiLoading] = useState(false);
   const [newKeyName, setNewKeyName] = useState('');
+  const [newKeyEnvironment, setNewKeyEnvironment] = useState('live');
   const [newKeyGenerated, setNewKeyGenerated] = useState(null);
   const [apiKeysCopied, setApiKeysCopied] = useState({});
   
@@ -363,7 +364,11 @@ export default function DevelopersPortalTab() {
       const res = await fetch('/api/developer/keys', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionToken, name: newKeyName.trim() }),
+        body: JSON.stringify({ 
+          sessionToken, 
+          name: newKeyName.trim(),
+          environment: newKeyEnvironment 
+        }),
       });
       const data = await res.json();
       if (data.success) {
@@ -372,12 +377,14 @@ export default function DevelopersPortalTab() {
           keyId: data.keyId,
           prefix: data.prefix,
           name: newKeyName.trim(),
+          environment: data.environment || newKeyEnvironment,
         });
         setNewKeyName('');
         setApiKeys(prev => [...prev, {
           id: data.keyId,
           name: newKeyName.trim(),
           prefix: data.prefix,
+          environment: data.environment || newKeyEnvironment,
           createdAt: new Date().toISOString(),
           status: 'active',
         }]);
@@ -564,7 +571,7 @@ export default function DevelopersPortalTab() {
           </div>
           
           <SectionCard title="Generate API Key" icon="🔐">
-            <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', gap: '12px', marginBottom: '12px', flexWrap: 'wrap' }}>
               <input
                 type="text"
                 value={newKeyName}
@@ -572,6 +579,7 @@ export default function DevelopersPortalTab() {
                 placeholder="Key name (e.g., My Trading Bot)"
                 style={{
                   flex: 1,
+                  minWidth: '200px',
                   background: '#0f0f0f',
                   border: '1px solid #333',
                   borderRadius: '8px',
@@ -580,6 +588,38 @@ export default function DevelopersPortalTab() {
                   fontSize: '14px',
                 }}
               />
+              <div style={{ display: 'flex', gap: '4px', background: '#0f0f0f', borderRadius: '8px', padding: '4px', border: '1px solid #333' }}>
+                <button
+                  onClick={() => setNewKeyEnvironment('live')}
+                  style={{
+                    background: newKeyEnvironment === 'live' ? 'linear-gradient(135deg, #39FF14, #2ECC71)' : 'transparent',
+                    border: 'none',
+                    borderRadius: '6px',
+                    padding: '8px 14px',
+                    color: newKeyEnvironment === 'live' ? '#000' : '#888',
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    fontSize: '12px',
+                  }}
+                >
+                  Live
+                </button>
+                <button
+                  onClick={() => setNewKeyEnvironment('test')}
+                  style={{
+                    background: newKeyEnvironment === 'test' ? 'linear-gradient(135deg, #FFB800, #FF8C00)' : 'transparent',
+                    border: 'none',
+                    borderRadius: '6px',
+                    padding: '8px 14px',
+                    color: newKeyEnvironment === 'test' ? '#000' : '#888',
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    fontSize: '12px',
+                  }}
+                >
+                  Test
+                </button>
+              </div>
               <button
                 onClick={handleGenerateApiKey}
                 disabled={apiLoading || !newKeyName.trim()}
@@ -596,6 +636,11 @@ export default function DevelopersPortalTab() {
               >
                 {apiLoading ? 'Generating...' : 'Generate Key'}
               </button>
+            </div>
+            <div style={{ fontSize: '11px', color: '#666', marginBottom: '12px' }}>
+              {newKeyEnvironment === 'live' 
+                ? '🟢 Live keys access real data and count against rate limits' 
+                : '🟡 Test keys return mock data for development - no rate limit impact'}
             </div>
             
             {newKeyGenerated && (

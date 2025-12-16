@@ -1494,6 +1494,18 @@ export const vaultActivityLog = pgTable('vault_activity_log', {
 // ============================================
 
 // API Keys - For external developers to access Pulse API
+// API Permission Scopes
+export const API_SCOPES = [
+  'market:read',      // Access market data, prices, overview
+  'signals:read',     // Access AI trading signals
+  'predictions:read', // Access prediction history and outcomes
+  'accuracy:read',    // Access model accuracy statistics
+  'strikeagent:read', // Access StrikeAgent token scanning
+  'webhooks:write',   // Register webhook callbacks
+] as const;
+
+export type ApiScope = typeof API_SCOPES[number];
+
 export const apiKeys = pgTable('api_keys', {
   id: varchar('id', { length: 255 }).primaryKey(),
   userId: varchar('user_id', { length: 255 }).notNull(),
@@ -1502,6 +1514,9 @@ export const apiKeys = pgTable('api_keys', {
   name: varchar('name', { length: 255 }).notNull(),
   keyPrefix: varchar('key_prefix', { length: 20 }).notNull(),
   keyHash: varchar('key_hash', { length: 255 }).notNull(),
+  
+  // Environment (live = production, test = sandbox with mock data)
+  environment: varchar('environment', { length: 20 }).notNull().default('live'),
   
   // Tier & Limits
   tier: varchar('tier', { length: 50 }).notNull().default('free'),
@@ -1512,7 +1527,7 @@ export const apiKeys = pgTable('api_keys', {
   status: varchar('status', { length: 50 }).notNull().default('active'),
   lastUsedAt: timestamp('last_used_at'),
   
-  // Permissions (JSON array of allowed endpoints)
+  // Scoped Permissions (JSON array of scope strings)
   permissions: text('permissions'),
   
   // Metadata
