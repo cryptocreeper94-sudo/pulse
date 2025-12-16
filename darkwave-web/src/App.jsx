@@ -198,6 +198,11 @@ function App() {
             console.log('🧹 Clearing stale demo session')
             localStorage.removeItem('dwp_user')
             localStorage.removeItem('dwp_demo_mode')
+          } else if (parsed.accessLevel) {
+            // Restore user session from localStorage
+            console.log('🔐 Restoring session from localStorage:', parsed.accessLevel)
+            setUserId(parsed.email || parsed.id || 'user')
+            setUserConfig(prev => ({ ...prev, accessLevel: parsed.accessLevel, ...parsed }))
           }
         } catch (e) {}
       }
@@ -222,7 +227,7 @@ function App() {
             const configRes = await fetch(`/api/users/${data.user.email}/dashboard`)
             if (configRes.ok) {
               const config = await configRes.json()
-              setUserConfig(config)
+              setUserConfig(prev => ({ ...prev, ...config }))
               if (config.defaultLandingTab && !isStrikeAgentDomain) {
                 setActiveTab(config.defaultLandingTab)
               }
