@@ -27,7 +27,7 @@ const LiveVisitors = ({ count }) => (
     border: '1px solid #00D4FF30',
     boxShadow: '0 0 30px #00D4FF15',
     textAlign: 'center',
-    gridColumn: 'span 2',
+    gridColumn: 'span 1',
   }}>
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '8px' }}>
       <div style={{
@@ -114,7 +114,7 @@ const HourlyChart = ({ data }) => {
       borderRadius: '16px',
       padding: '20px',
       border: '1px solid #2a2a2a',
-      gridColumn: 'span 2',
+      gridColumn: 'span 1',
     }}>
       <div style={{ fontWeight: '600', color: '#fff', marginBottom: '16px' }}>Today's Traffic (Hourly)</div>
       <div style={{ display: 'flex', alignItems: 'flex-end', gap: '2px', height: '100px' }}>
@@ -143,7 +143,7 @@ const DailyChart = ({ data }) => {
       borderRadius: '16px',
       padding: '20px',
       border: '1px solid #2a2a2a',
-      gridColumn: 'span 2',
+      gridColumn: 'span 1',
     }}>
       <div style={{ fontWeight: '600', color: '#fff', marginBottom: '16px' }}>Weekly Traffic Trend</div>
       <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', height: '120px' }}>
@@ -223,9 +223,14 @@ export default function DevelopersPortalTab() {
       
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
         gap: '16px',
-      }}>
+        '@media (max-width: 768px)': {
+          gridTemplateColumns: '1fr',
+        }
+      }}
+      className="analytics-grid"
+      >
         <LiveVisitors count={liveCount} />
         
         <StatCard title="Today" value={d.today?.views || 0} subtitle={`${d.today?.sessions || 0} sessions`} icon="📅" glow="#00D4FF" />
@@ -247,7 +252,7 @@ export default function DevelopersPortalTab() {
           borderRadius: '16px',
           padding: '20px',
           border: '1px solid #2a2a2a',
-          gridColumn: 'span 2',
+          gridColumn: 'span 1',
         }}>
           <div style={{ fontWeight: '600', color: '#fff', marginBottom: '12px' }}>Avg. Session Duration</div>
           <div style={{ fontSize: '36px', fontWeight: '700', color: '#00D4FF' }}>
