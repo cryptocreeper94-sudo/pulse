@@ -1,5 +1,5 @@
-import { socialTradingService } from '../../services/socialTradingService';
-import { communitySignalService } from '../../services/communitySignalService';
+import { socialTradingService } from '../../services/socialTradingService.js';
+import { communitySignalService } from '../../services/communitySignalService.js';
 
 export const socialTradingRoutes = [
   {

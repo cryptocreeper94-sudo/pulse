@@ -1,6 +1,6 @@
 import crypto from 'crypto';
-import { db } from '../db/client';
-import { exchangeConnections, exchangeOrders, exchangeBalanceSnapshots } from '../db/schema';
+import { db } from '../db/client.js';
+import { exchangeConnections, exchangeOrders, exchangeBalanceSnapshots } from '../db/schema.js';
 import { eq, and, desc } from 'drizzle-orm';
 import {
   ExchangeConnector,
@@ -13,11 +13,11 @@ import {
   Ticker,
   OrderBook,
   MarketInfo
-} from './exchanges/exchangeConnector';
-import { BinanceAdapter } from './exchanges/adapters/binanceAdapter';
-import { CoinbaseAdapter } from './exchanges/adapters/coinbaseAdapter';
-import { JupiterAdapter } from './exchanges/adapters/jupiterAdapter';
-import { UniswapAdapter } from './exchanges/adapters/uniswapAdapter';
+} from './exchanges/exchangeConnector.js';
+import { BinanceAdapter } from './exchanges/adapters/binanceAdapter.js';
+import { CoinbaseAdapter } from './exchanges/adapters/coinbaseAdapter.js';
+import { JupiterAdapter } from './exchanges/adapters/jupiterAdapter.js';
+import { UniswapAdapter } from './exchanges/adapters/uniswapAdapter.js';
 
 export type SupportedExchange = 'binance' | 'coinbase' | 'jupiter' | 'uniswap';
 

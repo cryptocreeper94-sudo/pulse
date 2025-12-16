@@ -51,11 +51,12 @@ export const dailyModelTrainingWorker = inngest.createFunction(
         if (trainResult.success) {
           trainedCount++;
           console.log(`✅ [DailyModelTraining] ${horizon} model trained successfully`);
-          console.log(`   Model ID: ${trainResult.modelId}`);
-          console.log(`   Accuracy: ${((trainResult.metrics?.accuracy || 0) * 100).toFixed(1)}%`);
-          console.log(`   Precision: ${((trainResult.metrics?.precision || 0) * 100).toFixed(1)}%`);
-          console.log(`   Recall: ${((trainResult.metrics?.recall || 0) * 100).toFixed(1)}%`);
-          console.log(`   F1 Score: ${((trainResult.metrics?.f1Score || 0) * 100).toFixed(1)}%`);
+          console.log(`   Model ID: ${'modelId' in trainResult ? trainResult.modelId : 'N/A'}`);
+          const metrics = 'metrics' in trainResult ? trainResult.metrics : null;
+          console.log(`   Accuracy: ${((metrics?.accuracy || 0) * 100).toFixed(1)}%`);
+          console.log(`   Precision: ${((metrics?.precision || 0) * 100).toFixed(1)}%`);
+          console.log(`   Recall: ${((metrics?.recall || 0) * 100).toFixed(1)}%`);
+          console.log(`   F1 Score: ${((metrics?.f1Score || 0) * 100).toFixed(1)}%`);
         } else {
           console.log(`⚠️ [DailyModelTraining] ${horizon} model training failed: ${trainResult.error}`);
         }

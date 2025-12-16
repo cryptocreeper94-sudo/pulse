@@ -1,5 +1,5 @@
-import { db } from '../db/client';
-import { communitySignals, signalVotes, traderProfiles } from '../db/schema';
+import { db } from '../db/client.js';
+import { communitySignals, signalVotes, traderProfiles } from '../db/schema.js';
 import { eq, desc, and, sql, or } from 'drizzle-orm';
 
 export interface Signal {

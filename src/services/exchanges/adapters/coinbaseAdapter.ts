@@ -12,7 +12,7 @@ import {
   OrderSide,
   OrderType,
   TimeInForce
-} from '../exchangeConnector';
+} from '../exchangeConnector.js';
 
 const COINBASE_API_URL = 'https://api.coinbase.com';
 

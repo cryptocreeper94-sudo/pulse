@@ -1,5 +1,5 @@
-import { db } from '../db/client';
-import { traderProfiles, copyTradingSubscriptions } from '../db/schema';
+import { db } from '../db/client.js';
+import { traderProfiles, copyTradingSubscriptions } from '../db/schema.js';
 import { eq, desc, and, gte, sql } from 'drizzle-orm';
 
 export type Timeframe = 'daily' | 'weekly' | 'monthly' | 'alltime';

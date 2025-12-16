@@ -13,7 +13,7 @@ import {
   SwapResult,
   OrderStatus,
   TimeInForce
-} from '../exchangeConnector';
+} from '../exchangeConnector.js';
 
 const JUPITER_API_URL = 'https://quote-api.jup.ag/v6';
 const JUPITER_PRICE_API = 'https://price.jup.ag/v4';

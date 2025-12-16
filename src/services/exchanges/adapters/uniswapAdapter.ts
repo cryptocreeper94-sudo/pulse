@@ -11,7 +11,7 @@ import {
   SwapParams,
   SwapResult,
   TimeInForce
-} from '../exchangeConnector';
+} from '../exchangeConnector.js';
 
 const UNISWAP_V3_QUOTER = '0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6';
 const UNISWAP_V3_ROUTER = '0xE592427A0AEce92De3Edee1F18E0157C05861564';

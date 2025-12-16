@@ -1,5 +1,5 @@
-import { exchangeService, SupportedExchange } from '../../services/exchangeService';
-import { ExchangeCredentials } from '../../services/exchanges/exchangeConnector';
+import { exchangeService, SupportedExchange } from '../../services/exchangeService.js';
+import { ExchangeCredentials } from '../../services/exchanges/exchangeConnector.js';
 
 const RATE_LIMIT_WINDOW = 60000;
 const MAX_REQUESTS_PER_WINDOW = 100;
