@@ -220,7 +220,10 @@ function GaugeContent({ title, value, type, accentColor, isMobile = false }) {
       justifyContent: 'flex-start',
       height: '100%',
       minHeight: isMobile ? 110 : 140,
-      padding: 12,
+      paddingLeft: 12,
+      paddingRight: 12,
+      paddingBottom: 12,
+      paddingTop: 12,
     }}>
       <div style={{ 
         color: accentColor, 
