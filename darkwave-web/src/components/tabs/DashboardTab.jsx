@@ -211,15 +211,17 @@ function MetricContent({ title, value, change }) {
 
 function GaugeContent({ title, value, type, accentColor, isMobile = false }) {
   const gaugeSize = isMobile ? 80 : 120
+  const extraTopMargin = type === 'fearGreed' ? (isMobile ? 12 : 18) : 0
   return (
     <div style={{ 
       display: 'flex', 
       flexDirection: 'column', 
       alignItems: 'center',
-      justifyContent: 'center',
+      justifyContent: 'flex-start',
       height: '100%',
       minHeight: isMobile ? 110 : 140,
       padding: 12,
+      paddingTop: 12 + extraTopMargin,
     }}>
       <div style={{ 
         color: accentColor, 

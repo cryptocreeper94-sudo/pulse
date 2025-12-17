@@ -227,7 +227,7 @@ export function GaugeCard({ title, value, type = 'fearGreed', onClick }) {
   return (
     <div className="gauge-card" onClick={onClick}>
       <div className="gauge-card-title">{title}</div>
-      <div style={{ marginTop: type === 'fearGreed' ? '8px' : '0' }}>
+      <div style={{ marginTop: type === 'fearGreed' ? '24px' : '0' }}>
         <Gauge value={value} type={type} size={160} />
       </div>
     </div>
