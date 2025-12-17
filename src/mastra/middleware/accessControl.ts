@@ -8,7 +8,30 @@ const FREE_TIER_DURATION_MS = 2 * 24 * 60 * 60 * 1000;     // 2 days for free ti
 const PREMIUM_DURATION_MS = 30 * 24 * 60 * 60 * 1000;      // 30 days for paid premium
 const WHITELIST_DURATION_MS = 10 * 365 * 24 * 60 * 60 * 1000; // 10 years for whitelisted (effectively permanent)
 
-export async function generateSessionToken(userId: string, email?: string, isPremium: boolean = false, isWhitelisted: boolean = false): Promise<string> {
+// Rotation thresholds
+const ROTATION_LAST_USED_THRESHOLD_MS = 60 * 60 * 1000; // 1 hour
+const ROTATION_EXPIRY_THRESHOLD_MS = 24 * 60 * 60 * 1000; // 1 day
+
+export interface SessionInfo {
+  token: string;
+  userId: string;
+  email: string | null;
+  accessLevel: string | null;
+}
+
+export interface VerifyAndRotateResult {
+  valid: boolean;
+  session?: SessionInfo;
+  rotated?: boolean;
+}
+
+export async function generateSessionToken(
+  userId: string, 
+  email?: string, 
+  isPremium: boolean = false, 
+  isWhitelisted: boolean = false,
+  accessLevel: string = 'user'
+): Promise<string> {
   if (!userId || userId === 'demo-user') {
     throw new Error('Valid userId required for session generation');
   }
@@ -34,13 +57,114 @@ export async function generateSessionToken(userId: string, email?: string, isPre
     email: email || null,
     issuedAt: now,
     expiresAt,
-    lastUsed: now
+    lastUsed: now,
+    accessLevel
   });
   
   // Clean up expired sessions periodically
   cleanExpiredSessions();
   
   return token;
+}
+
+export async function verifyAndRotateSession(token: string | null | undefined): Promise<VerifyAndRotateResult> {
+  if (!token) {
+    return { valid: false };
+  }
+
+  try {
+    const [session] = await db
+      .select()
+      .from(sessions)
+      .where(eq(sessions.token, token))
+      .limit(1);
+
+    if (!session) {
+      return { valid: false };
+    }
+
+    const now = new Date();
+    const expiresAt = new Date(session.expiresAt);
+
+    // Check if expired - delete and reject
+    if (now > expiresAt) {
+      await db.delete(sessions).where(eq(sessions.token, token));
+      return { valid: false };
+    }
+
+    // Check if rotation is needed
+    const lastUsed = new Date(session.lastUsed);
+    const lastUsedAgeMs = now.getTime() - lastUsed.getTime();
+    const timeToExpiryMs = expiresAt.getTime() - now.getTime();
+    
+    const needsRotation = 
+      lastUsedAgeMs > ROTATION_LAST_USED_THRESHOLD_MS || 
+      timeToExpiryMs < ROTATION_EXPIRY_THRESHOLD_MS;
+
+    if (needsRotation) {
+      // Generate new token with same user data
+      const newToken = randomBytes(32).toString('hex');
+      
+      // Determine session duration based on access level
+      let sessionDuration: number;
+      const accessLevel = session.accessLevel || 'user';
+      if (accessLevel === 'owner' || accessLevel === 'admin') {
+        sessionDuration = WHITELIST_DURATION_MS;
+      } else if (accessLevel === 'premium') {
+        sessionDuration = PREMIUM_DURATION_MS;
+      } else {
+        sessionDuration = FREE_TIER_DURATION_MS;
+      }
+
+      const newExpiresAt = new Date(now.getTime() + sessionDuration);
+
+      // Insert new session first (for safety)
+      await db.insert(sessions).values({
+        token: newToken,
+        userId: session.userId,
+        email: session.email,
+        verifiedAt: session.verifiedAt,
+        issuedAt: now,
+        expiresAt: newExpiresAt,
+        lastUsed: now,
+        accessLevel: session.accessLevel
+      });
+
+      // Delete old session after successful insert
+      await db.delete(sessions).where(eq(sessions.token, token));
+
+      return {
+        valid: true,
+        session: {
+          token: newToken,
+          userId: session.userId!,
+          email: session.email,
+          accessLevel: session.accessLevel
+        },
+        rotated: true
+      };
+    }
+
+    // No rotation needed - just update lastUsed
+    await db
+      .update(sessions)
+      .set({ lastUsed: now })
+      .where(eq(sessions.token, token));
+
+    return {
+      valid: true,
+      session: {
+        token,
+        userId: session.userId!,
+        email: session.email,
+        accessLevel: session.accessLevel
+      },
+      rotated: false
+    };
+  } catch (error) {
+    console.error('Session verify/rotate error:', error);
+    return { valid: false };
+  }
 }
 
 export async function verifySessionToken(token: string | null | undefined): Promise<boolean> {

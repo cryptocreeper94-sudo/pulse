@@ -224,11 +224,15 @@ function App() {
         
         const response = await fetch('/api/session', { headers })
         if (response.ok) {
+          const wasRotated = response.headers.get('X-Session-Token-Rotated') === 'true'
           const data = await response.json()
           if (data.user?.email) {
             setUserId(data.user.email)
             if (data.sessionToken) {
               localStorage.setItem('sessionToken', data.sessionToken)
+              if (wasRotated) {
+                console.log('🔄 Session token rotated for security')
+              }
             }
             const configRes = await fetch(`/api/users/${data.user.email}/dashboard`)
             if (configRes.ok) {

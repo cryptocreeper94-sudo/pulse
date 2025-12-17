@@ -42,6 +42,7 @@ export const sessions = pgTable('sessions', {
   issuedAt: timestamp('issued_at').defaultNow().notNull(),
   expiresAt: timestamp('expires_at').notNull(),
   lastUsed: timestamp('last_used').defaultNow().notNull(),
+  accessLevel: varchar('access_level', { length: 50 }), // 'user' | 'premium' | 'admin' | 'owner'
 });
 
 export const trackedWallets = pgTable('tracked_wallets', {

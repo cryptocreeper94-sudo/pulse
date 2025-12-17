@@ -738,24 +738,32 @@ export const mastra = new Mastra({
           const logger = mastra.getLogger();
           logger?.info('🔍 [Session] Session check request');
           
-          // Check for session token in header or cookie
           const sessionToken = c.req.header('X-Session-Token');
           
           if (sessionToken) {
             try {
-              const sessionRecords = await db.select().from(sessions).where(eq(sessions.token, sessionToken));
+              const { verifyAndRotateSession } = await import('./middleware/accessControl.js');
+              const result = await verifyAndRotateSession(sessionToken);
               
-              if (sessionRecords.length > 0) {
-                const session = sessionRecords[0];
-                logger?.info('✅ [Session] Valid session found', { email: session.email });
+              if (result.valid && result.session) {
+                logger?.info('✅ [Session] Valid session found', { 
+                  email: result.session.email,
+                  rotated: result.rotated 
+                });
+                
+                const headers: Record<string, string> = {};
+                if (result.rotated) {
+                  headers['X-Session-Token-Rotated'] = 'true';
+                }
+                
                 return c.json({ 
                   user: { 
-                    email: session.email || session.userId,
-                    userId: session.userId,
-                    accessLevel: session.accessLevel 
+                    email: result.session.email || result.session.userId,
+                    userId: result.session.userId,
+                    accessLevel: result.session.accessLevel 
                   },
-                  sessionToken: session.token
-                });
+                  sessionToken: result.session.token
+                }, 200, headers);
               }
             } catch (err) {
               logger?.error('❌ [Session] Session lookup error', { error: (err as Error).message });
