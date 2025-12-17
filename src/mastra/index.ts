@@ -63,6 +63,7 @@ import { exchangeRoutes } from "./routes/exchangeRoutes";
 import { autonomousTradingRoutes } from "./routes/autonomousTradingRoutes";
 import { moonpayRoutes } from "./routes/moonpayRoutes";
 import { transakRoutes } from "./routes/transakRoutes";
+import { webauthnRoutes } from "./routes/webauthnRoutes";
 
 class ProductionPinoLogger extends MastraLogger {
   protected logger: pino.Logger;
@@ -737,8 +738,31 @@ export const mastra = new Mastra({
           const logger = mastra.getLogger();
           logger?.info('🔍 [Session] Session check request');
           
-          // Return empty session - frontend uses localStorage for auth
-          // This endpoint exists to prevent 404 errors
+          // Check for session token in header or cookie
+          const sessionToken = c.req.header('X-Session-Token');
+          
+          if (sessionToken) {
+            try {
+              const sessionRecords = await db.select().from(sessions).where(eq(sessions.token, sessionToken));
+              
+              if (sessionRecords.length > 0) {
+                const session = sessionRecords[0];
+                logger?.info('✅ [Session] Valid session found', { email: session.email });
+                return c.json({ 
+                  user: { 
+                    email: session.email || session.userId,
+                    userId: session.userId,
+                    accessLevel: session.accessLevel 
+                  },
+                  sessionToken: session.token
+                });
+              }
+            } catch (err) {
+              logger?.error('❌ [Session] Session lookup error', { error: (err as Error).message });
+            }
+          }
+          
+          // Return empty session - frontend will check localStorage as fallback
           return c.json({ user: null, message: 'No active session' });
         }
       },
@@ -6195,6 +6219,9 @@ export const mastra = new Mastra({
       
       // Autonomous Trading Routes (Profiles, Suggestions, Executions, Milestones)
       ...autonomousTradingRoutes,
+      
+      // WebAuthn Biometric Authentication Routes
+      ...webauthnRoutes,
       
       // Catch-all static file handler (MUST BE LAST) - serves all assets from public/
       {

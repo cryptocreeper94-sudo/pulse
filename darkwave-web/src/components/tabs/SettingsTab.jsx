@@ -4,12 +4,40 @@ import { useAvatar } from '../../context/AvatarContext'
 import MiniAvatar from '../ui/MiniAvatar'
 import AvatarCreator from '../ui/AvatarCreator'
 
+const base64UrlEncode = (buffer) => {
+  const bytes = new Uint8Array(buffer);
+  let str = '';
+  for (const byte of bytes) {
+    str += String.fromCharCode(byte);
+  }
+  return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+};
+
+const base64UrlDecode = (str) => {
+  str = str.replace(/-/g, '+').replace(/_/g, '/');
+  while (str.length % 4) str += '=';
+  const binary = atob(str);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+};
+
 export default function SettingsTab({ userId, userConfig, setUserConfig }) {
   const { avatar, mode, isCustomMode, toggleMode, setAvatarMode } = useAvatar()
   const [showAvatarCreator, setShowAvatarCreator] = useState(false)
   const [landingTab, setLandingTab] = useState(userConfig?.defaultLandingTab || 'dashboard')
   const [saving, setSaving] = useState(false)
   const debounceTimerRef = useRef(null)
+  
+  const [biometricSupported, setBiometricSupported] = useState(false)
+  const [biometricCredentials, setBiometricCredentials] = useState([])
+  const [biometricSettings, setBiometricSettings] = useState({ biometric2faEnabled: false, biometricWalletEnabled: false })
+  const [biometricLoading, setBiometricLoading] = useState(true)
+  const [biometricEnrolling, setBiometricEnrolling] = useState(false)
+  const [biometricError, setBiometricError] = useState(null)
+  const [biometricSuccess, setBiometricSuccess] = useState(null)
   
   const [autoTradeConfig, setAutoTradeConfig] = useState({
     enabled: false,
@@ -37,6 +65,140 @@ export default function SettingsTab({ userId, userConfig, setUserConfig }) {
       loadAutoTradeStats()
     }
   }, [userId])
+
+  useEffect(() => {
+    checkBiometricSupport()
+    if (userConfig?.sessionToken) {
+      loadBiometricCredentials()
+    }
+  }, [userConfig?.sessionToken])
+
+  const checkBiometricSupport = async () => {
+    try {
+      if (window.PublicKeyCredential && 
+          typeof window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable === 'function') {
+        const available = await window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
+        setBiometricSupported(available)
+      }
+    } catch (err) {
+      console.error('Biometric check failed:', err)
+      setBiometricSupported(false)
+    }
+  }
+
+  const loadBiometricCredentials = async () => {
+    if (!userConfig?.sessionToken) return
+    setBiometricLoading(true)
+    try {
+      const response = await fetch('/api/webauthn/credentials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionToken: userConfig.sessionToken })
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setBiometricCredentials(data.credentials || [])
+        setBiometricSettings(data.settings || { biometric2faEnabled: false, biometricWalletEnabled: false })
+      }
+    } catch (err) {
+      console.error('Failed to load biometric credentials:', err)
+    } finally {
+      setBiometricLoading(false)
+    }
+  }
+
+  const enrollBiometric = async (usedFor) => {
+    if (!userConfig?.sessionToken || !biometricSupported) return
+    setBiometricEnrolling(true)
+    setBiometricError(null)
+    setBiometricSuccess(null)
+    
+    try {
+      const startRes = await fetch('/api/webauthn/registration/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          sessionToken: userConfig.sessionToken, 
+          deviceName: navigator.userAgent.includes('Mac') ? 'Touch ID' : 
+                      navigator.userAgent.includes('Windows') ? 'Windows Hello' : 'Biometric Device',
+          usedFor 
+        })
+      })
+      
+      if (!startRes.ok) {
+        const err = await startRes.json()
+        throw new Error(err.error || 'Failed to start registration')
+      }
+      
+      const { challengeId, options } = await startRes.json()
+      
+      const publicKeyOptions = {
+        ...options,
+        challenge: base64UrlDecode(options.challenge),
+        user: {
+          ...options.user,
+          id: base64UrlDecode(options.user.id)
+        }
+      }
+      
+      const credential = await navigator.credentials.create({ publicKey: publicKeyOptions })
+      
+      const credentialForServer = {
+        id: credential.id,
+        rawId: base64UrlEncode(credential.rawId),
+        type: credential.type,
+        response: {
+          clientDataJSON: base64UrlEncode(credential.response.clientDataJSON),
+          attestationObject: base64UrlEncode(credential.response.attestationObject),
+          transports: credential.response.getTransports ? credential.response.getTransports() : ['internal']
+        }
+      }
+      
+      const completeRes = await fetch('/api/webauthn/registration/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionToken: userConfig.sessionToken,
+          challengeId,
+          credential: credentialForServer,
+          deviceName: navigator.userAgent.includes('Mac') ? 'Touch ID' : 
+                      navigator.userAgent.includes('Windows') ? 'Windows Hello' : 'Biometric Device',
+          usedFor
+        })
+      })
+      
+      if (!completeRes.ok) {
+        const err = await completeRes.json()
+        throw new Error(err.error || 'Failed to complete registration')
+      }
+      
+      setBiometricSuccess(usedFor === '2fa' ? 'Biometric login enabled!' : 'Biometric wallet confirmation enabled!')
+      loadBiometricCredentials()
+    } catch (err) {
+      console.error('Biometric enrollment failed:', err)
+      setBiometricError(err.message || 'Enrollment failed. Please try again.')
+    } finally {
+      setBiometricEnrolling(false)
+    }
+  }
+
+  const removeBiometricCredential = async (credentialId) => {
+    if (!userConfig?.sessionToken) return
+    try {
+      const response = await fetch('/api/webauthn/credentials/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionToken: userConfig.sessionToken, credentialId })
+      })
+      if (response.ok) {
+        loadBiometricCredentials()
+        setBiometricSuccess('Biometric credential removed')
+      }
+    } catch (err) {
+      console.error('Failed to remove credential:', err)
+      setBiometricError('Failed to remove credential')
+    }
+  }
 
   const loadAutoTradeConfig = async () => {
     if (!userId) return
@@ -811,10 +973,152 @@ export default function SettingsTab({ userId, userConfig, setUserConfig }) {
         </AccordionItem>
         
         <AccordionItem title="Security" icon="🔒">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <button className="btn btn-secondary">Change Password</button>
-            <button className="btn btn-secondary">Enable 2FA</button>
-            <button className="btn btn-secondary">View Login History</button>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {biometricError && (
+              <div style={{ padding: 12, background: 'rgba(255, 68, 68, 0.1)', border: '1px solid rgba(255, 68, 68, 0.3)', borderRadius: 8, color: '#ff4444', fontSize: 12 }}>
+                {biometricError}
+              </div>
+            )}
+            {biometricSuccess && (
+              <div style={{ padding: 12, background: 'rgba(57, 255, 20, 0.1)', border: '1px solid rgba(57, 255, 20, 0.3)', borderRadius: 8, color: '#39FF14', fontSize: 12 }}>
+                {biometricSuccess}
+              </div>
+            )}
+            
+            <div style={{ padding: 16, background: '#0f0f0f', borderRadius: 12, border: '1px solid #333' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+                <span style={{ fontSize: 24 }}>👆</span>
+                <div>
+                  <div style={{ fontWeight: 600, color: '#fff' }}>Biometric Authentication</div>
+                  <div style={{ fontSize: 11, color: '#888' }}>
+                    {biometricSupported ? 'Use fingerprint or face recognition' : 'Not supported on this device'}
+                  </div>
+                </div>
+              </div>
+              
+              {biometricLoading ? (
+                <div style={{ textAlign: 'center', padding: 20, color: '#888' }}>Loading...</div>
+              ) : !biometricSupported ? (
+                <div style={{ padding: 12, background: '#1a1a1a', borderRadius: 8, fontSize: 12, color: '#888' }}>
+                  Your browser or device doesn't support biometric authentication. Try using Chrome on a device with Touch ID, Face ID, or Windows Hello.
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <div style={{ 
+                    padding: 12, 
+                    background: biometricSettings.biometric2faEnabled ? 'rgba(57, 255, 20, 0.1)' : '#1a1a1a', 
+                    borderRadius: 8,
+                    border: biometricSettings.biometric2faEnabled ? '1px solid rgba(57, 255, 20, 0.3)' : '1px solid #333'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <div style={{ fontWeight: 600, fontSize: 13 }}>Login 2FA</div>
+                        <div style={{ fontSize: 11, color: '#888' }}>Require biometric after password</div>
+                      </div>
+                      {biometricSettings.biometric2faEnabled ? (
+                        <span style={{ color: '#39FF14', fontSize: 12, fontWeight: 600 }}>✓ Enabled</span>
+                      ) : (
+                        <button 
+                          onClick={() => enrollBiometric('2fa')}
+                          disabled={biometricEnrolling}
+                          style={{ 
+                            background: 'linear-gradient(135deg, #00D4FF, #0099CC)', 
+                            border: 'none', 
+                            borderRadius: 6, 
+                            padding: '8px 16px', 
+                            color: '#000', 
+                            fontWeight: 600, 
+                            fontSize: 12,
+                            cursor: biometricEnrolling ? 'wait' : 'pointer',
+                            opacity: biometricEnrolling ? 0.6 : 1
+                          }}
+                        >
+                          {biometricEnrolling ? 'Setting up...' : 'Enable'}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div style={{ 
+                    padding: 12, 
+                    background: biometricSettings.biometricWalletEnabled ? 'rgba(57, 255, 20, 0.1)' : '#1a1a1a', 
+                    borderRadius: 8,
+                    border: biometricSettings.biometricWalletEnabled ? '1px solid rgba(57, 255, 20, 0.3)' : '1px solid #333'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <div style={{ fontWeight: 600, fontSize: 13 }}>Wallet Transactions</div>
+                        <div style={{ fontSize: 11, color: '#888' }}>Confirm sends with biometric</div>
+                      </div>
+                      {biometricSettings.biometricWalletEnabled ? (
+                        <span style={{ color: '#39FF14', fontSize: 12, fontWeight: 600 }}>✓ Enabled</span>
+                      ) : (
+                        <button 
+                          onClick={() => enrollBiometric('wallet')}
+                          disabled={biometricEnrolling}
+                          style={{ 
+                            background: 'linear-gradient(135deg, #00D4FF, #0099CC)', 
+                            border: 'none', 
+                            borderRadius: 6, 
+                            padding: '8px 16px', 
+                            color: '#000', 
+                            fontWeight: 600, 
+                            fontSize: 12,
+                            cursor: biometricEnrolling ? 'wait' : 'pointer',
+                            opacity: biometricEnrolling ? 0.6 : 1
+                          }}
+                        >
+                          {biometricEnrolling ? 'Setting up...' : 'Enable'}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {biometricCredentials.length > 0 && (
+                    <div style={{ marginTop: 8 }}>
+                      <div style={{ fontSize: 12, color: '#888', marginBottom: 8 }}>Registered Devices:</div>
+                      {biometricCredentials.map(cred => (
+                        <div key={cred.id} style={{ 
+                          display: 'flex', 
+                          justifyContent: 'space-between', 
+                          alignItems: 'center',
+                          padding: 8, 
+                          background: '#1a1a1a', 
+                          borderRadius: 6,
+                          marginBottom: 4
+                        }}>
+                          <div>
+                            <span style={{ fontSize: 12 }}>{cred.deviceName || 'Biometric Device'}</span>
+                            <span style={{ fontSize: 10, color: '#888', marginLeft: 8 }}>
+                              ({cred.usedFor === '2fa' ? 'Login' : 'Wallet'})
+                            </span>
+                          </div>
+                          <button 
+                            onClick={() => removeBiometricCredential(cred.id)}
+                            style={{ 
+                              background: 'transparent', 
+                              border: 'none', 
+                              color: '#ff4444', 
+                              fontSize: 11,
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            
+            <button className="btn btn-secondary" style={{ justifyContent: 'flex-start' }}>
+              🔑 Change Password
+            </button>
+            <button className="btn btn-secondary" style={{ justifyContent: 'flex-start' }}>
+              📜 View Login History
+            </button>
           </div>
         </AccordionItem>
         

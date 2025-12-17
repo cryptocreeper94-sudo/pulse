@@ -4,6 +4,22 @@ import { useBuiltInWallet } from '../../context/BuiltInWalletContext'
 import DustBuster from './DustBuster'
 import clientWalletService from '../../services/clientWalletService'
 
+const base64UrlEncode = (buffer) => {
+  const bytes = new Uint8Array(buffer);
+  let str = '';
+  for (const byte of bytes) str += String.fromCharCode(byte);
+  return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+};
+
+const base64UrlDecode = (str) => {
+  str = str.replace(/-/g, '+').replace(/_/g, '/');
+  while (str.length % 4) str += '=';
+  const binary = atob(str);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+};
+
 function BentoTile({ children, className = '', style = {}, onClick }) {
   return (
     <div
@@ -176,6 +192,88 @@ export default function WalletManager({ userId }) {
   const [showFromDropdown, setShowFromDropdown] = useState(false)
   const [showToDropdown, setShowToDropdown] = useState(false)
   
+  const [biometricWalletEnabled, setBiometricWalletEnabled] = useState(false)
+  const [biometricVerifying, setBiometricVerifying] = useState(false)
+  
+  useEffect(() => {
+    checkBiometricWalletStatus()
+  }, [userId])
+  
+  const checkBiometricWalletStatus = async () => {
+    try {
+      const sessionToken = localStorage.getItem('sessionToken')
+      if (!sessionToken) return
+      
+      const res = await fetch('/api/webauthn/has-credentials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionToken, usedFor: 'wallet' })
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setBiometricWalletEnabled(data.hasCredentials)
+      }
+    } catch (err) {
+      console.error('Failed to check biometric wallet status:', err)
+    }
+  }
+  
+  const verifyBiometricForWallet = async () => {
+    const sessionToken = localStorage.getItem('sessionToken')
+    if (!sessionToken) throw new Error('No session')
+    
+    const startRes = await fetch('/api/webauthn/authentication/start', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionToken, usedFor: 'wallet' })
+    })
+    
+    if (!startRes.ok) {
+      const err = await startRes.json()
+      throw new Error(err.error || 'Failed to start biometric verification')
+    }
+    
+    const { challengeId, options } = await startRes.json()
+    
+    const publicKeyOptions = {
+      ...options,
+      challenge: base64UrlDecode(options.challenge),
+      allowCredentials: options.allowCredentials.map(cred => ({
+        ...cred,
+        id: base64UrlDecode(cred.id)
+      }))
+    }
+    
+    const assertion = await navigator.credentials.get({ publicKey: publicKeyOptions })
+    
+    const verifyRes = await fetch('/api/webauthn/authentication/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionToken,
+        challengeId,
+        credential: {
+          id: assertion.id,
+          rawId: base64UrlEncode(assertion.rawId),
+          type: assertion.type,
+          response: {
+            clientDataJSON: base64UrlEncode(assertion.response.clientDataJSON),
+            authenticatorData: base64UrlEncode(assertion.response.authenticatorData),
+            signature: base64UrlEncode(assertion.response.signature)
+          }
+        },
+        usedFor: 'wallet'
+      })
+    })
+    
+    if (!verifyRes.ok) {
+      const err = await verifyRes.json()
+      throw new Error(err.error || 'Biometric verification failed')
+    }
+    
+    return true
+  }
+  
   useEffect(() => {
     if (builtInWallet.hasWallet) {
       if (builtInWallet.isUnlocked) {
@@ -292,6 +390,18 @@ export default function WalletManager({ userId }) {
     }
     
     try {
+      if (biometricWalletEnabled) {
+        setBiometricVerifying(true)
+        try {
+          await verifyBiometricForWallet()
+        } catch (bioErr) {
+          setBiometricVerifying(false)
+          setError('Biometric verification failed: ' + bioErr.message)
+          return
+        }
+        setBiometricVerifying(false)
+      }
+      
       const result = await builtInWallet.signAndSend(sendPassword, sendChain, sendTo, sendAmount)
       if (!result.success) throw new Error(result.error)
       
@@ -1318,10 +1428,15 @@ export default function WalletManager({ userId }) {
             <button 
               className="wallet-cta primary full-width" 
               onClick={handleSendTransaction} 
-              disabled={builtInWallet.loading || !sendTo || !sendAmount || !sendPassword}
+              disabled={builtInWallet.loading || biometricVerifying || !sendTo || !sendAmount || !sendPassword}
             >
-              {builtInWallet.loading ? 'Sending...' : 'Send Transaction'}
+              {biometricVerifying ? '👆 Verify Biometric...' : builtInWallet.loading ? 'Sending...' : biometricWalletEnabled ? '👆 Send with Biometric' : 'Send Transaction'}
             </button>
+            {biometricWalletEnabled && (
+              <div style={{ fontSize: 10, color: '#39FF14', textAlign: 'center', marginTop: 4 }}>
+                Biometric confirmation enabled
+              </div>
+            )}
           </div>
         </div>
       )}

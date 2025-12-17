@@ -219,15 +219,21 @@ function App() {
     
     const fetchUserSession = async () => {
       try {
-        const response = await fetch('/api/session')
+        const storedToken = localStorage.getItem('sessionToken')
+        const headers = storedToken ? { 'X-Session-Token': storedToken } : {}
+        
+        const response = await fetch('/api/session', { headers })
         if (response.ok) {
           const data = await response.json()
           if (data.user?.email) {
             setUserId(data.user.email)
+            if (data.sessionToken) {
+              localStorage.setItem('sessionToken', data.sessionToken)
+            }
             const configRes = await fetch(`/api/users/${data.user.email}/dashboard`)
             if (configRes.ok) {
               const config = await configRes.json()
-              setUserConfig(prev => ({ ...prev, ...config }))
+              setUserConfig(prev => ({ ...prev, ...config, sessionToken: data.sessionToken }))
               if (config.defaultLandingTab && !isStrikeAgentDomain) {
                 setActiveTab(config.defaultLandingTab)
               }
