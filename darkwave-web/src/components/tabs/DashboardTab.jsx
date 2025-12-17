@@ -229,6 +229,8 @@ function GaugeContent({ title, value, type, accentColor, isMobile = false }) {
         textTransform: 'uppercase', 
         letterSpacing: 1,
         marginBottom: (isMobile ? 6 : 10) + extraGaugeMargin,
+        textAlign: 'center',
+        width: '100%',
       }}>
         {title}
       </div>
