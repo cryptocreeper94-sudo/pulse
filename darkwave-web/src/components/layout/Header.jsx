@@ -40,6 +40,34 @@ export default function Header({ onMenuToggle, isMenuOpen, onAvatarClick, active
       <h1 className="header-title">PULSE</h1>
       
       <div className="header-right">
+        <a
+          href="/whitepaper"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '8px 14px',
+            background: 'linear-gradient(135deg, rgba(57, 255, 20, 0.15), rgba(0, 212, 255, 0.15))',
+            border: '1px solid rgba(57, 255, 20, 0.3)',
+            borderRadius: '8px',
+            color: '#39FF14',
+            fontSize: '12px',
+            fontWeight: '600',
+            textDecoration: 'none',
+            transition: 'all 0.2s ease',
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.boxShadow = '0 0 15px rgba(57, 255, 20, 0.3)';
+            e.currentTarget.style.borderColor = '#39FF14';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.boxShadow = 'none';
+            e.currentTarget.style.borderColor = 'rgba(57, 255, 20, 0.3)';
+          }}
+        >
+          <span style={{ fontSize: '14px' }}>📄</span>
+          Whitepaper
+        </a>
         <VerificationBadge 
           hallmarkId={hallmarkId}
           walletAddress={walletAddress}

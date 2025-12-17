@@ -17,6 +17,7 @@ import {
   RiskDashboardTab,
   DevelopersPortalTab
 } from './components/tabs'
+import WhitepaperPage from './pages/WhitepaperPage'
 import useAnalytics from './hooks/useAnalytics'
 import AccuracyDashboard from './components/ml/AccuracyDashboard'
 import AutoTradeConfig from './components/ml/AutoTradeConfig'
@@ -175,6 +176,7 @@ const hasStrikeAgentAccess = (userConfig) => {
 function App() {
   const isStrikeAgentDomain = window.location.hostname.includes('strikeagent')
   const isDemoPath = window.location.pathname.startsWith('/demo')
+  const isWhitepaperPage = window.location.pathname === '/whitepaper'
   const isDemoMode = isStrikeAgentDomain || isDemoPath
   
   const [activeTab, setActiveTab] = useState('dashboard')
@@ -299,9 +301,19 @@ function App() {
         return <RiskDashboardTab userId={userId} />
       case 'dev-portal':
         return <DevelopersPortalTab />
+      case 'whitepaper':
+        return <WhitepaperPage />
       default:
         return <DashboardTab userId={userId} userConfig={userConfig} onNavigate={setActiveTab} onAnalyzeCoin={handleAnalyzeCoin} />
     }
+  }
+
+  if (isWhitepaperPage) {
+    return (
+      <ThemeProvider>
+        <WhitepaperPage />
+      </ThemeProvider>
+    )
   }
   
   return (
