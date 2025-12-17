@@ -6,21 +6,24 @@ const PROVIDERS = [
     name: 'Stripe', 
     description: 'Credit/Debit Card',
     icon: '💳',
-    available: true 
+    available: false,
+    comingSoon: true
   },
   { 
     id: 'moonpay', 
     name: 'MoonPay', 
     description: 'Cards, Bank, Apple Pay',
     icon: '🌙',
-    available: true 
+    available: false,
+    comingSoon: true
   },
   { 
     id: 'transak', 
     name: 'Transak', 
     description: 'Cards, Bank Transfer',
     icon: '⚡',
-    available: true 
+    available: false,
+    comingSoon: true
   }
 ]
 
@@ -220,21 +223,20 @@ export default function BuyCryptoModal({ isOpen, onClose, walletAddress, default
           <label style={{ display: 'block', color: '#888', fontSize: 12, marginBottom: 8 }}>PAYMENT PROVIDER</label>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {PROVIDERS.map(provider => {
-              const config = providerConfigs[provider.id]
-              const isConfigured = config?.configured !== false
+              const isAvailable = provider.available
               
               return (
                 <button
                   key={provider.id}
-                  onClick={() => isConfigured && setSelectedProvider(provider.id)}
-                  disabled={!isConfigured}
+                  onClick={() => isAvailable && setSelectedProvider(provider.id)}
+                  disabled={!isAvailable}
                   style={{
                     background: selectedProvider === provider.id ? 'rgba(0, 212, 255, 0.15)' : '#252525',
                     border: selectedProvider === provider.id ? '1px solid #00D4FF' : '1px solid #333',
                     borderRadius: 12,
                     padding: 16,
-                    cursor: isConfigured ? 'pointer' : 'not-allowed',
-                    opacity: isConfigured ? 1 : 0.5,
+                    cursor: isAvailable ? 'pointer' : 'not-allowed',
+                    opacity: isAvailable ? 1 : 0.6,
                     display: 'flex',
                     alignItems: 'center',
                     gap: 12,
@@ -242,13 +244,25 @@ export default function BuyCryptoModal({ isOpen, onClose, walletAddress, default
                   }}
                 >
                   <span style={{ fontSize: 24 }}>{provider.icon}</span>
-                  <div style={{ textAlign: 'left' }}>
+                  <div style={{ textAlign: 'left', flex: 1 }}>
                     <div style={{ color: '#fff', fontWeight: 600, fontSize: 14 }}>
                       {provider.name}
-                      {!isConfigured && <span style={{ color: '#ff4444', fontSize: 10, marginLeft: 8 }}>Not configured</span>}
                     </div>
                     <div style={{ color: '#666', fontSize: 11 }}>{provider.description}</div>
                   </div>
+                  {provider.comingSoon && (
+                    <span style={{ 
+                      background: 'linear-gradient(135deg, #00D4FF, #0099CC)', 
+                      color: '#000', 
+                      fontSize: 9, 
+                      fontWeight: 700,
+                      padding: '4px 8px', 
+                      borderRadius: 4,
+                      textTransform: 'uppercase'
+                    }}>
+                      Coming Soon
+                    </span>
+                  )}
                 </button>
               )
             })}
