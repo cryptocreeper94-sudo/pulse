@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Header from './Header'
 import HamburgerMenu from './HamburgerMenu'
 import BugReportModal from '../modals/BugReportModal'
 import DisclaimerModal from '../modals/DisclaimerModal'
 import AvatarCreator from '../ui/AvatarCreator'
+import DisclaimerBanner from '../ui/DisclaimerBanner'
 import { useTheme } from '../../context/ThemeContext'
 
 export default function Layout({ children, activeTab, onTabChange, userTier, accessLevel }) {
@@ -12,6 +13,12 @@ export default function Layout({ children, activeTab, onTabChange, userTier, acc
   const [isBugModalOpen, setIsBugModalOpen] = useState(false)
   const [isDisclaimerOpen, setIsDisclaimerOpen] = useState(false)
   const [isAvatarCreatorOpen, setIsAvatarCreatorOpen] = useState(false)
+  
+  useEffect(() => {
+    const handleOpenDisclaimer = () => setIsDisclaimerOpen(true)
+    window.addEventListener('openDisclaimer', handleOpenDisclaimer)
+    return () => window.removeEventListener('openDisclaimer', handleOpenDisclaimer)
+  }, [])
   
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen)
@@ -50,6 +57,7 @@ export default function Layout({ children, activeTab, onTabChange, userTier, acc
   
   return (
     <div className="app-layout">
+      <DisclaimerBanner />
       <Header 
         onMenuToggle={handleMenuToggle}
         isMenuOpen={isMenuOpen}
