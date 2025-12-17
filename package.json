@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "mastra dev",
     "start": "mastra start",
-    "build": "mastra build",
+    "build": "NODE_OPTIONS='--max-old-space-size=4096' mastra build",
     "check": "tsc",
     "check:format": "prettier --check '**/*.ts'",
     "format": "prettier --write '**/*.ts'"
