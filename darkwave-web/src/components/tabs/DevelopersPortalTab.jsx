@@ -1367,6 +1367,20 @@ export default function DevelopersPortalTab() {
           
           <div style={{ gridColumn: '1 / -1' }}>
             <SectionCard title="API Documentation" icon="📖" fullWidth glowColor="#00D4FF">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                <span style={{ 
+                  background: 'linear-gradient(135deg, #00D4FF, #0099CC)', 
+                  color: '#fff', 
+                  padding: '4px 10px', 
+                  borderRadius: '6px', 
+                  fontSize: '11px', 
+                  fontWeight: '700' 
+                }}>
+                  v1.21.0
+                </span>
+                <span style={{ color: '#888', fontSize: '12px' }}>Latest release with WebAuthn & Session Security</span>
+              </div>
+              
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '12px' }}>
                 <div style={{ padding: '14px', background: 'rgba(15, 15, 15, 0.6)', borderRadius: '10px', border: '1px solid #2a2a2a' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
@@ -1411,6 +1425,130 @@ export default function DevelopersPortalTab() {
                 <p style={{ color: '#00D4FF', fontSize: '13px', margin: 0 }}>
                   <strong>Authentication:</strong> Include your API key in the <code style={{ background: 'rgba(15, 15, 15, 0.6)', padding: '3px 8px', borderRadius: '4px' }}>X-Pulse-Api-Key</code> header
                 </p>
+              </div>
+            </SectionCard>
+          </div>
+          
+          <div style={{ gridColumn: '1 / -1' }}>
+            <SectionCard title="🔐 Security Features (v1.21.0)" icon="🛡️" fullWidth glowColor="#39FF14">
+              <div style={{ marginBottom: '20px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                  <span style={{ fontSize: '18px' }}>🔑</span>
+                  <h4 style={{ margin: 0, color: '#fff', fontSize: '15px', fontWeight: '600' }}>Biometric Authentication (WebAuthn)</h4>
+                  <span style={{ 
+                    background: 'rgba(57, 255, 20, 0.15)', 
+                    color: '#39FF14', 
+                    padding: '3px 8px', 
+                    borderRadius: '4px', 
+                    fontSize: '10px', 
+                    fontWeight: '700' 
+                  }}>NEW</span>
+                </div>
+                <p style={{ color: '#888', fontSize: '13px', margin: '0 0 12px', lineHeight: 1.5 }}>
+                  Optional 2FA using fingerprint, Face ID, or security keys. Users can enable biometric verification for login, wallet transactions, or both.
+                </p>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '10px' }}>
+                  <div style={{ padding: '12px', background: 'rgba(15, 15, 15, 0.6)', borderRadius: '8px', border: '1px solid rgba(57, 255, 20, 0.2)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                      <span style={{ background: '#FFB800', color: '#000', padding: '2px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: '700' }}>POST</span>
+                      <code style={{ color: '#ccc', fontSize: '12px' }}>/api/webauthn/register-options</code>
+                    </div>
+                    <p style={{ color: '#666', fontSize: '11px', margin: 0 }}>Get WebAuthn registration options for credential creation</p>
+                  </div>
+                  
+                  <div style={{ padding: '12px', background: 'rgba(15, 15, 15, 0.6)', borderRadius: '8px', border: '1px solid rgba(57, 255, 20, 0.2)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                      <span style={{ background: '#FFB800', color: '#000', padding: '2px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: '700' }}>POST</span>
+                      <code style={{ color: '#ccc', fontSize: '12px' }}>/api/webauthn/register-verify</code>
+                    </div>
+                    <p style={{ color: '#666', fontSize: '11px', margin: 0 }}>Verify and store new biometric credential</p>
+                  </div>
+                  
+                  <div style={{ padding: '12px', background: 'rgba(15, 15, 15, 0.6)', borderRadius: '8px', border: '1px solid rgba(57, 255, 20, 0.2)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                      <span style={{ background: '#FFB800', color: '#000', padding: '2px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: '700' }}>POST</span>
+                      <code style={{ color: '#ccc', fontSize: '12px' }}>/api/webauthn/auth-options</code>
+                    </div>
+                    <p style={{ color: '#666', fontSize: '11px', margin: 0 }}>Get authentication challenge for biometric login</p>
+                  </div>
+                  
+                  <div style={{ padding: '12px', background: 'rgba(15, 15, 15, 0.6)', borderRadius: '8px', border: '1px solid rgba(57, 255, 20, 0.2)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                      <span style={{ background: '#FFB800', color: '#000', padding: '2px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: '700' }}>POST</span>
+                      <code style={{ color: '#ccc', fontSize: '12px' }}>/api/webauthn/auth-verify</code>
+                    </div>
+                    <p style={{ color: '#666', fontSize: '11px', margin: 0 }}>Verify biometric authentication response</p>
+                  </div>
+                </div>
+                
+                <div style={{ 
+                  marginTop: '12px', 
+                  padding: '10px 14px', 
+                  background: 'rgba(57, 255, 20, 0.05)', 
+                  borderRadius: '8px', 
+                  border: '1px solid rgba(57, 255, 20, 0.15)' 
+                }}>
+                  <p style={{ color: '#39FF14', fontSize: '12px', margin: 0 }}>
+                    💡 <strong>User Settings:</strong> Enable for login only, wallet transactions only, both, or neither. Fully user-controlled.
+                  </p>
+                </div>
+              </div>
+              
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                  <span style={{ fontSize: '18px' }}>🔒</span>
+                  <h4 style={{ margin: 0, color: '#fff', fontSize: '15px', fontWeight: '600' }}>Session Security</h4>
+                  <span style={{ 
+                    background: 'rgba(57, 255, 20, 0.15)', 
+                    color: '#39FF14', 
+                    padding: '3px 8px', 
+                    borderRadius: '4px', 
+                    fontSize: '10px', 
+                    fontWeight: '700' 
+                  }}>NEW</span>
+                </div>
+                <p style={{ color: '#888', fontSize: '13px', margin: '0 0 12px', lineHeight: 1.5 }}>
+                  Enhanced session management with automatic token rotation for improved security.
+                </p>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '10px' }}>
+                  <div style={{ padding: '12px', background: 'rgba(15, 15, 15, 0.6)', borderRadius: '8px', border: '1px solid rgba(0, 212, 255, 0.2)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                      <span style={{ color: '#00D4FF', fontSize: '14px' }}>🔄</span>
+                      <span style={{ color: '#fff', fontSize: '13px', fontWeight: '600' }}>Token Rotation</span>
+                    </div>
+                    <p style={{ color: '#666', fontSize: '11px', margin: 0 }}>Session tokens rotate automatically to prevent session hijacking</p>
+                  </div>
+                  
+                  <div style={{ padding: '12px', background: 'rgba(15, 15, 15, 0.6)', borderRadius: '8px', border: '1px solid rgba(0, 212, 255, 0.2)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                      <span style={{ color: '#00D4FF', fontSize: '14px' }}>📡</span>
+                      <span style={{ color: '#fff', fontSize: '13px', fontWeight: '600' }}>X-Session-Token-Rotated</span>
+                    </div>
+                    <p style={{ color: '#666', fontSize: '11px', margin: 0 }}>Response header signals when token has been refreshed</p>
+                  </div>
+                  
+                  <div style={{ padding: '12px', background: 'rgba(15, 15, 15, 0.6)', borderRadius: '8px', border: '1px solid rgba(0, 212, 255, 0.2)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                      <span style={{ color: '#00D4FF', fontSize: '14px' }}>⏱️</span>
+                      <span style={{ color: '#fff', fontSize: '13px', fontWeight: '600' }}>Tier-Based Durations</span>
+                    </div>
+                    <p style={{ color: '#666', fontSize: '11px', margin: 0 }}>Session lengths vary by subscription tier for flexible security</p>
+                  </div>
+                </div>
+                
+                <div style={{ 
+                  marginTop: '12px', 
+                  padding: '10px 14px', 
+                  background: 'rgba(0, 212, 255, 0.05)', 
+                  borderRadius: '8px', 
+                  border: '1px solid rgba(0, 212, 255, 0.15)' 
+                }}>
+                  <p style={{ color: '#00D4FF', fontSize: '12px', margin: 0 }}>
+                    🔧 <strong>Frontend Integration:</strong> Check for <code style={{ background: 'rgba(15, 15, 15, 0.6)', padding: '2px 6px', borderRadius: '4px' }}>X-Session-Token-Rotated</code> header and update stored token when present.
+                  </p>
+                </div>
               </div>
             </SectionCard>
           </div>

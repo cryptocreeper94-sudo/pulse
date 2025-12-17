@@ -1,6 +1,6 @@
 # DarkWave Studios Full Business Plan
 
-**Investor Brief | Version 2.0.6 | Confidential**
+**Investor Brief | Version 1.21.0 | Confidential**
 
 ---
 
@@ -29,6 +29,8 @@ DarkWave Studios is building the future of AI-powered trading intelligence. Our 
 **Key Highlights:**
 - Fully operational web platform with 18 AI trading agents
 - Blockchain-verified audit trail on Solana mainnet
+- Production-grade security with WebAuthn biometric authentication and auto-rotating session tokens
+- Multi-chain wallet supporting Solana and 22 EVM-compatible networks
 - Multi-platform presence (Web, Telegram, Mobile in development)
 - Token launch February 14, 2026
 - Conservative path to $8.4M ARR by 2028
@@ -86,6 +88,18 @@ The flagship product delivering full-featured trading intelligence:
 - 8-chapter comprehensive trading guide
 - 143-term glossary of trading terminology
 - Educational content for beginner to advanced traders
+
+**Security Infrastructure**
+- WebAuthn-based biometric authentication (fingerprint/Face ID) for 2FA login
+- Biometric confirmation required for wallet transactions
+- Auto-rotating session tokens with tier-based durations (2 days free, 30 days premium)
+- Protection against session fixation attacks
+- Flexible user control—enable biometrics for login, wallet, both, or neither
+
+**Multi-Chain Wallet**
+- Integrated wallet supporting Solana and 22 EVM-compatible chains
+- Biometric transaction confirmation for enhanced security
+- Production-grade implementation using @simplewebauthn/server
 
 #### Telegram Bot
 - 24/7 availability for quick market checks
@@ -165,6 +179,9 @@ The intersection of AI and financial technology represents one of the fastest-gr
 **Our Differentiation:**
 - Only platform with AI agent personas
 - Blockchain-verified audit trail
+- Production-grade WebAuthn biometric security (fingerprint/Face ID)
+- Auto-rotating session tokens with tier-based durations
+- Multi-chain wallet supporting Solana + 22 EVM chains
 - Token incentives aligned with users
 - Accessible pricing starting at $4/month
 
@@ -404,6 +421,9 @@ Legacy Founder tier at $4/month serves as loss leader to build community and tok
 - AI agents operational
 - Blockchain audit trail live
 - Telegram bot deployed
+- WebAuthn biometric authentication for login and wallet transactions
+- Secure session token system with auto-rotation
+- Multi-chain wallet (Solana + 22 EVM chains)
 
 ### 2026 Q1
 - Legacy Founder launch ($4/month)

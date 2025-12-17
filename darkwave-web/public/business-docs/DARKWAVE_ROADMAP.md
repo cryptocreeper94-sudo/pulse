@@ -1,6 +1,6 @@
 # DarkWave Studios Product Roadmap
 
-**Version 2.0.6 | Updated December 2025**
+**Version 1.21.0 | Updated December 2025**
 
 ---
 
@@ -30,6 +30,9 @@ Complete            Launch               Apps                Global
 | Knowledge Base | ✅ | 8 chapters, 143 terms |
 | Payment System | ✅ | Stripe integration ready |
 | Authentication | ✅ | Email whitelist + access codes |
+| Biometric Auth | ✅ | WebAuthn fingerprint/Face ID for login & wallet |
+| Secure Sessions | ✅ | Auto-rotating tokens, tier-based durations |
+| Multi-Chain Wallet | ✅ | Solana + 22 EVM chains with biometric confirmation |
 
 ---
 
@@ -236,8 +239,8 @@ This roadmap is reviewed and updated:
 - Monthly: Public update on progress
 - Quarterly: Major revision if needed
 
-**Last Updated:** December 7, 2025  
-**Next Review:** January 7, 2026
+**Last Updated:** December 17, 2025  
+**Next Review:** January 17, 2026
 
 ---
 
