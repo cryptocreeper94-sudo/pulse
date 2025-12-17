@@ -18,14 +18,14 @@ The platform features a solid dark theme with free-floating elements and glow ef
 - **Frontend**: React 19 and Vite 7 web app, plus React Native + Expo mobile app.
 - **Backend**: Mastra AI framework with an Express server, powered by the DarkWave-V2 AI agent.
 - **Database**: PostgreSQL (Neon-backed).
-- **Authentication**: Session-based, using an email whitelist and access codes.
+- **Authentication**: Session-based with access codes, featuring optional WebAuthn biometric authentication (fingerprint/Face ID) for login 2FA and wallet transaction confirmation. Secure session token rotation with tier-based durations (2 days free, 30 days premium, 10 years admin).
 - **Workflow Management**: Inngest for event-driven processing and cron jobs.
 - **Prediction Tracking**: Logs AI signals, tracks outcomes, calculates accuracy, and hashes predictions on the Solana blockchain. Features a logistic regression ML learning system with automated weekly training and an AI Status Widget.
 - **Personal Dashboard System**: Unique Hallmark ID per user, customizable landing page, favorite coins, market gauges, and main chart widget.
 - **Coin Table System**: Categories (Top, Gainers, Losers, Meme, DeFi, DEX) fetching 20 coins each from CoinGecko API, with 1H/24H timeframe toggles and mobile responsiveness.
 - **StrikeAgent**: AI tool for real-time token discovery with safety filters, smart auto mode, and multi-chain support (Solana, Ethereum, Base, Polygon, Arbitrum, BSC, and 17 other EVM chains).
 - **Manual Token Watchlist/Limit Orders**: System for setting entry, exit, and stop-loss orders across four token slots, monitored by Inngest.
-- **Multi-Chain Built-in Wallet**: Custom HD wallet with Trust Wallet-style UX, supporting Solana and 22 EVM chains, featuring BIP39 mnemonic generation and AES-256-GCM encrypted storage. Includes a premium UI redesign and Quick Actions Hub.
+- **Multi-Chain Built-in Wallet**: Custom HD wallet with Trust Wallet-style UX, supporting Solana and 22 EVM chains, featuring BIP39 mnemonic generation and AES-256-GCM encrypted storage. Includes biometric transaction confirmation, premium UI redesign, and Quick Actions Hub.
 - **Dust Buster**: Solana wallet cleanup utility for recovering locked SOL rent.
 - **Automatic Versioning System**: Manages `version.json` for frontend and backend.
 - **ORBIT Ecosystem Integration**: Cross-app communication for activity logging, code snippet sharing, metrics reporting, and alerts.
