@@ -61,6 +61,8 @@ import { apiBillingRoutes } from "./routes/apiBillingRoutes";
 import { socialTradingRoutes } from "./routes/socialTradingRoutes";
 import { exchangeRoutes } from "./routes/exchangeRoutes";
 import { autonomousTradingRoutes } from "./routes/autonomousTradingRoutes";
+import { moonpayRoutes } from "./routes/moonpayRoutes";
+import { transakRoutes } from "./routes/transakRoutes";
 
 class ProductionPinoLogger extends MastraLogger {
   protected logger: pino.Logger;
@@ -6167,6 +6169,13 @@ export const mastra = new Mastra({
       
       // Crypto Onramp Routes (Stripe fiat-to-crypto)
       ...cryptoOnrampRoutes,
+      
+      // MoonPay Crypto Onramp Routes
+      ...moonpayRoutes,
+      
+      // Transak Crypto Onramp Routes
+      ...transakRoutes,
+      
       ...swapRoutes,
       
       // Multi-Sig Vault Routes
