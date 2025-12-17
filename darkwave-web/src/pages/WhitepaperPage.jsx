@@ -158,6 +158,7 @@ const TableOfContents = ({ activeSection }) => {
     { id: 'overview', label: 'Overview' },
     { id: 'problem', label: 'The Problem' },
     { id: 'solution', label: 'The Solution' },
+    { id: 'strikeagent', label: 'StrikeAgent' },
     { id: 'tokenomics', label: 'Tokenomics' },
     { id: 'utility', label: 'Utility' },
     { id: 'roadmap', label: 'Roadmap' },
@@ -411,6 +412,78 @@ export default function WhitepaperPage() {
                   <div style={{ color: '#aaa', fontSize: '13px', lineHeight: 1.6 }}>{item.desc}</div>
                 </div>
               ))}
+            </div>
+          </SectionCard>
+
+          <SectionCard id="strikeagent" title="StrikeAgent: Autonomous Trading" icon="⚡" color="#FF6B35">
+            <p style={{ color: '#ccc', lineHeight: 1.8, fontSize: '15px', marginBottom: '24px' }}>
+              StrikeAgent is our revolutionary AI-powered autonomous trading system that executes trades based on proven prediction accuracy. As our AI's accuracy surpasses key thresholds, it earns the ability to make trading decisions with configurable levels of autonomy.
+            </p>
+            
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: '16px',
+              marginBottom: '24px',
+            }}>
+              {[
+                { mode: 'Observer', desc: 'AI monitors and suggests trades', color: '#888', icon: '👁️' },
+                { mode: 'Approval', desc: 'Trades require manual confirmation', color: '#00D4FF', icon: '✋' },
+                { mode: 'Semi-Auto', desc: 'Small trades auto-execute', color: '#FFB800', icon: '⚙️' },
+                { mode: 'Full-Auto', desc: 'AI executes with safety limits', color: '#39FF14', icon: '🤖' },
+              ].map((item, i) => (
+                <div key={i} style={{
+                  ...glassmorphism,
+                  padding: '20px',
+                  borderRadius: '12px',
+                  border: `1px solid ${item.color}30`,
+                  textAlign: 'center',
+                }}>
+                  <div style={{ fontSize: '32px', marginBottom: '8px' }}>{item.icon}</div>
+                  <div style={{ color: item.color, fontWeight: '700', fontSize: '16px', marginBottom: '6px' }}>{item.mode}</div>
+                  <div style={{ color: '#888', fontSize: '12px' }}>{item.desc}</div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{
+              ...glassmorphism,
+              padding: '24px',
+              borderRadius: '12px',
+              border: '1px solid rgba(255, 107, 53, 0.2)',
+              marginBottom: '20px',
+            }}>
+              <h4 style={{ color: '#FF6B35', fontSize: '16px', marginBottom: '16px' }}>Key Features</h4>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '12px' }}>
+                {[
+                  'Real-time token discovery with safety filters',
+                  'Multi-chain support (Solana + 22 EVM chains)',
+                  'Configurable risk parameters and position limits',
+                  'Automatic stop-loss and take-profit execution',
+                  'ML-powered signal accuracy tracking',
+                  'WebAuthn biometric transaction confirmation',
+                ].map((feature, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ color: '#39FF14' }}>✓</span>
+                    <span style={{ color: '#ccc', fontSize: '13px' }}>{feature}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={{
+              padding: '16px 20px',
+              background: 'linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(57, 255, 20, 0.05))',
+              borderRadius: '10px',
+              border: '1px solid rgba(255, 107, 53, 0.2)',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontSize: '24px' }}>🔐</span>
+                <div>
+                  <div style={{ color: '#FF6B35', fontWeight: '600', fontSize: '14px' }}>Safety First Architecture</div>
+                  <div style={{ color: '#888', fontSize: '12px' }}>Daily loss limits, position caps, and emergency stop functionality protect your capital</div>
+                </div>
+              </div>
             </div>
           </SectionCard>
 
