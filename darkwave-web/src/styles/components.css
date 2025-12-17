@@ -1219,6 +1219,10 @@ img {
   text-align: center;
   margin-bottom: 8px;
   text-shadow: 0 0 15px var(--neon-blue-glow);
+  min-height: 28px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
 }
 
 @media (max-width: 768px) {
@@ -1236,6 +1240,7 @@ img {
   .gauge-card-title {
     font-size: 10px;
     letter-spacing: 1px;
+    min-height: 24px;
   }
   
   .gauge-sentiment {
