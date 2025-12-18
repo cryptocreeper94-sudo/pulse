@@ -703,7 +703,7 @@ function MiniCoinTable({ coins: initialCoins, onCoinClick, favorites, selectedCo
   )
 }
 
-function ChartMetricsPanel({ coin }) {
+function ChartMetricsPanel({ coin, isMobile = false }) {
   if (!coin) {
     return (
       <div style={{ 
@@ -781,67 +781,69 @@ function ChartMetricsPanel({ coin }) {
         </div>
       </div>
       
-      <div style={{ 
-        marginTop: 'auto',
-        padding: '16px',
-        background: 'linear-gradient(135deg, rgba(0, 212, 255, 0.12) 0%, rgba(57, 255, 20, 0.08) 100%)',
-        borderRadius: 12,
-        border: '1px solid rgba(0, 212, 255, 0.3)',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
-          <div style={{ 
-            width: 42, 
-            height: 42, 
-            background: 'linear-gradient(135deg, #00D4FF, #39FF14)',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 20,
-            boxShadow: '0 0 20px rgba(0, 212, 255, 0.4)',
-          }}>
-            🎯
-          </div>
-          <div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>StrikeAgent</div>
-            <div style={{ fontSize: 11, color: '#00D4FF' }}>AI-Powered Trading Automation</div>
-          </div>
-        </div>
-        <div style={{ fontSize: 11, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 10 }}>
-          Automate your trades on any token with AI-driven entry/exit signals, real-time safety checks, and anti-MEV protection. Set limit orders, stop-losses, and let AI monitor markets 24/7.
-        </div>
+      {!isMobile && (
         <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: 8, 
-          marginBottom: 12,
-          padding: '8px 10px',
-          background: 'rgba(57, 255, 20, 0.1)',
-          borderRadius: 6,
-          border: '1px solid rgba(57, 255, 20, 0.2)',
+          marginTop: 'auto',
+          padding: '16px',
+          background: 'linear-gradient(135deg, rgba(0, 212, 255, 0.12) 0%, rgba(57, 255, 20, 0.08) 100%)',
+          borderRadius: 12,
+          border: '1px solid rgba(0, 212, 255, 0.3)',
         }}>
-          <span style={{ fontSize: 10, color: 'var(--neon-green)', fontWeight: 600 }}>SAVE 60%+</span>
-          <span style={{ fontSize: 10, color: 'var(--text-secondary)' }}>vs SolSniper ($75/mo)</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
+            <div style={{ 
+              width: 42, 
+              height: 42, 
+              background: 'linear-gradient(135deg, #00D4FF, #39FF14)',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 20,
+              boxShadow: '0 0 20px rgba(0, 212, 255, 0.4)',
+            }}>
+              🎯
+            </div>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>StrikeAgent</div>
+              <div style={{ fontSize: 11, color: '#00D4FF' }}>AI-Powered Trading Automation</div>
+            </div>
+          </div>
+          <div style={{ fontSize: 11, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 10 }}>
+            Automate your trades on any token with AI-driven entry/exit signals, real-time safety checks, and anti-MEV protection. Set limit orders, stop-losses, and let AI monitor markets 24/7.
+          </div>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 8, 
+            marginBottom: 12,
+            padding: '8px 10px',
+            background: 'rgba(57, 255, 20, 0.1)',
+            borderRadius: 6,
+            border: '1px solid rgba(57, 255, 20, 0.2)',
+          }}>
+            <span style={{ fontSize: 10, color: 'var(--neon-green)', fontWeight: 600 }}>SAVE 60%+</span>
+            <span style={{ fontSize: 10, color: 'var(--text-secondary)' }}>vs SolSniper ($75/mo)</span>
+          </div>
+          <button style={{
+            width: '100%',
+            padding: '10px 16px',
+            fontSize: 12,
+            fontWeight: 700,
+            background: 'linear-gradient(135deg, #00D4FF, #39FF14)',
+            border: 'none',
+            borderRadius: 8,
+            color: '#000',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            boxShadow: '0 0 15px rgba(0, 212, 255, 0.3)',
+          }}
+          onMouseEnter={(e) => { e.target.style.transform = 'scale(1.02)'; e.target.style.boxShadow = '0 0 25px rgba(0, 212, 255, 0.5)' }}
+          onMouseLeave={(e) => { e.target.style.transform = 'scale(1)'; e.target.style.boxShadow = '0 0 15px rgba(0, 212, 255, 0.3)' }}
+          >
+            Start Trading Smarter
+          </button>
         </div>
-        <button style={{
-          width: '100%',
-          padding: '10px 16px',
-          fontSize: 12,
-          fontWeight: 700,
-          background: 'linear-gradient(135deg, #00D4FF, #39FF14)',
-          border: 'none',
-          borderRadius: 8,
-          color: '#000',
-          cursor: 'pointer',
-          transition: 'all 0.2s',
-          boxShadow: '0 0 15px rgba(0, 212, 255, 0.3)',
-        }}
-        onMouseEnter={(e) => { e.target.style.transform = 'scale(1.02)'; e.target.style.boxShadow = '0 0 25px rgba(0, 212, 255, 0.5)' }}
-        onMouseLeave={(e) => { e.target.style.transform = 'scale(1)'; e.target.style.boxShadow = '0 0 15px rgba(0, 212, 255, 0.3)' }}
-        >
-          Start Trading Smarter
-        </button>
-      </div>
+      )}
     </div>
   )
 }
@@ -1262,7 +1264,7 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
 
       <div className="bento-chart-section">
         <div className="chart-metrics">
-          <ChartMetricsPanel coin={selectedCoin} />
+          <ChartMetricsPanel coin={selectedCoin} isMobile={isMobile} />
         </div>
         <div className="chart-container">
           <BitcoinChart compact={false} coinId={selectedCoin?.id} />

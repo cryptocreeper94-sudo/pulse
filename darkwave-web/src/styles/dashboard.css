@@ -225,6 +225,12 @@
 
 /* Mobile breakpoint - 640px (static 3-col, compact) */
 @media (max-width: 640px) {
+  /* Prevent horizontal overflow on mobile */
+  body, html, #root {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+  
   .top-carousels-container {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -232,6 +238,7 @@
     padding: 4px;
     padding-top: 55px;
     overflow: visible;
+    max-width: 100%;
   }
   
   .carousel-section {
