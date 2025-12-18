@@ -212,7 +212,7 @@ function MetricContent({ title, value, change }) {
 
 function GaugeContent({ title, value, type, accentColor, isMobile = false }) {
   const gaugeSize = isMobile ? 80 : 120
-  const extraGaugeMargin = type === 'fearGreed' ? (isMobile ? 12 : 20) : 0
+  const extraGaugeMargin = type === 'fearGreed' ? (isMobile ? 0 : 0) : 0
   return (
     <div style={{ 
       display: 'flex', 
