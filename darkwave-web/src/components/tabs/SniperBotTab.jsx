@@ -1156,7 +1156,8 @@ function RPCSettingsPanel({ rpcStatus, customRPC, setCustomRPC, onSaveCustomRPC,
   )
 }
 
-export default function SniperBotTab() {
+export default function SniperBotTab({ canTrade = true, onNavigate }) {
+  const isViewOnly = !canTrade
   const externalWallet = useWalletState()
   const builtInWallet = useBuiltInWallet()
   const [walletSource, setWalletSource] = useState('external')
@@ -1518,7 +1519,7 @@ export default function SniperBotTab() {
   }
 
   return (
-    <div className="sniper-tab">
+    <div className={`sniper-tab sniper-bot-tab ${isViewOnly ? 'view-only' : ''}`}>
       {selectedGlossaryTerm && (
         <GlossaryModal 
           term={selectedGlossaryTerm} 
@@ -1935,6 +1936,70 @@ export default function SniperBotTab() {
           <QuantSystemSection />
         </BentoItem>
       </BentoGrid>
+
+      {isViewOnly && (
+        <div 
+          style={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            background: 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.9) 70%, transparent 100%)',
+            padding: '24px 16px 32px',
+            zIndex: 1000,
+            textAlign: 'center',
+          }}
+        >
+          <div style={{ 
+            background: 'rgba(0, 212, 255, 0.1)', 
+            border: '1px solid rgba(0, 212, 255, 0.3)',
+            borderRadius: '12px',
+            padding: '16px 20px',
+            maxWidth: '500px',
+            margin: '0 auto',
+          }}>
+            <div style={{ fontSize: '11px', color: '#00D4FF', fontWeight: 600, marginBottom: '8px', letterSpacing: '1px' }}>
+              🔒 SUBSCRIPTION REQUIRED
+            </div>
+            <div style={{ fontSize: '14px', color: '#fff', marginBottom: '12px' }}>
+              Subscribe to unlock StrikeAgent trading features
+            </div>
+            <button
+              onClick={() => onNavigate?.('pricing')}
+              style={{
+                padding: '12px 32px',
+                background: 'linear-gradient(135deg, #00D4FF 0%, #00a8cc 100%)',
+                color: '#000',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: 700,
+                fontSize: '14px',
+              }}
+            >
+              View Plans - Starting at $30/mo
+            </button>
+          </div>
+        </div>
+      )}
+
+      {isViewOnly && (
+        <style>{`
+          .sniper-bot-tab button:not([style*="pricing"]),
+          .sniper-bot-tab input,
+          .sniper-bot-tab select,
+          .sniper-bot-tab .sniper-scan-btn,
+          .sniper-bot-tab .sniper-discover-btn,
+          .sniper-bot-tab .auto-mode-toggle,
+          .sniper-bot-tab .mode-tabs button {
+            pointer-events: none !important;
+            opacity: 0.6 !important;
+          }
+          .sniper-bot-tab .section-box {
+            position: relative;
+          }
+        `}</style>
+      )}
     </div>
   )
 }

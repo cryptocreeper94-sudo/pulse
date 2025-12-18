@@ -277,14 +277,8 @@ function App() {
       case 'staking':
         return <StakingTab />
       case 'sniper':
-        if (isDemoMode) {
-          // Demo mode from strikeagent.io - show upgrade CTA, not full access
-          return <StrikeAgentUpgradeCTA onNavigate={setActiveTab} />
-        }
-        if (!hasStrikeAgentAccess(userConfig)) {
-          return <StrikeAgentUpgradeCTA onNavigate={setActiveTab} />
-        }
-        return <SniperBotErrorBoundary><SniperBotTab /></SniperBotErrorBoundary>
+        const canTrade = hasStrikeAgentAccess(userConfig) || isDemoMode
+        return <SniperBotErrorBoundary><SniperBotTab canTrade={canTrade} onNavigate={setActiveTab} /></SniperBotErrorBoundary>
       case 'wallet':
         return <WalletTab userId={userId} />
       case 'settings':
