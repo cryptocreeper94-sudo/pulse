@@ -176,6 +176,7 @@ function QuickActionContent({ action, fullCard = false }) {
 function MetricContent({ title, value, change }) {
   const isPositive = change >= 0
   const hasChange = change !== null && change !== undefined
+  const valueColor = hasChange ? (isPositive ? 'var(--neon-green)' : 'var(--accent-red)') : 'var(--text-primary)'
   return (
     <div style={{ 
       display: 'flex', 
@@ -190,7 +191,7 @@ function MetricContent({ title, value, change }) {
       <div style={{ fontSize: 10, color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', marginBottom: 10, letterSpacing: 1 }}>
         {title}
       </div>
-      <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', marginBottom: hasChange ? 6 : 0 }}>
+      <div style={{ fontSize: 24, fontWeight: 800, color: valueColor, marginBottom: hasChange ? 6 : 0 }}>
         {value}
       </div>
       {hasChange && (
