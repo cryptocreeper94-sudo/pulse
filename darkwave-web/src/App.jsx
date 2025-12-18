@@ -277,7 +277,7 @@ function App() {
       case 'staking':
         return <StakingTab />
       case 'sniper':
-        const canTrade = hasStrikeAgentAccess(userConfig) || isDemoMode
+        const canTrade = hasStrikeAgentAccess(userConfig)
         return <SniperBotErrorBoundary><SniperBotTab canTrade={canTrade} onNavigate={setActiveTab} /></SniperBotErrorBoundary>
       case 'wallet':
         return <WalletTab userId={userId} />

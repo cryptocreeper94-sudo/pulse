@@ -1965,6 +1965,7 @@ export default function SniperBotTab({ canTrade = true, onNavigate }) {
               Subscribe to unlock StrikeAgent trading features
             </div>
             <button
+              className="view-only-cta"
               onClick={() => onNavigate?.('pricing')}
               style={{
                 padding: '12px 32px',
@@ -1985,17 +1986,17 @@ export default function SniperBotTab({ canTrade = true, onNavigate }) {
 
       {isViewOnly && (
         <style>{`
-          .sniper-bot-tab button:not([style*="pricing"]),
-          .sniper-bot-tab input,
-          .sniper-bot-tab select,
-          .sniper-bot-tab .sniper-scan-btn,
-          .sniper-bot-tab .sniper-discover-btn,
-          .sniper-bot-tab .auto-mode-toggle,
-          .sniper-bot-tab .mode-tabs button {
+          .sniper-bot-tab.view-only button:not(.view-only-cta),
+          .sniper-bot-tab.view-only input,
+          .sniper-bot-tab.view-only select,
+          .sniper-bot-tab.view-only .sniper-scan-btn,
+          .sniper-bot-tab.view-only .sniper-discover-btn,
+          .sniper-bot-tab.view-only .auto-mode-toggle,
+          .sniper-bot-tab.view-only .mode-tabs button {
             pointer-events: none !important;
             opacity: 0.6 !important;
           }
-          .sniper-bot-tab .section-box {
+          .sniper-bot-tab.view-only .section-box {
             position: relative;
           }
         `}</style>
