@@ -9,6 +9,13 @@ Pulse, by DarkWave Studios, LLC, is an AI-driven trading platform that leverages
 - Agent diversity: Equal distribution across age groups, gender, race, and hair color
 - Design aesthetic: Solid black/dark gray backgrounds (#0f0f0f, #1a1a1a, #141414) with free-floating elements featuring glow effects. Glassmorphism (backdrop-filter blur + semi-transparent backgrounds) is ALLOWED for cards site-wide, but NOT for backgrounds, buttons, or other non-card elements.
 
+## Recent Updates (December 18, 2025)
+- **UI Responsive Improvements**: Made header elements (Whitepaper button, wallet display) responsive and compact on mobile screens
+- **Carousel Navigation**: Moved carousel arrows below card content with dots for cleaner layout
+- **Metric Cards**: Fixed Fear & Greed title overlap with info button, aligned all gauge metrics properly
+- **Disclaimer Banner**: Changed from brown/orange to attention-grabbing red color scheme
+- **Recent Predictions Table**: Reorganized with proper table headers, help tooltips for each column (Ticker, Signal, Confidence, Price, Outcomes), and clean row/column grid layout
+
 ## System Architecture
 
 ### UI/UX Decisions

@@ -559,63 +559,133 @@ export default function AIStatusWidget() {
                         </div>
                       )}
 
-                      <div style={{ fontSize: '12px', color: '#888', marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ fontSize: '12px', color: '#888', marginBottom: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span>Recent Predictions</span>
                         <span>{userHistory.pagination?.total || 0} total</span>
                       </div>
 
+                      {/* Table Header */}
+                      <div style={{ 
+                        display: 'grid', 
+                        gridTemplateColumns: '1fr 0.8fr 0.8fr 0.6fr 1.2fr',
+                        gap: '12px',
+                        padding: '12px 14px',
+                        background: '#0f0f0f',
+                        borderRadius: '10px',
+                        border: '1px solid #333',
+                        marginBottom: '10px',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        color: '#666',
+                        textTransform: 'uppercase',
+                        letterSpacing: 0.5
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          TICKER
+                          <span title="The cryptocurrency token symbol" style={{ cursor: 'help', fontSize: '13px' }}>ⓘ</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          SIGNAL
+                          <span title="Buy/Sell prediction: BUY (green), SELL (red), or HOLD (gray)" style={{ cursor: 'help', fontSize: '13px' }}>ⓘ</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          CONF
+                          <span title="Confidence score (0-100%). How sure the AI is about this prediction" style={{ cursor: 'help', fontSize: '13px' }}>ⓘ</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          PRICE
+                          <span title="Current token price at prediction time" style={{ cursor: 'help', fontSize: '13px' }}>ⓘ</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          OUTCOMES
+                          <span title="Prediction accuracy: ✓ (correct), ✗ (incorrect), ⏳ (pending)" style={{ cursor: 'help', fontSize: '13px' }}>ⓘ</span>
+                        </div>
+                      </div>
+
+                      {/* Table Rows */}
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {userHistory.predictions.map((pred) => (
                           <div 
                             key={pred.id}
                             style={{
+                              display: 'grid',
+                              gridTemplateColumns: '1fr 0.8fr 0.8fr 0.6fr 1.2fr',
+                              gap: '12px',
                               background: '#0f0f0f',
                               borderRadius: '10px',
                               padding: '12px 14px',
-                              border: '1px solid #222'
+                              border: '1px solid #222',
+                              alignItems: 'center',
+                              transition: 'all 0.2s ease'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.borderColor = '#333'
+                              e.currentTarget.style.background = '#141414'
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.borderColor = '#222'
+                              e.currentTarget.style.background = '#0f0f0f'
                             }}
                           >
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <span style={{ color: '#fff', fontSize: '14px', fontWeight: 600 }}>
-                                  {pred.ticker?.toUpperCase()}
-                                </span>
-                                <span style={{ 
-                                  padding: '2px 8px',
-                                  background: getSignalColor(pred.signal) + '22',
-                                  color: getSignalColor(pred.signal),
-                                  borderRadius: '6px',
-                                  fontSize: '11px',
-                                  fontWeight: 600
-                                }}>
-                                  {pred.signal}
-                                </span>
-                                {pred.confidence && (
-                                  <span style={{ color: '#666', fontSize: '11px' }}>
-                                    {pred.confidence}
-                                  </span>
-                                )}
-                              </div>
-                              <span style={{ color: '#555', fontSize: '11px' }}>
-                                {formatDate(pred.createdAt)}
-                              </span>
+                            {/* Ticker */}
+                            <div style={{ color: '#fff', fontSize: '13px', fontWeight: 600 }}>
+                              {pred.ticker?.toUpperCase() || 'N/A'}
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                              <span style={{ color: '#666', fontSize: '11px', marginRight: '8px' }}>Outcomes:</span>
+
+                            {/* Signal */}
+                            <div style={{ 
+                              padding: '4px 8px',
+                              background: getSignalColor(pred.signal) + '22',
+                              color: getSignalColor(pred.signal),
+                              borderRadius: '6px',
+                              fontSize: '11px',
+                              fontWeight: 600,
+                              textAlign: 'center',
+                              textTransform: 'uppercase'
+                            }}>
+                              {pred.signal || 'HOLD'}
+                            </div>
+
+                            {/* Confidence */}
+                            <div style={{ 
+                              color: pred.confidence ? '#aaffaa' : '#444',
+                              fontSize: '12px',
+                              fontWeight: 600,
+                              textAlign: 'center'
+                            }}>
+                              {pred.confidence ? `${pred.confidence}%` : '--'}
+                            </div>
+
+                            {/* Price */}
+                            <div style={{ 
+                              color: pred.price ? '#00D4FF' : '#444',
+                              fontSize: '12px',
+                              fontWeight: 600,
+                              textAlign: 'center'
+                            }}>
+                              {pred.price ? `$${parseFloat(pred.price).toFixed(4)}` : '--'}
+                            </div>
+
+                            {/* Outcomes */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'flex-start' }}>
                               {['1h', '4h', '24h', '7d'].map(h => (
                                 <div 
                                   key={h} 
                                   style={{ 
                                     display: 'flex', 
-                                    alignItems: 'center', 
-                                    gap: '3px',
-                                    padding: '3px 6px',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    minWidth: '24px',
+                                    height: '24px',
                                     background: '#1a1a1a',
-                                    borderRadius: '4px'
+                                    borderRadius: '4px',
+                                    fontSize: '10px',
+                                    color: '#666',
+                                    fontWeight: 600
                                   }}
+                                  title={`${h} outcome`}
                                 >
-                                  <span style={{ fontSize: '10px', color: '#666' }}>{h}</span>
-                                  <OutcomeBadge status={pred.outcomes?.[h]} />
+                                  {pred.outcomes?.[h] ? <OutcomeBadge status={pred.outcomes?.[h]} /> : '⏳'}
                                 </div>
                               ))}
                             </div>
