@@ -16,7 +16,7 @@ export default function StrikeAgentLiveWidget({ isLocked = true, onUnlock }) {
   }, [signals.length])
 
   const currentSignal = signals[activeIndex]
-  const signalColor = currentSignal.type === 'SNIPE' ? '#00D4FF' : '#39FF14'
+  const signalColor = currentSignal.type === 'SNIPE' ? 'var(--neon-blue)' : 'var(--neon-green)'
 
   return (
     <div
@@ -121,10 +121,10 @@ export default function StrikeAgentLiveWidget({ isLocked = true, onUnlock }) {
                 fontSize: 10,
                 fontWeight: 600,
                 padding: '4px 8px',
-                background: currentSignal.confidence === 'HIGH' ? 'rgba(57, 255, 20, 0.2)' : 'rgba(255, 215, 0, 0.2)',
-                color: currentSignal.confidence === 'HIGH' ? '#39FF14' : '#FFD700',
+                background: currentSignal.confidence === 'HIGH' ? 'rgba(57, 255, 20, 0.2)' : 'rgba(0, 212, 255, 0.2)',
+                color: currentSignal.confidence === 'HIGH' ? 'var(--neon-green)' : 'var(--neon-blue)',
                 borderRadius: 4,
-                border: `1px solid ${currentSignal.confidence === 'HIGH' ? '#39FF1480' : '#FFD70080'}`,
+                border: `1px solid ${currentSignal.confidence === 'HIGH' ? 'rgba(57, 255, 20, 0.5)' : 'rgba(0, 212, 255, 0.5)'}`,
               }}
             >
               {currentSignal.confidence}
@@ -162,11 +162,11 @@ export default function StrikeAgentLiveWidget({ isLocked = true, onUnlock }) {
           </div>
           <div style={{ textAlign: 'center', padding: '8px', background: 'rgba(57, 255, 20, 0.08)', borderRadius: 8 }}>
             <div style={{ fontSize: 9, color: 'var(--text-muted)', marginBottom: 2 }}>WIN RATE</div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#39FF14' }}>73%</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--neon-green)' }}>73%</div>
           </div>
-          <div style={{ textAlign: 'center', padding: '8px', background: 'rgba(255, 215, 0, 0.08)', borderRadius: 8 }}>
+          <div style={{ textAlign: 'center', padding: '8px', background: 'var(--bg-surface-2)', borderRadius: 8 }}>
             <div style={{ fontSize: 9, color: 'var(--text-muted)', marginBottom: 2 }}>24H GAIN</div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#FFD700' }}>+18%</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--neon-green)' }}>+18%</div>
           </div>
         </div>
       </div>

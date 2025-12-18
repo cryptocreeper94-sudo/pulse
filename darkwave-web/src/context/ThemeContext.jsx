@@ -4,6 +4,10 @@ const ThemeContext = createContext()
 
 export function ThemeProvider({ children }) {
   const [isDarkMode, setIsDarkMode] = useState(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const themeParam = urlParams.get('theme')
+    if (themeParam === 'light') return false
+    if (themeParam === 'dark') return true
     const saved = localStorage.getItem('pulse-theme')
     return saved ? saved === 'dark' : true
   })

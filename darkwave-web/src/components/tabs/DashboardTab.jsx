@@ -197,7 +197,7 @@ function MetricContent({ title, value, change }) {
         <div style={{ 
           fontSize: 13, 
           fontWeight: 600, 
-          color: isPositive ? '#39FF14' : '#ff4444',
+          color: isPositive ? 'var(--neon-green)' : 'var(--accent-red)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -307,7 +307,7 @@ function CoinContent({ coin, isFavorite }) {
         <div>
           <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
             {coin.symbol?.toUpperCase() || 'UNKNOWN'}
-            {isFavorite && <span style={{ color: '#FFD700', marginLeft: 6 }}>★</span>}
+            {isFavorite && <span style={{ color: 'var(--neon-blue)', marginLeft: 6 }}>★</span>}
           </div>
           <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{coin.name || 'Unknown'}</div>
         </div>
@@ -318,7 +318,7 @@ function CoinContent({ coin, isFavorite }) {
       <div style={{ 
         fontSize: 13, 
         fontWeight: 600, 
-        color: isPositive ? '#39FF14' : '#ff4444',
+        color: isPositive ? 'var(--neon-green)' : 'var(--accent-red)',
         display: 'flex',
         alignItems: 'center',
         gap: 4,
@@ -683,13 +683,13 @@ function MiniCoinTable({ coins: initialCoins, onCoinClick, favorites, selectedCo
                 )}
                 <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)' }}>
                   {coin.symbol?.toUpperCase()}
-                  {isFavorite(coin.symbol) && <span style={{ color: '#FFD700', marginLeft: 3 }}>★</span>}
+                  {isFavorite(coin.symbol) && <span style={{ color: 'var(--neon-blue)', marginLeft: 3 }}>★</span>}
                 </span>
               </div>
               <div style={{ width: '25%', minWidth: 70, textAlign: 'right', fontSize: 12, color: 'var(--text-primary)' }}>
                 {formatPrice(priceNum)}
               </div>
-              <div style={{ width: '15%', minWidth: 55, textAlign: 'right', fontSize: 11, fontWeight: 600, color: isPositive ? '#39FF14' : '#ff4444' }}>
+              <div style={{ width: '15%', minWidth: 55, textAlign: 'right', fontSize: 11, fontWeight: 600, color: isPositive ? 'var(--neon-green)' : 'var(--accent-red)' }}>
                 {isPositive ? '+' : ''}{changeNum.toFixed(1)}%
               </div>
               <div style={{ width: '20%', minWidth: 60, textAlign: 'right', fontSize: 11, color: 'var(--text-secondary)' }}>
@@ -744,13 +744,13 @@ function ChartMetricsPanel({ coin }) {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
         <div>
           <div style={{ fontSize: 9, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 2 }}>24h Change</div>
-          <div style={{ fontSize: 13, fontWeight: 600, color: isPositive24h ? '#39FF14' : '#ff4444' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: isPositive24h ? 'var(--neon-green)' : 'var(--accent-red)' }}>
             {isPositive24h ? '+' : ''}{change24h.toFixed(2)}%
           </div>
         </div>
         <div>
           <div style={{ fontSize: 9, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 2 }}>7d Change</div>
-          <div style={{ fontSize: 13, fontWeight: 600, color: isPositive7d ? '#39FF14' : '#ff4444' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: isPositive7d ? 'var(--neon-green)' : 'var(--accent-red)' }}>
             {isPositive7d ? '+' : ''}{change7d.toFixed(2)}%
           </div>
         </div>
@@ -775,7 +775,7 @@ function ChartMetricsPanel({ coin }) {
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>From ATH</span>
-          <span style={{ fontSize: 10, fontWeight: 600, color: athChange >= -10 ? '#39FF14' : athChange >= -50 ? '#FFD700' : '#ff4444' }}>
+          <span style={{ fontSize: 10, fontWeight: 600, color: athChange >= -10 ? 'var(--neon-green)' : athChange >= -50 ? 'var(--neon-blue)' : 'var(--accent-red)' }}>
             {athChange.toFixed(1)}%
           </span>
         </div>
@@ -820,7 +820,7 @@ function ChartMetricsPanel({ coin }) {
           borderRadius: 6,
           border: '1px solid rgba(57, 255, 20, 0.2)',
         }}>
-          <span style={{ fontSize: 10, color: '#39FF14', fontWeight: 600 }}>SAVE 60%+</span>
+          <span style={{ fontSize: 10, color: 'var(--neon-green)', fontWeight: 600 }}>SAVE 60%+</span>
           <span style={{ fontSize: 10, color: 'var(--text-secondary)' }}>vs SolSniper ($75/mo)</span>
         </div>
         <button style={{
@@ -933,7 +933,7 @@ function TrendingModal({ coins, onClose, onSelectCoin, favorites }) {
                   <div>
                     <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 6 }}>
                       {coin.symbol?.toUpperCase()}
-                      {isFavorite(coin.symbol) && <span style={{ color: '#FFD700' }}>★</span>}
+                      {isFavorite(coin.symbol) && <span style={{ color: 'var(--neon-blue)' }}>★</span>}
                     </div>
                     <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{coin.name}</div>
                   </div>
@@ -945,7 +945,7 @@ function TrendingModal({ coins, onClose, onSelectCoin, favorites }) {
                   <div style={{ 
                     fontSize: 12, 
                     fontWeight: 600, 
-                    color: isPositive ? '#39FF14' : '#ff4444',
+                    color: isPositive ? 'var(--neon-green)' : 'var(--accent-red)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'flex-end',
@@ -1083,7 +1083,7 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
   const quickActions = [
     { image: '/assets/generated_images/ai_trading_strikeagent_icon.png', title: 'StrikeAgent', subtitle: 'AI Predictive Trading', color: '#00D4FF', tab: 'sniper' },
     { image: '/assets/generated_images/multi-chain_wallet_icon.png', title: 'Wallet', subtitle: 'Multi-chain', color: '#9D4EDD', tab: 'wallet' },
-    { image: '/assets/generated_images/watchlist_limit_orders_icon.png', title: 'Watchlist', subtitle: 'Limit orders', color: '#39FF14', tab: 'watchlist' },
+    { image: '/assets/generated_images/watchlist_limit_orders_icon.png', title: 'Watchlist', subtitle: 'Limit orders', color: 'var(--neon-green)', tab: 'watchlist' },
     { image: '/assets/generated_images/markets_live_prices_icon.png', title: 'Markets', subtitle: 'Live prices', color: '#FF006E', tab: 'markets' },
   ]
 
@@ -1210,20 +1210,20 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
           borderTop: '1px solid #222',
         }}>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#00D4FF' }}>1H</div>
-            <div style={{ fontSize: 9, color: '#666' }}>Short</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--neon-blue)' }}>1H</div>
+            <div style={{ fontSize: 9, color: 'var(--text-muted)' }}>Short</div>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#39FF14' }}>4H</div>
-            <div style={{ fontSize: 9, color: '#666' }}>Swing</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--neon-green)' }}>4H</div>
+            <div style={{ fontSize: 9, color: 'var(--text-muted)' }}>Swing</div>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#FFD700' }}>24H</div>
-            <div style={{ fontSize: 9, color: '#666' }}>Daily</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--neon-purple)' }}>24H</div>
+            <div style={{ fontSize: 9, color: 'var(--text-muted)' }}>Daily</div>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#9D4EDD' }}>7D</div>
-            <div style={{ fontSize: 9, color: '#666' }}>Weekly</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--neon-purple)' }}>7D</div>
+            <div style={{ fontSize: 9, color: 'var(--text-muted)' }}>Weekly</div>
           </div>
         </div>
         
