@@ -1,38 +1,88 @@
 import { useState, useEffect } from 'react'
-import Layout from './components/layout/Layout'
 import { 
-  MarketsTab, 
-  ProjectsTab, 
-  LearnTab, 
-  PortfolioTab, 
-  StakingTab, 
-  SettingsTab,
-  V2DetailsTab,
-  DashboardTab,
   SniperBotTab,
   WalletTab,
   PricingTab,
-  AnalysisTab
+  SettingsTab
 } from './components/tabs'
-import { GlossaryPopup, AIChatButton } from './components/ui'
 import SubscriptionGate from './components/ui/SubscriptionGate'
-import { GlossaryProvider } from './context/GlossaryContext'
-import { AvatarProvider } from './context/AvatarContext'
-import { FavoritesProvider } from './context/FavoritesContext'
 import { BuiltInWalletProvider } from './context/BuiltInWalletContext'
 import { ThemeProvider } from './context/ThemeContext'
-import { SkinsProvider } from './context/SkinsContext'
 import { TelegramProvider, useTelegram } from './context/TelegramContext'
-import CryptoCatPopup from './components/engagement/CryptoCatPopup'
 import './styles/components.css'
 
+const NAV_ITEMS = [
+  { id: 'sniper', label: 'StrikeAgent', icon: '🎯' },
+  { id: 'wallet', label: 'Wallet', icon: '💳' },
+  { id: 'pricing', label: 'Upgrade', icon: '⚡' },
+]
+
+function BottomNav({ activeTab, onTabChange }) {
+  return (
+    <nav style={{
+      position: 'fixed',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      background: '#0f0f0f',
+      borderTop: '1px solid rgba(0, 212, 255, 0.15)',
+      display: 'flex',
+      justifyContent: 'space-around',
+      padding: '8px 0 max(8px, env(safe-area-inset-bottom))',
+      zIndex: 1000,
+    }}>
+      {NAV_ITEMS.map((item) => {
+        const isActive = activeTab === item.id
+        return (
+          <button
+            key={item.id}
+            onClick={() => onTabChange(item.id)}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '4px',
+              background: 'transparent',
+              border: 'none',
+              padding: '8px 16px',
+              cursor: 'pointer',
+              color: isActive ? '#00d4ff' : '#666',
+              transition: 'color 0.2s ease',
+              position: 'relative',
+            }}
+          >
+            <span style={{ fontSize: '20px' }}>{item.icon}</span>
+            <span style={{
+              fontSize: '11px',
+              fontWeight: isActive ? '600' : '400',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+            }}>
+              {item.label}
+            </span>
+            {isActive && (
+              <span style={{
+                position: 'absolute',
+                bottom: '4px',
+                width: '24px',
+                height: '2px',
+                background: '#00d4ff',
+                borderRadius: '1px',
+              }} />
+            )}
+          </button>
+        )
+      })}
+    </nav>
+  )
+}
+
 function TelegramAppContent() {
-  const { isTelegram, telegramUser, isReady, webApp } = useTelegram()
-  const isStrikeAgentDomain = window.location.hostname.includes('strikeagent')
-  const [activeTab, setActiveTab] = useState(isStrikeAgentDomain ? 'sniper' : 'dashboard')
+  const { telegramUser, isReady, webApp } = useTelegram()
+  const [activeTab, setActiveTab] = useState('sniper')
   const [userId, setUserId] = useState(null)
   const [userConfig, setUserConfig] = useState(null)
-  const [selectedCoinForAnalysis, setSelectedCoinForAnalysis] = useState(null)
+  const [showSettings, setShowSettings] = useState(false)
   
   useEffect(() => {
     if (telegramUser?.id) {
@@ -52,9 +102,6 @@ function TelegramAppContent() {
             if (configRes.ok) {
               const config = await configRes.json()
               setUserConfig(config)
-              if (config.defaultLandingTab && !isStrikeAgentDomain) {
-                setActiveTab(config.defaultLandingTab)
-              }
             }
           }
         }
@@ -67,8 +114,8 @@ function TelegramAppContent() {
   
   useEffect(() => {
     if (webApp && isReady) {
-      webApp.setHeaderColor?.('#1a1a2e')
-      webApp.setBackgroundColor?.('#1a1a2e')
+      webApp.setHeaderColor?.('#0f0f0f')
+      webApp.setBackgroundColor?.('#0f0f0f')
     }
   }, [webApp, isReady])
   
@@ -90,55 +137,68 @@ function TelegramAppContent() {
   
   const handleTabChange = (tab) => {
     triggerHapticFeedback('selection')
-    setActiveTab(tab)
-  }
-  
-  const handleAnalyzeCoin = (coin) => {
-    triggerHapticFeedback('impact')
-    setSelectedCoinForAnalysis(coin)
-    setActiveTab('analysis')
+    if (tab === 'settings') {
+      setShowSettings(true)
+    } else {
+      setShowSettings(false)
+      setActiveTab(tab)
+    }
   }
   
   const renderTab = () => {
+    if (showSettings) {
+      return (
+        <SettingsTab 
+          userId={userId} 
+          userConfig={userConfig} 
+          setUserConfig={setUserConfig} 
+          isTelegram={true}
+        />
+      )
+    }
+    
     switch (activeTab) {
-      case 'dashboard':
-        return <DashboardTab userId={userId} userConfig={userConfig} onNavigate={handleTabChange} onAnalyzeCoin={handleAnalyzeCoin} isTelegram={true} />
-      case 'markets':
-        return <MarketsTab isTelegram={true} />
-      case 'projects':
-        return <ProjectsTab isTelegram={true} />
-      case 'learn':
-        return <LearnTab isTelegram={true} />
-      case 'portfolio':
-        return <PortfolioTab isTelegram={true} />
-      case 'staking':
-        return (
-          <SubscriptionGate requiredTier="rm-plus" featureName="Staking" mode="overlay" currentTier={userConfig?.subscriptionTier}>
-            <StakingTab isTelegram={true} />
-          </SubscriptionGate>
-        )
       case 'sniper':
         return (
-          <SubscriptionGate requiredTier="rm-plus" featureName="StrikeAgent AI Trading" mode="overlay" currentTier={userConfig?.subscriptionTier}>
+          <SubscriptionGate 
+            requiredTier="rm-plus" 
+            featureName="StrikeAgent AI Trading" 
+            mode="overlay" 
+            currentTier={userConfig?.subscriptionTier}
+          >
             <SniperBotTab isTelegram={true} />
           </SubscriptionGate>
         )
       case 'wallet':
         return (
-          <SubscriptionGate requiredTier="rm-plus" featureName="Wallet Transactions" mode="overlay" currentTier={userConfig?.subscriptionTier}>
+          <SubscriptionGate 
+            requiredTier="rm-plus" 
+            featureName="Wallet Transactions" 
+            mode="overlay" 
+            currentTier={userConfig?.subscriptionTier}
+          >
             <WalletTab userId={userId} isTelegram={true} />
           </SubscriptionGate>
         )
-      case 'settings':
-        return <SettingsTab userId={userId} userConfig={userConfig} setUserConfig={setUserConfig} isTelegram={true} />
-      case 'v2-details':
-        return <V2DetailsTab isTelegram={true} />
       case 'pricing':
-        return <PricingTab userId={userId} currentTier={userConfig?.subscriptionTier} isTelegram={true} />
-      case 'analysis':
-        return <AnalysisTab coin={selectedCoinForAnalysis} onBack={() => handleTabChange('dashboard')} isTelegram={true} />
+        return (
+          <PricingTab 
+            userId={userId} 
+            currentTier={userConfig?.subscriptionTier} 
+            isTelegram={true} 
+          />
+        )
       default:
-        return <DashboardTab userId={userId} userConfig={userConfig} onNavigate={handleTabChange} onAnalyzeCoin={handleAnalyzeCoin} isTelegram={true} />
+        return (
+          <SubscriptionGate 
+            requiredTier="rm-plus" 
+            featureName="StrikeAgent AI Trading" 
+            mode="overlay" 
+            currentTier={userConfig?.subscriptionTier}
+          >
+            <SniperBotTab isTelegram={true} />
+          </SubscriptionGate>
+        )
     }
   }
   
@@ -149,7 +209,7 @@ function TelegramAppContent() {
         alignItems: 'center', 
         justifyContent: 'center', 
         height: '100vh',
-        background: '#1a1a2e',
+        background: '#0f0f0f',
         color: '#00d4ff'
       }}>
         <div style={{ textAlign: 'center' }}>
@@ -162,7 +222,7 @@ function TelegramAppContent() {
             animation: 'spin 1s linear infinite',
             margin: '0 auto 16px'
           }} />
-          <p>Loading Pulse...</p>
+          <p style={{ margin: 0, fontSize: '14px' }}>Loading StrikeAgent...</p>
         </div>
         <style>{`
           @keyframes spin {
@@ -174,33 +234,69 @@ function TelegramAppContent() {
   }
   
   return (
-    <AvatarProvider>
-      <BuiltInWalletProvider>
-        <FavoritesProvider userId={userId}>
-          <GlossaryProvider>
-            <Layout activeTab={activeTab} onTabChange={handleTabChange} userTier={userConfig?.subscriptionTier} isTelegram={true}>
-              <div style={{ padding: '0 12px' }}>
-                {renderTab()}
-              </div>
-            </Layout>
-            <GlossaryPopup />
-            <CryptoCatPopup enabled={true} interval={90000} />
-            <AIChatButton isSubscribed={userConfig?.subscriptionTier && userConfig.subscriptionTier !== 'free'} />
-          </GlossaryProvider>
-        </FavoritesProvider>
-      </BuiltInWalletProvider>
-    </AvatarProvider>
+    <BuiltInWalletProvider>
+      <div style={{
+        minHeight: '100vh',
+        background: '#0f0f0f',
+        color: '#fff',
+        paddingBottom: '80px',
+      }}>
+        <header style={{
+          position: 'sticky',
+          top: 0,
+          background: '#0f0f0f',
+          borderBottom: '1px solid rgba(0, 212, 255, 0.1)',
+          padding: '12px 16px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          zIndex: 100,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '24px' }}>🎯</span>
+            <span style={{ 
+              fontWeight: '700', 
+              fontSize: '18px',
+              background: 'linear-gradient(135deg, #00d4ff, #00ff88)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}>
+              StrikeAgent
+            </span>
+          </div>
+          <button
+            onClick={() => handleTabChange('settings')}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              padding: '8px',
+              cursor: 'pointer',
+              fontSize: '20px',
+              opacity: showSettings ? 1 : 0.6,
+            }}
+          >
+            ⚙️
+          </button>
+        </header>
+        
+        <main style={{ padding: '0 12px' }}>
+          {renderTab()}
+        </main>
+        
+        {!showSettings && (
+          <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
+        )}
+      </div>
+    </BuiltInWalletProvider>
   )
 }
 
 function TelegramApp() {
   return (
     <ThemeProvider>
-      <SkinsProvider>
-        <TelegramProvider>
-          <TelegramAppContent />
-        </TelegramProvider>
-      </SkinsProvider>
+      <TelegramProvider>
+        <TelegramAppContent />
+      </TelegramProvider>
     </ThemeProvider>
   )
 }

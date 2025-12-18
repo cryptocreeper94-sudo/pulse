@@ -10,6 +10,7 @@ Pulse, by DarkWave Studios, LLC, is an AI-driven trading platform that leverages
 - Design aesthetic: Solid black/dark gray backgrounds (#0f0f0f, #1a1a1a, #141414) with free-floating elements featuring glow effects. Glassmorphism (backdrop-filter blur + semi-transparent backgrounds) is ALLOWED for cards site-wide, but NOT for backgrounds, buttons, or other non-card elements.
 
 ## Recent Updates (December 18, 2025)
+- **Telegram Mini App Refactor**: Converted TelegramApp.jsx to StrikeAgent-only focused experience with 3-tab bottom nav (StrikeAgent 🎯, Wallet 💳, Upgrade ⚡) and settings gear icon in header. Removed full Pulse dashboard for cleaner GTM.
 - **Light Theme Support**: Full light/dark theme toggle via header button (☀️/🌙). Theme persists in localStorage. URL param `?theme=light` can force light mode. ThemeContext manages state, CSS variables handle colors.
 - **StrikeAgent Live Widget**: Premium dashboard widget showing live bot signals (SNIPE/WATCH), confidence levels, win rate stats, with subtle "🔒 Pro" badge for locked features
 - **Theme-Aware CSS Variables**: Updated inline styles in DashboardTab, StrikeAgentLiveWidget, and other components to use CSS variables (`var(--text-primary)`, `var(--bg-surface)`, etc.) for proper theme switching
