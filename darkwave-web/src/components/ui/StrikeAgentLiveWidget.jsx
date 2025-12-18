@@ -7,6 +7,28 @@ export default function StrikeAgentLiveWidget({ isLocked = true, onUnlock }) {
     { id: 'sa_3', type: 'SNIPE', token: 'PEPE', price: '$0.000003979', confidence: 'HIGH', timestamp: '5m ago' },
   ])
   const [activeIndex, setActiveIndex] = useState(0)
+  const [stats, setStats] = useState({ activeSignals: 0, winRate: 0, gain24h: 0 })
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await fetch('/api/sniper/ml/stats')
+        if (res.ok) {
+          const data = await res.json()
+          setStats({
+            activeSignals: data.totalPredictions || 0,
+            winRate: data.winRate || 0,
+            gain24h: data.avgGain24h || 0
+          })
+        }
+      } catch (err) {
+        console.log('Could not fetch StrikeAgent stats')
+      }
+    }
+    fetchStats()
+    const statsInterval = setInterval(fetchStats, 60000)
+    return () => clearInterval(statsInterval)
+  }, [])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -157,16 +179,18 @@ export default function StrikeAgentLiveWidget({ isLocked = true, onUnlock }) {
           }}
         >
           <div style={{ textAlign: 'center', padding: '8px', background: 'rgba(0, 212, 255, 0.08)', borderRadius: 8 }}>
-            <div style={{ fontSize: 9, color: 'var(--text-muted)', marginBottom: 2 }}>ACTIVE</div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#00D4FF' }}>47</div>
+            <div style={{ fontSize: 9, color: 'var(--text-muted)', marginBottom: 2 }}>SIGNALS</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#00D4FF' }}>{stats.activeSignals || '--'}</div>
           </div>
           <div style={{ textAlign: 'center', padding: '8px', background: 'rgba(57, 255, 20, 0.08)', borderRadius: 8 }}>
             <div style={{ fontSize: 9, color: 'var(--text-muted)', marginBottom: 2 }}>WIN RATE</div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--neon-green)' }}>73%</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--neon-green)' }}>{stats.winRate ? `${stats.winRate}%` : '--'}</div>
           </div>
           <div style={{ textAlign: 'center', padding: '8px', background: 'var(--bg-surface-2)', borderRadius: 8 }}>
             <div style={{ fontSize: 9, color: 'var(--text-muted)', marginBottom: 2 }}>24H GAIN</div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--neon-green)' }}>+18%</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: stats.gain24h >= 0 ? 'var(--neon-green)' : 'var(--accent-red)' }}>
+              {stats.gain24h ? `${stats.gain24h > 0 ? '+' : ''}${stats.gain24h}%` : '--'}
+            </div>
           </div>
         </div>
       </div>
