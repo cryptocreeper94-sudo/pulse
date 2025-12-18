@@ -1127,6 +1127,7 @@ export const sniperBotRoutes = [
         const signals = await topSignalsService.getTopSignals(limit, category);
         
         return c.json({
+          success: true,
           signals,
           count: signals.length,
           disclaimer: 'This is not financial advice. Always do your own research.',
