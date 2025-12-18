@@ -1301,6 +1301,7 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
         borderTop: '1px solid #1a1a1a',
         maxHeight: '50px',
         boxSizing: 'border-box',
+        zIndex: 50,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <a 
