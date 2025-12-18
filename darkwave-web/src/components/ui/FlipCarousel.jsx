@@ -128,7 +128,7 @@ export default function FlipCarousel({
           <div style={{
             position: 'absolute',
             top: 6,
-            right: 6,
+            left: 6,
             fontSize: 9,
             color: '#555',
             zIndex: 10,
