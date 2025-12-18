@@ -6,6 +6,7 @@ import Gauge from '../ui/Gauge'
 import FlipCarousel from '../ui/FlipCarousel'
 import MobileCardCarousel from '../ui/MobileCardCarousel'
 import AIStatusWidget from '../ui/AIStatusWidget'
+import StrikeAgentLiveWidget from '../ui/StrikeAgentLiveWidget'
 import MetricInfoModal from '../modals/MetricInfoModal'
 import versionData from '../../data/version.json'
 import '../../styles/dashboard.css'
@@ -1243,6 +1244,12 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
           </div>
         </div>
       </BentoTile>
+
+      <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 12, minHeight: 300 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <StrikeAgentLiveWidget isLocked={true} onUnlock={() => onNavigate?.('pricing')} />
+        </div>
+      </div>
 
       <BentoTile className="bento-table">
         <MiniCoinTable 
