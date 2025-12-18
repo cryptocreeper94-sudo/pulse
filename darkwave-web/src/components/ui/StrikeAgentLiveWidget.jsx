@@ -15,10 +15,12 @@ export default function StrikeAgentLiveWidget({ isLocked = true, onUnlock }) {
         const res = await fetch('/api/sniper/ml/stats')
         if (res.ok) {
           const data = await res.json()
+          const winRate24h = data.outcomesByHorizon?.['24h']?.winRate || 
+                             data.outcomesByHorizon?.['1h']?.winRate || 0
           setStats({
             activeSignals: data.totalPredictions || 0,
-            winRate: data.winRate || 0,
-            gain24h: data.avgGain24h || 0
+            winRate: parseFloat(winRate24h) || 0,
+            snipes: data.snipeRecommendations || 0
           })
         }
       } catch (err) {
@@ -180,17 +182,15 @@ export default function StrikeAgentLiveWidget({ isLocked = true, onUnlock }) {
         >
           <div style={{ textAlign: 'center', padding: '8px', background: 'rgba(0, 212, 255, 0.08)', borderRadius: 8 }}>
             <div style={{ fontSize: 9, color: 'var(--text-muted)', marginBottom: 2 }}>SIGNALS</div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#00D4FF' }}>{stats.activeSignals || '--'}</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#00D4FF' }}>{stats.activeSignals ? stats.activeSignals.toLocaleString() : '--'}</div>
           </div>
           <div style={{ textAlign: 'center', padding: '8px', background: 'rgba(57, 255, 20, 0.08)', borderRadius: 8 }}>
             <div style={{ fontSize: 9, color: 'var(--text-muted)', marginBottom: 2 }}>WIN RATE</div>
             <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--neon-green)' }}>{stats.winRate ? `${stats.winRate}%` : '--'}</div>
           </div>
-          <div style={{ textAlign: 'center', padding: '8px', background: 'var(--bg-surface-2)', borderRadius: 8 }}>
-            <div style={{ fontSize: 9, color: 'var(--text-muted)', marginBottom: 2 }}>24H GAIN</div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: stats.gain24h >= 0 ? 'var(--neon-green)' : 'var(--accent-red)' }}>
-              {stats.gain24h ? `${stats.gain24h > 0 ? '+' : ''}${stats.gain24h}%` : '--'}
-            </div>
+          <div style={{ textAlign: 'center', padding: '8px', background: 'rgba(255, 68, 68, 0.08)', borderRadius: 8 }}>
+            <div style={{ fontSize: 9, color: 'var(--text-muted)', marginBottom: 2 }}>SNIPES</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#FF4444' }}>{stats.snipes ? stats.snipes.toLocaleString() : '--'}</div>
           </div>
         </div>
       </div>
