@@ -1,5 +1,6 @@
 import { useAvatar } from '../../context/AvatarContext'
 import { useWalletState, WalletMultiButton } from '../../context/WalletContext'
+import { useTheme } from '../../context/ThemeContext'
 import MiniAvatar from '../ui/MiniAvatar'
 import VerificationBadge from '../ui/VerificationBadge'
 import { useState, useEffect } from 'react'
@@ -7,27 +8,15 @@ import { useState, useEffect } from 'react'
 export default function Header({ onMenuToggle, isMenuOpen, onAvatarClick, activeTab, onBackClick }) {
   const { avatar, isCustomMode } = useAvatar()
   const wallet = useWalletState()
+  const { isDarkMode, toggleTheme } = useTheme()
   const showBackButton = activeTab && activeTab !== 'dashboard' && activeTab !== 'markets'
   const [isScreenMobile, setIsScreenMobile] = useState(window.innerWidth < 640)
-  const [theme, setTheme] = useState(() => {
-    if (typeof document !== 'undefined') {
-      return document.documentElement.getAttribute('data-theme') || localStorage.getItem('theme') || 'dark'
-    }
-    return 'dark'
-  })
 
   useEffect(() => {
     const handleResize = () => setIsScreenMobile(window.innerWidth < 640)
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark'
-    setTheme(newTheme)
-    document.documentElement.setAttribute('data-theme', newTheme)
-    localStorage.setItem('theme', newTheme)
-  }
   
   const hallmarkId = '000000000-01'
   const walletAddress = wallet?.publicKey?.toBase58() || null
@@ -61,6 +50,26 @@ export default function Header({ onMenuToggle, isMenuOpen, onAvatarClick, active
       <h1 className="header-title">PULSE</h1>
       
       <div className="header-right">
+        <button
+          onClick={toggleTheme}
+          title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '32px',
+            height: '32px',
+            background: 'var(--bg-surface-2)',
+            border: '1px solid var(--border-color)',
+            borderRadius: '8px',
+            color: 'var(--text-primary)',
+            fontSize: '16px',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+          }}
+        >
+          {isDarkMode ? '☀️' : '🌙'}
+        </button>
         <a
           href="/whitepaper"
           title="View Whitepaper"
