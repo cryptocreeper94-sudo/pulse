@@ -10,7 +10,7 @@ Pulse, by DarkWave Studios, LLC, is an AI-driven trading platform that leverages
 - Design aesthetic: Solid black/dark gray backgrounds (#0f0f0f, #1a1a1a, #141414) with free-floating elements featuring glow effects. Glassmorphism (backdrop-filter blur + semi-transparent backgrounds) is ALLOWED for cards site-wide, but NOT for backgrounds, buttons, or other non-card elements.
 
 ## Recent Updates (December 18, 2025)
-- **Dashboard Carousel Cleanup**: Removed redundant "Latest News" carousel from top section (already exists in mobile news section). Now displays 2 carousels (Market Metrics, Quick Actions) side-by-side at 50% width each.
+- **Dashboard Carousel Cleanup (Mobile Only)**: Hidden "Latest News" carousel on mobile screens only (already exists in mobile news section below). Desktop still shows all 3 carousels; mobile displays 2 carousels (Market Metrics, Quick Actions) side-by-side.
 - **Dark Mode Only**: Removed light theme toggle - platform is dark theme only ("DarkWave = dark"). Removed theme toggle button from header.
 - **Header Cleanup**: Fixed PULSE title truncation on mobile by adjusting responsive breakpoints and removing unnecessary header elements
 - **Pricing Page Layout**: Restructured billing toggle with "Save up to 17%" badge positioned below as a separate centered element for better symmetry

@@ -1150,6 +1150,25 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
           </div>
         </div>
 
+        {/* News Carousel - 1/3 width (hidden on mobile via CSS) */}
+        <div className="carousel-section news-carousel-section">
+          <div className="carousel-label">Latest News</div>
+          <div style={{ height: 220, width: '100%', flex: 1 }}>
+            <FlipCarousel
+              items={news.length > 0 ? news : [{ title: 'No news available', source: 'System', time: 'Now', url: '#' }]}
+              renderItem={(item) => (
+                <div 
+                  onClick={() => item.url && item.url !== '#' && window.open(item.url, '_blank')}
+                  style={{ height: '100%', cursor: item.url && item.url !== '#' ? 'pointer' : 'default', margin: '0 8px' }}
+                >
+                  <MobileNewsCard news={item} />
+                </div>
+              )}
+              showDots={true}
+              autoPlay={false}
+            />
+          </div>
+        </div>
       </div>
       
       <div className="bento-dashboard">
