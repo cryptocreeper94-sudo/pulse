@@ -1096,31 +1096,75 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
 
   return (
     <>
-      {/* Market Overview Carousel - TOP of page */}
-      <div className="market-overview-carousel-container">
-        <div style={{ height: 220, width: '100%' }}>
-          <FlipCarousel
-            items={marketOverviewItems}
-            renderItem={(item) => (
-              <div 
-                className="market-overview-card market-overview-card--clickable"
-                onClick={() => setSelectedMetric(item.title)}
-                title={`Click for info about ${item.title}`}
-                style={{ height: '100%', cursor: 'pointer' }}
-              >
-                {item.type === 'metric' ? (
-                  <MetricContent title={item.title} value={item.value} change={item.change} />
-                ) : (
-                  <GaugeContent title={item.title} value={item.value} type={item.gaugeType} accentColor={item.color} isMobile={false} />
-                )}
-                <div className="metric-info-hint">
-                  <span>ℹ️</span>
+      {/* Three-Column Top Section with Self-Contained Carousels */}
+      <div className="top-carousels-container">
+        {/* Metrics Carousel - 1/3 width */}
+        <div className="carousel-section metrics-carousel-section">
+          <div className="carousel-label">Market Metrics</div>
+          <div style={{ height: 220, width: '100%', flex: 1 }}>
+            <FlipCarousel
+              items={marketOverviewItems}
+              renderItem={(item) => (
+                <div 
+                  className="market-overview-card market-overview-card--clickable"
+                  onClick={() => setSelectedMetric(item.title)}
+                  title={`Click for info about ${item.title}`}
+                  style={{ height: '100%', cursor: 'pointer', margin: '0 8px' }}
+                >
+                  {item.type === 'metric' ? (
+                    <MetricContent title={item.title} value={item.value} change={item.change} />
+                  ) : (
+                    <GaugeContent title={item.title} value={item.value} type={item.gaugeType} accentColor={item.color} isMobile={false} />
+                  )}
+                  <div className="metric-info-hint">
+                    <span>ℹ️</span>
+                  </div>
                 </div>
-              </div>
-            )}
-            showDots={false}
-            autoPlay={false}
-          />
+              )}
+              showDots={true}
+              autoPlay={false}
+            />
+          </div>
+        </div>
+
+        {/* Quick Actions Carousel - 1/3 width */}
+        <div className="carousel-section quick-actions-carousel-section">
+          <div className="carousel-label">Quick Actions</div>
+          <div style={{ height: 220, width: '100%', flex: 1 }}>
+            <FlipCarousel
+              items={quickActions}
+              renderItem={(action) => (
+                <div 
+                  onClick={() => onNavigate && onNavigate(action.tab)}
+                  style={{ height: '100%', cursor: 'pointer', margin: '0 8px' }}
+                >
+                  <QuickActionContent action={action} fullCard={true} />
+                </div>
+              )}
+              showDots={true}
+              autoPlay={false}
+            />
+          </div>
+        </div>
+
+        {/* News Carousel - 1/3 width */}
+        <div className="carousel-section news-carousel-section">
+          <div className="carousel-label">Latest News</div>
+          <div style={{ height: 220, width: '100%', flex: 1 }}>
+            <FlipCarousel
+              items={news.length > 0 ? news : [{ title: 'No news available', source: 'System', time: 'Now', url: '#' }]}
+              renderItem={(item) => (
+                <div 
+                  onClick={() => item.url && item.url !== '#' && window.open(item.url, '_blank')}
+                  style={{ height: '100%', cursor: item.url && item.url !== '#' ? 'pointer' : 'default', margin: '0 8px' }}
+                >
+                  <MobileNewsCard news={item} />
+                </div>
+              )}
+              showDots={true}
+              autoPlay={false}
+            />
+          </div>
         </div>
       </div>
       
@@ -1200,29 +1244,6 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
         </div>
       </BentoTile>
 
-      
-      <BentoTile className="bento-quick" style={{ padding: 0, overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: 10, left: 12, zIndex: 10 }}>
-          <TileLabel>Quick Actions</TileLabel>
-        </div>
-        <div style={{ flex: 1, height: '100%' }}>
-          <FlipCarousel
-            items={quickActions}
-            renderItem={(action) => (
-              <div 
-                onClick={() => onNavigate && onNavigate(action.tab)}
-                style={{ height: '100%', cursor: 'pointer' }}
-              >
-                <QuickActionContent action={action} fullCard={true} />
-              </div>
-            )}
-            showDots={true}
-            autoPlay={true}
-            interval={6000}
-          />
-        </div>
-      </BentoTile>
-
       <BentoTile className="bento-table">
         <MiniCoinTable 
           coins={coins} 
@@ -1231,50 +1252,6 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
           selectedCoinId={selectedCoin?.id}
         />
       </BentoTile>
-
-      {!isMobile && news.length > 0 && (
-        <div className="desktop-news-grid">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-            <TileLabel color="#00D4FF">Latest News</TileLabel>
-          </div>
-          <div style={{
-            flex: 1,
-            overflowY: 'auto',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 12,
-          }}>
-            {news.map((item, idx) => (
-              <a
-                key={idx}
-                href={item.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="desktop-news-card"
-                style={{
-                  background: '#141414',
-                  border: '1px solid #222',
-                  borderRadius: 10,
-                  padding: 14,
-                  textDecoration: 'none',
-                  transition: 'all 0.2s ease',
-                  flexShrink: 0,
-                }}
-              >
-                <div style={{ fontSize: 10, fontWeight: 700, color: '#00D4FF', textTransform: 'uppercase', marginBottom: 6 }}>
-                  {item.source}
-                </div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#fff', lineHeight: 1.4, marginBottom: 8 }}>
-                  {item.title}
-                </div>
-                <div style={{ fontSize: 10, color: '#666' }}>
-                  {item.time}
-                </div>
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
 
       <div className="bento-chart-section">
         <div className="chart-metrics">
