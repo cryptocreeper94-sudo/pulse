@@ -172,19 +172,22 @@ export default function PricingTab({ userId, currentTier }) {
         <h1>Choose Your Plan</h1>
         <p>Start your 2-day free trial • 3-day refund policy • Cancel anytime</p>
         
-        <div className="billing-toggle">
-          <button 
-            className={`toggle-btn ${billingCycle === 'monthly' ? 'active' : ''}`}
-            onClick={() => setBillingCycle('monthly')}
-          >
-            Monthly
-          </button>
-          <button 
-            className={`toggle-btn ${billingCycle === 'annual' ? 'active' : ''}`}
-            onClick={() => setBillingCycle('annual')}
-          >
-            Annual <span className="save-badge">Save up to 17%</span>
-          </button>
+        <div className="billing-toggle-wrapper">
+          <div className="billing-toggle">
+            <button 
+              className={`toggle-btn ${billingCycle === 'monthly' ? 'active' : ''}`}
+              onClick={() => setBillingCycle('monthly')}
+            >
+              Monthly
+            </button>
+            <button 
+              className={`toggle-btn ${billingCycle === 'annual' ? 'active' : ''}`}
+              onClick={() => setBillingCycle('annual')}
+            >
+              Annual
+            </button>
+          </div>
+          <span className="save-badge-standalone">Save up to 17%</span>
         </div>
       </div>
 

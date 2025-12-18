@@ -22,6 +22,13 @@
   margin: 0 0 20px 0;
 }
 
+.billing-toggle-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
 .billing-toggle {
   display: inline-flex;
   background: var(--bg-surface-2);
@@ -31,7 +38,7 @@
 }
 
 .toggle-btn {
-  padding: 10px 24px;
+  padding: 10px 28px;
   border-radius: 26px;
   border: none;
   background: transparent;
@@ -49,6 +56,16 @@
 
 .toggle-btn:hover:not(.active) {
   color: var(--text-primary);
+}
+
+.save-badge-standalone {
+  background: rgba(57, 255, 20, 0.15);
+  color: var(--neon-green);
+  padding: 6px 14px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid rgba(57, 255, 20, 0.3);
 }
 
 .save-badge {
