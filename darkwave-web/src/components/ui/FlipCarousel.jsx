@@ -69,155 +69,159 @@ export default function FlipCarousel({
     <div 
       className={className}
       style={{ 
-        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
         width: '100%',
         height: '100%',
-        perspective: '1200px',
-        overflow: 'hidden',
         ...style 
       }}
     >
       <div
         style={{
           position: 'relative',
-          width: '100%',
-          height: '100%',
-          transformStyle: 'preserve-3d',
-          transition: isFlipping ? 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
-          transform: isFlipping ? `rotateY(${flipRotation}deg)` : 'rotateY(0deg)',
+          flex: 1,
+          perspective: '1200px',
+          overflow: 'hidden',
         }}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
       >
         <div
           style={{
-            position: 'absolute',
-            inset: 0,
-            backfaceVisibility: 'hidden',
-            WebkitBackfaceVisibility: 'hidden',
-            borderRadius: 12,
-            overflow: 'hidden',
+            position: 'relative',
+            width: '100%',
+            height: '100%',
+            transformStyle: 'preserve-3d',
+            transition: isFlipping ? 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
+            transform: isFlipping ? `rotateY(${flipRotation}deg)` : 'rotateY(0deg)',
           }}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
         >
-          {renderItem(items[currentIndex], currentIndex)}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden',
+              borderRadius: 12,
+              overflow: 'hidden',
+            }}
+          >
+            {renderItem(items[currentIndex], currentIndex)}
+          </div>
+
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden',
+              borderRadius: 12,
+              overflow: 'hidden',
+              transform: `rotateY(${-flipRotation}deg)`,
+            }}
+          >
+            {isFlipping && renderItem(items[nextIndex], nextIndex)}
+          </div>
         </div>
 
-        <div
-          style={{
+        {showCounter && (
+          <div style={{
             position: 'absolute',
-            inset: 0,
-            backfaceVisibility: 'hidden',
-            WebkitBackfaceVisibility: 'hidden',
-            borderRadius: 12,
-            overflow: 'hidden',
-            transform: `rotateY(${-flipRotation}deg)`,
-          }}
-        >
-          {isFlipping && renderItem(items[nextIndex], nextIndex)}
-        </div>
+            top: 6,
+            right: 6,
+            fontSize: 9,
+            color: '#555',
+            zIndex: 10,
+          }}>
+            {currentIndex + 1}/{items.length}
+          </div>
+        )}
       </div>
 
-      {showArrows && items.length > 1 && (
-        <>
-          <button
-            onClick={prev}
-            disabled={isFlipping}
-            style={{
-              position: 'absolute',
-              left: 8,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              width: 32,
-              height: 32,
-              borderRadius: '50%',
-              background: '#141414',
-              border: '1px solid #00D4FF',
-              color: '#00D4FF',
-              fontSize: 18,
-              fontWeight: 'bold',
-              cursor: isFlipping ? 'default' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 20,
-              opacity: isFlipping ? 0.5 : 1,
-              transition: 'all 0.2s',
-              boxShadow: '0 0 8px rgba(0, 212, 255, 0.4)',
-            }}
-          >
-            ‹
-          </button>
-          <button
-            onClick={next}
-            disabled={isFlipping}
-            style={{
-              position: 'absolute',
-              right: 8,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              width: 32,
-              height: 32,
-              borderRadius: '50%',
-              background: '#141414',
-              border: '1px solid #00D4FF',
-              color: '#00D4FF',
-              fontSize: 18,
-              fontWeight: 'bold',
-              cursor: isFlipping ? 'default' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 20,
-              opacity: isFlipping ? 0.5 : 1,
-              transition: 'all 0.2s',
-              boxShadow: '0 0 8px rgba(0, 212, 255, 0.4)',
-            }}
-          >
-            ›
-          </button>
-        </>
-      )}
-
-      {showDots && items.length > 1 && (
+      {(showArrows || showDots) && items.length > 1 && (
         <div style={{
-          position: 'absolute',
-          bottom: 6,
-          left: '50%',
-          transform: 'translateX(-50%)',
           display: 'flex',
-          gap: 4,
-          zIndex: 10,
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 12,
+          paddingTop: 10,
         }}>
-          {items.map((_, idx) => (
+          {showArrows && (
             <button
-              key={idx}
-              onClick={() => goTo(idx, idx > currentIndex ? 'next' : 'prev')}
+              onClick={prev}
               disabled={isFlipping}
               style={{
-                width: 6,
-                height: 6,
+                width: 32,
+                height: 32,
                 borderRadius: '50%',
-                background: idx === currentIndex ? '#00D4FF' : '#444',
-                border: 'none',
+                background: '#141414',
+                border: '1px solid #00D4FF',
+                color: '#00D4FF',
+                fontSize: 18,
+                fontWeight: 'bold',
                 cursor: isFlipping ? 'default' : 'pointer',
-                padding: 0,
-                transition: 'background 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                opacity: isFlipping ? 0.5 : 1,
+                transition: 'all 0.2s',
+                boxShadow: '0 0 8px rgba(0, 212, 255, 0.4)',
               }}
-            />
-          ))}
-        </div>
-      )}
+            >
+              ‹
+            </button>
+          )}
 
-      {showCounter && (
-        <div style={{
-          position: 'absolute',
-          top: 6,
-          right: 6,
-          fontSize: 9,
-          color: '#555',
-          zIndex: 10,
-        }}>
-          {currentIndex + 1}/{items.length}
+          {showDots && (
+            <div style={{
+              display: 'flex',
+              gap: 6,
+            }}>
+              {items.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => goTo(idx, idx > currentIndex ? 'next' : 'prev')}
+                  disabled={isFlipping}
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    background: idx === currentIndex ? '#00D4FF' : '#444',
+                    border: 'none',
+                    cursor: isFlipping ? 'default' : 'pointer',
+                    padding: 0,
+                    transition: 'background 0.2s',
+                  }}
+                />
+              ))}
+            </div>
+          )}
+
+          {showArrows && (
+            <button
+              onClick={next}
+              disabled={isFlipping}
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: '50%',
+                background: '#141414',
+                border: '1px solid #00D4FF',
+                color: '#00D4FF',
+                fontSize: 18,
+                fontWeight: 'bold',
+                cursor: isFlipping ? 'default' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                opacity: isFlipping ? 0.5 : 1,
+                transition: 'all 0.2s',
+                boxShadow: '0 0 8px rgba(0, 212, 255, 0.4)',
+              }}
+            >
+              ›
+            </button>
+          )}
         </div>
       )}
     </div>
