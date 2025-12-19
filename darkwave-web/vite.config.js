@@ -46,6 +46,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         telegram: resolve(__dirname, 'telegram.html'),
+        strikeagent: resolve(__dirname, 'strikeagent.html'),
       },
       onwarn(warning, warn) {
         if (warning.code === 'MODULE_LEVEL_DIRECTIVE') return;

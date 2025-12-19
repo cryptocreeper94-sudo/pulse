@@ -358,13 +358,14 @@ function getChainInfo(chain) {
   return CHAIN_CONFIG[normalizedChain] || CHAIN_CONFIG.solana
 }
 
-function DiscoveredTokenCard({ token, onSnipe, onWatch, onSafetyCheck, disabled, isDemoMode, onTermClick }) {
+function DiscoveredTokenCard({ token, onSnipe, onWatch, onSafetyCheck, disabled, isDemoMode, onTermClick, isLocked = false }) {
   const gradeColor = getSafetyGradeColor(token.safetyGrade)
   const dexColor = token.dex === 'pumpfun' ? '#FF69B4' : token.dex === 'raydium' ? '#9D4EDD' : '#00D4FF'
   const chainInfo = getChainInfo(token.chain)
+  const isDisabled = disabled || isLocked
 
   return (
-    <div className="section-box sniper-token-card">
+    <div className="section-box sniper-token-card" style={{ position: 'relative' }}>
       <div className="sniper-token-row">
         <div className="sniper-token-left">
           <div className="sniper-safety-badge" style={{ '--grade-color': gradeColor }}>
@@ -425,12 +426,20 @@ function DiscoveredTokenCard({ token, onSnipe, onWatch, onSafetyCheck, disabled,
       <div className="sniper-token-actions">
         <button 
           className="sniper-btn-snipe" 
-          onClick={() => onSnipe(token)}
-          disabled={disabled && !isDemoMode}
+          onClick={() => !isDisabled && onSnipe(token)}
+          disabled={isDisabled && !isDemoMode}
+          style={isLocked ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
         >
-          {disabled && !isDemoMode ? 'Connect Wallet' : '🎯 BUY'}
+          {isLocked ? '🔒 Subscribe' : (disabled && !isDemoMode ? 'Connect Wallet' : '🎯 BUY')}
         </button>
-        <button className="sniper-btn-watch" onClick={() => onWatch(token)}>👁️</button>
+        <button 
+          className="sniper-btn-watch" 
+          onClick={() => !isLocked && onWatch(token)}
+          disabled={isLocked}
+          style={isLocked ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+        >
+          {isLocked ? '🔒' : '👁️'}
+        </button>
         <button 
           className="sniper-btn-safety" 
           onClick={() => onSafetyCheck && onSafetyCheck(token)}
@@ -1156,8 +1165,9 @@ function RPCSettingsPanel({ rpcStatus, customRPC, setCustomRPC, onSaveCustomRPC,
   )
 }
 
-export default function SniperBotTab({ canTrade = true, onNavigate }) {
-  const isViewOnly = !canTrade
+export default function SniperBotTab({ canTrade = true, onNavigate, isViewOnly: viewOnlyProp = false, isAdmin = false, userId, userConfig }) {
+  const isViewOnly = viewOnlyProp || !canTrade
+  const hasControlAccess = isAdmin || !isViewOnly
   const externalWallet = useWalletState()
   const builtInWallet = useBuiltInWallet()
   const [walletSource, setWalletSource] = useState('external')
@@ -1688,10 +1698,13 @@ export default function SniperBotTab({ canTrade = true, onNavigate }) {
           <SessionStatsCard stats={stats} isActive={autoModeActive} />
         </BentoItem>
 
-        <BentoItem span={2}>
+        <BentoItem span={2} style={{ position: 'relative' }}>
           <SmartAutoModePanel 
             isActive={autoModeActive} 
             onToggle={() => {
+              if (!hasControlAccess) {
+                return
+              }
               if (!wallet.connected) {
                 alert('Please connect your wallet first')
                 return
@@ -1699,8 +1712,36 @@ export default function SniperBotTab({ canTrade = true, onNavigate }) {
               setAutoModeActive(!autoModeActive)
             }}
             config={config}
-            disabled={!wallet.connected}
+            disabled={!hasControlAccess || !wallet.connected}
           />
+          {!hasControlAccess && (
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0, 0, 0, 0.4)',
+              borderRadius: 12,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backdropFilter: 'blur(2px)',
+            }}>
+              <span style={{ 
+                fontSize: 12, 
+                color: '#888', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 6,
+                padding: '8px 16px',
+                background: 'rgba(0, 0, 0, 0.6)',
+                borderRadius: 20,
+              }}>
+                🔒 Subscribe to unlock
+              </span>
+            </div>
+          )}
         </BentoItem>
 
         {isDemoMode && (
@@ -1869,12 +1910,13 @@ export default function SniperBotTab({ canTrade = true, onNavigate }) {
                       <DiscoveredTokenCard 
                         key={token.address || i}
                         token={token}
-                        onSnipe={handleSnipe}
-                        onWatch={handleWatch}
+                        onSnipe={hasControlAccess ? handleSnipe : () => {}}
+                        onWatch={hasControlAccess ? handleWatch : () => {}}
                         onSafetyCheck={(t) => setSafetyCheckToken(t.address)}
-                        disabled={!wallet.connected}
+                        disabled={!hasControlAccess || !wallet.connected}
                         isDemoMode={isDemoMode}
                         onTermClick={setSelectedGlossaryTerm}
+                        isLocked={!hasControlAccess}
                       />
                     ))}
                   </div>
