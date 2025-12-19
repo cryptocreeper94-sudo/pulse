@@ -18,6 +18,7 @@ import {
   DevelopersPortalTab
 } from './components/tabs'
 import WhitepaperPage from './pages/WhitepaperPage'
+import StrikeAgentPublicView from './pages/StrikeAgentPublicView'
 import useAnalytics from './hooks/useAnalytics'
 import AccuracyDashboard from './components/ml/AccuracyDashboard'
 import AutoTradeConfig from './components/ml/AutoTradeConfig'
@@ -181,6 +182,7 @@ function App() {
   const isStrikeAgentDomain = window.location.hostname.includes('strikeagent')
   const isDemoPath = window.location.pathname.startsWith('/demo')
   const isWhitepaperPage = window.location.pathname === '/whitepaper'
+  const isStrikeAgentLive = window.location.pathname === '/strikeagent/live' || window.location.pathname === '/live'
   const isDemoMode = isStrikeAgentDomain || isDemoPath
   
   const [activeTab, setActiveTab] = useState('dashboard')
@@ -310,6 +312,16 @@ function App() {
     return (
       <ThemeProvider>
         <WhitepaperPage />
+      </ThemeProvider>
+    )
+  }
+
+  if (isStrikeAgentLive) {
+    return (
+      <ThemeProvider>
+        <StrikeAgentPublicView 
+          onSubscribe={() => window.location.href = '/?tab=pricing'} 
+        />
       </ThemeProvider>
     )
   }
