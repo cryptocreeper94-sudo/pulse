@@ -1155,12 +1155,12 @@ export const sniperBotRoutes = [
         
         // Sanitize for public consumption - remove sensitive data
         const publicSignals = signals.map((s: any) => ({
-          token: s.symbol || s.token,
-          name: s.name,
-          type: s.signal || (s.confidence === 'HIGH' ? 'SNIPE' : 'WATCH'),
-          confidence: s.confidence || 'MEDIUM',
-          price: s.price,
-          change24h: s.change24h,
+          token: s.tokenSymbol || s.symbol || s.token,
+          name: s.tokenName || s.name || 'Unknown',
+          type: s.compositeScore >= 75 ? 'SNIPE' : 'WATCH',
+          confidence: s.compositeScore >= 80 ? 'HIGH' : s.compositeScore >= 60 ? 'MEDIUM' : 'LOW',
+          price: s.priceUsd ? `$${s.priceUsd.toFixed(s.priceUsd < 0.01 ? 8 : 4)}` : '--',
+          change24h: s.indicators?.priceChange?.h24 || null,
           timestamp: s.timestamp || new Date().toISOString(),
         }));
         
