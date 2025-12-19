@@ -57,7 +57,6 @@ export default function Layout({ children, activeTab, onTabChange, userTier, acc
   
   return (
     <div className="app-layout">
-      <DisclaimerBanner />
       <Header 
         onMenuToggle={handleMenuToggle}
         isMenuOpen={isMenuOpen}
@@ -78,6 +77,7 @@ export default function Layout({ children, activeTab, onTabChange, userTier, acc
       />
       
       <main className="app-content">
+        <DisclaimerBanner />
         {children}
       </main>
 
