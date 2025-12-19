@@ -18,6 +18,16 @@ const TOP_COINS = [
   'bittensor', 'pepe', 'bonk', 'dogecoin', 'shiba-inu',
 ];
 
+// Fisher-Yates shuffle for randomizing scan order
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 interface IndicatorSnapshot {
   rsi: number;
   macd: { value: number; signal: number; histogram: number };
@@ -289,7 +299,11 @@ export const backgroundPredictionWorker = inngest.createFunction(
     let errorCount = 0;
     const predictions: { coinId: string; signal: string; id: string }[] = [];
 
-    for (const coinId of TOP_COINS) {
+    // Randomize scan order so different coins appear as "recent" each cycle
+    const shuffledCoins = shuffleArray(TOP_COINS);
+    console.log(`🔀 [BackgroundPredictionWorker] Scanning ${shuffledCoins.length} coins in randomized order`);
+
+    for (const coinId of shuffledCoins) {
       try {
         const ohlcData = await step.run(
           `fetch-ohlc-${coinId}`,
