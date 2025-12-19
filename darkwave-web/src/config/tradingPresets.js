@@ -68,6 +68,26 @@ export const getPresetById = (id) => TRADING_PRESETS[id] || TRADING_PRESETS.path
 export const getPresetConfig = (id) => {
   const preset = getPresetById(id)
   return {
+    safetyFilters: {
+      minLiquidityUsd: preset.safetyFilters.minLiquidityUsd,
+      maxBotPercent: preset.safetyFilters.maxBotPercent,
+      maxTop10HoldersPercent: preset.safetyFilters.maxTop10HoldersPercent,
+    },
+    discoveryFilters: {
+      minHolders: preset.safetyFilters.minHolders,
+    },
+    tradeControls: {
+      buyAmountSol: preset.tradeConfig.buyAmountSol,
+      stopLossPercent: preset.tradeConfig.stopLossPercent,
+      takeProfitPercent: preset.tradeConfig.takeProfitPercent,
+    },
+    autoModeSettings: {},
+  }
+}
+
+export const getPresetDisplayValues = (id) => {
+  const preset = getPresetById(id)
+  return {
     ...preset.tradeConfig,
     ...preset.safetyFilters,
   }

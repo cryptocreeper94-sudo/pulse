@@ -5,6 +5,8 @@ import { useWalletState } from '../../context/WalletContext'
 import { useBuiltInWallet } from '../../context/BuiltInWalletContext'
 import ManualWatchlist from '../trading/ManualWatchlist'
 import SafetyReport from '../trading/SafetyReport'
+import PresetSelector from '../trading/PresetSelector'
+import { TRADING_PRESETS, getPresetConfig } from '../../config/tradingPresets'
 import DemoTradeHistory from './DemoTradeHistory'
 import DemoLeadCapture from './DemoLeadCapture'
 import DemoUpgradeCTA from './DemoUpgradeCTA'
@@ -1239,6 +1241,24 @@ export default function SniperBotTab({ canTrade = true, onNavigate, isViewOnly: 
   const [showPricing, setShowPricing] = useState(false)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
   const [selectedGlossaryTerm, setSelectedGlossaryTerm] = useState(null)
+  const [selectedPreset, setSelectedPreset] = useState(() => {
+    return localStorage.getItem('strikeagent_preset') || 'pathfinder'
+  })
+  
+  const handlePresetSelect = useCallback((presetId) => {
+    setSelectedPreset(presetId)
+    localStorage.setItem('strikeagent_preset', presetId)
+    const presetConfig = getPresetConfig(presetId)
+    if (presetConfig) {
+      setConfig(prev => ({
+        ...prev,
+        safetyFilters: { ...prev.safetyFilters, ...presetConfig.safetyFilters },
+        discoveryFilters: { ...prev.discoveryFilters, ...presetConfig.discoveryFilters },
+        tradeControls: { ...prev.tradeControls, ...presetConfig.tradeControls },
+        autoModeSettings: { ...prev.autoModeSettings, ...presetConfig.autoModeSettings },
+      }))
+    }
+  }, [])
   
   const wallet = isDemoMode
     ? {
@@ -1696,6 +1716,43 @@ export default function SniperBotTab({ canTrade = true, onNavigate, isViewOnly: 
       <BentoGrid columns={2} gap="md">
         <BentoItem span={2}>
           <SessionStatsCard stats={stats} isActive={autoModeActive} />
+        </BentoItem>
+
+        <BentoItem span={2} style={{ position: 'relative' }}>
+          <PresetSelector
+            selectedPreset={selectedPreset}
+            onSelectPreset={handlePresetSelect}
+            disabled={!hasControlAccess}
+          />
+          {!hasControlAccess && (
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0, 0, 0, 0.4)',
+              borderRadius: 12,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backdropFilter: 'blur(2px)',
+              zIndex: 10,
+            }}>
+              <span style={{ 
+                fontSize: 12, 
+                color: '#888', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 6,
+                padding: '8px 16px',
+                background: 'rgba(0, 0, 0, 0.6)',
+                borderRadius: 20,
+              }}>
+                🔒 Subscribe to customize
+              </span>
+            </div>
+          )}
         </BentoItem>
 
         <BentoItem span={2} style={{ position: 'relative' }}>
