@@ -39,7 +39,7 @@
 
 .sniper-subtitle {
   font-size: 11px;
-  color: #666;
+  color: #aaa;
   margin: 4px 0 0;
 }
 
@@ -58,7 +58,7 @@
 
 .sniper-sol-label {
   font-size: 9px;
-  color: #666;
+  color: #aaa;
   text-transform: uppercase;
 }
 
@@ -78,7 +78,7 @@
   font-size: 11px;
   font-weight: 500;
   background: transparent;
-  color: #666;
+  color: #aaa;
   border: 1px solid #333;
   border-radius: 6px;
   cursor: pointer;
@@ -149,7 +149,7 @@
 .sniper-status-text {
   font-size: 10px;
   font-weight: 700;
-  color: #888;
+  color: #ccc;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -175,7 +175,7 @@
 
 .sniper-stat-label {
   font-size: 9px;
-  color: #666;
+  color: #aaa;
   text-transform: uppercase;
   margin-bottom: 4px;
 }
@@ -191,7 +191,7 @@
 
 .sniper-stat-max {
   font-size: 10px;
-  color: #666;
+  color: #aaa;
   font-weight: 400;
 }
 
@@ -221,7 +221,7 @@
 
 .sniper-automode-desc {
   font-size: 11px;
-  color: #666;
+  color: #aaa;
   margin: 4px 0 0;
 }
 
@@ -273,7 +273,7 @@
 
 .sniper-limit-label {
   font-size: 9px;
-  color: #666;
+  color: #aaa;
 }
 
 .sniper-limit-value {
@@ -350,12 +350,12 @@
 
 .sniper-empty-text {
   font-size: 13px;
-  color: #666;
+  color: #aaa;
 }
 
 .sniper-empty-hint {
   font-size: 11px;
-  color: #444;
+  color: #777;
   margin-top: 4px;
 }
 
@@ -417,7 +417,7 @@
 
 .sniper-token-meta {
   font-size: 10px;
-  color: #888;
+  color: #ccc;
 }
 
 .sniper-position-pnl {
@@ -461,7 +461,7 @@
 
 .sniper-price-label {
   font-size: 9px;
-  color: #666;
+  color: #aaa;
   text-transform: uppercase;
 }
 
@@ -503,7 +503,7 @@
   font-size: 11px;
   font-weight: 600;
   background: transparent;
-  color: #888;
+  color: #ccc;
   border: 1px solid #333;
   border-radius: 6px;
   cursor: pointer;
@@ -669,7 +669,7 @@
 
 .sniper-metric-label {
   font-size: 9px;
-  color: #666;
+  color: #aaa;
   text-transform: uppercase;
 }
 
@@ -711,7 +711,7 @@
   font-size: 11px;
   font-weight: 600;
   background: transparent;
-  color: #888;
+  color: #ccc;
   border: 1px solid #333;
   border-radius: 6px;
   cursor: pointer;
@@ -770,7 +770,7 @@
 
 .sniper-accordion-arrow {
   font-size: 10px;
-  color: #666;
+  color: #aaa;
   transition: transform 0.2s ease;
 }
 
@@ -799,19 +799,23 @@
 
 .sniper-setting-label {
   font-size: 10px;
-  color: #666;
+  color: #aaa;
 }
 
 .sniper-input {
   padding: 10px 12px;
-  background: #050505;
-  border: 1px solid #222;
+  background: #0f0f0f;
+  border: 1px solid #333;
   border-radius: 6px;
   color: #fff;
   font-size: 13px;
   font-weight: 600;
   width: 100%;
   transition: border-color 0.2s ease;
+}
+
+.sniper-input::placeholder {
+  color: #888;
 }
 
 .sniper-input:focus {
@@ -825,7 +829,7 @@
 
 .sniper-chart-container {
   position: relative;
-  background: #0a0a0a;
+  background: #121212;
   border-radius: 8px;
   overflow: hidden;
 }
@@ -877,7 +881,7 @@
 
 .sniper-wallet-label {
   font-size: 9px;
-  color: #666;
+  color: #aaa;
   text-transform: uppercase;
 }
 
@@ -1036,7 +1040,7 @@
   border-radius: 4px;
   border: 1px solid #333;
   background: transparent;
-  color: #666;
+  color: #aaa;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1070,7 +1074,7 @@
   display: flex;
   align-items: center;
   font-size: 11px;
-  color: #888;
+  color: #ccc;
   margin-bottom: 6px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -1166,7 +1170,7 @@
 
 .watchlist-price-label {
   font-size: 9px;
-  color: #666;
+  color: #aaa;
   text-transform: uppercase;
   display: block;
 }
@@ -1192,7 +1196,7 @@
 
 .watchlist-input-label {
   font-size: 9px;
-  color: #666;
+  color: #aaa;
   text-transform: uppercase;
 }
 
@@ -1394,7 +1398,7 @@
 
 .sniper-chain-label {
   font-size: 11px;
-  color: #666;
+  color: #aaa;
   text-transform: uppercase;
   font-weight: 600;
 }
@@ -1425,7 +1429,7 @@
   font-size: 11px;
   font-weight: 500;
   background: rgba(0, 0, 0, 0.4);
-  color: #666;
+  color: #aaa;
   border: 1px solid #333;
   border-radius: 6px;
   cursor: pointer;
@@ -1527,7 +1531,7 @@
 
 .sniper-token-fullname {
   font-size: 9px;
-  color: #666;
+  color: #aaa;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1586,7 +1590,7 @@
   font-size: 12px;
   font-weight: 600;
   background: rgba(0, 0, 0, 0.4);
-  color: #888;
+  color: #ccc;
   border: 1px solid #333;
   border-radius: 8px;
   cursor: pointer;
@@ -1703,7 +1707,7 @@
 
 .demo-position-name {
   font-size: 10px;
-  color: #888;
+  color: #ccc;
 }
 
 .demo-position-pnl {
@@ -1747,7 +1751,7 @@
 
 .demo-price-label {
   font-size: 9px;
-  color: #666;
+  color: #aaa;
   text-transform: uppercase;
 }
 
@@ -1851,7 +1855,7 @@
 
 .demo-stat-label {
   font-size: 9px;
-  color: #666;
+  color: #aaa;
   text-transform: uppercase;
   margin-bottom: 4px;
 }
@@ -1874,7 +1878,7 @@
 .demo-loading {
   padding: 20px;
   text-align: center;
-  color: #666;
+  color: #aaa;
   font-size: 13px;
 }
 
@@ -1932,7 +1936,7 @@
 
 .demo-trade-time {
   font-size: 10px;
-  color: #666;
+  color: #aaa;
 }
 
 .demo-trade-pnl {
@@ -3209,7 +3213,7 @@ body.telegram-mode .sniper-tab {
   border: none;
   border-radius: 6px;
   background: transparent;
-  color: #888;
+  color: #ccc;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -3222,6 +3226,18 @@ body.telegram-mode .sniper-tab {
 .quick-action-modes button.active {
   background: linear-gradient(135deg, #00D4FF 0%, #00a8cc 100%);
   color: #000;
+}
+
+.quick-action-settings {
+  padding: 10px 12px !important;
+  background: rgba(139, 92, 246, 0.2) !important;
+  border: 1px solid rgba(139, 92, 246, 0.4) !important;
+  font-size: 16px;
+}
+
+.quick-action-settings:hover {
+  background: rgba(139, 92, 246, 0.4) !important;
+  border-color: rgba(139, 92, 246, 0.6) !important;
 }
 
 .quick-action-amount {
@@ -3280,7 +3296,7 @@ body.telegram-mode .sniper-tab {
 .quick-action-hint {
   width: 100%;
   text-align: center;
-  color: #666;
+  color: #bbb;
   font-size: 12px;
   margin: 8px 0 0 0;
 }
@@ -3510,5 +3526,246 @@ body.telegram-mode .sniper-tab {
   
   .ai-insight-item {
     padding: 6px 10px;
+  }
+}
+
+/* ============================================ */
+/* MODE SETTINGS MODAL                         */
+/* ============================================ */
+
+.mode-settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(4px);
+}
+
+.mode-settings-modal {
+  background: #151515;
+  border: 1px solid #333;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 420px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 0 40px rgba(0, 212, 255, 0.15);
+}
+
+.mode-settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #333;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.08), rgba(157, 78, 221, 0.05));
+}
+
+.mode-settings-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.mode-settings-icon {
+  font-size: 22px;
+}
+
+.mode-settings-close {
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 1px solid #444;
+  border-radius: 50%;
+  color: #aaa;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mode-settings-close:hover {
+  border-color: #FF4444;
+  color: #FF4444;
+  background: rgba(255, 68, 68, 0.1);
+}
+
+.mode-settings-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mode-setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mode-setting-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mode-setting-input {
+  padding: 12px 14px;
+  background: #0f0f0f;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  width: 100%;
+  transition: border-color 0.2s ease;
+}
+
+.mode-setting-input::placeholder {
+  color: #666;
+}
+
+.mode-setting-input:focus {
+  outline: none;
+  border-color: #00D4FF;
+}
+
+.mode-setting-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.mode-setting-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #0f0f0f;
+  border: 1px solid #333;
+  border-radius: 8px;
+}
+
+.mode-setting-desc {
+  font-size: 12px;
+  color: #888;
+}
+
+.mode-setting-toggle {
+  padding: 6px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  background: transparent;
+  border: 1px solid #444;
+  border-radius: 20px;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-setting-toggle.active {
+  background: linear-gradient(135deg, #00D4FF, #39FF14);
+  border-color: transparent;
+  color: #000;
+}
+
+.mode-setting-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.mode-setting-btn {
+  flex: 1;
+  padding: 10px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #0f0f0f;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-setting-btn:hover {
+  border-color: #00D4FF;
+  color: #00D4FF;
+}
+
+.mode-setting-btn.active {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(157, 78, 221, 0.1));
+  border-color: #00D4FF;
+  color: #00D4FF;
+}
+
+.mode-settings-footer {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid #333;
+}
+
+.mode-settings-cancel {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  background: transparent;
+  border: 1px solid #444;
+  border-radius: 8px;
+  color: #aaa;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-settings-cancel:hover {
+  border-color: #666;
+  color: #fff;
+}
+
+.mode-settings-save {
+  flex: 2;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #00D4FF, #00A8CC);
+  border: none;
+  border-radius: 8px;
+  color: #000;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-settings-save:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
+}
+
+.mode-settings-save:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 480px) {
+  .mode-settings-modal {
+    width: 95%;
+    max-height: 90vh;
+  }
+  
+  .mode-setting-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .mode-setting-buttons {
+    flex-direction: column;
   }
 }

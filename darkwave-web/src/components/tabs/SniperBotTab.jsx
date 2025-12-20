@@ -587,21 +587,33 @@ function BuiltInWalletUnlock({ onUnlock, loading }) {
   )
 }
 
-function QuickActionBar({ mode, setMode, amount, setAmount, onGo, disabled }) {
+function QuickActionBar({ mode, setMode, amount, setAmount, onGo, disabled, modeSettings, onModeSettingsSave }) {
+  const [showModeModal, setShowModeModal] = useState(false)
+  
   return (
-    <div className="quick-action-bar section-box">
-      <div className="quick-action-modes">
-        <button className={mode === 'manual' ? 'active' : ''} onClick={() => setMode('manual')}>Manual</button>
-        <button className={mode === 'semi-auto' ? 'active' : ''} onClick={() => setMode('semi-auto')}>Semi-Auto</button>
-        <button className={mode === 'full-auto' ? 'active' : ''} onClick={() => setMode('full-auto')}>Full Auto</button>
+    <>
+      <ModeSettingsModal
+        mode={mode}
+        isOpen={showModeModal}
+        onClose={() => setShowModeModal(false)}
+        settings={modeSettings?.[mode] || {}}
+        onSave={(settings) => onModeSettingsSave(mode, settings)}
+      />
+      <div className="quick-action-bar section-box">
+        <div className="quick-action-modes">
+          <button className={mode === 'manual' ? 'active' : ''} onClick={() => setMode('manual')}>Manual</button>
+          <button className={mode === 'semi-auto' ? 'active' : ''} onClick={() => setMode('semi-auto')}>Semi-Auto</button>
+          <button className={mode === 'full-auto' ? 'active' : ''} onClick={() => setMode('full-auto')}>Full Auto</button>
+          <button className="quick-action-settings" onClick={() => setShowModeModal(true)} title="Configure settings">⚙️</button>
+        </div>
+        <div className="quick-action-amount">
+          <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} step="0.1" min="0.01" />
+          <span>SOL</span>
+        </div>
+        <button className="quick-action-go" onClick={onGo} disabled={disabled}>GO</button>
+        <p className="quick-action-hint">Select mode, tap ⚙️ to configure, then GO</p>
       </div>
-      <div className="quick-action-amount">
-        <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} step="0.1" min="0.01" />
-        <span>SOL</span>
-      </div>
-      <button className="quick-action-go" onClick={onGo} disabled={disabled}>GO</button>
-      <p className="quick-action-hint">Select mode and amount, then hit GO to start trading</p>
-    </div>
+    </>
   )
 }
 
@@ -686,6 +698,298 @@ function GlossaryTerm({ term, children, onTermClick }) {
     >
       {children || term}
     </span>
+  )
+}
+
+function ModeSettingsModal({ mode, isOpen, onClose, settings, onSave }) {
+  const [localSettings, setLocalSettings] = useState(settings || {})
+  
+  useEffect(() => {
+    if (settings) {
+      setLocalSettings(settings)
+    }
+  }, [settings, mode])
+  
+  if (!isOpen) return null
+  
+  const modeLabels = {
+    'manual': 'Manual Mode',
+    'semi-auto': 'Semi-Auto Mode',
+    'full-auto': 'Full Auto Mode'
+  }
+  
+  const modeIcons = {
+    'manual': '🎯',
+    'semi-auto': '🤖',
+    'full-auto': '⚡'
+  }
+  
+  const handleChange = (field, value) => {
+    setLocalSettings(prev => ({ ...prev, [field]: value }))
+  }
+  
+  const handleSave = () => {
+    onSave(localSettings)
+    onClose()
+  }
+  
+  return (
+    <div className="mode-settings-overlay" onClick={onClose}>
+      <div className="mode-settings-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="mode-settings-header">
+          <div className="mode-settings-title">
+            <span className="mode-settings-icon">{modeIcons[mode]}</span>
+            <span>{modeLabels[mode]} Settings</span>
+          </div>
+          <button className="mode-settings-close" onClick={onClose}>×</button>
+        </div>
+        
+        <div className="mode-settings-content">
+          {mode === 'manual' && (
+            <>
+              <div className="mode-setting-group">
+                <label className="mode-setting-label">Token Address</label>
+                <input 
+                  type="text" 
+                  className="mode-setting-input"
+                  placeholder="Enter token contract address..."
+                  value={localSettings.tokenAddress || ''}
+                  onChange={(e) => handleChange('tokenAddress', e.target.value)}
+                />
+              </div>
+              <div className="mode-setting-row">
+                <div className="mode-setting-group">
+                  <label className="mode-setting-label">Buy Amount (SOL)</label>
+                  <input 
+                    type="number" 
+                    className="mode-setting-input"
+                    step="0.1"
+                    min="0.01"
+                    value={localSettings.buyAmount || 0.1}
+                    onChange={(e) => handleChange('buyAmount', parseFloat(e.target.value))}
+                  />
+                </div>
+                <div className="mode-setting-group">
+                  <label className="mode-setting-label">Slippage %</label>
+                  <input 
+                    type="number" 
+                    className="mode-setting-input"
+                    step="0.5"
+                    min="0.1"
+                    max="50"
+                    value={localSettings.slippage || 5}
+                    onChange={(e) => handleChange('slippage', parseFloat(e.target.value))}
+                  />
+                </div>
+              </div>
+              <div className="mode-setting-row">
+                <div className="mode-setting-group">
+                  <label className="mode-setting-label">Take Profit %</label>
+                  <input 
+                    type="number" 
+                    className="mode-setting-input"
+                    step="5"
+                    min="1"
+                    value={localSettings.takeProfit || 50}
+                    onChange={(e) => handleChange('takeProfit', parseFloat(e.target.value))}
+                  />
+                </div>
+                <div className="mode-setting-group">
+                  <label className="mode-setting-label">Stop Loss %</label>
+                  <input 
+                    type="number" 
+                    className="mode-setting-input"
+                    step="5"
+                    min="1"
+                    value={localSettings.stopLoss || 20}
+                    onChange={(e) => handleChange('stopLoss', parseFloat(e.target.value))}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+          
+          {mode === 'semi-auto' && (
+            <>
+              <div className="mode-setting-group">
+                <label className="mode-setting-label">Auto-Detect Tokens</label>
+                <div className="mode-setting-toggle-row">
+                  <span className="mode-setting-desc">AI finds tokens for you to approve</span>
+                  <button 
+                    className={`mode-setting-toggle ${localSettings.autoDetect ? 'active' : ''}`}
+                    onClick={() => handleChange('autoDetect', !localSettings.autoDetect)}
+                  >
+                    {localSettings.autoDetect ? 'ON' : 'OFF'}
+                  </button>
+                </div>
+              </div>
+              <div className="mode-setting-row">
+                <div className="mode-setting-group">
+                  <label className="mode-setting-label">Approval Timeout (sec)</label>
+                  <input 
+                    type="number" 
+                    className="mode-setting-input"
+                    step="5"
+                    min="5"
+                    max="300"
+                    value={localSettings.approvalTimeout || 30}
+                    onChange={(e) => handleChange('approvalTimeout', parseInt(e.target.value))}
+                  />
+                </div>
+                <div className="mode-setting-group">
+                  <label className="mode-setting-label">Max Trades/Session</label>
+                  <input 
+                    type="number" 
+                    className="mode-setting-input"
+                    step="1"
+                    min="1"
+                    max="100"
+                    value={localSettings.maxTrades || 10}
+                    onChange={(e) => handleChange('maxTrades', parseInt(e.target.value))}
+                  />
+                </div>
+              </div>
+              <div className="mode-setting-group">
+                <label className="mode-setting-label">Risk Level</label>
+                <div className="mode-setting-buttons">
+                  {['Conservative', 'Moderate', 'Aggressive'].map(level => (
+                    <button 
+                      key={level}
+                      className={`mode-setting-btn ${localSettings.riskLevel === level ? 'active' : ''}`}
+                      onClick={() => handleChange('riskLevel', level)}
+                    >
+                      {level}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="mode-setting-row">
+                <div className="mode-setting-group">
+                  <label className="mode-setting-label">Buy Amount (SOL)</label>
+                  <input 
+                    type="number" 
+                    className="mode-setting-input"
+                    step="0.1"
+                    min="0.01"
+                    value={localSettings.buyAmount || 0.1}
+                    onChange={(e) => handleChange('buyAmount', parseFloat(e.target.value))}
+                  />
+                </div>
+              </div>
+              <div className="mode-setting-row">
+                <div className="mode-setting-group">
+                  <label className="mode-setting-label">Take Profit %</label>
+                  <input 
+                    type="number" 
+                    className="mode-setting-input"
+                    step="5"
+                    min="1"
+                    value={localSettings.takeProfit || 50}
+                    onChange={(e) => handleChange('takeProfit', parseFloat(e.target.value))}
+                  />
+                </div>
+                <div className="mode-setting-group">
+                  <label className="mode-setting-label">Stop Loss %</label>
+                  <input 
+                    type="number" 
+                    className="mode-setting-input"
+                    step="5"
+                    min="1"
+                    value={localSettings.stopLoss || 20}
+                    onChange={(e) => handleChange('stopLoss', parseFloat(e.target.value))}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+          
+          {mode === 'full-auto' && (
+            <>
+              <div className="mode-setting-row">
+                <div className="mode-setting-group">
+                  <label className="mode-setting-label">Max SOL/Session</label>
+                  <input 
+                    type="number" 
+                    className="mode-setting-input"
+                    step="0.5"
+                    min="0.1"
+                    value={localSettings.maxSol || 5}
+                    onChange={(e) => handleChange('maxSol', parseFloat(e.target.value))}
+                  />
+                </div>
+                <div className="mode-setting-group">
+                  <label className="mode-setting-label">Max Trades/Session</label>
+                  <input 
+                    type="number" 
+                    className="mode-setting-input"
+                    step="1"
+                    min="1"
+                    max="100"
+                    value={localSettings.maxTrades || 10}
+                    onChange={(e) => handleChange('maxTrades', parseInt(e.target.value))}
+                  />
+                </div>
+              </div>
+              <div className="mode-setting-row">
+                <div className="mode-setting-group">
+                  <label className="mode-setting-label">Min Safety Score (0-100)</label>
+                  <input 
+                    type="number" 
+                    className="mode-setting-input"
+                    step="5"
+                    min="0"
+                    max="100"
+                    value={localSettings.minSafetyScore || 60}
+                    onChange={(e) => handleChange('minSafetyScore', parseInt(e.target.value))}
+                  />
+                </div>
+                <div className="mode-setting-group">
+                  <label className="mode-setting-label">Cooldown (seconds)</label>
+                  <input 
+                    type="number" 
+                    className="mode-setting-input"
+                    step="5"
+                    min="0"
+                    max="600"
+                    value={localSettings.cooldown || 60}
+                    onChange={(e) => handleChange('cooldown', parseInt(e.target.value))}
+                  />
+                </div>
+              </div>
+              <div className="mode-setting-group">
+                <label className="mode-setting-label">Max Consecutive Losses</label>
+                <input 
+                  type="number" 
+                  className="mode-setting-input"
+                  step="1"
+                  min="1"
+                  max="20"
+                  value={localSettings.maxLosses || 3}
+                  onChange={(e) => handleChange('maxLosses', parseInt(e.target.value))}
+                />
+              </div>
+              <div className="mode-setting-group">
+                <label className="mode-setting-label">Auto-Compound Profits</label>
+                <div className="mode-setting-toggle-row">
+                  <span className="mode-setting-desc">Reinvest gains into new trades</span>
+                  <button 
+                    className={`mode-setting-toggle ${localSettings.autoCompound ? 'active' : ''}`}
+                    onClick={() => handleChange('autoCompound', !localSettings.autoCompound)}
+                  >
+                    {localSettings.autoCompound ? 'ON' : 'OFF'}
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+        
+        <div className="mode-settings-footer">
+          <button className="mode-settings-cancel" onClick={onClose}>Cancel</button>
+          <button className="mode-settings-save" onClick={handleSave}>Save & Apply</button>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -1263,6 +1567,50 @@ export default function SniperBotTab({ canTrade = true, onNavigate, isViewOnly: 
   const [quickMode, setQuickMode] = useState('manual')
   const [quickAmount, setQuickAmount] = useState('0.1')
   const [showAdvanced, setShowAdvanced] = useState(false)
+  const [modeSettings, setModeSettings] = useState({
+    manual: { buyAmount: 0.1, slippage: 5, takeProfit: 50, stopLoss: 20, tokenAddress: '' },
+    'semi-auto': { autoDetect: true, approvalTimeout: 30, maxTrades: 10, riskLevel: 'Moderate', buyAmount: 0.1, takeProfit: 50, stopLoss: 20 },
+    'full-auto': { maxSol: 5, maxTrades: 10, minSafetyScore: 60, cooldown: 60, maxLosses: 3, autoCompound: false }
+  })
+  
+  const handleModeSettingsSave = useCallback((mode, settings) => {
+    const validated = { ...settings }
+    const numericDefaults = {
+      buyAmount: 0.1, slippage: 5, takeProfit: 50, stopLoss: 20,
+      minSafetyScore: 60, maxTrades: 10, cooldown: 60, maxLosses: 3,
+      approvalTimeout: 30, maxSol: 5
+    }
+    const numericRanges = {
+      buyAmount: [0.01, 1000], slippage: [0.1, 50], takeProfit: [1, 1000], stopLoss: [1, 100],
+      minSafetyScore: [0, 100], maxTrades: [1, 100], cooldown: [0, 600], maxLosses: [1, 20],
+      approvalTimeout: [5, 300], maxSol: [0.1, 1000]
+    }
+    
+    Object.keys(validated).forEach(key => {
+      let val = validated[key]
+      
+      if (key in numericDefaults) {
+        val = parseFloat(val)
+        if (isNaN(val) || val < 0) {
+          validated[key] = numericDefaults[key]
+        } else if (numericRanges[key]) {
+          const [min, max] = numericRanges[key]
+          validated[key] = Math.max(min, Math.min(max, val))
+        } else {
+          validated[key] = val
+        }
+      }
+      
+      if (key === 'autoDetect' || key === 'autoCompound') {
+        validated[key] = Boolean(val)
+      }
+    })
+    
+    setModeSettings(prev => ({
+      ...prev,
+      [mode]: { ...prev[mode], ...validated }
+    }))
+  }, [])
   const [safetyCheckToken, setSafetyCheckToken] = useState(null)
   const [selectedChain, setSelectedChain] = useState('solana')
   const [availableChains] = useState([
@@ -1673,15 +2021,81 @@ export default function SniperBotTab({ canTrade = true, onNavigate, isViewOnly: 
         amount={quickAmount}
         setAmount={setQuickAmount}
         onGo={() => {
+          const currentSettings = modeSettings[quickMode] || {}
+          const tradeAmount = parseFloat(quickAmount) || currentSettings.buyAmount || 0.1
+          
+          setConfig(prev => {
+            const updated = { ...prev }
+            
+            if (currentSettings.slippage !== undefined) {
+              updated.tradeControls = { ...updated.tradeControls, slippagePercent: currentSettings.slippage }
+            }
+            if (currentSettings.takeProfit !== undefined) {
+              updated.tradeControls = { ...updated.tradeControls, takeProfitPercent: currentSettings.takeProfit }
+            }
+            if (currentSettings.stopLoss !== undefined) {
+              updated.tradeControls = { ...updated.tradeControls, stopLossPercent: currentSettings.stopLoss }
+            }
+            updated.tradeControls = { ...updated.tradeControls, buyAmountSol: tradeAmount }
+            
+            if (currentSettings.maxTrades !== undefined) {
+              updated.autoModeSettings = { ...updated.autoModeSettings, maxTradesPerSession: currentSettings.maxTrades }
+            }
+            if (currentSettings.maxSol !== undefined) {
+              updated.autoModeSettings = { ...updated.autoModeSettings, maxSolPerSession: currentSettings.maxSol }
+            }
+            if (currentSettings.cooldown !== undefined) {
+              updated.autoModeSettings = { ...updated.autoModeSettings, cooldownSeconds: currentSettings.cooldown }
+            }
+            if (currentSettings.maxLosses !== undefined) {
+              updated.autoModeSettings = { ...updated.autoModeSettings, maxConsecutiveLosses: currentSettings.maxLosses }
+            }
+            if (currentSettings.autoCompound !== undefined) {
+              updated.autoModeSettings = { ...updated.autoModeSettings, autoCompound: currentSettings.autoCompound }
+            }
+            
+            if (currentSettings.minSafetyScore !== undefined) {
+              updated.safetyFilters = { ...updated.safetyFilters, minSafetyScore: currentSettings.minSafetyScore }
+            }
+            
+            if (currentSettings.riskLevel) {
+              const riskMultipliers = { Conservative: 0.5, Moderate: 1, Aggressive: 2 }
+              updated.riskMultiplier = riskMultipliers[currentSettings.riskLevel] || 1
+            }
+            
+            if (currentSettings.approvalTimeout !== undefined) {
+              updated.approvalTimeout = currentSettings.approvalTimeout
+            }
+            
+            if (currentSettings.autoDetect !== undefined) {
+              updated.autoDetect = currentSettings.autoDetect
+            }
+            
+            return updated
+          })
+          
           if (quickMode === 'full-auto') {
             setAutoModeActive(true)
+            console.log('[StrikeAgent] Full Auto started with settings:', currentSettings)
           } else if (quickMode === 'semi-auto') {
-            discoverTokens()
+            console.log('[StrikeAgent] Semi-Auto started with settings:', currentSettings)
+            if (currentSettings.autoDetect === false) {
+              alert('Semi-Auto with Auto-Detect OFF requires you to select tokens from the discovery list. Tap the ⚙️ to enable Auto-Detect, or use Manual mode to enter a specific token address.')
+            } else {
+              discoverTokens()
+            }
           } else {
-            discoverTokens()
+            if (currentSettings.tokenAddress && currentSettings.tokenAddress.trim()) {
+              setSafetyCheckToken(currentSettings.tokenAddress.trim())
+              console.log('[StrikeAgent] Manual mode - checking token:', currentSettings.tokenAddress)
+            } else {
+              alert('Manual mode requires a token address. Tap ⚙️ to enter a token contract address, or switch to Semi-Auto/Full Auto mode.')
+            }
           }
         }}
         disabled={!wallet.connected && !isDemoMode}
+        modeSettings={modeSettings}
+        onModeSettingsSave={handleModeSettingsSave}
       />
 
       <div className="sniper-chain-selector section-box">
