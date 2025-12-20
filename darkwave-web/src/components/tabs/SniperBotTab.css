@@ -3140,3 +3140,38 @@
   color: #bbb;
   margin: 0;
 }
+
+/* ============================================ */
+/* TELEGRAM MINI APP - HIGH CONTRAST OVERRIDES */
+/* ============================================ */
+
+body.telegram-mode .sniper-subtitle,
+body.telegram-mode .sniper-sol-label,
+body.telegram-mode .sniper-mode-btn,
+body.telegram-mode .manual-slot-empty,
+body.telegram-mode .order-slot-label,
+body.telegram-mode .order-address-placeholder {
+  color: #aaa !important;
+}
+
+body.telegram-mode .order-price-label,
+body.telegram-mode .order-field-label,
+body.telegram-mode input::placeholder {
+  color: #999 !important;
+}
+
+body.telegram-mode input,
+body.telegram-mode .order-address-input,
+body.telegram-mode .order-price-value {
+  color: #fff !important;
+}
+
+body.telegram-mode .order-slot-header,
+body.telegram-mode .manual-slot {
+  background: rgba(30, 30, 30, 0.9) !important;
+  border-color: rgba(100, 100, 100, 0.4) !important;
+}
+
+body.telegram-mode .sniper-tab {
+  background: #0a0a0a;
+}

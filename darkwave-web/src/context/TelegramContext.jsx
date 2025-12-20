@@ -38,6 +38,11 @@ export function TelegramProvider({ children }) {
 
     const urlParams = new URLSearchParams(window.location.search)
     const testMode = urlParams.get('tg') === '1'
+    
+    // Add telegram-mode class for high-contrast styling
+    if (testMode || webApp?.initData) {
+      document.body.classList.add('telegram-mode')
+    }
 
     if (testMode && !webApp) {
       setTelegramUser({
