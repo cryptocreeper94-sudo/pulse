@@ -10,10 +10,11 @@ export default function StrikeAgentPublicView({ onSubscribe }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const cacheBust = `?_t=${Date.now()}`
         const [signalsRes, executionsRes, statsRes] = await Promise.all([
-          fetch('/api/public/strikeagent/signals'),
-          fetch('/api/public/strikeagent/executions'),
-          fetch('/api/public/strikeagent/stats')
+          fetch(`/api/public/strikeagent/signals${cacheBust}`, { cache: 'no-store' }),
+          fetch(`/api/public/strikeagent/executions${cacheBust}`, { cache: 'no-store' }),
+          fetch(`/api/public/strikeagent/stats${cacheBust}`, { cache: 'no-store' })
         ])
         
         const signalsData = await signalsRes.json()
@@ -22,7 +23,14 @@ export default function StrikeAgentPublicView({ onSubscribe }) {
         
         if (signalsData.success) setSignals(signalsData.signals || [])
         if (executionsData.success) setExecutions(executionsData.executions || [])
-        if (statsData.success) setStats(statsData.stats || {})
+        if (statsData.success) {
+          setStats({
+            totalSignals: statsData.stats?.totalSignals || 0,
+            winRate: statsData.stats?.winRate || 0,
+            activeToday: statsData.stats?.activeToday || 0,
+            tradesExecuted: statsData.stats?.tradesExecuted || 0
+          })
+        }
       } catch (err) {
         console.error('Failed to fetch public data:', err)
       } finally {
