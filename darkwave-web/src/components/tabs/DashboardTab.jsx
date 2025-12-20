@@ -572,7 +572,7 @@ function MiniCoinTable({ coins: initialCoins, onCoinClick, favorites, selectedCo
   const displayCoins = getFilteredCoins()
   
   return (
-    <div style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ height: 360, display: 'flex', flexDirection: 'column' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8, flexWrap: 'wrap', gap: 8 }}>
         <TileLabel>{category === 'top' ? 'Top Coins' : category === 'gainers' ? 'Top Gainers' : category === 'losers' ? 'Top Losers' : category === 'meme' ? 'Meme Coins' : category === 'defi' ? 'DeFi' : 'DEX Tokens'}</TileLabel>
         <div style={{ display: 'flex', gap: 4, background: 'var(--bg-surface-2)', borderRadius: 6, padding: 2 }}>

@@ -3,9 +3,9 @@
 
 set -e
 
-# Colors for output
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
 NC='\033[0m'
 
 echo -e "${BLUE}🚀 DarkWave Development Server Starting...${NC}"
@@ -16,9 +16,25 @@ PORT=3001 npm run dev &
 BACKEND_PID=$!
 echo -e "${GREEN}✅ Backend PID: $BACKEND_PID${NC}"
 
-# Wait for backend to be ready
-echo -e "${BLUE}⏳ Waiting 4 seconds for backend to initialize...${NC}"
-sleep 4
+# Wait for backend to be fully ready (poll until port 3001 responds)
+echo -e "${YELLOW}⏳ Waiting for backend to be ready...${NC}"
+MAX_WAIT=60
+WAITED=0
+while ! curl -s http://localhost:3001/api > /dev/null 2>&1; do
+  sleep 1
+  WAITED=$((WAITED + 1))
+  if [ $WAITED -ge $MAX_WAIT ]; then
+    echo -e "${YELLOW}⚠️ Backend took too long, starting frontend anyway...${NC}"
+    break
+  fi
+  if [ $((WAITED % 5)) -eq 0 ]; then
+    echo -e "${BLUE}   Still waiting... (${WAITED}s)${NC}"
+  fi
+done
+
+if [ $WAITED -lt $MAX_WAIT ]; then
+  echo -e "${GREEN}✅ Backend ready after ${WAITED}s${NC}"
+fi
 
 # Step 2: Start Public API server on port 3002 in background
 echo -e "${BLUE}🔌 Starting Public API server on port 3002...${NC}"
