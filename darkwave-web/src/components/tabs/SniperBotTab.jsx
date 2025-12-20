@@ -587,6 +587,79 @@ function BuiltInWalletUnlock({ onUnlock, loading }) {
   )
 }
 
+function QuickActionBar({ mode, setMode, amount, setAmount, onGo, disabled }) {
+  return (
+    <div className="quick-action-bar section-box">
+      <div className="quick-action-modes">
+        <button className={mode === 'manual' ? 'active' : ''} onClick={() => setMode('manual')}>Manual</button>
+        <button className={mode === 'semi-auto' ? 'active' : ''} onClick={() => setMode('semi-auto')}>Semi-Auto</button>
+        <button className={mode === 'full-auto' ? 'active' : ''} onClick={() => setMode('full-auto')}>Full Auto</button>
+      </div>
+      <div className="quick-action-amount">
+        <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} step="0.1" min="0.01" />
+        <span>SOL</span>
+      </div>
+      <button className="quick-action-go" onClick={onGo} disabled={disabled}>GO</button>
+      <p className="quick-action-hint">Select mode and amount, then hit GO to start trading</p>
+    </div>
+  )
+}
+
+function AdvancedSettingsSection({ children, expanded, onToggle }) {
+  return (
+    <div className={`advanced-settings-section ${expanded ? 'expanded' : ''}`}>
+      <button className="advanced-settings-toggle" onClick={onToggle}>
+        {expanded ? '▼ Hide Advanced Settings' : '▶ Show Advanced Settings'}
+      </button>
+      {expanded && <div className="advanced-settings-content">{children}</div>}
+    </div>
+  )
+}
+
+function AIInsightsCard({ stats, isActive }) {
+  const confidenceLevel = stats?.winRate >= 60 ? 'high' : stats?.winRate >= 40 ? 'medium' : 'low'
+  const riskLevel = stats?.totalPnl >= 0 ? 'low' : stats?.totalPnl >= -1 ? 'medium' : 'high'
+  
+  return (
+    <div className="section-box ai-insights-card">
+      <div className="ai-insights-header">
+        <span className="ai-insights-title">🤖 AI Insights</span>
+        <span className={`ai-status-badge ${isActive ? 'active' : ''}`}>
+          {isActive ? 'Analyzing' : 'Ready'}
+        </span>
+      </div>
+      <div className="ai-insights-metrics">
+        <div className="ai-insight-item">
+          <span className="ai-insight-label">Confidence</span>
+          <span className={`ai-insight-value ${confidenceLevel}`}>
+            {confidenceLevel === 'high' ? '🟢 High' : confidenceLevel === 'medium' ? '🟡 Medium' : '🔴 Low'}
+          </span>
+        </div>
+        <div className="ai-insight-item">
+          <span className="ai-insight-label">Risk Level</span>
+          <span className={`ai-insight-value ${riskLevel}`}>
+            {riskLevel === 'low' ? '🟢 Low' : riskLevel === 'medium' ? '🟡 Medium' : '🔴 High'}
+          </span>
+        </div>
+        <div className="ai-insight-item">
+          <span className="ai-insight-label">Session P&L</span>
+          <span className={`ai-insight-value ${(stats?.totalPnl || 0) >= 0 ? 'positive' : 'negative'}`}>
+            {(stats?.totalPnl || 0) >= 0 ? '+' : ''}{(stats?.totalPnl || 0).toFixed(3)} SOL
+          </span>
+        </div>
+      </div>
+      <div className="ai-insights-reasoning">
+        <span className="ai-reasoning-label">Current Strategy</span>
+        <p className="ai-reasoning-text">
+          {isActive 
+            ? 'Monitoring market for high-confidence entry signals. Applying safety filters and volume analysis.'
+            : 'Ready to analyze. Start a session to receive AI trading recommendations.'}
+        </p>
+      </div>
+    </div>
+  )
+}
+
 function GlossaryModal({ term, onClose }) {
   if (!term || !GLOSSARY_DATA[term]) return null
   
@@ -1187,6 +1260,9 @@ export default function SniperBotTab({ canTrade = true, onNavigate, isViewOnly: 
   const [expandedRPC, setExpandedRPC] = useState(false)
   const [rpcStatus, setRpcStatus] = useState(null)
   const [customRPC, setCustomRPC] = useState('')
+  const [quickMode, setQuickMode] = useState('manual')
+  const [quickAmount, setQuickAmount] = useState('0.1')
+  const [showAdvanced, setShowAdvanced] = useState(false)
   const [safetyCheckToken, setSafetyCheckToken] = useState(null)
   const [selectedChain, setSelectedChain] = useState('solana')
   const [availableChains] = useState([
@@ -1591,6 +1667,23 @@ export default function SniperBotTab({ canTrade = true, onNavigate, isViewOnly: 
         </div>
       </div>
 
+      <QuickActionBar
+        mode={quickMode}
+        setMode={setQuickMode}
+        amount={quickAmount}
+        setAmount={setQuickAmount}
+        onGo={() => {
+          if (quickMode === 'full-auto') {
+            setAutoModeActive(true)
+          } else if (quickMode === 'semi-auto') {
+            discoverTokens()
+          } else {
+            discoverTokens()
+          }
+        }}
+        disabled={!wallet.connected && !isDemoMode}
+      />
+
       <div className="sniper-chain-selector section-box">
         <div className="sniper-chain-header">
           <span className="sniper-chain-label">Target Chain</span>
@@ -1713,96 +1806,116 @@ export default function SniperBotTab({ canTrade = true, onNavigate, isViewOnly: 
         </div>
       )}
 
-      <BentoGrid columns={2} gap="md">
+      <BentoGrid columns={3} gap="md">
         <BentoItem span={2}>
-          <SessionStatsCard stats={stats} isActive={autoModeActive} />
+          <div className="section-box activity-column">
+            <div className="column-header">
+              <span className="column-icon">📊</span>
+              <span className="column-title">Activity</span>
+            </div>
+            <SessionStatsCard stats={stats} isActive={autoModeActive} />
+          </div>
         </BentoItem>
 
-        <BentoItem span={2} style={{ position: 'relative' }}>
-          <PresetSelector
-            selectedPreset={selectedPreset}
-            onSelectPreset={handlePresetSelect}
-            disabled={!hasControlAccess}
-          />
-          {!hasControlAccess && (
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: 'rgba(0, 0, 0, 0.4)',
-              borderRadius: 12,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backdropFilter: 'blur(2px)',
-              zIndex: 10,
-            }}>
-              <span style={{ 
-                fontSize: 12, 
-                color: '#888', 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: 6,
-                padding: '8px 16px',
-                background: 'rgba(0, 0, 0, 0.6)',
-                borderRadius: 20,
-              }}>
-                🔒 Subscribe to customize
-              </span>
+        <BentoItem span={1}>
+          <div className="section-box guidance-column">
+            <div className="column-header">
+              <span className="column-icon">🤖</span>
+              <span className="column-title">AI Guidance</span>
             </div>
-          )}
+            <AIInsightsCard stats={stats} isActive={autoModeActive} />
+          </div>
         </BentoItem>
 
-        <BentoItem span={2} style={{ position: 'relative' }}>
-          <SmartAutoModePanel 
-            isActive={autoModeActive} 
-            onToggle={() => {
-              if (!hasControlAccess) {
-                return
-              }
-              if (!wallet.connected) {
-                alert('Please connect your wallet first')
-                return
-              }
-              setAutoModeActive(!autoModeActive)
-            }}
-            config={config}
-            disabled={!hasControlAccess || !wallet.connected}
-          />
-          {!hasControlAccess && (
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: 'rgba(0, 0, 0, 0.4)',
-              borderRadius: 12,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backdropFilter: 'blur(2px)',
-            }}>
-              <span style={{ 
-                fontSize: 12, 
-                color: '#888', 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: 6,
-                padding: '8px 16px',
-                background: 'rgba(0, 0, 0, 0.6)',
-                borderRadius: 20,
-              }}>
-                🔒 Subscribe to unlock
-              </span>
+        <BentoItem span={3}>
+          <AdvancedSettingsSection expanded={showAdvanced} onToggle={() => setShowAdvanced(!showAdvanced)}>
+            <div style={{ position: 'relative' }}>
+              <PresetSelector
+                selectedPreset={selectedPreset}
+                onSelectPreset={handlePresetSelect}
+                disabled={!hasControlAccess}
+              />
+              {!hasControlAccess && (
+                <div style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  background: 'rgba(0, 0, 0, 0.4)',
+                  borderRadius: 12,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backdropFilter: 'blur(2px)',
+                  zIndex: 10,
+                }}>
+                  <span style={{ 
+                    fontSize: 12, 
+                    color: '#888', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: 6,
+                    padding: '8px 16px',
+                    background: 'rgba(0, 0, 0, 0.6)',
+                    borderRadius: 20,
+                  }}>
+                    🔒 Subscribe to customize
+                  </span>
+                </div>
+              )}
             </div>
-          )}
+
+            <div style={{ position: 'relative', marginTop: 12 }}>
+              <SmartAutoModePanel 
+                isActive={autoModeActive} 
+                onToggle={() => {
+                  if (!hasControlAccess) {
+                    return
+                  }
+                  if (!wallet.connected) {
+                    alert('Please connect your wallet first')
+                    return
+                  }
+                  setAutoModeActive(!autoModeActive)
+                }}
+                config={config}
+                disabled={!hasControlAccess || !wallet.connected}
+              />
+              {!hasControlAccess && (
+                <div style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  background: 'rgba(0, 0, 0, 0.4)',
+                  borderRadius: 12,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backdropFilter: 'blur(2px)',
+                }}>
+                  <span style={{ 
+                    fontSize: 12, 
+                    color: '#888', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: 6,
+                    padding: '8px 16px',
+                    background: 'rgba(0, 0, 0, 0.6)',
+                    borderRadius: 20,
+                  }}>
+                    🔒 Subscribe to unlock
+                  </span>
+                </div>
+              )}
+            </div>
+          </AdvancedSettingsSection>
         </BentoItem>
 
         {isDemoMode && (
-          <BentoItem span={2} className="sniper-demo-tabs-section">
+          <BentoItem span={3} className="sniper-demo-tabs-section">
             <div className="section-box demo-section-tabs">
               <div className="demo-tabs-header">
                 <button 
@@ -1829,7 +1942,7 @@ export default function SniperBotTab({ canTrade = true, onNavigate, isViewOnly: 
         )}
 
         {(!isDemoMode || activeSubTab === 'positions') && (
-          <BentoItem span={2} className="sniper-positions-section">
+          <BentoItem span={3} className="sniper-positions-section">
             <div className="section-box">
               <div className="sniper-section-header">
                 <h3 className="sniper-section-title">
@@ -1882,7 +1995,7 @@ export default function SniperBotTab({ canTrade = true, onNavigate, isViewOnly: 
         )}
 
         {isDemoMode && activeSubTab === 'history' && (
-          <BentoItem span={2} className="sniper-history-section">
+          <BentoItem span={3} className="sniper-history-section">
             <div className="section-box">
               <DemoTradeHistory sessionId={demoSessionId} refreshKey={historyRefreshKey} />
             </div>
@@ -1890,7 +2003,7 @@ export default function SniperBotTab({ canTrade = true, onNavigate, isViewOnly: 
         )}
 
         {isDemoMode && !leadCaptured && (
-          <BentoItem span={1} className="sniper-lead-capture-section">
+          <BentoItem span={2} className="sniper-lead-capture-section">
             <DemoLeadCapture 
               onSuccess={() => setLeadCaptured(true)}
             />
@@ -1898,13 +2011,13 @@ export default function SniperBotTab({ canTrade = true, onNavigate, isViewOnly: 
         )}
 
         {isDemoMode && !showPricing && (
-          <BentoItem span={leadCaptured ? 2 : 1} className="sniper-upgrade-section">
+          <BentoItem span={1} className="sniper-upgrade-section">
             <DemoUpgradeCTA onUpgrade={() => setShowPricing(true)} />
           </BentoItem>
         )}
 
         {isDemoMode && showPricing && (
-          <BentoItem span={2} className="sniper-pricing-section">
+          <BentoItem span={3} className="sniper-pricing-section">
             <div className="section-box pricing-modal">
               <button 
                 className="pricing-close-btn" 
@@ -1927,13 +2040,13 @@ export default function SniperBotTab({ canTrade = true, onNavigate, isViewOnly: 
         )}
 
         {!isDemoMode && (
-          <BentoItem span={2} className="sniper-watchlist-section">
+          <BentoItem span={3} className="sniper-watchlist-section">
             <ManualWatchlist />
           </BentoItem>
         )}
 
         {(!isDemoMode || activeSubTab === 'discovery') && (
-          <BentoItem span={2} className="sniper-discovery-section">
+          <BentoItem span={3} className="sniper-discovery-section">
             <div className="section-box">
               <div className="sniper-section-header">
                 <h3 className="sniper-section-title">
@@ -1992,7 +2105,7 @@ export default function SniperBotTab({ canTrade = true, onNavigate, isViewOnly: 
         )}
 
         {safetyCheckToken && (
-          <BentoItem span={2} className="sniper-safety-section">
+          <BentoItem span={3} className="sniper-safety-section">
             <SafetyReport 
               tokenAddress={safetyCheckToken}
               onClose={() => setSafetyCheckToken(null)}
@@ -2002,7 +2115,7 @@ export default function SniperBotTab({ canTrade = true, onNavigate, isViewOnly: 
 
         {mode === 'advanced' && (
           <>
-            <BentoItem span={2}>
+            <BentoItem span={3}>
               <QuickSettingsPanel 
                 config={config}
                 updateConfig={updateConfig}
@@ -2010,7 +2123,7 @@ export default function SniperBotTab({ canTrade = true, onNavigate, isViewOnly: 
                 onToggle={() => setExpandedSettings(!expandedSettings)}
               />
             </BentoItem>
-            <BentoItem span={2}>
+            <BentoItem span={3}>
               <SafetyFiltersPanel 
                 config={config}
                 updateConfig={updateConfig}
@@ -2018,7 +2131,7 @@ export default function SniperBotTab({ canTrade = true, onNavigate, isViewOnly: 
                 onToggle={() => setExpandedSafety(!expandedSafety)}
               />
             </BentoItem>
-            <BentoItem span={2}>
+            <BentoItem span={3}>
               <RPCSettingsPanel 
                 rpcStatus={rpcStatus}
                 customRPC={customRPC}
@@ -2031,7 +2144,7 @@ export default function SniperBotTab({ canTrade = true, onNavigate, isViewOnly: 
           </>
         )}
 
-        <BentoItem span={2} className="quant-system-section">
+        <BentoItem span={3} className="quant-system-section">
           <QuantSystemSection />
         </BentoItem>
       </BentoGrid>
