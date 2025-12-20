@@ -786,12 +786,17 @@ export const mastra = new Mastra({
           const path = await import('path');
           const url = await import('url');
           
+          // Check if request is for StrikeAgent domain
+          const host = c.req.header('host') || '';
+          const isStrikeAgent = host.includes('strikeagent.io') || host.includes('strikeagent');
+          const htmlFile = isStrikeAgent ? 'strikeagent.html' : 'index.html';
+          
           // Try multiple paths for dev vs deployment
           const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
           const possiblePaths = [
-            path.join(process.cwd(), 'public', 'index.html'),
-            path.join(__dirname, '..', '..', 'public', 'index.html'),
-            path.join(__dirname, '..', '..', '..', 'public', 'index.html'),
+            path.join(process.cwd(), 'public', htmlFile),
+            path.join(__dirname, '..', '..', 'public', htmlFile),
+            path.join(__dirname, '..', '..', '..', 'public', htmlFile),
           ];
           
           for (const filePath of possiblePaths) {
