@@ -337,7 +337,7 @@ export default function TopSignalsWidget({ onAnalyze }) {
                     {getCategoryLabel(signal.category)}
                   </span>
                   
-                  {signal.indicators && signal.indicators.slice(0, 2).map((indicator, i) => {
+                  {Array.isArray(signal.indicators) && signal.indicators.slice(0, 2).map((indicator, i) => {
                     const indStyle = getIndicatorStyle(indicator)
                     return (
                       <span 
