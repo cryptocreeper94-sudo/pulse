@@ -14,7 +14,7 @@ import './styles/components.css'
 class TelegramErrorBoundary extends Component {
   constructor(props) {
     super(props)
-    this.state = { hasError: false, error: null }
+    this.state = { hasError: false, error: null, errorInfo: null }
   }
   
   static getDerivedStateFromError(error) {
@@ -23,23 +23,45 @@ class TelegramErrorBoundary extends Component {
   
   componentDidCatch(error, errorInfo) {
     console.error('TelegramApp error:', error, errorInfo)
+    this.setState({ errorInfo })
   }
   
   render() {
     if (this.state.hasError) {
+      const errorMessage = this.state.error?.message || 
+                          this.state.error?.toString() || 
+                          'Unknown error occurred'
+      const errorStack = this.state.error?.stack || ''
+      const componentStack = this.state.errorInfo?.componentStack || ''
+      
       return (
         <div style={{ 
-          padding: '40px 20px', 
+          padding: '20px', 
           textAlign: 'center',
           background: '#0f0f0f',
           minHeight: '100vh',
           color: '#fff'
         }}>
           <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
-          <h2 style={{ marginBottom: '12px' }}>Something went wrong</h2>
-          <p style={{ color: '#888', marginBottom: '24px', fontSize: '14px' }}>
-            {this.state.error?.message || 'Unknown error'}
-          </p>
+          <h2 style={{ marginBottom: '12px', fontSize: '18px' }}>Something went wrong</h2>
+          <div style={{ 
+            background: '#1a1a1a', 
+            padding: '12px', 
+            borderRadius: '8px',
+            marginBottom: '16px',
+            textAlign: 'left',
+            maxHeight: '200px',
+            overflow: 'auto'
+          }}>
+            <p style={{ color: '#ff6b6b', fontSize: '12px', margin: 0, wordBreak: 'break-word' }}>
+              {errorMessage}
+            </p>
+            {componentStack && (
+              <pre style={{ color: '#888', fontSize: '10px', marginTop: '8px', whiteSpace: 'pre-wrap' }}>
+                {componentStack.slice(0, 500)}
+              </pre>
+            )}
+          </div>
           <button
             onClick={() => window.location.reload()}
             style={{
