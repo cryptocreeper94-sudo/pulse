@@ -4,23 +4,30 @@ import { db } from '../../db/client.js';
 import { strikeAgentSignals } from '../../db/schema.js';
 import { desc, gte } from 'drizzle-orm';
 
+// StrikeAgent bot for signal broadcasts (primary)
+const STRIKEAGENT_BOT_TOKEN = process.env.TELEGRAM_MINIAPP_BOT_TOKEN;
+// Fallback to main bot if StrikeAgent bot not configured
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHANNEL_ID = process.env.TELEGRAM_CHANNEL_ID;
 
+// Use StrikeAgent bot for signals, fall back to main bot
+const SIGNAL_BOT_TOKEN = STRIKEAGENT_BOT_TOKEN || TELEGRAM_BOT_TOKEN;
+
 async function sendChannelMessage(text: string): Promise<boolean> {
-  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHANNEL_ID) {
-    console.warn('[TelegramBroadcast] Missing TELEGRAM_BOT_TOKEN or TELEGRAM_CHANNEL_ID');
+  if (!SIGNAL_BOT_TOKEN || !TELEGRAM_CHANNEL_ID) {
+    console.warn('[TelegramBroadcast] Missing bot token or TELEGRAM_CHANNEL_ID');
     return false;
   }
 
   try {
-    const response = await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+    const botName = STRIKEAGENT_BOT_TOKEN ? 'StrikeAgent' : 'Main';
+    const response = await axios.post(`https://api.telegram.org/bot${SIGNAL_BOT_TOKEN}/sendMessage`, {
       chat_id: TELEGRAM_CHANNEL_ID,
       text,
       parse_mode: 'HTML',
       disable_web_page_preview: true
     });
-    console.log('[TelegramBroadcast] Message sent successfully');
+    console.log(`[TelegramBroadcast] Message sent via ${botName} bot successfully`);
     return response.data.ok;
   } catch (error: any) {
     console.error('[TelegramBroadcast] Failed to send message:', error.message);
