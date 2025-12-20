@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Component } from 'react'
 import { 
   SniperBotTab,
   WalletTab,
@@ -10,6 +10,56 @@ import { BuiltInWalletProvider } from './context/BuiltInWalletContext'
 import { ThemeProvider } from './context/ThemeContext'
 import { TelegramProvider, useTelegram } from './context/TelegramContext'
 import './styles/components.css'
+
+class TelegramErrorBoundary extends Component {
+  constructor(props) {
+    super(props)
+    this.state = { hasError: false, error: null }
+  }
+  
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error }
+  }
+  
+  componentDidCatch(error, errorInfo) {
+    console.error('TelegramApp error:', error, errorInfo)
+  }
+  
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ 
+          padding: '40px 20px', 
+          textAlign: 'center',
+          background: '#0f0f0f',
+          minHeight: '100vh',
+          color: '#fff'
+        }}>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
+          <h2 style={{ marginBottom: '12px' }}>Something went wrong</h2>
+          <p style={{ color: '#888', marginBottom: '24px', fontSize: '14px' }}>
+            {this.state.error?.message || 'Unknown error'}
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            style={{
+              padding: '12px 24px',
+              background: 'linear-gradient(135deg, #00D4FF, #00A0CC)',
+              color: '#000',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: 600
+            }}
+          >
+            Reload App
+          </button>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
 
 const NAV_ITEMS = [
   { id: 'sniper', label: 'StrikeAgent', icon: '🎯' },
@@ -293,11 +343,13 @@ function TelegramAppContent() {
 
 function TelegramApp() {
   return (
-    <ThemeProvider>
-      <TelegramProvider>
-        <TelegramAppContent />
-      </TelegramProvider>
-    </ThemeProvider>
+    <TelegramErrorBoundary>
+      <ThemeProvider>
+        <TelegramProvider>
+          <TelegramAppContent />
+        </TelegramProvider>
+      </ThemeProvider>
+    </TelegramErrorBoundary>
   )
 }
 
