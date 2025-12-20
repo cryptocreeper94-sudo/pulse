@@ -485,6 +485,9 @@ function MiniCoinTable({ coins: initialCoins, onCoinClick, favorites, selectedCo
   const isFavorite = (symbol) => favorites?.some(f => f.symbol?.toUpperCase() === symbol?.toUpperCase())
   
   useEffect(() => {
+    let retryCount = 0
+    let retryTimer = null
+    
     const fetchCategoryCoins = async () => {
       setLoading(true)
       try {
@@ -493,17 +496,30 @@ function MiniCoinTable({ coins: initialCoins, onCoinClick, favorites, selectedCo
           const data = await response.json()
           if (data.coins && Array.isArray(data.coins)) {
             setCategoryCoins(data.coins)
+            retryCount = 0
           }
+        } else if (retryCount < 5) {
+          retryCount++
+          retryTimer = setTimeout(fetchCategoryCoins, 2000)
         }
       } catch (err) {
         console.log('Failed to fetch category coins:', err)
-        setCategoryCoins([])
+        if (retryCount < 5) {
+          retryCount++
+          retryTimer = setTimeout(fetchCategoryCoins, 2000)
+        } else {
+          setCategoryCoins([])
+        }
       } finally {
         setLoading(false)
       }
     }
     
     fetchCategoryCoins()
+    
+    return () => {
+      if (retryTimer) clearTimeout(retryTimer)
+    }
   }, [category, timeframe])
   
   const getFilteredCoins = () => {
