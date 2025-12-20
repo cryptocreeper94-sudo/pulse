@@ -814,6 +814,37 @@ export const mastra = new Mastra({
           return c.text('Frontend not found. Tried paths: ' + possiblePaths.join(', '), 404);
         }
       },
+      // Serve Telegram Mini App HTML
+      {
+        path: "/telegram",
+        method: "GET",
+        createHandler: async ({ mastra }) => async (c: any) => {
+          const fs = await import('fs/promises');
+          const path = await import('path');
+          const url = await import('url');
+          
+          const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
+          const possiblePaths = [
+            path.join(process.cwd(), 'public', 'telegram.html'),
+            path.join(__dirname, '..', '..', 'public', 'telegram.html'),
+            path.join(__dirname, '..', '..', '..', 'public', 'telegram.html'),
+          ];
+          
+          for (const filePath of possiblePaths) {
+            try {
+              const html = await fs.readFile(filePath, 'utf-8');
+              c.header('Cache-Control', 'no-cache, no-store, must-revalidate');
+              c.header('Pragma', 'no-cache');
+              c.header('Expires', '0');
+              return c.html(html);
+            } catch (err) {
+              continue;
+            }
+          }
+          
+          return c.text('Telegram Mini App not found', 404);
+        }
+      },
       // Serve static assets
       {
         path: "/app.js",
