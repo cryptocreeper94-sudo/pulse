@@ -4352,3 +4352,436 @@ body.telegram-mode .sniper-tab {
     width: 0%;
   }
 }
+
+/* ============================================ */
+/* RPC GEAR BUTTON IN HEADER                   */
+/* ============================================ */
+
+.sniper-rpc-gear-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid #333;
+  color: #aaa;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sniper-rpc-gear-btn:hover {
+  border-color: #00D4FF;
+  color: #00D4FF;
+  background: rgba(0, 212, 255, 0.1);
+}
+
+/* ============================================ */
+/* RPC SETTINGS MODAL                          */
+/* ============================================ */
+
+.rpc-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(4px);
+  padding: 16px;
+}
+
+.rpc-modal {
+  background: #151515;
+  border: 1px solid #333;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 400px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 0 40px rgba(0, 212, 255, 0.15);
+}
+
+.rpc-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #333;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.08), rgba(157, 78, 221, 0.05));
+}
+
+.rpc-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.rpc-modal-icon {
+  font-size: 20px;
+}
+
+.rpc-modal-close {
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 1px solid #444;
+  border-radius: 50%;
+  color: #aaa;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rpc-modal-close:hover {
+  border-color: #FF4444;
+  color: #FF4444;
+  background: rgba(255, 68, 68, 0.1);
+}
+
+.rpc-modal-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.rpc-status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.rpc-status-item {
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.rpc-status-label {
+  font-size: 10px;
+  color: #666;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.rpc-status-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.rpc-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.rpc-custom-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rpc-input-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rpc-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.rpc-modal-input {
+  flex: 1;
+  padding: 12px 14px;
+  background: #0f0f0f;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 13px;
+  min-width: 0;
+}
+
+.rpc-modal-input::placeholder {
+  color: #666;
+}
+
+.rpc-modal-input:focus {
+  outline: none;
+  border-color: #00D4FF;
+}
+
+.rpc-save-btn {
+  padding: 12px 20px;
+  background: rgba(0, 212, 255, 0.15);
+  border: 1px solid rgba(0, 212, 255, 0.4);
+  border-radius: 8px;
+  color: #00D4FF;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.rpc-save-btn:hover {
+  background: #00D4FF;
+  color: #000;
+}
+
+.rpc-input-hint {
+  font-size: 10px;
+  color: #555;
+  line-height: 1.4;
+}
+
+/* ============================================ */
+/* MODE DESCRIPTIONS                           */
+/* ============================================ */
+
+.quick-action-mode-description {
+  font-size: 11px;
+  color: #777;
+  text-align: center;
+  padding: 4px 8px;
+  margin-top: -4px;
+  margin-bottom: 8px;
+  font-style: italic;
+}
+
+/* ============================================ */
+/* 390px MOBILE RESPONSIVE FIXES               */
+/* ============================================ */
+
+@media (max-width: 400px) {
+  .sniper-tab {
+    padding: 8px;
+  }
+
+  .sniper-header {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .sniper-title {
+    font-size: 18px;
+  }
+
+  .sniper-header-right {
+    gap: 8px;
+  }
+
+  .sniper-mode-btn {
+    padding: 8px 12px;
+    font-size: 11px;
+    min-height: 44px;
+  }
+
+  .sniper-rpc-gear-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 16px;
+  }
+
+  .notification-triggers-grid {
+    grid-template-columns: 1fr !important;
+    gap: 8px;
+  }
+
+  .mode-settings-modal {
+    width: 95%;
+    max-width: 100%;
+    margin: 8px;
+  }
+
+  .mode-setting-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .mode-setting-input {
+    padding: 10px 12px;
+    font-size: 13px;
+    min-height: 44px;
+  }
+
+  .sniper-token-metrics {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .sniper-metric {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .sniper-metric:last-child {
+    border-bottom: none;
+  }
+
+  .sniper-chain-buttons {
+    gap: 4px;
+  }
+
+  .sniper-chain-btn {
+    padding: 8px 10px;
+    font-size: 11px;
+    min-height: 44px;
+  }
+
+  .sniper-chain-btn .chain-name {
+    display: none;
+  }
+
+  .quick-action-bar {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .quick-action-modes {
+    gap: 4px;
+  }
+
+  .quick-action-modes button {
+    padding: 10px 12px;
+    font-size: 11px;
+    min-height: 44px;
+  }
+
+  .quick-action-amount input {
+    width: 60px;
+    padding: 10px 12px;
+    font-size: 14px;
+    min-height: 44px;
+  }
+
+  .quick-action-go {
+    padding: 12px 20px;
+    font-size: 12px;
+    min-height: 44px;
+  }
+
+  .quick-action-mode-description {
+    font-size: 11px;
+    padding: 2px 4px;
+  }
+
+  .rpc-modal {
+    max-width: 95%;
+  }
+
+  .rpc-status-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .rpc-status-item {
+    padding: 10px;
+  }
+
+  .rpc-status-value {
+    font-size: 12px;
+  }
+
+  .rpc-input-row {
+    flex-direction: column;
+  }
+
+  .rpc-save-btn {
+    width: 100%;
+    min-height: 44px;
+    font-size: 11px;
+  }
+
+  .active-trades-panel {
+    padding: 10px;
+  }
+
+  .trade-prices {
+    font-size: 11px;
+  }
+
+  .sniper-stats-grid {
+    gap: 8px;
+  }
+
+  .sniper-stat-item {
+    padding: 6px;
+  }
+
+  .sniper-stat-value {
+    font-size: 16px;
+  }
+
+  .sniper-stat-label {
+    font-size: 9px;
+  }
+
+  .demo-position-card {
+    padding: 10px;
+  }
+
+  .sniper-token-card {
+    padding: 10px;
+  }
+
+  .sniper-token-actions {
+    flex-wrap: wrap;
+  }
+
+  .sniper-btn-snipe,
+  .sniper-btn-watch {
+    flex: 1 1 40%;
+    min-height: 44px;
+    font-size: 11px;
+  }
+
+  .sniper-btn-safety {
+    flex: 0 0 auto;
+    min-height: 44px;
+  }
+
+  .sniper-automode-btn {
+    min-height: 44px;
+    font-size: 11px;
+  }
+
+  .sniper-scan-btn {
+    min-height: 44px;
+    font-size: 11px;
+  }
+
+  .sniper-discover-btn {
+    min-height: 44px;
+    font-size: 11px;
+  }
+
+  .sniper-btn-close,
+  .sniper-btn-adjust {
+    min-height: 44px;
+    font-size: 11px;
+  }
+}

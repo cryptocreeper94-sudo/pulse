@@ -587,6 +587,12 @@ function BuiltInWalletUnlock({ onUnlock, loading }) {
   )
 }
 
+const MODE_DESCRIPTIONS = {
+  'manual': 'Enter a token address to trade',
+  'semi-auto': 'AI finds tokens, you approve trades',
+  'full-auto': 'AI trades automatically within your limits'
+}
+
 function QuickActionBar({ mode, setMode, amount, setAmount, onGo, disabled, modeSettings, onModeSettingsSave }) {
   const [showModeModal, setShowModeModal] = useState(false)
   
@@ -605,6 +611,9 @@ function QuickActionBar({ mode, setMode, amount, setAmount, onGo, disabled, mode
           <button className={mode === 'semi-auto' ? 'active' : ''} onClick={() => setMode('semi-auto')}>Semi-Auto</button>
           <button className={mode === 'full-auto' ? 'active' : ''} onClick={() => setMode('full-auto')}>Full Auto</button>
           <button className="quick-action-settings" onClick={() => setShowModeModal(true)} title="Configure settings">⚙️</button>
+        </div>
+        <div className="quick-action-mode-description">
+          {MODE_DESCRIPTIONS[mode]}
         </div>
         <div className="quick-action-amount">
           <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} step="0.1" min="0.01" />
@@ -1681,6 +1690,74 @@ function SafetyFiltersPanel({ config, updateConfig, expanded, onToggle }) {
   )
 }
 
+function RPCSettingsModal({ isOpen, onClose, rpcStatus, customRPC, setCustomRPC, onSaveCustomRPC }) {
+  const getStatusColor = (status) => {
+    if (status === 'healthy') return '#39FF14'
+    if (status === 'degraded') return '#FFD700'
+    return '#FF4444'
+  }
+
+  if (!isOpen) return null
+
+  return (
+    <div className="rpc-modal-overlay" onClick={onClose}>
+      <div className="rpc-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="rpc-modal-header">
+          <div className="rpc-modal-title">
+            <span className="rpc-modal-icon">⚙️</span>
+            <span>RPC Settings</span>
+          </div>
+          <button className="rpc-modal-close" onClick={onClose}>×</button>
+        </div>
+        <div className="rpc-modal-content">
+          <div className="rpc-status-grid">
+            <div className="rpc-status-item">
+              <div className="rpc-status-label">Status</div>
+              <div className="rpc-status-value" style={{ color: getStatusColor(rpcStatus?.status) }}>
+                <span className="rpc-status-dot" style={{ background: getStatusColor(rpcStatus?.status) }} />
+                {rpcStatus?.status?.toUpperCase() || 'CHECKING'}
+              </div>
+            </div>
+            <div className="rpc-status-item">
+              <div className="rpc-status-label">Latency</div>
+              <div className="rpc-status-value">{rpcStatus?.latencyMs ? `${rpcStatus.latencyMs}ms` : '--'}</div>
+            </div>
+            <div className="rpc-status-item">
+              <div className="rpc-status-label">Active</div>
+              <div className="rpc-status-value" style={{ color: '#00D4FF' }}>{rpcStatus?.active || 'Loading...'}</div>
+            </div>
+            <div className="rpc-status-item">
+              <div className="rpc-status-label">Type</div>
+              <div className="rpc-status-value" style={{ color: '#9D4EDD' }}>
+                {rpcStatus?.type === 'helius' ? 'Premium' : rpcStatus?.type === 'custom' ? 'Custom' : 'Public'}
+              </div>
+            </div>
+          </div>
+          <div className="rpc-custom-input-group">
+            <label className="rpc-input-label">Custom RPC Endpoint (Optional)</label>
+            <div className="rpc-input-row">
+              <input
+                type="text"
+                placeholder="https://your-rpc-endpoint.com"
+                value={customRPC}
+                onChange={(e) => setCustomRPC(e.target.value)}
+                className="rpc-modal-input"
+              />
+              <button className="rpc-save-btn" onClick={async () => { 
+                const success = await onSaveCustomRPC(); 
+                if (success) onClose(); 
+              }}>
+                {customRPC ? 'Save' : 'Default'}
+              </button>
+            </div>
+            <div className="rpc-input-hint">Use your own Helius, QuickNode, or Triton endpoint for faster execution</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function RPCSettingsPanel({ rpcStatus, customRPC, setCustomRPC, onSaveCustomRPC, expanded, onToggle }) {
   const getStatusColor = (status) => {
     if (status === 'healthy') return '#39FF14'
@@ -1813,6 +1890,7 @@ export default function SniperBotTab({ canTrade = true, onNavigate, isViewOnly: 
   const [expandedSettings, setExpandedSettings] = useState(false)
   const [expandedSafety, setExpandedSafety] = useState(false)
   const [expandedRPC, setExpandedRPC] = useState(false)
+  const [showRPCModal, setShowRPCModal] = useState(false)
   const [rpcStatus, setRpcStatus] = useState(null)
   const [customRPC, setCustomRPC] = useState('')
   const [quickMode, setQuickMode] = useState('manual')
@@ -2075,12 +2153,16 @@ export default function SniperBotTab({ canTrade = true, onNavigate, isViewOnly: 
       const data = await res.json()
       if (data.success) {
         await fetchRPCStatus()
+        showToast('success', 'RPC Saved', customRPC ? 'Custom RPC endpoint configured' : 'Using default RPC endpoint')
+        return true
       } else {
-        alert(data.error || 'Failed to set custom RPC')
+        showToast('error', 'Save Failed', data.error || 'Failed to set custom RPC')
+        return false
       }
     } catch (err) {
       console.error('Error saving custom RPC:', err)
-      alert('Failed to connect to RPC endpoint')
+      showToast('error', 'Connection Error', 'Failed to connect to RPC endpoint')
+      return false
     }
   }
 
@@ -2342,8 +2424,24 @@ export default function SniperBotTab({ canTrade = true, onNavigate, isViewOnly: 
               Advanced
             </button>
           </div>
+          <button 
+            className="sniper-rpc-gear-btn" 
+            onClick={() => setShowRPCModal(true)}
+            title="RPC Settings"
+          >
+            ⚙️
+          </button>
         </div>
       </div>
+
+      <RPCSettingsModal
+        isOpen={showRPCModal}
+        onClose={() => setShowRPCModal(false)}
+        rpcStatus={rpcStatus}
+        customRPC={customRPC}
+        setCustomRPC={setCustomRPC}
+        onSaveCustomRPC={saveCustomRPC}
+      />
 
       <QuickActionBar
         mode={quickMode}
@@ -2899,16 +2997,6 @@ export default function SniperBotTab({ canTrade = true, onNavigate, isViewOnly: 
                 updateConfig={updateConfig}
                 expanded={expandedSafety}
                 onToggle={() => setExpandedSafety(!expandedSafety)}
-              />
-            </BentoItem>
-            <BentoItem span={3}>
-              <RPCSettingsPanel 
-                rpcStatus={rpcStatus}
-                customRPC={customRPC}
-                setCustomRPC={setCustomRPC}
-                onSaveCustomRPC={saveCustomRPC}
-                expanded={expandedRPC}
-                onToggle={() => setExpandedRPC(!expandedRPC)}
               />
             </BentoItem>
           </>
