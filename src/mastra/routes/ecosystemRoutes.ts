@@ -30,7 +30,80 @@ function generateApiKey(): string {
   return `orbit_${crypto.randomBytes(32).toString("hex")}`;
 }
 
+const ECOSYSTEM_INTEGRATION_SNIPPET = {
+  id: "ecosystem-integration-protocol",
+  name: "Orbit Ecosystem Integration Protocol",
+  language: "markdown",
+  category: "integration",
+  tags: ["ecosystem", "orbit", "handoff", "api", "documentation"],
+  content: `# Orbit Ecosystem Integration Protocol
+
+## Pulse Ecosystem Metadata
+**Endpoint**: \`GET /api/ecosystem/pulse\`
+
+## Dev Hub API Endpoints
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| \`/api/ecosystem/pulse\` | GET | Get Pulse's ecosystem metadata |
+| \`/api/ecosystem/apps\` | GET | List all approved ecosystem apps |
+| \`/api/ecosystem/register\` | POST | Register a new app (returns API key) |
+| \`/api/ecosystem/update\` | PUT | Update app data (requires x-api-key header) |
+| \`/api/ecosystem/approve/:appId\` | POST | Approve pending app (requires x-admin-key header) |
+
+## Agent Registration
+\`\`\`bash
+curl -X POST "/api/ecosystem/register" -H "Content-Type: application/json" -d '{
+  "appName": "Your App",
+  "category": "Enterprise",
+  "hook": "5-10 word tagline",
+  "valueProposition": "Full description...",
+  "keyTags": ["Tag1", "Tag2"],
+  "imagePrompt": "Dark mode dashboard...",
+  "websiteUrl": "https://...",
+  "submittedBy": "agent-name"
+}'
+\`\`\`
+
+## Required Fields
+- appName (string) - Official product name
+- category (string) - e.g., Enterprise, DeFi, Automation, Gaming
+- hook (string) - 5-10 word punchy tagline
+- valueProposition (string) - Full turnkey business description
+- keyTags (string[]) - 3-4 keywords (max 10)
+- imagePrompt (string) - Text-to-image prompt for dark/glassmorphic UI
+- websiteUrl (string) - App URL
+`,
+  createdAt: "2025-12-20T21:00:00.000Z",
+};
+
 export const ecosystemRoutes = [
+  {
+    path: "/api/ecosystem/snippets",
+    method: "GET",
+    createHandler: async ({ mastra }: any) => async (c: any) => {
+      return c.json({
+        success: true,
+        snippets: [ECOSYSTEM_INTEGRATION_SNIPPET],
+        count: 1,
+      });
+    },
+  },
+
+  {
+    path: "/api/ecosystem/snippets/:snippetId",
+    method: "GET",
+    createHandler: async ({ mastra }: any) => async (c: any) => {
+      const snippetId = c.req.param("snippetId");
+      if (snippetId === "ecosystem-integration-protocol") {
+        return c.json({
+          success: true,
+          snippet: ECOSYSTEM_INTEGRATION_SNIPPET,
+        });
+      }
+      return c.json({ success: false, error: "Snippet not found" }, 404);
+    },
+  },
+
   {
     path: "/api/ecosystem/pulse",
     method: "GET",
