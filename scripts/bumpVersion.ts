@@ -45,6 +45,36 @@ async function hashToSolana(version: string): Promise<string | null> {
   }
 }
 
+async function hashToDarkWaveChain(version: string): Promise<string | null> {
+  try {
+    const response = await fetch('http://localhost:3001/api/darkwave-chain/hash/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        hash: `VERSION_STAMP_${version}_${Date.now()}`,
+        metadata: {
+          type: 'VERSION_STAMP',
+          version,
+          timestamp: new Date().toISOString(),
+          environment: process.env.NODE_ENV || 'development',
+        },
+      }),
+    })
+    
+    if (response.ok) {
+      const data = await response.json()
+      console.log(`✅ DarkWave Chain hash created: ${data.txHash || data.blockHeight || 'success'}`)
+      return data.txHash || null
+    } else {
+      console.log('⚠️ DarkWave Chain hash skipped (API unavailable)')
+      return null
+    }
+  } catch (error) {
+    console.log('⚠️ DarkWave Chain hash skipped (server not running)')
+    return null
+  }
+}
+
 async function bumpVersion(type: 'patch' | 'minor' | 'major' | 'v2launch' = 'patch') {
   const primaryFile = VERSION_FILES[0]
   
@@ -109,10 +139,16 @@ async function bumpVersion(type: 'patch' | 'minor' | 'major' | 'v2launch' = 'pat
   
   console.log(`\n🎉 Version bumped to v${data.version}`)
   
-  await hashToSolana(data.version)
+  console.log('\n⛓️ Hashing to blockchains...')
+  const [solanaHash, darkwaveHash] = await Promise.all([
+    hashToSolana(data.version),
+    hashToDarkWaveChain(data.version),
+  ])
   
   console.log('\n✅ Version bump complete!')
   console.log(`   New version: v${data.version}`)
+  if (solanaHash) console.log(`   Solana TX: ${solanaHash}`)
+  if (darkwaveHash) console.log(`   DarkWave TX: ${darkwaveHash}`)
 }
 
 const arg = process.argv[2] as 'patch' | 'minor' | 'major' | 'v2launch' | undefined
