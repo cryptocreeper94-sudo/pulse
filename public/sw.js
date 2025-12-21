@@ -1,10 +1,15 @@
-const CACHE_NAME = 'pulse-v2.1.0';
+const CACHE_NAME = 'pulse-v2.2.0';
 const STATIC_ASSETS = [
-  '/',
-  '/mini-app',
   '/pwa-icon.png',
   '/pwa-splash.png',
   '/manifest.json'
+];
+const NEVER_CACHE = [
+  '/',
+  '/mini-app',
+  '/telegram',
+  '/strikeagent',
+  '/dashboard'
 ];
 
 self.addEventListener('install', (event) => {
@@ -38,6 +43,17 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   
   if (url.pathname.startsWith('/api/')) {
+    return;
+  }
+  
+  const shouldNeverCache = NEVER_CACHE.some(path => 
+    url.pathname === path || url.pathname.startsWith(path + '/')
+  );
+  
+  if (shouldNeverCache) {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match(event.request))
+    );
     return;
   }
   

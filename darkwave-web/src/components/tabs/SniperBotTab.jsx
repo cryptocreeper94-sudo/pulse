@@ -1286,9 +1286,10 @@ function QuantSystemSection() {
   useEffect(() => {
     const fetchQuantData = async () => {
       try {
+        const cacheBust = `?_t=${Date.now()}`
         const [metricsRes, feedRes] = await Promise.all([
-          fetch('/api/quant/metrics').catch(() => null),
-          fetch('/api/quant/trade-feed').catch(() => null)
+          fetch(`/api/quant/metrics${cacheBust}`, { cache: 'no-store' }).catch(() => null),
+          fetch(`/api/quant/trade-feed${cacheBust}`, { cache: 'no-store' }).catch(() => null)
         ])
         if (metricsRes?.ok) {
           const data = await metricsRes.json()
