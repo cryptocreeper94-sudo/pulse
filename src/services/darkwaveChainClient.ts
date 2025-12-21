@@ -61,7 +61,8 @@ export class DarkWaveChainClient {
     }
 
     const timestamp = Date.now().toString();
-    const signature = this.generateSignature('POST', '/api/developer/auth', '', timestamp);
+    const authBody = JSON.stringify({ apiKey: this.apiKey });
+    const signature = this.generateSignature('POST', '/api/developer/auth', authBody, timestamp);
 
     const response = await fetch(`${this.baseUrl}/api/developer/auth`, {
       method: 'POST',
@@ -71,7 +72,7 @@ export class DarkWaveChainClient {
         'X-Timestamp': timestamp,
         'X-Signature': signature,
       },
-      body: JSON.stringify({ apiKey: this.apiKey }),
+      body: authBody,
     });
 
     if (!response.ok) {

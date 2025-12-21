@@ -34,7 +34,8 @@ The platform features a solid dark theme with free-floating elements and glow ef
 - **Database**: PostgreSQL (Neon-backed).
 - **Authentication**: Session-based with access codes, featuring optional WebAuthn biometric authentication (fingerprint/Face ID) for login 2FA and wallet transaction confirmation. Secure session token rotation with tier-based durations (2 days free, 30 days premium, 10 years admin).
 - **Workflow Management**: Inngest for event-driven processing and cron jobs.
-- **Prediction Tracking**: Logs AI signals, tracks outcomes, calculates accuracy, and hashes predictions on the Solana blockchain. Features a logistic regression ML learning system with automated weekly training and an AI Status Widget.
+- **Prediction Tracking**: Logs AI signals, tracks outcomes, calculates accuracy, and hashes predictions on both Solana and DarkWave Chain L1 for dual-layer verification. Features a logistic regression ML learning system with automated weekly training and an AI Status Widget.
+- **DarkWave Chain Integration**: Full L1 blockchain integration for hash verification, hallmark generation, and prediction stamping. API routes at `/api/darkwave-chain/*` for status, hash submit/verify, and hallmark operations. Requires `DARKWAVE_API_KEY`, `DARKWAVE_API_SECRET`, `DARKWAVE_CHAIN_URL` secrets.
 - **Personal Dashboard System**: Unique Hallmark ID per user, customizable landing page, favorite coins, market gauges, and main chart widget.
 - **Coin Table System**: Categories (Top, Gainers, Losers, Meme, DeFi, DEX) fetching 20 coins each from CoinGecko API, with 1H/24H timeframe toggles and mobile responsiveness.
 - **StrikeAgent**: AI tool for real-time token discovery with safety filters, smart auto mode, and multi-chain support (Solana, Ethereum, Base, Polygon, Arbitrum, BSC, and 17 other EVM chains).
