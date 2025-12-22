@@ -53,14 +53,21 @@ function getStaticFile(urlPath: string): { data: Buffer; type: string } | null {
 
 const server = http.createServer((req, res) => {
   const url = req.url || '/';
+  const acceptHeader = req.headers['accept'] || '';
   
   if (url === '/healthz' || url === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ status: 'ok', mastraReady, timestamp: Date.now() }));
+    res.end('{"status":"ok"}');
     return;
   }
   
   if (url === '/' || url === '/index.html') {
+    const isBrowser = acceptHeader.includes('text/html');
+    if (!isBrowser) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end('{"status":"ok"}');
+      return;
+    }
     res.writeHead(200, { 'Content-Type': 'text/html', 'Cache-Control': 'no-cache' });
     res.end(realHtml);
     return;
