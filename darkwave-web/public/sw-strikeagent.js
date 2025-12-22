@@ -1,4 +1,4 @@
-const CACHE_NAME = 'strikeagent-v1.0.2';
+const CACHE_NAME = 'strikeagent-v1.1.0';
 const STATIC_ASSETS = [
   '/strikeagent-icon.png',
   '/strikeagent-splash.png',

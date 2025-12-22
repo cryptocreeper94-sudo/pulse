@@ -17,7 +17,7 @@ MASTRA_HIDE_CLOUD_CTA = "true"
 build = ["npm", "run", "build"]
 run = ["npm", "run", "start"]
 deploymentTarget = "autoscale"
-publicDir = "darkwave-web/dist"
+publicDir = "public"
 
 [workflows]
 runButton = "Project"
