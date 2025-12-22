@@ -7,10 +7,51 @@ let mastraReady = false;
 let cachedIndexHtml = null;
 const publicDir = path.join(process.cwd(), 'public');
 const indexPath = path.join(publicDir, 'index.html');
+try {
+    if (fs.existsSync(indexPath)) {
+        cachedIndexHtml = fs.readFileSync(indexPath);
+        console.log('Cached index.html on boot');
+    }
+}
+catch (e) {
+    console.log('Could not cache index.html');
+}
+async function startMastra() {
+    console.log('Starting Mastra backend via dynamic import...');
+    process.env.PORT = String(MASTRA_PORT);
+    try {
+        await import('../.mastra/output/index.mjs');
+        console.log('Mastra module imported successfully');
+        for (let i = 0; i < 60; i++) {
+            try {
+                const response = await fetch(`http://127.0.0.1:${MASTRA_PORT}/api/healthz`);
+                if (response.ok) {
+                    mastraReady = true;
+                    console.log('Mastra backend is ready!');
+                    return;
+                }
+            }
+            catch (e) {
+            }
+            await new Promise(r => setTimeout(r, 1000));
+        }
+        console.log('Mastra readiness timeout - enabling proxy anyway');
+        mastraReady = true;
+    }
+    catch (err) {
+        console.error('Failed to import Mastra:', err);
+        mastraReady = true;
+    }
+}
 const server = http.createServer((req, res) => {
     const url = req.url || '/';
-    if (url === '/healthz' || url === '/health' || url === '/') {
-        if (url === '/' && cachedIndexHtml) {
+    if (url === '/healthz' || url === '/health') {
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.end('OK');
+        return;
+    }
+    if (url === '/') {
+        if (cachedIndexHtml) {
             res.writeHead(200, {
                 'Content-Type': 'text/html',
                 'Cache-Control': 'no-cache, no-store, must-revalidate'
@@ -95,45 +136,13 @@ const server = http.createServer((req, res) => {
         res.end(data);
     });
 });
-server.listen(PORT, '0.0.0.0', async () => {
+server.listen(PORT, '0.0.0.0', () => {
     console.log(`Bootstrap server running on port ${PORT}`);
-    try {
-        if (fs.existsSync(indexPath)) {
-            cachedIndexHtml = fs.readFileSync(indexPath);
-            console.log('Cached index.html');
-        }
-    }
-    catch (e) {
-        console.log('Could not cache index.html');
-    }
-    console.log('Starting Mastra backend via dynamic import...');
-    process.env.PORT = String(MASTRA_PORT);
-    try {
-        await import('../.mastra/output/index.mjs');
-        console.log('Mastra module imported successfully');
-        const pollMastra = async () => {
-            for (let i = 0; i < 30; i++) {
-                try {
-                    const response = await fetch(`http://127.0.0.1:${MASTRA_PORT}/api/healthz`);
-                    if (response.ok) {
-                        mastraReady = true;
-                        console.log('Mastra backend is ready!');
-                        return;
-                    }
-                }
-                catch (e) {
-                }
-                await new Promise(r => setTimeout(r, 1000));
-            }
-            console.log('Mastra readiness timeout - enabling proxy anyway');
-            mastraReady = true;
-        };
-        pollMastra();
-    }
-    catch (err) {
-        console.error('Failed to import Mastra:', err);
-        mastraReady = true;
-    }
+    setImmediate(() => {
+        startMastra().catch(err => {
+            console.error('Mastra startup failed:', err);
+        });
+    });
 });
 process.on('SIGTERM', () => {
     console.log('Shutting down...');
