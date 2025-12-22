@@ -7,9 +7,20 @@ const PORT = Number(process.env.PORT ?? 5000);
 const MASTRA_PORT = 4111;
 
 let mastraReady = false;
-let cachedIndexHtml: Buffer | null = null;
 
 const publicDir = path.join(process.cwd(), 'public');
+const indexPath = path.join(publicDir, 'index.html');
+
+// Pre-load index.html synchronously BEFORE server starts
+let cachedIndexHtml: Buffer;
+try {
+  cachedIndexHtml = fs.readFileSync(indexPath);
+  console.log('Pre-loaded index.html');
+} catch (e) {
+  // Fallback: minimal HTML that redirects or shows loading
+  cachedIndexHtml = Buffer.from('<!DOCTYPE html><html><head><title>Pulse</title></head><body>Loading...</body></html>');
+  console.log('index.html not found, using fallback');
+}
 
 const server = http.createServer((req, res) => {
   const url = req.url || '/';
@@ -21,21 +32,8 @@ const server = http.createServer((req, res) => {
   }
   
   if (url === '/' || url === '/index.html') {
-    if (cachedIndexHtml) {
-      res.writeHead(200, { 'Content-Type': 'text/html' });
-      res.end(cachedIndexHtml);
-      return;
-    }
-    fs.readFile(path.join(publicDir, 'index.html'), (err, data) => {
-      if (err) {
-        res.writeHead(200, { 'Content-Type': 'text/plain' });
-        res.end('OK');
-        return;
-      }
-      cachedIndexHtml = data;
-      res.writeHead(200, { 'Content-Type': 'text/html' });
-      res.end(data);
-    });
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.end(cachedIndexHtml);
     return;
   }
   
@@ -72,21 +70,9 @@ const server = http.createServer((req, res) => {
   
   fs.readFile(filePath, (err, data) => {
     if (err) {
-      if (cachedIndexHtml) {
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end(cachedIndexHtml);
-        return;
-      }
-      fs.readFile(path.join(publicDir, 'index.html'), (err2, html) => {
-        if (err2) {
-          res.writeHead(404);
-          res.end('Not found');
-          return;
-        }
-        cachedIndexHtml = html;
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end(html);
-      });
+      // SPA fallback - serve cached index.html for client-side routing
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(cachedIndexHtml);
       return;
     }
     
