@@ -4,7 +4,7 @@ import path from 'path';
 import fs from 'fs';
 
 const PORT = 5000;
-const MASTRA_PORT = 5001;
+const MASTRA_PORT = 4111;
 
 let mastraReady = false;
 let mastraProcess: ChildProcess | null = null;
@@ -12,7 +12,28 @@ let mastraProcess: ChildProcess | null = null;
 const server = http.createServer((req, res) => {
   const url = req.url || '/';
   
-  if (url === '/healthz' || url === '/health') {
+  if (url === '/healthz' || url === '/health' || url === '/') {
+    if (url === '/') {
+      const publicDir = path.join(process.cwd(), 'darkwave-web', 'dist');
+      const indexPath = path.join(publicDir, 'index.html');
+      
+      try {
+        if (fs.existsSync(indexPath)) {
+          const data = fs.readFileSync(indexPath);
+          res.writeHead(200, { 
+            'Content-Type': 'text/html',
+            'Cache-Control': 'no-cache, no-store, must-revalidate'
+          });
+          res.end(data);
+          return;
+        }
+      } catch (e) {
+      }
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ status: 'ok', mastraReady }));
+      return;
+    }
+    
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ status: 'ok', mastraReady }));
     return;
@@ -49,9 +70,9 @@ const server = http.createServer((req, res) => {
   }
   
   const publicDir = path.join(process.cwd(), 'darkwave-web', 'dist');
-  let filePath = path.join(publicDir, url === '/' ? 'index.html' : url);
+  let filePath = path.join(publicDir, url);
   
-  if (!filePath.includes('.')) {
+  if (!path.extname(filePath)) {
     filePath = path.join(publicDir, 'index.html');
   }
   
@@ -100,16 +121,16 @@ server.listen(PORT, '0.0.0.0', () => {
   console.log(`Bootstrap server running on port ${PORT}`);
   console.log('Starting Mastra backend...');
   
-  mastraProcess = spawn('npx', ['mastra', 'start', '--port', String(MASTRA_PORT)], {
+  mastraProcess = spawn('npx', ['mastra', 'start'], {
     cwd: process.cwd(),
-    env: { ...process.env },
+    env: { ...process.env, PORT: String(MASTRA_PORT) },
     stdio: ['inherit', 'pipe', 'pipe']
   });
   
   mastraProcess.stdout?.on('data', (data) => {
     const output = data.toString();
     console.log('[Mastra]', output);
-    if (output.includes('Server started') || output.includes('listening')) {
+    if (output.includes('Server started') || output.includes('listening') || output.includes('ready')) {
       mastraReady = true;
       console.log('Mastra backend is ready!');
     }
@@ -128,7 +149,7 @@ server.listen(PORT, '0.0.0.0', () => {
       console.log('Assuming Mastra is ready after timeout');
       mastraReady = true;
     }
-  }, 30000);
+  }, 10000);
 });
 
 process.on('SIGTERM', () => {
