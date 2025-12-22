@@ -11,32 +11,35 @@ let mastraReady = false;
 const publicDir = path.join(process.cwd(), 'public');
 const indexPath = path.join(publicDir, 'index.html');
 
-// Pre-load index.html synchronously BEFORE server starts
+// Minimal fallback for instant response if file not found
+const fallbackHtml = Buffer.from('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Pulse</title><meta http-equiv="refresh" content="2"></head><body style="background:#0f0f0f;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;font-family:system-ui"><div>Loading Pulse...</div></body></html>');
+
+// Try to load index.html synchronously, fall back if not available
 let cachedIndexHtml: Buffer;
 try {
   cachedIndexHtml = fs.readFileSync(indexPath);
-  console.log('Pre-loaded index.html');
-} catch (e) {
-  // Fallback: minimal HTML that redirects or shows loading
-  cachedIndexHtml = Buffer.from('<!DOCTYPE html><html><head><title>Pulse</title></head><body>Loading...</body></html>');
-  console.log('index.html not found, using fallback');
+} catch {
+  cachedIndexHtml = fallbackHtml;
 }
 
 const server = http.createServer((req, res) => {
   const url = req.url || '/';
   
+  // Health checks - respond immediately
   if (url === '/healthz' || url === '/health') {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end('OK');
     return;
   }
   
+  // Root and index - serve cached HTML instantly
   if (url === '/' || url === '/index.html') {
     res.writeHead(200, { 'Content-Type': 'text/html' });
     res.end(cachedIndexHtml);
     return;
   }
   
+  // API proxy
   if (url.startsWith('/api/')) {
     if (!mastraReady) {
       res.writeHead(503, { 'Content-Type': 'application/json' });
@@ -66,11 +69,11 @@ const server = http.createServer((req, res) => {
     return;
   }
   
+  // Static files
   const filePath = path.join(publicDir, url);
   
   fs.readFile(filePath, (err, data) => {
     if (err) {
-      // SPA fallback - serve cached index.html for client-side routing
       res.writeHead(200, { 'Content-Type': 'text/html' });
       res.end(cachedIndexHtml);
       return;
@@ -96,17 +99,26 @@ const server = http.createServer((req, res) => {
   });
 });
 
+// Start server immediately
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server on port ${PORT}`);
+  console.log(`Server ready on port ${PORT}`);
   
-  mastraReady = true;
-  
-  const workerPath = path.join(process.cwd(), 'dist', 'mastra-worker.js');
-  
-  if (fs.existsSync(workerPath)) {
-    const worker = new Worker(workerPath);
-    worker.on('error', () => {});
-  } else {
-    import('../.mastra/output/index.mjs').catch(() => {});
-  }
+  // Defer Mastra worker initialization to not block event loop
+  setImmediate(() => {
+    mastraReady = true;
+    
+    const workerPath = path.join(process.cwd(), 'dist', 'mastra-worker.js');
+    
+    try {
+      if (fs.existsSync(workerPath)) {
+        const worker = new Worker(workerPath);
+        worker.on('error', (e) => console.error('Worker error:', e));
+        worker.on('exit', (code) => console.log('Worker exited:', code));
+      } else {
+        import('../.mastra/output/index.mjs').catch((e) => console.error('Mastra import error:', e));
+      }
+    } catch (e) {
+      console.error('Worker init error:', e);
+    }
+  });
 });
