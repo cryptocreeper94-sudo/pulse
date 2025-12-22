@@ -191,15 +191,7 @@ export const mastra = new Mastra({
       },
     ],
     apiRoutes: [
-      // Health check endpoint for deployment health checks (must be at / for Replit health checks)
-      {
-        path: "/",
-        method: "GET",
-        createHandler: async () => async (c: any) => {
-          return c.json({ status: "ok", timestamp: Date.now() });
-        }
-      },
-      // Alternate health check path
+      // Health check endpoint for deployment (configured via healthcheckPath in .replit)
       {
         path: "/healthz",
         method: "GET",
