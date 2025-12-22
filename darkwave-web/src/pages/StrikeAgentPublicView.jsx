@@ -8,13 +8,26 @@ export default function StrikeAgentPublicView({ onSubscribe }) {
   const [activeSignalIndex, setActiveSignalIndex] = useState(0)
 
   useEffect(() => {
+    const fetchWithRetry = async (url, retries = 3) => {
+      for (let i = 0; i < retries; i++) {
+        const res = await fetch(url, { cache: 'no-store' })
+        if (res.ok) return res
+        if (res.status === 503) {
+          await new Promise(r => setTimeout(r, 2000))
+          continue
+        }
+        return res
+      }
+      return fetch(url, { cache: 'no-store' })
+    }
+
     const fetchData = async () => {
       try {
         const cacheBust = `?_t=${Date.now()}`
         const [signalsRes, executionsRes, statsRes] = await Promise.all([
-          fetch(`/api/public/strikeagent/signals${cacheBust}`, { cache: 'no-store' }),
-          fetch(`/api/public/strikeagent/executions${cacheBust}`, { cache: 'no-store' }),
-          fetch(`/api/public/strikeagent/stats${cacheBust}`, { cache: 'no-store' })
+          fetchWithRetry(`/api/public/strikeagent/signals${cacheBust}`),
+          fetchWithRetry(`/api/public/strikeagent/executions${cacheBust}`),
+          fetchWithRetry(`/api/public/strikeagent/stats${cacheBust}`)
         ])
         
         const signalsData = await signalsRes.json()

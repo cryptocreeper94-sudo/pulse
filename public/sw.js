@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pulse-v2.2.0';
+const CACHE_NAME = 'pulse-v2.3.0';
 const STATIC_ASSETS = [
   '/pwa-icon.png',
   '/pwa-splash.png',
