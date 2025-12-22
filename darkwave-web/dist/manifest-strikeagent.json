@@ -1,0 +1,50 @@
+{
+  "name": "StrikeAgent - AI Trading Bot",
+  "short_name": "StrikeAgent",
+  "description": "AI-powered token discovery and autonomous trading for crypto",
+  "start_url": "/live",
+  "display": "standalone",
+  "background_color": "#0A0A0A",
+  "theme_color": "#00D4FF",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/strikeagent-icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/strikeagent-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/strikeagent-splash.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "StrikeAgent AI Trading Bot"
+    }
+  ],
+  "categories": ["finance", "productivity", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Live Trading",
+      "short_name": "Live",
+      "description": "Watch live AI signals",
+      "url": "/live",
+      "icons": [{ "src": "/strikeagent-icon.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Upgrade",
+      "short_name": "Upgrade",
+      "description": "Unlock full trading power",
+      "url": "/live?upgrade=true",
+      "icons": [{ "src": "/strikeagent-icon.png", "sizes": "192x192" }]
+    }
+  ]
+}

@@ -1,6 +1,5 @@
 node_modules
-dist
-.mastra
+.mastra/.build
 .env.development
 .env
 *.db

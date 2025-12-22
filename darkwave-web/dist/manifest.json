@@ -1,0 +1,50 @@
+{
+  "name": "Pulse - AI Trading Analysis",
+  "short_name": "Pulse",
+  "description": "AI-powered predictive trading analysis for crypto and stocks",
+  "start_url": "/mini-app",
+  "display": "standalone",
+  "background_color": "#0A0A0A",
+  "theme_color": "#00D4FF",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/pwa-icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/pwa-splash.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Pulse AI Trading Agents"
+    }
+  ],
+  "categories": ["finance", "productivity", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Analysis",
+      "short_name": "Analyze",
+      "description": "Quick technical analysis",
+      "url": "/mini-app?tab=analysis",
+      "icons": [{ "src": "/pwa-icon.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Projects",
+      "short_name": "Projects",
+      "description": "View featured tokens",
+      "url": "/mini-app?tab=projects",
+      "icons": [{ "src": "/pwa-icon.png", "sizes": "192x192" }]
+    }
+  ]
+}
