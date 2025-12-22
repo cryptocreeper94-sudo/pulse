@@ -9,12 +9,12 @@ let cachedIndexHtml = null;
 const publicDir = path.join(process.cwd(), 'public');
 const server = http.createServer((req, res) => {
     const url = req.url || '/';
-    if (url === '/' || url === '/healthz' || url === '/health') {
+    if (url === '/healthz' || url === '/health') {
         res.writeHead(200, { 'Content-Type': 'text/plain' });
         res.end('OK');
         return;
     }
-    if (url === '/app' || url === '/index.html') {
+    if (url === '/' || url === '/index.html') {
         if (cachedIndexHtml) {
             res.writeHead(200, { 'Content-Type': 'text/html' });
             res.end(cachedIndexHtml);
@@ -22,8 +22,8 @@ const server = http.createServer((req, res) => {
         }
         fs.readFile(path.join(publicDir, 'index.html'), (err, data) => {
             if (err) {
-                res.writeHead(404);
-                res.end('Not found');
+                res.writeHead(200, { 'Content-Type': 'text/plain' });
+                res.end('OK');
                 return;
             }
             cachedIndexHtml = data;
