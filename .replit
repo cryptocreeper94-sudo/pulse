@@ -15,7 +15,7 @@ MASTRA_HIDE_CLOUD_CTA = "true"
 
 [deployment]
 build = ["npm", "run", "build"]
-run = ["npm", "run", "start"]
+run = ["bash", "-c", "PORT=5000 node --import=./.mastra/output/instrumentation.mjs .mastra/output/index.mjs"]
 deploymentTarget = "vm"
 publicDir = "public"
 

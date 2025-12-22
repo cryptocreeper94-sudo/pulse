@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "mastra dev",
-    "start": "node dist/bootstrap.js",
+    "start": "node --import=./.mastra/output/instrumentation.mjs .mastra/output/index.mjs",
     "start:mastra": "mastra start",
     "build": "rm -rf .mastra/output .mastra/.build && NODE_OPTIONS='--max-old-space-size=4096' MASTRA_DEV_NO_CACHE=1 mastra build && npm install --prefix darkwave-web && cd darkwave-web && npm run build && cp -r dist/* ../public/ && cd .. && npx tsc src/bootstrap.ts --outDir dist --esModuleInterop --module NodeNext --moduleResolution NodeNext --target ES2022",
     "check": "tsc",
