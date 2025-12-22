@@ -1,0 +1,111 @@
+modules = ["nodejs-22", "python-3.11", "postgresql-16"]
+
+[agent]
+stack = "AGENT_STACK"
+integrations = ["javascript_openai_ai_integrations:1.0.0", "agentstack-trigger-telegram:1.0.0", "replitmail:1.0.0", "javascript_anthropic_ai_integrations:1.0.0"]
+expertMode = true
+automationTriggerConnectorName = "legacy_telegram"
+
+[nix]
+channel = "stable-24_11"
+packages = ["freetype", "imagemagick", "jq", "lcms2", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "oneDNN", "openjpeg", "re2", "tcl", "tk", "zlib"]
+
+[env]
+MASTRA_HIDE_CLOUD_CTA = "true"
+
+[deployment]
+build = ["npm", "run", "build"]
+run = ["npm", "run", "start"]
+deploymentTarget = "autoscale"
+publicDir = "darkwave-web/dist"
+healthcheckPath = "/healthz"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Start inngest server"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Start application"
+
+[[workflows.workflow]]
+name = "Start inngest server"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "./scripts/inngest.sh"
+waitForPort = 3000
+
+[workflows.workflow.metadata]
+outputType = "automations"
+
+[[workflows.workflow]]
+name = "Start application"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "./run-dev.sh"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[userenv]
+
+[userenv.shared]
+BASE_PRICE_ID = "price_1SdIrPPQpkkF93FKzRU0JkpS"
+STRIPE_BASE_MONTHLY_PRICE = "price_1SdIrPPQpkkF93FKzRU0JkpS"
+ANNUAL_SUBSCRIPTION_PRICE_ID = "price_1SdIrQPQpkkF93FKmkOk8KC9"
+STRIPE_ANNUAL_PRICE = "price_1SdIrQPQpkkF93FKmkOk8KC9"
+LEGACY_FOUNDER_6MONTH_PRICE_ID = "price_1SdIrQPQpkkF93FK07iEC0tf"
+STRIPE_LEGACY_FOUNDER_PRICE = "price_1SdIrQPQpkkF93FK07iEC0tf"
+PULSE_PRO_MONTHLY_PRICE_ID = "price_1SeAxwPQpkkF93FKfrJeVcII"
+PULSE_PRO_ANNUAL_PRICE_ID = "price_1SeAxwPQpkkF93FKw5bpIAGQ"
+STRIKE_AGENT_MONTHLY_PRICE_ID = "price_1SeAxxPQpkkF93FKSlPA3Sy0"
+STRIKE_AGENT_ANNUAL_PRICE_ID = "price_1SeAxxPQpkkF93FK2Mv8kFJz"
+COMPLETE_BUNDLE_MONTHLY_PRICE_ID = "price_1SeAxxPQpkkF93FKLxKsK8Qp"
+COMPLETE_BUNDLE_ANNUAL_PRICE_ID = "price_1SeAxyPQpkkF93FKuPONK6Oh"
+API_PRO_MONTHLY_PRICE_ID = "price_1Sf21aPQpkkF93FKSomqCwLC"
+API_PRO_ANNUAL_PRICE_ID = "price_1Sf21aPQpkkF93FKj2Hhiau5"
+API_ENTERPRISE_MONTHLY_PRICE_ID = "price_1Sf21aPQpkkF93FKzfVcPTcK"
+API_ENTERPRISE_ANNUAL_PRICE_ID = "price_1Sf21bPQpkkF93FKHXXMPN0A"
+NODE_OPTIONS = "--max-old-space-size=4096"
+MASTRA_DEV_NO_CACHE = "1"
+
+[[ports]]
+localPort = 3000
+externalPort = 4200
+
+[[ports]]
+localPort = 3001
+externalPort = 3001
+
+[[ports]]
+localPort = 3002
+externalPort = 5173
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[[ports]]
+localPort = 5001
+externalPort = 3000
+
+[[ports]]
+localPort = 5173
+externalPort = 9000
+
+[[ports]]
+localPort = 8289
+externalPort = 3003
