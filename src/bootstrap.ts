@@ -3,39 +3,44 @@ import { spawn, ChildProcess } from 'child_process';
 import path from 'path';
 import fs from 'fs';
 
-const PORT = 5000;
+const PORT = Number(process.env.PORT ?? 5000);
 const MASTRA_PORT = 4111;
 
 let mastraReady = false;
 let mastraProcess: ChildProcess | null = null;
+let cachedIndexHtml: Buffer | null = null;
+
+const publicDir = path.join(process.cwd(), 'darkwave-web', 'dist');
+const indexPath = path.join(publicDir, 'index.html');
+try {
+  if (fs.existsSync(indexPath)) {
+    cachedIndexHtml = fs.readFileSync(indexPath);
+    console.log('Cached index.html on boot');
+  }
+} catch (e) {
+  console.log('Could not cache index.html');
+}
 
 const server = http.createServer((req, res) => {
   const url = req.url || '/';
   
-  if (url === '/healthz' || url === '/health' || url === '/') {
-    if (url === '/') {
-      const publicDir = path.join(process.cwd(), 'darkwave-web', 'dist');
-      const indexPath = path.join(publicDir, 'index.html');
-      
-      try {
-        if (fs.existsSync(indexPath)) {
-          const data = fs.readFileSync(indexPath);
-          res.writeHead(200, { 
-            'Content-Type': 'text/html',
-            'Cache-Control': 'no-cache, no-store, must-revalidate'
-          });
-          res.end(data);
-          return;
-        }
-      } catch (e) {
-      }
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ status: 'ok', mastraReady }));
+  if (url === '/healthz' || url === '/health') {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('OK');
+    return;
+  }
+  
+  if (url === '/') {
+    if (cachedIndexHtml) {
+      res.writeHead(200, { 
+        'Content-Type': 'text/html',
+        'Cache-Control': 'no-cache, no-store, must-revalidate'
+      });
+      res.end(cachedIndexHtml);
       return;
     }
-    
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ status: 'ok', mastraReady }));
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('OK');
     return;
   }
   
@@ -69,27 +74,32 @@ const server = http.createServer((req, res) => {
     return;
   }
   
-  const publicDir = path.join(process.cwd(), 'darkwave-web', 'dist');
   let filePath = path.join(publicDir, url);
   
   if (!path.extname(filePath)) {
+    if (cachedIndexHtml) {
+      res.writeHead(200, { 
+        'Content-Type': 'text/html',
+        'Cache-Control': 'no-cache, no-store, must-revalidate'
+      });
+      res.end(cachedIndexHtml);
+      return;
+    }
     filePath = path.join(publicDir, 'index.html');
   }
   
   fs.readFile(filePath, (err, data) => {
     if (err) {
-      fs.readFile(path.join(publicDir, 'index.html'), (err2, indexData) => {
-        if (err2) {
-          res.writeHead(404);
-          res.end('Not found');
-          return;
-        }
+      if (cachedIndexHtml) {
         res.writeHead(200, { 
           'Content-Type': 'text/html',
           'Cache-Control': 'no-cache, no-store, must-revalidate'
         });
-        res.end(indexData);
-      });
+        res.end(cachedIndexHtml);
+        return;
+      }
+      res.writeHead(404);
+      res.end('Not found');
       return;
     }
     
@@ -149,7 +159,7 @@ server.listen(PORT, '0.0.0.0', () => {
       console.log('Assuming Mastra is ready after timeout');
       mastraReady = true;
     }
-  }, 10000);
+  }, 5000);
 });
 
 process.on('SIGTERM', () => {
