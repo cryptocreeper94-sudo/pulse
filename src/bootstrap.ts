@@ -5,9 +5,11 @@ import fs from 'fs';
 
 const PORT = Number(process.env.PORT ?? 5000);
 const MASTRA_PORT = 4111;
+const INNGEST_PORT = 3000;
 
 let mastraReady = false;
 let mastraProcess: ChildProcess | null = null;
+let inngestProcess: ChildProcess | null = null;
 let cachedIndexHtml: Buffer | null = null;
 
 const publicDir = path.join(process.cwd(), 'public');
@@ -160,11 +162,53 @@ server.listen(PORT, '0.0.0.0', () => {
       mastraReady = true;
     }
   }, 5000);
+  
+  // Start Inngest worker for StrikeAgent data ingestion
+  console.log('Starting Inngest worker for StrikeAgent...');
+  
+  // Setup Inngest config
+  const inngestConfigDir = path.join(process.cwd(), '.config', 'inngest');
+  const inngestConfigPath = path.join(inngestConfigDir, 'inngest.yaml');
+  
+  if (!fs.existsSync(inngestConfigPath)) {
+    fs.mkdirSync(inngestConfigDir, { recursive: true });
+    const dbUrl = process.env.DATABASE_URL;
+    if (dbUrl) {
+      fs.writeFileSync(inngestConfigPath, `postgres-uri: "${dbUrl}"`);
+    } else {
+      fs.writeFileSync(inngestConfigPath, 'sqlite-dir: "/home/runner/workspace/.local/share/inngest"');
+    }
+  }
+  
+  inngestProcess = spawn('npx', [
+    'inngest-cli', 'dev',
+    '-u', `http://localhost:${MASTRA_PORT}/api/inngest`,
+    '--host', '0.0.0.0',
+    '--port', String(INNGEST_PORT),
+    '--config', inngestConfigPath
+  ], {
+    cwd: process.cwd(),
+    env: process.env,
+    stdio: ['inherit', 'pipe', 'pipe']
+  });
+  
+  inngestProcess.stdout?.on('data', (data) => {
+    console.log('[Inngest]', data.toString().trim());
+  });
+  
+  inngestProcess.stderr?.on('data', (data) => {
+    console.error('[Inngest Error]', data.toString().trim());
+  });
+  
+  inngestProcess.on('error', (err) => {
+    console.error('Failed to start Inngest:', err);
+  });
 });
 
 process.on('SIGTERM', () => {
   console.log('Shutting down...');
   mastraProcess?.kill();
+  inngestProcess?.kill();
   server.close();
   process.exit(0);
 });
