@@ -10,28 +10,32 @@ let mastraReady = false;
 let cachedIndexHtml: Buffer | null = null;
 
 const publicDir = path.join(process.cwd(), 'public');
-const indexPath = path.join(publicDir, 'index.html');
-
-try {
-  if (fs.existsSync(indexPath)) {
-    cachedIndexHtml = fs.readFileSync(indexPath);
-  }
-} catch (e) {}
 
 const server = http.createServer((req, res) => {
   const url = req.url || '/';
   
-  if (url === '/healthz' || url === '/health' || url === '/') {
-    if (url === '/' && cachedIndexHtml) {
-      res.writeHead(200, { 
-        'Content-Type': 'text/html',
-        'Cache-Control': 'no-cache'
-      });
+  if (url === '/' || url === '/healthz' || url === '/health') {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('OK');
+    return;
+  }
+  
+  if (url === '/app' || url === '/index.html') {
+    if (cachedIndexHtml) {
+      res.writeHead(200, { 'Content-Type': 'text/html' });
       res.end(cachedIndexHtml);
-    } else {
-      res.writeHead(200, { 'Content-Type': 'text/plain' });
-      res.end('OK');
+      return;
     }
+    fs.readFile(path.join(publicDir, 'index.html'), (err, data) => {
+      if (err) {
+        res.writeHead(404);
+        res.end('Not found');
+        return;
+      }
+      cachedIndexHtml = data;
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(data);
+    });
     return;
   }
   
@@ -71,10 +75,18 @@ const server = http.createServer((req, res) => {
       if (cachedIndexHtml) {
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.end(cachedIndexHtml);
-      } else {
-        res.writeHead(404);
-        res.end('Not found');
+        return;
       }
+      fs.readFile(path.join(publicDir, 'index.html'), (err2, html) => {
+        if (err2) {
+          res.writeHead(404);
+          res.end('Not found');
+          return;
+        }
+        cachedIndexHtml = html;
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(html);
+      });
       return;
     }
     
@@ -101,15 +113,14 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server on port ${PORT}`);
   
+  mastraReady = true;
+  
   const workerPath = path.join(process.cwd(), 'dist', 'mastra-worker.js');
   
   if (fs.existsSync(workerPath)) {
     const worker = new Worker(workerPath);
-    worker.on('message', (msg: { type: string }) => {
-      if (msg.type === 'ready') mastraReady = true;
-    });
-    worker.on('error', () => { mastraReady = true; });
+    worker.on('error', () => {});
   } else {
-    import('../.mastra/output/index.mjs').then(() => { mastraReady = true; }).catch(() => { mastraReady = true; });
+    import('../.mastra/output/index.mjs').catch(() => {});
   }
 });
