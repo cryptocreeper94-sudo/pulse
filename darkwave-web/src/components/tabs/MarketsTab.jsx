@@ -147,7 +147,7 @@ function CoinRow({ coin, rank, onClick, isFavorite, onToggleFavorite }) {
           <strong>{coin.symbol}</strong>
         </div>
       </td>
-      <td>{formatPrice(coin.price)}</td>
+      <td style={{ color: isPositive ? '#00D4FF' : '#FF4444' }}>{formatPrice(coin.price)}</td>
       <td className={isPositive ? 'positive' : 'negative'}>{formatChange(coin.change)}</td>
       <td>
         <div style={{ 
@@ -176,7 +176,7 @@ function CoinRow({ coin, rank, onClick, isFavorite, onToggleFavorite }) {
           </span>
         </div>
       </td>
-      <td>{formatVolume(coin.volume)}</td>
+      <td style={{ color: isPositive ? '#00D4FF' : '#FF4444' }}>{formatVolume(coin.volume)}</td>
     </tr>
   )
 }
