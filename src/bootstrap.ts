@@ -131,19 +131,16 @@ server.listen(PORT, '0.0.0.0', () => {
       stdio: 'inherit'
     });
     
+    mastraReady = true;
+    console.log('Mastra spawned, ready for requests');
+    
     child.on('error', (err) => {
       console.error('Mastra spawn error:', err);
-      mastraReady = true;
     });
     
     child.on('exit', (code) => {
       console.log('Mastra exited with code:', code);
     });
-    
-    setTimeout(() => {
-      mastraReady = true;
-      console.log('Mastra marked ready');
-    }, 10000);
   } else {
     console.log('No Mastra output found');
     mastraReady = true;
