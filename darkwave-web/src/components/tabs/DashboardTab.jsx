@@ -1001,10 +1001,10 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
     btcDominance: 54.5,
   })
   const [news, setNews] = useState([
-    { source: 'CoinDesk', title: 'Bitcoin Holds Above $90K as Market Awaits Fed Decision', time: '2h ago', url: 'https://coindesk.com' },
-    { source: 'CoinTelegraph', title: 'Ethereum Layer-2 Solutions See Record Growth in Q4', time: '4h ago', url: 'https://cointelegraph.com' },
-    { source: 'The Block', title: 'Solana DeFi TVL Surges Past $5 Billion Milestone', time: '6h ago', url: 'https://theblock.co' },
-    { source: 'Decrypt', title: 'AI Tokens Lead Altcoin Rally as Sector Gains Momentum', time: '8h ago', url: 'https://decrypt.co' },
+    { source: 'CoinDesk', title: 'Market Analysis: Key Levels to Watch This Week', time: 'Today', url: 'https://coindesk.com' },
+    { source: 'CoinTelegraph', title: 'Institutional Adoption Continues to Drive Crypto Growth', time: 'Today', url: 'https://cointelegraph.com' },
+    { source: 'The Block', title: 'DeFi Protocol Activity Reaches New Highs', time: 'Today', url: 'https://theblock.co' },
+    { source: 'Decrypt', title: 'AI and Blockchain Integration Trends for 2025', time: 'Today', url: 'https://decrypt.co' },
   ])
 
   useEffect(() => {
@@ -1058,10 +1058,10 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
 
   useEffect(() => {
     const defaultNews = [
-      { source: 'CoinDesk', title: 'Bitcoin Holds Above $90K as Market Awaits Fed Decision', time: '2h ago', url: 'https://coindesk.com' },
-      { source: 'CoinTelegraph', title: 'Ethereum Layer-2 Solutions See Record Growth in Q4', time: '4h ago', url: 'https://cointelegraph.com' },
-      { source: 'The Block', title: 'Solana DeFi TVL Surges Past $5 Billion Milestone', time: '6h ago', url: 'https://theblock.co' },
-      { source: 'Decrypt', title: 'AI Tokens Lead Altcoin Rally as Sector Gains Momentum', time: '8h ago', url: 'https://decrypt.co' },
+      { source: 'CoinDesk', title: 'Market Analysis: Key Levels to Watch This Week', time: 'Today', url: 'https://coindesk.com' },
+      { source: 'CoinTelegraph', title: 'Institutional Adoption Continues to Drive Crypto Growth', time: 'Today', url: 'https://cointelegraph.com' },
+      { source: 'The Block', title: 'DeFi Protocol Activity Reaches New Highs', time: 'Today', url: 'https://theblock.co' },
+      { source: 'Decrypt', title: 'AI and Blockchain Integration Trends for 2025', time: 'Today', url: 'https://decrypt.co' },
     ]
     const fetchNews = async () => {
       try {
