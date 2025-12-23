@@ -64,6 +64,7 @@ API_ENTERPRISE_MONTHLY_PRICE_ID = "price_1Sf21aPQpkkF93FKzfVcPTcK"
 API_ENTERPRISE_ANNUAL_PRICE_ID = "price_1Sf21bPQpkkF93FKHXXMPN0A"
 NODE_OPTIONS = "--max-old-space-size=4096"
 MASTRA_DEV_NO_CACHE = "1"
+CRON_SECRET = "pulse-cron-2024-secure"
 
 [[ports]]
 localPort = 4111

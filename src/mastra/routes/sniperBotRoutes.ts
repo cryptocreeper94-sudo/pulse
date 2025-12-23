@@ -1260,4 +1260,78 @@ export const sniperBotRoutes = [
       };
     }
   },
+
+  {
+    path: "/api/internal/trigger-scan",
+    method: "POST",
+    createHandler: async ({ mastra }: any) => async (c: any) => {
+      const logger = mastra.getLogger();
+      try {
+        const authHeader = c.req.header('x-cron-secret');
+        const expectedSecret = process.env.CRON_SECRET || 'pulse-cron-2024';
+        
+        if (authHeader !== expectedSecret) {
+          logger?.warn('[CronTrigger] Unauthorized scan attempt');
+          return c.json({ error: 'Unauthorized' }, 401);
+        }
+
+        logger?.info('[CronTrigger] Starting scheduled token scan...');
+        
+        const signals = await topSignalsService.scanAndScoreTokens();
+        
+        logger?.info(`[CronTrigger] Scan complete - ${signals.length} tokens saved`);
+        
+        return c.json({
+          success: true,
+          signalsCount: signals.length,
+          topTokens: signals.slice(0, 5).map(s => ({
+            symbol: s.tokenSymbol,
+            chain: s.chain,
+            score: s.compositeScore
+          })),
+          timestamp: new Date().toISOString()
+        });
+      } catch (error: any) {
+        logger?.error('[CronTrigger] Scan failed', { error: error.message });
+        return c.json({ error: 'Scan failed', message: error.message }, 500);
+      }
+    }
+  },
+
+  {
+    path: "/api/internal/trigger-scan",
+    method: "GET",
+    createHandler: async ({ mastra }: any) => async (c: any) => {
+      const logger = mastra.getLogger();
+      try {
+        const secret = c.req.query('secret');
+        const expectedSecret = process.env.CRON_SECRET || 'pulse-cron-2024';
+        
+        if (secret !== expectedSecret) {
+          logger?.warn('[CronTrigger] Unauthorized GET scan attempt');
+          return c.json({ error: 'Unauthorized' }, 401);
+        }
+
+        logger?.info('[CronTrigger] Starting scheduled token scan via GET...');
+        
+        const signals = await topSignalsService.scanAndScoreTokens();
+        
+        logger?.info(`[CronTrigger] Scan complete - ${signals.length} tokens saved`);
+        
+        return c.json({
+          success: true,
+          signalsCount: signals.length,
+          topTokens: signals.slice(0, 5).map(s => ({
+            symbol: s.tokenSymbol,
+            chain: s.chain,
+            score: s.compositeScore
+          })),
+          timestamp: new Date().toISOString()
+        });
+      } catch (error: any) {
+        logger?.error('[CronTrigger] Scan failed', { error: error.message });
+        return c.json({ error: 'Scan failed', message: error.message }, 500);
+      }
+    }
+  },
 ];

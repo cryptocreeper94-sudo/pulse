@@ -9,7 +9,11 @@ Pulse, by DarkWave Studios, LLC, is an AI-driven trading platform that leverages
 - Agent diversity: Equal distribution across age groups, gender, race, and hair color
 - Design aesthetic: Solid black/dark gray backgrounds (#0f0f0f, #1a1a1a, #141414) with free-floating elements featuring glow effects. Glassmorphism (backdrop-filter blur + semi-transparent backgrounds) is ALLOWED for cards site-wide, but NOT for backgrounds, buttons, or other non-card elements.
 
-## Recent Updates (December 22, 2025)
+## Recent Updates (December 23, 2025)
+- **Automatic Token Scan Trigger**: Added `/api/internal/trigger-scan` endpoint for external cron services to refresh StrikeAgent token data. Requires `CRON_SECRET` environment variable for authentication. Use GET with `?secret=YOUR_SECRET` or POST with `x-cron-secret` header.
+- **Production Cron Setup**: Since Autoscale deployments go idle between requests, use an external cron service (like cron-job.org, EasyCron, or UptimeRobot) to call the trigger endpoint every 5-15 minutes to keep token data fresh.
+
+## Previous Updates (December 22, 2025)
 - **Production Deployment Fix**: Changed `npm run start` to use bootstrap server that properly handles static file serving from `public/` AND proxies API requests to Mastra. This fixes StrikeAgent API endpoints (`/api/public/strikeagent/*`) not working in production.
 - **Bootstrap Server Update**: Updated `bootstrap.ts` to serve static files from `public/` directory where the build process copies the compiled frontend assets.
 
