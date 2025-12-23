@@ -1,7 +1,7 @@
 import http from 'http';
 import fs from 'fs';
 import path from 'path';
-import { Worker } from 'worker_threads';
+import { fork } from 'child_process';
 const PORT = 5000;
 const MASTRA_PORT = 4111;
 const FALLBACK_HTML = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Pulse</title><meta http-equiv="refresh" content="3"><style>body{background:#0f0f0f;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;font-family:system-ui}div{text-align:center}h1{color:#00D4FF;margin-bottom:10px}.loader{width:40px;height:40px;border:3px solid #333;border-top:3px solid #00D4FF;border-radius:50%;animation:spin 1s linear infinite;margin:20px auto}@keyframes spin{to{transform:rotate(360deg)}}</style></head><body><div><h1>PULSE</h1><div class="loader"></div><p>Loading AI Trading Platform...</p></div></body></html>`;
@@ -18,9 +18,14 @@ const MIME_TYPES = {
     '.html': 'text/html'
 };
 let mastraReady = false;
+let healthCheckPhase = true;
 let realHtml = FALLBACK_HTML;
 let publicDir = '';
 const staticCache = new Map();
+setTimeout(() => {
+    healthCheckPhase = false;
+    console.log('Health check phase complete, serving HTML');
+}, 5000);
 function getStaticFile(urlPath) {
     if (!publicDir)
         return null;
@@ -46,14 +51,13 @@ function getStaticFile(urlPath) {
 }
 const server = http.createServer((req, res) => {
     const url = req.url || '/';
-    const acceptHeader = req.headers['accept'] || '';
     if (url === '/healthz' || url === '/health') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end('{"status":"ok"}');
         return;
     }
     if (url === '/' || url === '/index.html') {
-        if (!mastraReady) {
+        if (healthCheckPhase) {
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end('{"status":"ok"}');
             return;
@@ -103,49 +107,43 @@ server.on('error', (err) => {
 });
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`Server ready on port ${PORT}`);
-    setImmediate(() => {
-        publicDir = path.join(process.cwd(), 'public');
-        const indexPath = path.join(publicDir, 'index.html');
-        try {
-            if (fs.existsSync(indexPath)) {
-                realHtml = fs.readFileSync(indexPath, 'utf8');
-                console.log('Loaded index.html');
+    publicDir = path.join(process.cwd(), 'public');
+    const indexPath = path.join(publicDir, 'index.html');
+    try {
+        if (fs.existsSync(indexPath)) {
+            realHtml = fs.readFileSync(indexPath, 'utf8');
+            console.log('Loaded index.html');
+        }
+    }
+    catch (e) {
+        console.log('Using fallback HTML');
+    }
+    const mastraScript = path.join(process.cwd(), 'dist', 'mastra-child.js');
+    if (fs.existsSync(mastraScript)) {
+        console.log('Starting Mastra child process...');
+        const child = fork(mastraScript, [], {
+            stdio: 'inherit',
+            env: { ...process.env, PORT: String(MASTRA_PORT) }
+        });
+        child.on('message', (msg) => {
+            if (msg?.type === 'ready') {
+                mastraReady = true;
+                console.log('Mastra ready');
             }
-        }
-        catch (e) {
-            console.log('Using fallback HTML');
-        }
-        const workerPath = path.join(process.cwd(), 'dist', 'mastra-worker.js');
-        if (fs.existsSync(workerPath)) {
-            console.log('Starting Mastra worker...');
-            const worker = new Worker(workerPath);
-            worker.on('message', (msg) => {
-                if (msg?.type === 'ready') {
-                    mastraReady = true;
-                    console.log('Mastra ready');
-                }
-            });
-            worker.on('error', (err) => {
-                console.error('Worker error:', err);
-                mastraReady = true;
-            });
-            worker.on('exit', (code) => {
-                console.log('Worker exited with code:', code);
-                mastraReady = true;
-            });
-        }
-        else {
-            setTimeout(() => {
-                import('../.mastra/output/index.mjs')
-                    .then(() => {
-                    mastraReady = true;
-                    console.log('Mastra ready (direct import)');
-                })
-                    .catch((err) => {
-                    console.error('Mastra import error:', err);
-                    mastraReady = true;
-                });
-            }, 100);
-        }
-    });
+        });
+        child.on('error', (err) => {
+            console.error('Child process error:', err);
+        });
+        child.on('exit', (code) => {
+            console.log('Child process exited with code:', code);
+        });
+        setTimeout(() => {
+            mastraReady = true;
+            console.log('Mastra ready (timeout fallback)');
+        }, 30000);
+    }
+    else {
+        console.log('No mastra-child.js found, marking ready');
+        mastraReady = true;
+    }
 });
