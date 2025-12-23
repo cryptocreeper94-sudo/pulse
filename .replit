@@ -66,6 +66,10 @@ NODE_OPTIONS = "--max-old-space-size=4096"
 MASTRA_DEV_NO_CACHE = "1"
 
 [[ports]]
+localPort = 4111
+externalPort = 3000
+
+[[ports]]
 localPort = 5000
 externalPort = 80
 
