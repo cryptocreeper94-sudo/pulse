@@ -1334,4 +1334,89 @@ export const sniperBotRoutes = [
       }
     }
   },
+
+  {
+    path: "/api/internal/import-predictions",
+    method: "POST",
+    createHandler: async ({ mastra }: any) => async (c: any) => {
+      const logger = mastra.getLogger();
+      try {
+        const authHeader = c.req.header('x-cron-secret');
+        const expectedSecret = process.env.CRON_SECRET || 'pulse-cron-2024';
+        
+        if (authHeader !== expectedSecret) {
+          logger?.warn('[Import] Unauthorized import attempt');
+          return c.json({ error: 'Unauthorized' }, 401);
+        }
+
+        logger?.info('[Import] Starting predictions import...');
+        
+        const fs = await import('fs');
+        const pathModule = await import('path');
+        const { Pool } = await import('pg');
+        
+        const exportPath = pathModule.join(process.cwd(), 'exports', 'predictions-export.json');
+        
+        if (!fs.existsSync(exportPath)) {
+          return c.json({ error: 'Export file not found. Republish to include export.' }, 404);
+        }
+        
+        const exportData = JSON.parse(fs.readFileSync(exportPath, 'utf8'));
+        const predictions = exportData.predictions;
+        
+        logger?.info(`[Import] Found ${predictions.length} predictions to import`);
+        
+        const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+        let imported = 0;
+        let skipped = 0;
+        
+        for (const pred of predictions) {
+          try {
+            await pool.query(`
+              INSERT INTO strikeagent_predictions 
+              (id, user_id, token_address, token_symbol, token_name, dex, chain, 
+               price_usd, price_sol, market_cap_usd, liquidity_usd, token_age_minutes,
+               ai_recommendation, ai_score, ai_reasoning, safety_metrics, movement_metrics,
+               holder_count, top10_holders_percent, bot_percent, bundle_percent,
+               mint_authority_active, freeze_authority_active, is_honeypot, liquidity_locked,
+               is_pump_fun, creator_wallet_risky, payload_hash, onchain_signature, status,
+               created_at, stamped_at)
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32)
+              ON CONFLICT (id) DO NOTHING
+            `, [
+              pred.id, pred.user_id, pred.token_address, pred.token_symbol, pred.token_name,
+              pred.dex, pred.chain, pred.price_usd, pred.price_sol, pred.market_cap_usd,
+              pred.liquidity_usd, pred.token_age_minutes, pred.ai_recommendation, pred.ai_score,
+              pred.ai_reasoning, pred.safety_metrics, pred.movement_metrics, pred.holder_count,
+              pred.top10_holders_percent, pred.bot_percent, pred.bundle_percent,
+              pred.mint_authority_active, pred.freeze_authority_active, pred.is_honeypot,
+              pred.liquidity_locked, pred.is_pump_fun, pred.creator_wallet_risky,
+              pred.payload_hash, pred.onchain_signature, pred.status, pred.created_at, pred.stamped_at
+            ]);
+            imported++;
+          } catch (e: any) {
+            if (e.code === '23505') {
+              skipped++;
+            } else {
+              logger?.warn(`[Import] Failed: ${pred.id} - ${e.message}`);
+            }
+          }
+        }
+        
+        await pool.end();
+        logger?.info(`[Import] Complete: ${imported} imported, ${skipped} skipped`);
+        
+        return c.json({
+          success: true,
+          imported,
+          skipped,
+          total: predictions.length,
+          timestamp: new Date().toISOString()
+        });
+      } catch (error: any) {
+        logger?.error('[Import] Failed', { error: error.message });
+        return c.json({ error: 'Import failed', message: error.message }, 500);
+      }
+    }
+  },
 ];
