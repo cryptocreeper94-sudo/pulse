@@ -4,7 +4,6 @@ import path from 'path';
 import { spawn } from 'child_process';
 
 const PORT = Number(process.env.PORT || 5000);
-const IS_PRODUCTION = process.env.REPLIT_DEPLOYMENT === '1' || process.env.NODE_ENV === 'production';
 
 let html = '<!DOCTYPE html><html><head><title>Pulse</title><meta http-equiv="refresh" content="2"></head><body style="background:#0f0f0f;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;font-family:system-ui"><h1 style="color:#00D4FF">Loading Pulse...</h1></body></html>';
 
@@ -49,7 +48,6 @@ const server = http.createServer((req, res) => {
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log('Server ready on port ' + PORT);
-  console.log('Mode:', IS_PRODUCTION ? 'PRODUCTION' : 'DEVELOPMENT');
   
   setImmediate(() => {
     try {
@@ -61,20 +59,18 @@ server.listen(PORT, '0.0.0.0', () => {
     } catch (e) {}
   });
   
-  if (IS_PRODUCTION) {
-    setImmediate(() => {
-      try {
-        const mastraPath = path.join(process.cwd(), '.mastra', 'output', 'index.mjs');
-        if (fs.existsSync(mastraPath)) {
-          spawn('node', [mastraPath], {
-            env: { ...process.env, PORT: '4111' },
-            stdio: 'inherit'
-          });
-          console.log('Mastra starting...');
-        }
-      } catch (e) {
-        console.error('Mastra init error:', e);
+  setTimeout(() => {
+    try {
+      const mastraPath = path.join(process.cwd(), '.mastra', 'output', 'index.mjs');
+      if (fs.existsSync(mastraPath)) {
+        spawn('node', [mastraPath], {
+          env: { ...process.env, PORT: '4111' },
+          stdio: 'inherit'
+        });
+        console.log('Mastra starting on 127.0.0.1:4111');
       }
-    });
-  }
+    } catch (e) {
+      console.error('Mastra init error:', e);
+    }
+  }, 2000);
 });
