@@ -8,7 +8,7 @@ import { Memory } from "@mastra/memory";
 import { PostgresStore } from "@mastra/pg";
 import { NonRetriableError } from "inngest";
 import { z } from "zod";
-import { desc } from "drizzle-orm";
+import { desc, asc, eq, max, and, or, gte } from "drizzle-orm";
 
 import { coinGeckoClient } from "../lib/coinGeckoClient";
 import { apiCache, CACHE_TTL } from "../lib/cache";
@@ -5880,7 +5880,6 @@ export const mastra = new Mastra({
           try {
             const { db } = await import('../db/client.js');
             const { userFavorites } = await import('../db/schema.js');
-            const { eq, asc } = await import('drizzle-orm');
             
             const favorites = await db
               .select()
@@ -5921,7 +5920,6 @@ export const mastra = new Mastra({
             
             const { db } = await import('../db/client.js');
             const { userFavorites } = await import('../db/schema.js');
-            const { eq, max } = await import('drizzle-orm');
             const crypto = await import('crypto');
             
             // Get max displayOrder for this user
@@ -5976,7 +5974,6 @@ export const mastra = new Mastra({
           try {
             const { db } = await import('../db/client.js');
             const { userFavorites } = await import('../db/schema.js');
-            const { eq, and } = await import('drizzle-orm');
             
             const result = await db
               .delete(userFavorites)
@@ -6015,7 +6012,6 @@ export const mastra = new Mastra({
             
             const { db } = await import('../db/client.js');
             const { userFavorites } = await import('../db/schema.js');
-            const { eq, and } = await import('drizzle-orm');
             
             const updateData: any = { updatedAt: new Date() };
             if (displayOrder !== undefined) updateData.displayOrder = displayOrder;
