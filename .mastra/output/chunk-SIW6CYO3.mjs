@@ -1,13 +1,5 @@
-import { _ as __commonJS, b as __require, r as require_token_error } from './index.mjs';
+import { _ as __commonJS, a as __require, r as require_token_error } from './index.mjs';
 
-
-// -- Shims --
-import cjsUrl from 'node:url';
-import cjsPath from 'node:path';
-import cjsModule from 'node:module';
-const __filename = cjsUrl.fileURLToPath(import.meta.url);
-const __dirname = cjsPath.dirname(__filename);
-const require = cjsModule.createRequire(import.meta.url);
 // ../../node_modules/.pnpm/@vercel+oidc@3.0.1/node_modules/@vercel/oidc/dist/token-io.js
 var require_token_io = __commonJS({
   "../../node_modules/.pnpm/@vercel+oidc@3.0.1/node_modules/@vercel/oidc/dist/token-io.js"(exports, module) {
