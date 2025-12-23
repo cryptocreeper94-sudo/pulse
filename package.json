@@ -59,6 +59,7 @@
     "exa-js": "^1.8.17",
     "expo-secure-store": "^15.0.8",
     "firebase": "^12.7.0",
+    "firebase-admin": "^13.6.0",
     "helius-sdk": "^2.0.2",
     "inngest": "^3.40.2",
     "inngest-cli": "^1.11.5",

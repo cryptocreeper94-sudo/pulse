@@ -5,7 +5,8 @@ import {
   signInWithPopup, 
   signInWithRedirect,
   getRedirectResult,
-  GoogleAuthProvider, 
+  GoogleAuthProvider,
+  GithubAuthProvider,
   signOut as firebaseSignOut,
   onAuthStateChanged
 } from 'firebase/auth'
@@ -67,6 +68,28 @@ export async function signInWithGoogle() {
       return null
     }
     console.error('[Firebase] Google sign-in error:', error)
+    throw error
+  }
+}
+
+export async function signInWithGithub() {
+  const auth = getFirebaseAuth()
+  if (!auth) throw new Error('Firebase not initialized')
+  
+  const provider = new GithubAuthProvider()
+  provider.addScope('user:email')
+  
+  try {
+    const result = await signInWithPopup(auth, provider)
+    console.log('[Firebase] GitHub sign-in successful:', result.user.email)
+    return result.user
+  } catch (error) {
+    if (error.code === 'auth/popup-blocked') {
+      console.log('[Firebase] Popup blocked, trying redirect...')
+      await signInWithRedirect(auth, provider)
+      return null
+    }
+    console.error('[Firebase] GitHub sign-in error:', error)
     throw error
   }
 }

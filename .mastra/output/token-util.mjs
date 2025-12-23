@@ -1,6 +1,6 @@
 import { o as getDefaultExportFromCjs, t as tokenError } from './mastra.mjs';
 import require$$0__default$1 from 'path';
-import require$$0__default$1$1 from 'fs';
+import require$$0__default$2 from 'fs';
 import require$$1__default from 'os';
 import 'stream/web';
 import 'crypto';
@@ -86,7 +86,7 @@ __export$1(token_io_exports, {
 });
 var tokenIo = __toCommonJS$1(token_io_exports);
 var import_path = __toESM$1(require$$0__default$1);
-var import_fs = __toESM$1(require$$0__default$1$1);
+var import_fs = __toESM$1(require$$0__default$2);
 var import_os = __toESM$1(require$$1__default);
 var import_token_error$1 = tokenError;
 function findRootDir() {
@@ -166,7 +166,7 @@ __export(token_util_exports, {
 });
 var tokenUtil = __toCommonJS(token_util_exports);
 var path = __toESM(require$$0__default$1);
-var fs = __toESM(require$$0__default$1$1);
+var fs = __toESM(require$$0__default$2);
 var import_token_error = tokenError;
 var import_token_io = tokenIo;
 function getVercelDataDir() {

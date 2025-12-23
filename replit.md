@@ -10,6 +10,12 @@ Pulse, by DarkWave Studios, LLC, is an AI-driven trading platform that leverages
 - Design aesthetic: Solid black/dark gray backgrounds (#0f0f0f, #1a1a1a, #141414) with free-floating elements featuring glow effects. Glassmorphism (backdrop-filter blur + semi-transparent backgrounds) is ALLOWED for cards site-wide, but NOT for backgrounds, buttons, or other non-card elements.
 
 ## Recent Updates (December 23, 2025)
+- **Firebase Authentication**: Replaced Replit auth with Firebase Authentication using Google and GitHub sign-in providers. New login screen with both options. Backend syncs Firebase users with existing user database.
+- **Firebase Analytics**: Integrated Firebase Analytics for tracking user activity and events.
+- **Firebase Console Setup Required**: Add these domains to Firebase Console > Authentication > Settings > Authorized domains:
+  - `*.replit.app`
+  - `*.replit.dev`
+  - Your production domain
 - **Automatic Token Scan Trigger**: Added `/api/internal/trigger-scan` endpoint for external cron services to refresh StrikeAgent token data. Requires `CRON_SECRET` environment variable for authentication. Use GET with `?secret=YOUR_SECRET` or POST with `x-cron-secret` header.
 - **Production Cron Setup**: Since Autoscale deployments go idle between requests, use an external cron service (like cron-job.org, EasyCron, or UptimeRobot) to call the trigger endpoint every 5-15 minutes to keep token data fresh.
 
@@ -40,7 +46,7 @@ The platform features a solid dark theme with free-floating elements and glow ef
 - **Frontend**: React 19 and Vite 7 web app, plus React Native + Expo mobile app.
 - **Backend**: Mastra AI framework with an Express server, powered by the DarkWave-V2 AI agent.
 - **Database**: PostgreSQL (Neon-backed).
-- **Authentication**: Session-based with access codes, featuring optional WebAuthn biometric authentication (fingerprint/Face ID) for login 2FA and wallet transaction confirmation. Secure session token rotation with tier-based durations (2 days free, 30 days premium, 10 years admin).
+- **Authentication**: Firebase Authentication with Google and GitHub OAuth providers. Backend verifies Firebase ID tokens and syncs user data. Optional WebAuthn biometric authentication for wallet transaction confirmation.
 - **Workflow Management**: Inngest for event-driven processing and cron jobs.
 - **Prediction Tracking**: Logs AI signals, tracks outcomes, calculates accuracy, and hashes predictions on both Solana and DarkWave Chain L1 for dual-layer verification. Features a logistic regression ML learning system with automated weekly training and an AI Status Widget.
 - **DarkWave Chain Integration**: Full L1 blockchain integration for hash verification, hallmark generation, and prediction stamping. API routes at `/api/darkwave-chain/*` for status, hash submit/verify, and hallmark operations. Requires `DARKWAVE_API_KEY`, `DARKWAVE_API_SECRET`, `DARKWAVE_CHAIN_URL` secrets.

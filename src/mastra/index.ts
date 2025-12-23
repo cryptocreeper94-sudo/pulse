@@ -66,6 +66,7 @@ import { transakRoutes } from "./routes/transakRoutes";
 import { webauthnRoutes } from "./routes/webauthnRoutes";
 import { ecosystemRoutes } from "./routes/ecosystemRoutes";
 import { darkwaveChainRoutes } from "./routes/darkwaveChainRoutes";
+import { firebaseAuthRoutes } from "./routes/firebaseAuthRoutes";
 
 class ProductionPinoLogger extends MastraLogger {
   protected logger: pino.Logger;
@@ -6282,6 +6283,9 @@ export const mastra = new Mastra({
       
       // DarkWave Chain L1 Integration Routes (Hash verification, Hallmarks)
       ...darkwaveChainRoutes,
+      
+      // Firebase Authentication Routes
+      ...firebaseAuthRoutes,
       
       // Catch-all static file handler (MUST BE LAST) - serves all assets from public/
       {

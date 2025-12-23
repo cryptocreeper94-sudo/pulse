@@ -2,7 +2,8 @@ import { createContext, useContext, useState, useEffect } from 'react'
 import { 
   initFirebase, 
   onAuthChange, 
-  signInWithGoogle, 
+  signInWithGoogle,
+  signInWithGithub,
   signOut, 
   getIdToken,
   handleRedirectResult,
@@ -87,11 +88,22 @@ export function AuthProvider({ children }) {
     }
   }
 
-  async function login() {
+  async function loginWithGoogle() {
     setError(null)
     setLoading(true)
     try {
       await signInWithGoogle()
+    } catch (err) {
+      setError(err.message)
+      setLoading(false)
+    }
+  }
+
+  async function loginWithGithub() {
+    setError(null)
+    setLoading(true)
+    try {
+      await signInWithGithub()
     } catch (err) {
       setError(err.message)
       setLoading(false)
@@ -122,7 +134,8 @@ export function AuthProvider({ children }) {
     setUserConfig,
     loading,
     error,
-    login,
+    loginWithGoogle,
+    loginWithGithub,
     logout,
     refreshToken,
     isAuthenticated: !!user
