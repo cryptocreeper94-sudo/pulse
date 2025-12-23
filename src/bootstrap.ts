@@ -157,15 +157,17 @@ server.listen(PORT, '0.0.0.0', () => {
         mastraReady = true;
       });
     } else {
-      import('../.mastra/output/index.mjs')
-        .then(() => {
-          mastraReady = true;
-          console.log('Mastra ready (direct import)');
-        })
-        .catch((err) => {
-          console.error('Mastra import error:', err);
-          mastraReady = true;
-        });
+      setTimeout(() => {
+        import('../.mastra/output/index.mjs')
+          .then(() => {
+            mastraReady = true;
+            console.log('Mastra ready (direct import)');
+          })
+          .catch((err) => {
+            console.error('Mastra import error:', err);
+            mastraReady = true;
+          });
+      }, 100);
     }
   });
 });
