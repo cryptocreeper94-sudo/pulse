@@ -3,7 +3,7 @@ import { darkwaveChainClient } from '../../services/darkwaveChainClient.js';
 export const darkwaveChainRoutes = [
   {
     path: "/api/darkwave-chain/status",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       try {
         const status = await darkwaveChainClient.getStatus();
@@ -19,7 +19,7 @@ export const darkwaveChainRoutes = [
 
   {
     path: "/api/darkwave-chain/hash/submit",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       try {
         const body = await c.req.json();
@@ -44,7 +44,7 @@ export const darkwaveChainRoutes = [
 
   {
     path: "/api/darkwave-chain/hash/verify/:hash",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       try {
         const hash = c.req.param('hash');
@@ -58,7 +58,7 @@ export const darkwaveChainRoutes = [
 
   {
     path: "/api/darkwave-chain/hallmark/generate",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       try {
         const body = await c.req.json();
@@ -83,7 +83,7 @@ export const darkwaveChainRoutes = [
 
   {
     path: "/api/darkwave-chain/hallmark/:id",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       try {
         const id = c.req.param('id');
@@ -102,7 +102,7 @@ export const darkwaveChainRoutes = [
 
   {
     path: "/api/darkwave-chain/hallmark/:id/verify",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       try {
         const id = c.req.param('id');
@@ -116,7 +116,7 @@ export const darkwaveChainRoutes = [
 
   {
     path: "/api/darkwave-chain/prediction/record",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       try {
         const body = await c.req.json();

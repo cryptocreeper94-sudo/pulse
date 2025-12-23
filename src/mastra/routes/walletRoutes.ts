@@ -3,7 +3,7 @@ import { walletService } from '../../wallet/walletService';
 export const walletRoutes = [
   {
     path: "/api/wallet/create",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -42,7 +42,7 @@ export const walletRoutes = [
   
   {
     path: "/api/wallet/import",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -83,7 +83,7 @@ export const walletRoutes = [
   
   {
     path: "/api/wallet/decrypt",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -105,7 +105,7 @@ export const walletRoutes = [
   
   {
     path: "/api/wallet/chains",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       try {
         const chains = walletService.getSupportedChains();
@@ -118,7 +118,7 @@ export const walletRoutes = [
   
   {
     path: "/api/wallet/balance",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -139,7 +139,7 @@ export const walletRoutes = [
   
   {
     path: "/api/wallet/balances",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -166,7 +166,7 @@ export const walletRoutes = [
   
   {
     path: "/api/wallet/estimate-gas",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -187,7 +187,7 @@ export const walletRoutes = [
   
   {
     path: "/api/wallet/send",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -219,7 +219,7 @@ export const walletRoutes = [
   
   {
     path: "/api/wallet/send-signed",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -247,7 +247,7 @@ export const walletRoutes = [
   
   {
     path: "/api/wallet/validate",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       try {
         const { mnemonic } = await c.req.json();
@@ -261,7 +261,7 @@ export const walletRoutes = [
   
   {
     path: "/api/wallet/derive",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {

@@ -15,7 +15,7 @@ export const sniperBotRoutes = [
   // ============================================
   {
     path: "/api/sniper/wallets",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -34,7 +34,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/wallets",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -54,7 +54,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/wallets/balance",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -77,7 +77,7 @@ export const sniperBotRoutes = [
   // ============================================
   {
     path: "/api/sniper/presets",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -96,7 +96,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/presets",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -116,7 +116,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/presets/:id",
-    method: "DELETE",
+    method: "DELETE" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -137,7 +137,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/default-config",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       return c.json({ config: DEFAULT_PRESET });
     }
@@ -148,7 +148,7 @@ export const sniperBotRoutes = [
   // ============================================
   {
     path: "/api/sniper/discover",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -192,7 +192,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/analyze-token",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -267,7 +267,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/pumpfun",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -289,7 +289,7 @@ export const sniperBotRoutes = [
   // ============================================
   {
     path: "/api/sniper/quote",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -327,7 +327,7 @@ export const sniperBotRoutes = [
   // ============================================
   {
     path: "/api/sniper/orders",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -346,7 +346,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/orders",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -375,7 +375,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/orders/:id/pause",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -396,7 +396,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/orders/:id/resume",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -417,7 +417,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/orders/:id/cancel",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -442,7 +442,7 @@ export const sniperBotRoutes = [
   // ============================================
   {
     path: "/api/sniper/executions",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -462,7 +462,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/positions",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -485,7 +485,7 @@ export const sniperBotRoutes = [
   // ============================================
   {
     path: "/api/sniper/stats",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -509,7 +509,7 @@ export const sniperBotRoutes = [
   // ============================================
   {
     path: "/api/sniper/sol-price",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       try {
         const price = await tradeExecutorService.getSolPrice();
@@ -525,7 +525,7 @@ export const sniperBotRoutes = [
   // ============================================
   {
     path: "/api/sniper/rpc/status",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -552,7 +552,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/rpc/info",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       try {
         const info = rpcService.getRPCInfo();
@@ -564,7 +564,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/rpc/custom",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -607,7 +607,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/rpc/priority-fee",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -634,7 +634,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/fee-estimate",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -662,7 +662,7 @@ export const sniperBotRoutes = [
   // ============================================
   {
     path: "/api/sniper/safety/check",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -693,7 +693,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/safety/quick-check",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -725,7 +725,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/safety/authorities",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -745,7 +745,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/safety/honeypot",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -767,7 +767,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/safety/liquidity",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -787,7 +787,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/safety/holders",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -807,7 +807,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/safety/config",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async () => async (c: any) => {
       return c.json({ defaultConfig: DEFAULT_SAFETY_CONFIG });
     }
@@ -818,7 +818,7 @@ export const sniperBotRoutes = [
   // ============================================
   {
     path: "/api/sniper/chains",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async () => async (c: any) => {
       const chains = Object.entries(CHAIN_CONFIGS).map(([id, config]) => ({
         id,
@@ -832,7 +832,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/multichain/token",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -853,7 +853,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/multichain/discover",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -870,7 +870,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/multichain/safety",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -898,7 +898,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/multichain/quick-safety",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -936,7 +936,7 @@ export const sniperBotRoutes = [
   // ============================================
   {
     path: "/api/sniper/trades",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -957,7 +957,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/trades/stats",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -978,7 +978,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/trades",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -1023,7 +1023,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/trades/outcome",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -1048,7 +1048,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/ai/retrain",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -1069,7 +1069,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/ai/drift",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -1092,7 +1092,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/sniper/ml/stats",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -1115,7 +1115,7 @@ export const sniperBotRoutes = [
   // ============================================
   {
     path: "/api/strike-agent/top-signals",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -1145,7 +1145,7 @@ export const sniperBotRoutes = [
   // ============================================
   {
     path: "/api/public/strikeagent/signals",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -1178,7 +1178,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/public/strikeagent/executions",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -1211,7 +1211,7 @@ export const sniperBotRoutes = [
   },
   {
     path: "/api/public/strikeagent/stats",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => {
       // In-memory cache for stats (1 minute TTL)
       let cachedStats: any = null;
@@ -1263,88 +1263,91 @@ export const sniperBotRoutes = [
 
   {
     path: "/api/internal/trigger-scan",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
-        const authHeader = c.req.header('x-cron-secret');
-        const expectedSecret = process.env.CRON_SECRET || 'pulse-cron-2024';
+        if (!process.env.CRON_SECRET) {
+          logger?.error('[CronTrigger] CRON_SECRET not configured');
+          return c.json({ error: 'CRON_SECRET not configured' }, 503);
+        }
         
-        if (authHeader !== expectedSecret) {
+        const authHeader = c.req.header('x-cron-secret');
+        if (authHeader !== process.env.CRON_SECRET) {
           logger?.warn('[CronTrigger] Unauthorized scan attempt');
           return c.json({ error: 'Unauthorized' }, 401);
         }
 
-        logger?.info('[CronTrigger] Starting scheduled token scan...');
+        logger?.info('[CronTrigger] Triggering scheduled token scan...');
         
-        const signals = await topSignalsService.scanAndScoreTokens();
-        
-        logger?.info(`[CronTrigger] Scan complete - ${signals.length} tokens saved`);
+        topSignalsService.scanAndScoreTokens().then(signals => {
+          logger?.info(`[CronTrigger] Scan complete - ${signals.length} tokens saved`);
+        }).catch(error => {
+          logger?.error('[CronTrigger] Background scan failed', { error: error.message });
+        });
         
         return c.json({
           success: true,
-          signalsCount: signals.length,
-          topTokens: signals.slice(0, 5).map(s => ({
-            symbol: s.tokenSymbol,
-            chain: s.chain,
-            score: s.compositeScore
-          })),
+          message: 'Scan triggered',
           timestamp: new Date().toISOString()
         });
       } catch (error: any) {
-        logger?.error('[CronTrigger] Scan failed', { error: error.message });
-        return c.json({ error: 'Scan failed', message: error.message }, 500);
+        logger?.error('[CronTrigger] Scan trigger failed', { error: error.message });
+        return c.json({ error: 'Scan trigger failed', message: error.message }, 500);
       }
     }
   },
 
   {
     path: "/api/internal/trigger-scan",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
-        const secret = c.req.query('secret');
-        const expectedSecret = process.env.CRON_SECRET || 'pulse-cron-2024';
+        if (!process.env.CRON_SECRET) {
+          logger?.error('[CronTrigger] CRON_SECRET not configured');
+          return c.json({ error: 'CRON_SECRET not configured' }, 503);
+        }
         
-        if (secret !== expectedSecret) {
+        const secret = c.req.query('secret');
+        if (secret !== process.env.CRON_SECRET) {
           logger?.warn('[CronTrigger] Unauthorized GET scan attempt');
           return c.json({ error: 'Unauthorized' }, 401);
         }
 
-        logger?.info('[CronTrigger] Starting scheduled token scan via GET...');
+        logger?.info('[CronTrigger] Triggering scheduled token scan via GET...');
         
-        const signals = await topSignalsService.scanAndScoreTokens();
-        
-        logger?.info(`[CronTrigger] Scan complete - ${signals.length} tokens saved`);
+        topSignalsService.scanAndScoreTokens().then(signals => {
+          logger?.info(`[CronTrigger] Scan complete - ${signals.length} tokens saved`);
+        }).catch(error => {
+          logger?.error('[CronTrigger] Background scan failed', { error: error.message });
+        });
         
         return c.json({
           success: true,
-          signalsCount: signals.length,
-          topTokens: signals.slice(0, 5).map(s => ({
-            symbol: s.tokenSymbol,
-            chain: s.chain,
-            score: s.compositeScore
-          })),
+          message: 'Scan triggered',
           timestamp: new Date().toISOString()
         });
       } catch (error: any) {
-        logger?.error('[CronTrigger] Scan failed', { error: error.message });
-        return c.json({ error: 'Scan failed', message: error.message }, 500);
+        logger?.error('[CronTrigger] Scan trigger failed', { error: error.message });
+        return c.json({ error: 'Scan trigger failed', message: error.message }, 500);
       }
     }
   },
 
   {
     path: "/api/internal/import-predictions",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
-        const authHeader = c.req.header('x-cron-secret');
-        const expectedSecret = process.env.CRON_SECRET || 'pulse-cron-2024';
+        if (!process.env.CRON_SECRET) {
+          logger?.error('[Import] CRON_SECRET not configured');
+          return c.json({ error: 'CRON_SECRET not configured' }, 503);
+        }
         
-        if (authHeader !== expectedSecret) {
+        const authHeader = c.req.header('x-cron-secret');
+        if (authHeader !== process.env.CRON_SECRET) {
           logger?.warn('[Import] Unauthorized import attempt');
           return c.json({ error: 'Unauthorized' }, 401);
         }

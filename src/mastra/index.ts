@@ -194,7 +194,7 @@ export const mastra = new Mastra({
       // Health check endpoint for deployment (configured via healthcheckPath in .replit)
       {
         path: "/healthz",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async () => async (c: any) => {
           return c.json({ status: "ok", timestamp: Date.now() });
         }
@@ -202,7 +202,7 @@ export const mastra = new Mastra({
       // This API route is used to register the Mastra workflow (inngest function) on the inngest server
       {
         path: "/api/inngest",
-        method: "ALL",
+        method: "ALL" as const,
         createHandler: async ({ mastra }) => inngestServe({ mastra, inngest }),
         // The inngestServe function integrates Mastra workflows with Inngest by:
         // 1. Creating Inngest functions for each workflow with unique IDs (workflow.${workflowId})
@@ -227,7 +227,7 @@ export const mastra = new Mastra({
       // Market Overview API - Unified endpoint for stocks and crypto
       {
         path: "/api/market-overview",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           logger?.info('🔧 [MarketOverviewAPI] Request received');
@@ -281,7 +281,7 @@ export const mastra = new Mastra({
       // News endpoint
       {
         path: "/api/news",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           logger?.info('📰 [News] Request received');
@@ -301,7 +301,7 @@ export const mastra = new Mastra({
       // Multi-Model Streaming Analysis endpoint
       {
         path: "/api/stream-analysis",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -354,7 +354,7 @@ export const mastra = new Mastra({
       // Multi-Model Ensemble Analysis endpoint
       {
         path: "/api/ensemble-analysis",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -390,7 +390,7 @@ export const mastra = new Mastra({
       // Agent Personas endpoint
       {
         path: "/api/agent-personas",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           logger?.info('🤖 [AgentPersonas] Request received');
@@ -420,7 +420,7 @@ export const mastra = new Mastra({
       // Unified Market Data endpoint
       {
         path: "/api/unified-data",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -454,7 +454,7 @@ export const mastra = new Mastra({
       // AI Chat endpoint - Compatible with AI SDK v4
       {
         path: "/api/chat",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -492,7 +492,7 @@ export const mastra = new Mastra({
       // Analyze endpoint - Technical analysis for any ticker with prediction tracking
       {
         path: "/api/analyze",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -591,7 +591,7 @@ export const mastra = new Mastra({
       // Stripe Checkout Session endpoint
       {
         path: "/api/create-checkout-session",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -674,7 +674,7 @@ export const mastra = new Mastra({
       // Authentication - Login endpoint
       {
         path: "/api/auth/login",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -733,7 +733,7 @@ export const mastra = new Mastra({
       // Authentication - Session validation endpoint
       {
         path: "/api/auth/validate",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           logger?.info('🔍 [Auth] Session validation request');
@@ -746,7 +746,7 @@ export const mastra = new Mastra({
       // Session check endpoint (called by frontend App.jsx)
       {
         path: "/api/session",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           logger?.info('🔍 [Session] Session check request');
@@ -790,7 +790,7 @@ export const mastra = new Mastra({
       // Serve frontend HTML at root
       {
         path: "/",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const fs = await import('fs/promises');
           const path = await import('path');
@@ -827,7 +827,7 @@ export const mastra = new Mastra({
       // Serve Telegram Mini App HTML
       {
         path: "/telegram",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const fs = await import('fs/promises');
           const path = await import('path');
@@ -858,7 +858,7 @@ export const mastra = new Mastra({
       // Serve static assets
       {
         path: "/app.js",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const fs = await import('fs/promises');
           const path = await import('path');
@@ -886,7 +886,7 @@ export const mastra = new Mastra({
       },
       {
         path: "/styles.css",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const fs = await import('fs/promises');
           const path = await import('path');
@@ -914,7 +914,7 @@ export const mastra = new Mastra({
       },
       {
         path: "/darkwave-logo.jpg",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const fs = await import('fs/promises');
           const path = await import('path');
@@ -943,7 +943,7 @@ export const mastra = new Mastra({
       // ALIAS: /api/crypto/coin-prices -> /api/market-overview
       {
         path: "/api/crypto/coin-prices",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           try {
             const response = await fetch('http://localhost:3001/api/market-overview');
@@ -957,7 +957,7 @@ export const mastra = new Mastra({
       // Global Market Overview - totalMarketCap, volume, btcDominance, fearGreed, altcoinSeason
       {
         path: "/api/crypto/market-overview",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -1007,7 +1007,7 @@ export const mastra = new Mastra({
       // Live BTC Price - 1 second ticker updates
       {
         path: "/api/crypto/btc-price",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -1041,7 +1041,7 @@ export const mastra = new Mastra({
       // Live Coin Price - for any coin by symbol (for live charts)
       {
         path: "/api/crypto/coin-price",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const rawSymbol = c.req.query('symbol');
@@ -1109,7 +1109,7 @@ export const mastra = new Mastra({
       // BTC History - OHLC data for chart
       {
         path: "/api/crypto/btc-history",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const days = c.req.query('days') || '7';
@@ -1160,7 +1160,7 @@ export const mastra = new Mastra({
       // Coin History - OHLC data for any coin (by symbol)
       {
         path: "/api/crypto/coin-history",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const symbol = c.req.query('symbol')?.toUpperCase() || 'BTC';
@@ -1303,7 +1303,7 @@ export const mastra = new Mastra({
       // Crypto Category Filter Routes - Used by coin table filter buttons
       {
         path: "/api/crypto/category/:category",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const category = c.req.param('category');
@@ -1444,7 +1444,7 @@ export const mastra = new Mastra({
       // ALIAS: /api/sentiment/fear-greed
       {
         path: "/api/sentiment/fear-greed",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           try {
             return c.json({
@@ -1462,7 +1462,7 @@ export const mastra = new Mastra({
       // ALIAS: /api/crypto/market-chart (with 60-second cache using CoinGecko API)
       {
         path: "/api/crypto/market-chart",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => {
           // In-memory cache for market chart data (60 second TTL) - keyed by interval
           const chartCacheMap: Map<string, { data: any; timestamp: number }> = new Map();
@@ -1580,7 +1580,7 @@ export const mastra = new Mastra({
       // Trading API: Buy Limit Order (V2 Feature - Locked)
       {
         path: "/api/trading/buy-limit",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -1606,7 +1606,7 @@ export const mastra = new Mastra({
       // Trading API: Sell Limit Order (V2 Feature - Locked)
       {
         path: "/api/trading/sell-limit",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -1632,7 +1632,7 @@ export const mastra = new Mastra({
       // Trading API: List Active Orders (V2 Feature - Locked)
       {
         path: "/api/trading/orders",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -1654,7 +1654,7 @@ export const mastra = new Mastra({
       // ALIAS: /api/payments/plans
       {
         path: "/api/payments/plans",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           try {
             return c.json([
@@ -1670,7 +1670,7 @@ export const mastra = new Mastra({
       // Serve coins directory (JSON and images)
       {
         path: "/coins/*",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const fs = await import('fs/promises');
           const path = await import('path');
@@ -1709,7 +1709,7 @@ export const mastra = new Mastra({
       // Admin Dashboard - View subscribers and manage whitelist
       {
         path: "/admin",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -2025,7 +2025,7 @@ export const mastra = new Mastra({
       // Admin: Add user to whitelist
       {
         path: "/admin/whitelist/add",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const expectedCode = process.env.ADMIN_ACCESS_CODE;
@@ -2085,7 +2085,7 @@ export const mastra = new Mastra({
       // Admin: Remove user from whitelist
       {
         path: "/admin/whitelist/remove",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const expectedCode = process.env.ADMIN_ACCESS_CODE;
@@ -2125,7 +2125,7 @@ export const mastra = new Mastra({
       // Admin API: Get all token submissions
       {
         path: "/api/admin/token-submissions",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const expectedCode = process.env.ADMIN_ACCESS_CODE;
@@ -2154,7 +2154,7 @@ export const mastra = new Mastra({
       // Admin API: Approve token submission
       {
         path: "/api/admin/approve-token",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const expectedCode = process.env.ADMIN_ACCESS_CODE;
@@ -2233,7 +2233,7 @@ export const mastra = new Mastra({
       // Admin API: Reject token submission
       {
         path: "/api/admin/reject-token",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const expectedCode = process.env.ADMIN_ACCESS_CODE;
@@ -2273,7 +2273,7 @@ export const mastra = new Mastra({
       // Access Code Verification
       {
         path: "/api/verify-access",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -2365,7 +2365,7 @@ export const mastra = new Mastra({
       // Email Registration - Auto-whitelist + admin notifications
       {
         path: "/api/register-email",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -2484,7 +2484,7 @@ export const mastra = new Mastra({
       },
       {
         path: "/api/analyze",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -2679,7 +2679,7 @@ export const mastra = new Mastra({
       // Prediction Accuracy API
       {
         path: "/api/prediction-accuracy",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -2729,7 +2729,7 @@ export const mastra = new Mastra({
       // ML Model Status API
       {
         path: "/api/model-status",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -2757,7 +2757,7 @@ export const mastra = new Mastra({
       // ML Model Training Trigger API (Admin only)
       {
         path: "/api/train-models",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -2794,7 +2794,7 @@ export const mastra = new Mastra({
       // ORBIT Ecosystem Status API
       {
         path: "/api/ecosystem/status",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -2811,7 +2811,7 @@ export const mastra = new Mastra({
       // ORBIT Ecosystem Activity Logs
       {
         path: "/api/ecosystem/logs",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -2831,7 +2831,7 @@ export const mastra = new Mastra({
       // ORBIT Ecosystem Log Activity (for internal use)
       {
         path: "/api/ecosystem/log",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -2857,7 +2857,7 @@ export const mastra = new Mastra({
       // ORBIT Ecosystem Push Snippet (for code sharing)
       {
         path: "/api/ecosystem/snippets",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -2883,7 +2883,7 @@ export const mastra = new Mastra({
       // ORBIT Ecosystem Get Snippet
       {
         path: "/api/ecosystem/snippets/:snippetId",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -2902,7 +2902,7 @@ export const mastra = new Mastra({
       // ORBIT Ecosystem Report Metrics (for dashboard integration)
       {
         path: "/api/ecosystem/metrics",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -2928,7 +2928,7 @@ export const mastra = new Mastra({
       // Bot Detection API
       {
         path: "/api/bot-detection",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -2982,7 +2982,7 @@ export const mastra = new Mastra({
       },
       {
         path: "/api/chat",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           logger?.info('🤖 [AI Chat] Chat request received');
@@ -3056,7 +3056,7 @@ export const mastra = new Mastra({
       },
       {
         path: "/api/holdings",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -3122,7 +3122,7 @@ export const mastra = new Mastra({
       },
       {
         path: "/api/holdings",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -3154,7 +3154,7 @@ export const mastra = new Mastra({
       // Top Movers endpoint
       {
         path: "/api/movers",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -3240,7 +3240,7 @@ export const mastra = new Mastra({
       // Price Alerts endpoints
       {
         path: "/api/alerts",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -3273,7 +3273,7 @@ export const mastra = new Mastra({
       },
       {
         path: "/api/alerts",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -3322,7 +3322,7 @@ export const mastra = new Mastra({
       },
       {
         path: "/api/alerts/:id",
-        method: "DELETE",
+        method: "DELETE" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -3356,7 +3356,7 @@ export const mastra = new Mastra({
       },
       {
         path: "/api/wallet",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -3411,7 +3411,7 @@ export const mastra = new Mastra({
       // Tracked Wallets API (Read-Only, Up to 5 Wallets)
       {
         path: "/api/tracked-wallets",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -3452,7 +3452,7 @@ export const mastra = new Mastra({
       },
       {
         path: "/api/tracked-wallets",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -3599,7 +3599,7 @@ export const mastra = new Mastra({
       },
       {
         path: "/api/tracked-wallets/:id",
-        method: "DELETE",
+        method: "DELETE" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -3634,7 +3634,7 @@ export const mastra = new Mastra({
       },
       {
         path: "/api/tracked-wallets/clear",
-        method: "DELETE",
+        method: "DELETE" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -3665,7 +3665,7 @@ export const mastra = new Mastra({
       },
       {
         path: "/api/wallet/connect",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -3687,7 +3687,7 @@ export const mastra = new Mastra({
       },
       {
         path: "/api/wallet/disconnect",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -3709,7 +3709,7 @@ export const mastra = new Mastra({
       },
       {
         path: "/api/limit-orders",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const userId = c.req.query('userId') || 'demo-user';
@@ -3734,7 +3734,7 @@ export const mastra = new Mastra({
       },
       {
         path: "/api/limit-orders",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -3764,7 +3764,7 @@ export const mastra = new Mastra({
       },
       {
         path: "/api/sniping",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const userId = c.req.query('userId') || 'demo-user';
@@ -3796,7 +3796,7 @@ export const mastra = new Mastra({
       },
       {
         path: "/api/sniping",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -3823,7 +3823,7 @@ export const mastra = new Mastra({
       },
       {
         path: "/api/settings",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const userId = c.req.query('userId') || 'demo-user';
@@ -3852,7 +3852,7 @@ export const mastra = new Mastra({
       },
       {
         path: "/api/settings",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -3885,7 +3885,7 @@ export const mastra = new Mastra({
       // Scanner endpoint
       {
         path: "/api/scanner",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -3913,7 +3913,7 @@ export const mastra = new Mastra({
       // Subscription endpoints
       {
         path: "/api/subscription",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const userId = c.req.query('userId') || 'demo-user';
@@ -3935,7 +3935,7 @@ export const mastra = new Mastra({
       },
       {
         path: "/api/subscription/checkout",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -3959,7 +3959,7 @@ export const mastra = new Mastra({
       },
       {
         path: "/api/subscription/cancel",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -3981,7 +3981,7 @@ export const mastra = new Mastra({
       },
       {
         path: "/api/stripe/webhook",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const Stripe = await import('stripe');
@@ -4250,7 +4250,7 @@ export const mastra = new Mastra({
       // Crypto Payment Endpoint (Coinbase Commerce)
       {
         path: "/api/crypto/create-charge",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -4351,7 +4351,7 @@ export const mastra = new Mastra({
       // Crypto Webhook (Coinbase Commerce payment confirmations)
       {
         path: "/api/crypto/webhook",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -4561,7 +4561,7 @@ export const mastra = new Mastra({
       // Feedback & Token Submission endpoint
       {
         path: "/api/submit-feedback",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -4833,7 +4833,7 @@ export const mastra = new Mastra({
       // Chart endpoint - Returns time-series data for LightweightCharts
       {
         path: "/api/chart",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -4918,7 +4918,7 @@ export const mastra = new Mastra({
       // Multi-Timeframe Analysis endpoint
       {
         path: "/api/multi-timeframe",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -5026,7 +5026,7 @@ export const mastra = new Mastra({
       // DEX Search endpoint
       {
         path: "/api/dex-search",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -5063,7 +5063,7 @@ export const mastra = new Mastra({
       // DEX Analysis endpoint
       {
         path: "/api/dex-analyze",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -5123,7 +5123,7 @@ export const mastra = new Mastra({
       // NFT Analysis endpoint
       {
         path: "/api/nft-analyze",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -5168,7 +5168,7 @@ export const mastra = new Mastra({
       // Download DarkWave banner image for Telegram
       {
         path: "/telegram-banner.png",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async () => async (c: any) => {
           const fs = await import('fs/promises');
           const path = await import('path');
@@ -5198,7 +5198,7 @@ export const mastra = new Mastra({
       // Simple download page for the banner
       {
         path: "/download-banner",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async () => async (c: any) => {
           const html = `
 <!DOCTYPE html>
@@ -5296,7 +5296,7 @@ export const mastra = new Mastra({
       // Mini App static files - Helper to resolve public files in both dev and deployment
       {
         path: "/mini-app",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async () => async (c: any) => {
           const fs = await import('fs/promises');
           const path = await import('path');
@@ -5322,7 +5322,7 @@ export const mastra = new Mastra({
       },
       {
         path: "/mini-app/styles.css",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async () => async (c: any) => {
           const fs = await import('fs/promises');
           const path = await import('path');
@@ -5348,7 +5348,7 @@ export const mastra = new Mastra({
       },
       {
         path: "/mini-app/app.js",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async () => async (c: any) => {
           const fs = await import('fs/promises');
           const path = await import('path');
@@ -5375,7 +5375,7 @@ export const mastra = new Mastra({
       // CoinCap Market API - Serves coin market data from CoinGecko
       {
         path: "/api/coincap/market/:coinId",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const coinId = c.req.param('coinId');
@@ -5411,7 +5411,7 @@ export const mastra = new Mastra({
       // CoinCap History API - Serves historical price data
       {
         path: "/api/coincap/history/:coinId",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const coinId = c.req.param('coinId');
@@ -5461,7 +5461,7 @@ export const mastra = new Mastra({
       // CoinCap ATH API - Serves all-time high data
       {
         path: "/api/coincap/ath/:coinId",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const coinId = c.req.param('coinId');
@@ -5493,7 +5493,7 @@ export const mastra = new Mastra({
       // Get user's audit trail
       {
         path: "/api/audit-trail",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -5536,7 +5536,7 @@ export const mastra = new Mastra({
       // Verify an audit event
       {
         path: "/api/audit-trail/verify/:eventId",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -5564,7 +5564,7 @@ export const mastra = new Mastra({
       // Get audit trail stats (admin)
       {
         path: "/api/audit-trail/stats",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -5582,7 +5582,7 @@ export const mastra = new Mastra({
       // Get user's Hallmark profile
       {
         path: "/api/hallmark/profile",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -5611,7 +5611,7 @@ export const mastra = new Mastra({
       // Get user's Hallmark collection
       {
         path: "/api/hallmark/collection",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -5640,7 +5640,7 @@ export const mastra = new Mastra({
       // Create draft Hallmark (before payment)
       {
         path: "/api/hallmark/create-draft",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -5679,7 +5679,7 @@ export const mastra = new Mastra({
       // Verify a Hallmark
       {
         path: "/api/hallmark/verify/:serialNumber",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -5709,7 +5709,7 @@ export const mastra = new Mastra({
       // Get Hallmark stats (admin)
       {
         path: "/api/hallmark/stats",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -5727,7 +5727,7 @@ export const mastra = new Mastra({
       // Developer/Admin dashboard data
       {
         path: "/api/dev/dashboard",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -5812,7 +5812,7 @@ export const mastra = new Mastra({
       // Update system config (admin)
       {
         path: "/api/dev/config",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           
@@ -5866,7 +5866,7 @@ export const mastra = new Mastra({
       // GET /api/users/:userId/favorites - Get user's favorites
       {
         path: "/api/users/:userId/favorites",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const userId = c.req.param('userId');
@@ -5900,7 +5900,7 @@ export const mastra = new Mastra({
       // POST /api/users/:userId/favorites - Add a favorite
       {
         path: "/api/users/:userId/favorites",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const userId = c.req.param('userId');
@@ -5961,7 +5961,7 @@ export const mastra = new Mastra({
       // DELETE /api/users/:userId/favorites/:id - Remove a favorite
       {
         path: "/api/users/:userId/favorites/:id",
-        method: "DELETE",
+        method: "DELETE" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const userId = c.req.param('userId');
@@ -5997,7 +5997,7 @@ export const mastra = new Mastra({
       // PUT /api/users/:userId/favorites/:id - Update favorite (order, notes)
       {
         path: "/api/users/:userId/favorites/:id",
-        method: "PUT",
+        method: "PUT" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const userId = c.req.param('userId');
@@ -6046,7 +6046,7 @@ export const mastra = new Mastra({
       // GET /api/users/:userId/dashboard - Get dashboard config
       {
         path: "/api/users/:userId/dashboard",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const userId = c.req.param('userId');
@@ -6113,7 +6113,7 @@ export const mastra = new Mastra({
       // PUT /api/users/:userId/dashboard - Update dashboard config
       {
         path: "/api/users/:userId/dashboard",
-        method: "PUT",
+        method: "PUT" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const userId = c.req.param('userId');
@@ -6165,7 +6165,7 @@ export const mastra = new Mastra({
       // POST /api/users/:userId/hallmark - Generate hallmark ID if not exists
       {
         path: "/api/users/:userId/hallmark",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const userId = c.req.param('userId');
@@ -6290,7 +6290,7 @@ export const mastra = new Mastra({
       // Catch-all static file handler (MUST BE LAST) - serves all assets from public/
       {
         path: "/*",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const fs = await import('fs/promises');
           const path = await import('path');
@@ -6367,7 +6367,7 @@ export const mastra = new Mastra({
       // API Key Management - Generate new API key (requires authentication)
       {
         path: "/api/developer/keys",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -6429,7 +6429,7 @@ export const mastra = new Mastra({
       // API Key Management - Get user's API keys
       {
         path: "/api/developer/list-keys",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -6453,7 +6453,7 @@ export const mastra = new Mastra({
       // API Key Management - Revoke API key
       {
         path: "/api/developer/keys/:keyId",
-        method: "DELETE",
+        method: "DELETE" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -6480,7 +6480,7 @@ export const mastra = new Mastra({
       // API Key Management - Regenerate key
       {
         path: "/api/developer/keys/regenerate",
-        method: "POST",
+        method: "POST" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -6545,7 +6545,7 @@ export const mastra = new Mastra({
       // API Subscription - Get user's current subscription
       {
         path: "/api/developer/subscription",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -6585,7 +6585,7 @@ export const mastra = new Mastra({
       // API Key Management - Get usage stats
       {
         path: "/api/developer/keys/:keyId/usage",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           try {
@@ -6610,7 +6610,7 @@ export const mastra = new Mastra({
       // Public API - Market Overview
       {
         path: "/api/v1/market-overview",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const startTime = Date.now();
@@ -6694,7 +6694,7 @@ export const mastra = new Mastra({
       // Public API - Coin Price
       {
         path: "/api/v1/price/:symbol",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const startTime = Date.now();
@@ -6775,7 +6775,7 @@ export const mastra = new Mastra({
       // Public API - AI Signals
       {
         path: "/api/v1/signals",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const startTime = Date.now();
@@ -6890,7 +6890,7 @@ export const mastra = new Mastra({
       // Public API - ML Predictions
       {
         path: "/api/v1/predictions/:symbol",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           const startTime = Date.now();
@@ -6978,7 +6978,7 @@ export const mastra = new Mastra({
       // StrikeAgent Top Signals endpoint - for frontend dashboard
       {
         path: "/api/strike-agent/top-signals",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           logger?.info('🎯 [StrikeAgent] Top signals request');
@@ -7035,7 +7035,7 @@ export const mastra = new Mastra({
       // AI System Status endpoint - for frontend dashboard
       {
         path: "/api/system/ai/status",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           const logger = mastra.getLogger();
           logger?.info('🤖 [System] AI status request');
@@ -7073,7 +7073,7 @@ export const mastra = new Mastra({
       // Public API - API Documentation
       {
         path: "/api/v1/docs",
-        method: "GET",
+        method: "GET" as const,
         createHandler: async ({ mastra }) => async (c: any) => {
           return c.json({
             name: 'Pulse Public API',

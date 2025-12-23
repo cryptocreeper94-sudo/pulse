@@ -16,7 +16,7 @@ const SUPPORTED_CURRENCIES: Record<string, string[]> = {
 export const cryptoOnrampRoutes = [
   {
     path: "/api/crypto/onramp/create-session",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -88,7 +88,7 @@ export const cryptoOnrampRoutes = [
 
   {
     path: "/api/crypto/onramp/session-status",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -116,7 +116,7 @@ export const cryptoOnrampRoutes = [
 
   {
     path: "/api/crypto/onramp/supported",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async () => async (c: any) => {
       return c.json({
         success: true,

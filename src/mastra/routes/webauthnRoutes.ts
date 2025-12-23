@@ -42,7 +42,7 @@ function generateId(): string {
 export const webauthnRoutes = [
   {
     path: "/api/webauthn/check-support",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       return c.json({
         supported: true,
@@ -57,7 +57,7 @@ export const webauthnRoutes = [
 
   {
     path: "/api/webauthn/registration/start",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -133,7 +133,7 @@ export const webauthnRoutes = [
 
   {
     path: "/api/webauthn/registration/complete",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -227,7 +227,7 @@ export const webauthnRoutes = [
 
   {
     path: "/api/webauthn/authentication/start",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -288,7 +288,7 @@ export const webauthnRoutes = [
 
   {
     path: "/api/webauthn/authentication/verify",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -405,7 +405,7 @@ export const webauthnRoutes = [
 
   {
     path: "/api/webauthn/credentials",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       try {
         const { sessionToken } = await c.req.json();
@@ -443,7 +443,7 @@ export const webauthnRoutes = [
 
   {
     path: "/api/webauthn/credentials/delete",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -474,7 +474,7 @@ export const webauthnRoutes = [
 
   {
     path: "/api/webauthn/has-credentials",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       try {
         const { sessionToken, usedFor } = await c.req.json();

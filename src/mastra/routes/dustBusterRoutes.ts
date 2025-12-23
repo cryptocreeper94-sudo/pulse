@@ -3,7 +3,7 @@ import { dustBusterService, RENT_PER_ACCOUNT, FEE_PERCENTAGE, THRESHOLDS } from 
 export const dustBusterRoutes = [
   {
     path: "/api/dust-buster/scan",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -38,7 +38,7 @@ export const dustBusterRoutes = [
   },
   {
     path: "/api/dust-buster/preview",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -68,7 +68,7 @@ export const dustBusterRoutes = [
   },
   {
     path: "/api/dust-buster/execute",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -117,7 +117,7 @@ export const dustBusterRoutes = [
   },
   {
     path: "/api/dust-buster/stats",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -149,7 +149,7 @@ export const dustBusterRoutes = [
   },
   {
     path: "/api/dust-buster/history",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -172,7 +172,7 @@ export const dustBusterRoutes = [
   },
   {
     path: "/api/dust-buster/constants",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       return c.json({
         rentPerAccount: RENT_PER_ACCOUNT,

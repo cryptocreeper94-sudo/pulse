@@ -6,7 +6,7 @@ import { predictionLearningService } from '../../services/predictionLearningServ
 export const mlRoutes = [
   {
     path: "/api/ml/user-history",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -112,7 +112,7 @@ export const mlRoutes = [
   },
   {
     path: "/api/ml/stats",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -177,7 +177,7 @@ export const mlRoutes = [
   },
   {
     path: "/api/ml/model-status",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -212,7 +212,7 @@ export const mlRoutes = [
   },
   {
     path: "/api/ml/api-usage",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -309,7 +309,7 @@ export const mlRoutes = [
   },
   {
     path: "/api/ml/accuracy-trends",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -440,7 +440,7 @@ export const mlRoutes = [
   },
   {
     path: "/api/ml/drift-status",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {

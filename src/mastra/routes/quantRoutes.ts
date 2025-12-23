@@ -9,7 +9,7 @@ const QUANT_PIN = '0424';
 export const quantRoutes = [
   {
     path: "/api/quant/metrics",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -82,7 +82,7 @@ export const quantRoutes = [
   },
   {
     path: "/api/quant/trade-feed",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -113,7 +113,7 @@ export const quantRoutes = [
   },
   {
     path: "/api/quant/scan-config",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       try {
         const configs = await db.select().from(quantScanConfig);
@@ -125,7 +125,7 @@ export const quantRoutes = [
   },
   {
     path: "/api/quant/scan-config",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -195,7 +195,7 @@ export const quantRoutes = [
   },
   {
     path: "/api/quant/sessions",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       try {
         const sessions = await db.select()
@@ -211,7 +211,7 @@ export const quantRoutes = [
   },
   {
     path: "/api/quant/signals",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -282,7 +282,7 @@ export const quantRoutes = [
   },
   {
     path: "/api/quant/chains",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       return c.json({
         chains: SUPPORTED_CHAINS.map(chain => ({

@@ -4,7 +4,7 @@ import { communitySignalService } from '../../services/communitySignalService.js
 export const socialTradingRoutes = [
   {
     path: "/api/social/leaderboard",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -30,7 +30,7 @@ export const socialTradingRoutes = [
   
   {
     path: "/api/social/traders/:id",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -66,7 +66,7 @@ export const socialTradingRoutes = [
   
   {
     path: "/api/social/follow",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -105,7 +105,7 @@ export const socialTradingRoutes = [
   
   {
     path: "/api/social/unfollow/:traderId",
-    method: "DELETE",
+    method: "DELETE" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -133,7 +133,7 @@ export const socialTradingRoutes = [
   
   {
     path: "/api/social/following/:userId",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -159,7 +159,7 @@ export const socialTradingRoutes = [
   
   {
     path: "/api/social/signals",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -184,7 +184,7 @@ export const socialTradingRoutes = [
   
   {
     path: "/api/social/signals",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -224,7 +224,7 @@ export const socialTradingRoutes = [
   
   {
     path: "/api/social/signals/:id/vote",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -258,7 +258,7 @@ export const socialTradingRoutes = [
   
   {
     path: "/api/social/profile",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {

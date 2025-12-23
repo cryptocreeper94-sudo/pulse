@@ -19,7 +19,7 @@ const getBaseUrl = () => process.env.REPLIT_DEV_DOMAIN ? 'https://' + process.en
 export const paymentRoutes = [
   {
     path: "/api/payments/stripe/create-pulse-monthly",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -65,7 +65,7 @@ export const paymentRoutes = [
 
   {
     path: "/api/payments/stripe/create-pulse-annual",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -111,7 +111,7 @@ export const paymentRoutes = [
 
   {
     path: "/api/payments/stripe/create-strike-monthly",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -157,7 +157,7 @@ export const paymentRoutes = [
 
   {
     path: "/api/payments/stripe/create-strike-annual",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -203,7 +203,7 @@ export const paymentRoutes = [
 
   {
     path: "/api/payments/stripe/create-bundle-monthly",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -249,7 +249,7 @@ export const paymentRoutes = [
 
   {
     path: "/api/payments/stripe/create-bundle-annual",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -295,7 +295,7 @@ export const paymentRoutes = [
 
   {
     path: "/api/payments/stripe/create-founder",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -339,7 +339,7 @@ export const paymentRoutes = [
 
   {
     path: "/api/payments/stripe/create-legacy-founder",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -383,7 +383,7 @@ export const paymentRoutes = [
 
   {
     path: "/api/payments/stripe/cancel-subscription",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -412,7 +412,7 @@ export const paymentRoutes = [
 
   {
     path: "/api/payments/stripe/webhook",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {

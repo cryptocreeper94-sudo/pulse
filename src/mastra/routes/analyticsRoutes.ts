@@ -20,13 +20,14 @@ const parseUserAgent = (ua: string) => {
 };
 
 const hashIP = (ip: string) => {
-  return crypto.createHash('sha256').update(ip + 'pulse-salt').digest('hex').substring(0, 16);
+  const salt = process.env.ANALYTICS_SALT || 'pulse-salt-fallback';
+  return crypto.createHash('sha256').update(ip + salt).digest('hex').substring(0, 16);
 };
 
 export const analyticsRoutes = [
   {
     path: "/api/analytics/track",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -99,7 +100,7 @@ export const analyticsRoutes = [
   },
   {
     path: "/api/analytics/dashboard",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -204,7 +205,7 @@ export const analyticsRoutes = [
   },
   {
     path: "/api/analytics/live",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {

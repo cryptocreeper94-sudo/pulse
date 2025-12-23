@@ -17,7 +17,7 @@ const getBaseUrl = () => process.env.REPLIT_DEV_DOMAIN ? 'https://' + process.en
 export const apiBillingRoutes = [
   {
     path: "/api/developer/billing/create-pro-monthly",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -71,7 +71,7 @@ export const apiBillingRoutes = [
 
   {
     path: "/api/developer/billing/create-pro-annual",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -125,7 +125,7 @@ export const apiBillingRoutes = [
 
   {
     path: "/api/developer/billing/create-enterprise-monthly",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -179,7 +179,7 @@ export const apiBillingRoutes = [
 
   {
     path: "/api/developer/billing/create-enterprise-annual",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -233,7 +233,7 @@ export const apiBillingRoutes = [
 
   {
     path: "/api/developer/billing/status",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -265,7 +265,7 @@ export const apiBillingRoutes = [
 
   {
     path: "/api/developer/billing/portal",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -293,7 +293,7 @@ export const apiBillingRoutes = [
 
   {
     path: "/api/developer/billing/webhook",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {

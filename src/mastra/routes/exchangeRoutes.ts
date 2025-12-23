@@ -25,7 +25,7 @@ function checkRateLimit(userId: string): boolean {
 export const exchangeRoutes = [
   {
     path: '/api/exchanges/connect',
-    method: 'POST',
+    method: 'POST' as const,
     createHandler: async ({ mastra }: { mastra: any }) => async (c: any) => {
       const logger = mastra.getLogger();
 
@@ -93,7 +93,7 @@ export const exchangeRoutes = [
 
   {
     path: '/api/exchanges/:exchangeId',
-    method: 'DELETE',
+    method: 'DELETE' as const,
     createHandler: async ({ mastra }: { mastra: any }) => async (c: any) => {
       const logger = mastra.getLogger();
 
@@ -123,7 +123,7 @@ export const exchangeRoutes = [
 
   {
     path: '/api/exchanges',
-    method: 'GET',
+    method: 'GET' as const,
     createHandler: async ({ mastra }: { mastra: any }) => async (c: any) => {
       const logger = mastra.getLogger();
 
@@ -152,7 +152,7 @@ export const exchangeRoutes = [
 
   {
     path: '/api/exchanges/:id/balances',
-    method: 'GET',
+    method: 'GET' as const,
     createHandler: async ({ mastra }: { mastra: any }) => async (c: any) => {
       const logger = mastra.getLogger();
 
@@ -182,7 +182,7 @@ export const exchangeRoutes = [
 
   {
     path: '/api/exchanges/aggregated-balances',
-    method: 'GET',
+    method: 'GET' as const,
     createHandler: async ({ mastra }: { mastra: any }) => async (c: any) => {
       const logger = mastra.getLogger();
 
@@ -211,7 +211,7 @@ export const exchangeRoutes = [
 
   {
     path: '/api/exchanges/:id/order',
-    method: 'POST',
+    method: 'POST' as const,
     createHandler: async ({ mastra }: { mastra: any }) => async (c: any) => {
       const logger = mastra.getLogger();
 
@@ -270,7 +270,7 @@ export const exchangeRoutes = [
 
   {
     path: '/api/exchanges/:id/order/:orderId',
-    method: 'DELETE',
+    method: 'DELETE' as const,
     createHandler: async ({ mastra }: { mastra: any }) => async (c: any) => {
       const logger = mastra.getLogger();
 
@@ -302,7 +302,7 @@ export const exchangeRoutes = [
 
   {
     path: '/api/exchanges/:id/orders',
-    method: 'GET',
+    method: 'GET' as const,
     createHandler: async ({ mastra }: { mastra: any }) => async (c: any) => {
       const logger = mastra.getLogger();
 
@@ -339,7 +339,7 @@ export const exchangeRoutes = [
 
   {
     path: '/api/exchanges/:id/ticker/:symbol',
-    method: 'GET',
+    method: 'GET' as const,
     createHandler: async ({ mastra }: { mastra: any }) => async (c: any) => {
       const logger = mastra.getLogger();
 
@@ -372,7 +372,7 @@ export const exchangeRoutes = [
 
   {
     path: '/api/exchanges/:id/markets',
-    method: 'GET',
+    method: 'GET' as const,
     createHandler: async ({ mastra }: { mastra: any }) => async (c: any) => {
       const logger = mastra.getLogger();
 
@@ -400,7 +400,7 @@ export const exchangeRoutes = [
 
   {
     path: '/api/exchanges/:id/validate',
-    method: 'POST',
+    method: 'POST' as const,
     createHandler: async ({ mastra }: { mastra: any }) => async (c: any) => {
       const logger = mastra.getLogger();
 

@@ -11,7 +11,7 @@ const MOONPAY_WIDGET_URL = IS_PRODUCTION
 export const moonpayRoutes = [
   {
     path: "/api/crypto/moonpay/widget-url",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -78,7 +78,7 @@ export const moonpayRoutes = [
 
   {
     path: "/api/crypto/moonpay/sign-url",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -109,7 +109,7 @@ export const moonpayRoutes = [
 
   {
     path: "/api/crypto/moonpay/config",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async () => async (c: any) => {
       return c.json({
         success: true,

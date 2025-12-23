@@ -81,7 +81,7 @@ function calculateSafetyScore(token: any): { safetyScore: number; safetyGrade: '
 export const demoRoutes = [
   {
     path: "/api/demo/discover",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       
@@ -193,7 +193,7 @@ export const demoRoutes = [
   },
   {
     path: "/api/demo/prices",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -230,7 +230,7 @@ export const demoRoutes = [
   },
   {
     path: "/api/demo/portfolio/:sessionId",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const sessionId = c.req.param('sessionId');
       const portfolio = getOrCreatePortfolio(sessionId);
@@ -246,7 +246,7 @@ export const demoRoutes = [
   },
   {
     path: "/api/demo/buy",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -274,7 +274,7 @@ export const demoRoutes = [
   },
   {
     path: "/api/demo/sell",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -302,7 +302,7 @@ export const demoRoutes = [
   },
   {
     path: "/api/demo/reset",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -326,7 +326,7 @@ export const demoRoutes = [
   },
   {
     path: "/api/demo/trades/:sessionId",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const sessionId = c.req.param('sessionId');
       const portfolio = getOrCreatePortfolio(sessionId);
@@ -340,7 +340,7 @@ export const demoRoutes = [
   },
   {
     path: "/api/demo/capture-lead",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -369,7 +369,7 @@ export const demoRoutes = [
   },
   {
     path: "/api/demo/checkout",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -459,7 +459,7 @@ export const demoRoutes = [
   },
   {
     path: "/api/demo/telegram/register",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -482,7 +482,7 @@ export const demoRoutes = [
   },
   {
     path: "/api/demo/telegram/test",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -515,7 +515,7 @@ export const demoRoutes = [
   },
   {
     path: "/api/user/referral-code",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -537,7 +537,7 @@ export const demoRoutes = [
   },
   {
     path: "/api/user/referral/apply",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -565,7 +565,7 @@ export const demoRoutes = [
   },
   {
     path: "/api/user/referral/stats",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {

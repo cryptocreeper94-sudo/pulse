@@ -3,7 +3,7 @@ import { limitOrderService, CreateLimitOrderInput, LimitOrderStatus } from '../.
 export const limitOrderRoutes = [
   {
     path: "/api/limit-orders",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -37,7 +37,7 @@ export const limitOrderRoutes = [
   },
   {
     path: "/api/limit-orders",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -57,7 +57,7 @@ export const limitOrderRoutes = [
   },
   {
     path: "/api/limit-orders/:id",
-    method: "PUT",
+    method: "PUT" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -107,7 +107,7 @@ export const limitOrderRoutes = [
   },
   {
     path: "/api/limit-orders/:id",
-    method: "DELETE",
+    method: "DELETE" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -143,7 +143,7 @@ export const limitOrderRoutes = [
   },
   {
     path: "/api/limit-orders/:id/execute",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -186,7 +186,7 @@ export const limitOrderRoutes = [
   },
   {
     path: "/api/limit-orders/monitor",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -204,7 +204,7 @@ export const limitOrderRoutes = [
   },
   {
     path: "/api/limit-orders/active",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {

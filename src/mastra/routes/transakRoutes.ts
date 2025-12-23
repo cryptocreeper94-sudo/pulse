@@ -17,7 +17,7 @@ const getBaseUrl = () => process.env.REPLIT_DEV_DOMAIN
 export const transakRoutes = [
   {
     path: "/api/crypto/transak/widget-url",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -84,7 +84,7 @@ export const transakRoutes = [
 
   {
     path: "/api/crypto/transak/config",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async () => async (c: any) => {
       return c.json({
         success: true,
@@ -100,7 +100,7 @@ export const transakRoutes = [
 
   {
     path: "/api/crypto/transak/webhook",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {

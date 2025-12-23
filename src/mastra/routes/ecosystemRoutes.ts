@@ -79,7 +79,7 @@ curl -X POST "/api/ecosystem/register" -H "Content-Type: application/json" -d '{
 export const ecosystemRoutes = [
   {
     path: "/api/ecosystem/snippets",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       return c.json({
         success: true,
@@ -91,7 +91,7 @@ export const ecosystemRoutes = [
 
   {
     path: "/api/ecosystem/snippets/:snippetId",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const snippetId = c.req.param("snippetId");
       if (snippetId === "ecosystem-integration-protocol") {
@@ -106,7 +106,7 @@ export const ecosystemRoutes = [
 
   {
     path: "/api/ecosystem/pulse",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       return c.json({
         success: true,
@@ -118,7 +118,7 @@ export const ecosystemRoutes = [
   
   {
     path: "/api/ecosystem/apps",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -163,7 +163,7 @@ export const ecosystemRoutes = [
 
   {
     path: "/api/ecosystem/register",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -227,7 +227,7 @@ export const ecosystemRoutes = [
 
   {
     path: "/api/ecosystem/update",
-    method: "PUT",
+    method: "PUT" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -276,7 +276,7 @@ export const ecosystemRoutes = [
 
   {
     path: "/api/ecosystem/approve/:appId",
-    method: "POST",
+    method: "POST" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
@@ -316,7 +316,7 @@ export const ecosystemRoutes = [
 
   {
     path: "/api/ecosystem/pending",
-    method: "GET",
+    method: "GET" as const,
     createHandler: async ({ mastra }: any) => async (c: any) => {
       const logger = mastra.getLogger();
       try {
