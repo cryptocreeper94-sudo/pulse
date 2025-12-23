@@ -276,33 +276,73 @@ export default function MarketsTab() {
   const { favorites, isFavorite, toggleFavorite, loading: favoritesLoading } = useFavorites()
   const [coinsLoading, setCoinsLoading] = useState(true)
   const [marketData, setMarketData] = useState({
-    fearGreed: 65,
-    altcoinSeason: 75,
-    marketCap: '$3.14T',
-    marketCapChange: '+1.5%',
-    volume: '$64.1B',
-    volumeChange: '+2.8%',
-    volumeFlow: 'inflow',
+    fearGreed: null,
+    altcoinSeason: null,
+    marketCap: '--',
+    marketCapChange: '--',
+    volume: '--',
+    volumeChange: '--',
+    volumeFlow: null,
   })
+  const [marketDataLoading, setMarketDataLoading] = useState(true)
   const [coins, setCoins] = useState([])
-  const [news, setNews] = useState([
-    { source: 'CoinDesk', title: 'Bitcoin Holds Above $90K as Market Awaits Fed Decision', time: '2h ago' },
-    { source: 'Bloomberg', title: 'Ethereum ETF Sees Record Inflows', time: '4h ago' },
-    { source: 'Reuters', title: 'Fed Signals Potential Rate Cuts in 2025', time: '6h ago' },
-    { source: 'CryptoNews', title: 'Solana DeFi TVL Reaches New All-Time High', time: '8h ago' },
-    { source: 'The Block', title: 'Major Exchange Announces New Listing Requirements', time: '10h ago' },
-  ])
+  const [news, setNews] = useState([])
+  const [newsLoading, setNewsLoading] = useState(true)
   
   useEffect(() => {
+    const formatMarketCap = (val) => {
+      if (!val) return '--'
+      if (val >= 1e12) return `$${(val / 1e12).toFixed(2)}T`
+      if (val >= 1e9) return `$${(val / 1e9).toFixed(2)}B`
+      return `$${(val / 1e6).toFixed(2)}M`
+    }
+    
+    const formatChange = (val) => {
+      if (val === undefined || val === null) return '--'
+      const sign = val >= 0 ? '+' : ''
+      return `${sign}${val.toFixed(1)}%`
+    }
+    
     const fetchMarketData = async () => {
       try {
         const response = await fetch('/api/crypto/market-overview')
         if (response.ok) {
           const data = await response.json()
-          setMarketData(prev => ({ ...prev, ...data }))
+          setMarketData({
+            fearGreed: data.fearGreed ?? 50,
+            altcoinSeason: data.altcoinSeason ?? 50,
+            marketCap: formatMarketCap(data.totalMarketCap),
+            marketCapChange: formatChange(data.totalMarketCapChange),
+            volume: formatMarketCap(data.totalVolume),
+            volumeChange: formatChange(data.totalVolumeChange),
+            volumeFlow: data.totalVolumeChange >= 0 ? 'inflow' : 'outflow',
+          })
         }
       } catch (err) {
-        console.log('Using default market data')
+        console.log('Market data fetch error:', err)
+      } finally {
+        setMarketDataLoading(false)
+      }
+    }
+    
+    const fetchNews = async () => {
+      try {
+        const response = await fetch('/api/crypto/news')
+        if (response.ok) {
+          const data = await response.json()
+          if (data.articles && Array.isArray(data.articles)) {
+            setNews(data.articles.slice(0, 10).map(article => ({
+              source: article.source || 'Crypto News',
+              title: article.title,
+              time: article.publishedAt ? new Date(article.publishedAt).toLocaleString() : '',
+              url: article.link
+            })))
+          }
+        }
+      } catch (err) {
+        console.log('News fetch error:', err)
+      } finally {
+        setNewsLoading(false)
       }
     }
     
@@ -326,7 +366,16 @@ export default function MarketsTab() {
     }
     
     fetchMarketData()
+    fetchNews()
     loadPredictions()
+    
+    const marketInterval = setInterval(fetchMarketData, 60000)
+    const newsInterval = setInterval(fetchNews, 300000)
+    
+    return () => {
+      clearInterval(marketInterval)
+      clearInterval(newsInterval)
+    }
   }, [])
   
   useEffect(() => {
@@ -473,11 +522,22 @@ export default function MarketsTab() {
           <h3 className="section-title">📰 Latest News</h3>
         </div>
         <div className="section-content">
-          <Carousel itemWidth={280}>
-            {news.map((item, i) => (
-              <NewsCard key={i} {...item} />
-            ))}
-          </Carousel>
+          {newsLoading ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', color: '#888' }}>
+              <div className="loading-spinner" style={{ width: '20px', height: '20px', marginRight: '10px' }}></div>
+              Loading news...
+            </div>
+          ) : news.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '20px', color: '#888' }}>
+              No news available
+            </div>
+          ) : (
+            <Carousel itemWidth={280}>
+              {news.map((item, i) => (
+                <NewsCard key={i} {...item} />
+              ))}
+            </Carousel>
+          )}
         </div>
       </div>
       

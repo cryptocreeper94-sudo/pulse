@@ -4,10 +4,7 @@ import HamburgerMenu from './HamburgerMenu'
 import BugReportModal from '../modals/BugReportModal'
 import DisclaimerModal from '../modals/DisclaimerModal'
 import DisclaimerBanner from '../ui/DisclaimerBanner'
-import { useTheme } from '../../context/ThemeContext'
-
 export default function Layout({ children, activeTab, onTabChange, userTier, accessLevel }) {
-  const { isDarkMode, toggleTheme } = useTheme()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isBugModalOpen, setIsBugModalOpen] = useState(false)
   const [isDisclaimerOpen, setIsDisclaimerOpen] = useState(false)
@@ -31,9 +28,6 @@ export default function Layout({ children, activeTab, onTabChange, userTier, acc
       case 'agent':
         console.log('Opening Agent Builder')
         alert('Agent Builder coming soon!')
-        break
-      case 'theme':
-        toggleTheme()
         break
       case 'bug':
         setIsBugModalOpen(true)
@@ -68,7 +62,6 @@ export default function Layout({ children, activeTab, onTabChange, userTier, acc
         onTabChange={onTabChange}
         onClose={handleClose}
         onAction={handleAction}
-        isDarkMode={isDarkMode}
         userTier={userTier}
         accessLevel={accessLevel}
       />

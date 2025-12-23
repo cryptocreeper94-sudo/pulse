@@ -92,6 +92,8 @@ export default function VerificationModal({
         .verification-modal-container {
           width: 100%;
           max-width: 380px;
+          max-height: 90vh;
+          overflow-y: auto;
           background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
           border: 1px solid rgba(153, 69, 255, 0.3);
           border-radius: 20px;
@@ -267,8 +269,13 @@ export default function VerificationModal({
         }
 
         @media (max-width: 480px) {
+          .verification-modal-overlay {
+            padding: 10px;
+          }
+
           .verification-modal-container {
-            padding: 20px;
+            padding: 16px;
+            max-height: 85vh;
           }
 
           .verification-modal-title {
@@ -276,12 +283,25 @@ export default function VerificationModal({
           }
 
           .hallmark-value {
-            font-size: 18px;
+            font-size: 16px;
             letter-spacing: 1px;
+          }
+
+          .qr-wrapper {
+            padding: 12px;
           }
 
           .info-text {
             font-size: 11px;
+          }
+
+          .verification-solana-badge {
+            width: 50px;
+            height: 50px;
+          }
+
+          .verification-shield-large {
+            font-size: 24px;
           }
         }
       `}</style>

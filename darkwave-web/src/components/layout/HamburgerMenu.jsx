@@ -25,16 +25,15 @@ const getMenuItems = (accessLevel) => {
   return allMenuItems.filter(item => !item.adminOnly || isAdmin)
 }
 
-const getQuickActions = (isDarkMode) => [
+const getQuickActions = () => [
   { id: 'agent', icon: '👤', label: 'Agent Builder' },
-  { id: 'theme', icon: isDarkMode ? '☀️' : '🌙', label: isDarkMode ? 'Light Mode' : 'Dark Mode' },
   { id: 'bug', icon: '🐛', label: 'Report Bug' },
   { id: 'disclaimer', icon: '⚠️', label: 'Disclaimer' },
   { id: 'logout', icon: '🚪', label: 'Logout', danger: true },
 ]
 
-export default function HamburgerMenu({ isOpen, activeTab, onTabChange, onClose, onAction, isDarkMode = true, userTier, accessLevel }) {
-  const quickActions = getQuickActions(isDarkMode)
+export default function HamburgerMenu({ isOpen, activeTab, onTabChange, onClose, onAction, userTier, accessLevel }) {
+  const quickActions = getQuickActions()
   const menuItems = getMenuItems(accessLevel)
   const [showSkins, setShowSkins] = useState(false)
   const menuContentRef = useRef(null)
