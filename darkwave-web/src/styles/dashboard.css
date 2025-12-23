@@ -235,6 +235,11 @@
     max-width: 100vw;
   }
   
+  /* Mobile font size scaling - prevent tiny text */
+  html {
+    font-size: 16px !important;
+  }
+  
   .top-carousels-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -257,10 +262,44 @@
     overflow: hidden;
   }
   
+  /* Larger labels on mobile */
   .carousel-label {
-    font-size: 8px;
-    margin-bottom: 3px;
+    font-size: 11px;
+    margin-bottom: 4px;
     letter-spacing: 0.5px;
+  }
+  
+  /* Scale up all small text on mobile */
+  .carousel-section span,
+  .carousel-section div,
+  .market-overview-card span,
+  .market-overview-card div {
+    font-size: max(12px, 1em) !important;
+  }
+  
+  /* Mobile tile label sizing */
+  .tile-label {
+    font-size: 12px !important;
+  }
+  
+  /* Bento dashboard text scaling */
+  .bento-dashboard span,
+  .bento-dashboard div {
+    min-height: auto;
+  }
+  
+  /* Table header and content scaling */
+  .bento-table span,
+  .bento-table div {
+    font-size: max(12px, inherit) !important;
+  }
+  
+  /* Chart section text */
+  .bento-chart-section span,
+  .bento-chart-section div,
+  .chart-metrics span,
+  .chart-metrics div {
+    font-size: max(12px, inherit) !important;
   }
   
   .market-overview-strip {

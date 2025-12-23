@@ -82,9 +82,10 @@ function BentoTile({ children, className = '', style = {}, onClick }) {
 }
 
 function TileLabel({ children, color = 'var(--text-muted)' }) {
+  const isMobile = window.innerWidth <= 640
   return (
-    <div style={{
-      fontSize: 9,
+    <div className="tile-label" style={{
+      fontSize: isMobile ? 12 : 9,
       fontWeight: 700,
       color,
       textTransform: 'uppercase',
