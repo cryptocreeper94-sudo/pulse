@@ -75,7 +75,12 @@ const server = http.createServer((req, res) => {
             method: req.method,
             headers: req.headers
         }, (proxyRes) => {
-            res.writeHead(proxyRes.statusCode || 500, proxyRes.headers);
+            // Add no-cache headers to prevent CDN/edge caching of API responses
+            const headers = { ...proxyRes.headers };
+            headers['cache-control'] = 'no-store, no-cache, must-revalidate, proxy-revalidate';
+            headers['pragma'] = 'no-cache';
+            headers['expires'] = '0';
+            res.writeHead(proxyRes.statusCode || 500, headers);
             proxyRes.pipe(res);
         });
         proxyReq.on('error', () => {

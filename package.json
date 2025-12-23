@@ -7,7 +7,7 @@
     "dev": "mastra dev",
     "start": "node dist/bootstrap.js",
     "start:mastra": "mastra start",
-    "build": "npx tsc src/bootstrap.ts src/mastra-child.ts --outDir dist --esModuleInterop --module NodeNext --moduleResolution NodeNext --target ES2022 --skipLibCheck && mv dist/bootstrap.js dist/bootstrap.mjs && ./scripts/patch-mastra.sh",
+    "build": "npx tsc src/bootstrap.ts src/mastra-child.ts --outDir dist --esModuleInterop --module NodeNext --moduleResolution NodeNext --target ES2022 --skipLibCheck && mv dist/bootstrap.js dist/bootstrap.mjs && ./scripts/patch-mastra.sh && cd .mastra/output && npm install --legacy-peer-deps --production",
     "build:full": "rm -rf .mastra/output .mastra/.build && NODE_OPTIONS='--max-old-space-size=4096' MASTRA_DEV_NO_CACHE=1 mastra build && ./scripts/patch-mastra.sh && npm install --prefix darkwave-web && cd darkwave-web && npm run build && cp -r dist/* ../public/ && cd .. && npm run build",
     "check": "tsc",
     "check:format": "prettier --check '**/*.ts'",
