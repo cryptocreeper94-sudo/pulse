@@ -38,24 +38,27 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, '0.0.0.0', () => {
   console.log('Server ready on port ' + PORT);
   
-  setTimeout(() => {
+  setImmediate(() => {
     try {
       const publicDir = path.join(process.cwd(), 'public');
       const indexPath = path.join(publicDir, 'index.html');
-      
       if (fs.existsSync(indexPath)) {
         html = fs.readFileSync(indexPath, 'utf8');
       }
-      
+    } catch (e) {}
+  });
+  
+  setTimeout(() => {
+    try {
       const mastraPath = path.join(process.cwd(), '.mastra', 'output', 'index.mjs');
       if (fs.existsSync(mastraPath)) {
         spawn('node', [mastraPath], {
-          env: { ...process.env, PORT: '4111' },
+          env: { ...process.env, PORT: '4111', HOST: '127.0.0.1' },
           stdio: 'inherit'
         });
       }
     } catch (e) {
-      console.error('Background init error:', e);
+      console.error('Mastra init error:', e);
     }
-  }, 500);
+  }, 30000);
 });
