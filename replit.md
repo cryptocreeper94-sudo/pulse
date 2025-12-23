@@ -10,6 +10,10 @@ Pulse, by DarkWave Studios, LLC, is an AI-driven trading platform that leverages
 - Design aesthetic: Solid black/dark gray backgrounds (#0f0f0f, #1a1a1a, #141414) with free-floating elements featuring glow effects. Glassmorphism (backdrop-filter blur + semi-transparent backgrounds) is ALLOWED for cards site-wide, but NOT for backgrounds, buttons, or other non-card elements.
 
 ## Recent Updates (December 23, 2025)
+- **Live Fear & Greed Index**: Now fetching real-time data from Alternative.me API instead of hardcoded values. Shows current market sentiment (0-100 scale with labels like "Extreme Fear", "Greed", etc.)
+- **Dynamic Altcoin Season**: Calculated from BTC dominance - higher values when altcoins are outperforming Bitcoin.
+- **Live Crypto News RSS**: Added `/api/crypto/news` endpoint that aggregates real-time headlines from CoinDesk, CoinTelegraph, Decrypt, and The Block RSS feeds with 5-minute caching.
+- **Verification Badge Fix**: Fixed black screen issue when clicking blockchain verification badges by adding missing `qrcode.react` dependency to frontend.
 - **Firebase Authentication**: Replaced Replit auth with Firebase Authentication using Google and GitHub sign-in providers. New login screen with both options. Backend syncs Firebase users with existing user database.
 - **Firebase Analytics**: Integrated Firebase Analytics for tracking user activity and events.
 - **Firebase Console Setup Required**: Add these domains to Firebase Console > Authentication > Settings > Authorized domains:

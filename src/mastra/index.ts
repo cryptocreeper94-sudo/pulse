@@ -969,18 +969,26 @@ export const mastra = new Mastra({
           }
           
           try {
-            const globalData = await coinGeckoClient.getGlobal();
+            const [globalData, fearGreedData] = await Promise.all([
+              coinGeckoClient.getGlobal(),
+              fetch('https://api.alternative.me/fng/?limit=1').then(r => r.json()).catch(() => null)
+            ]);
             const data = globalData?.data || {};
+            
+            const fearGreedValue = fearGreedData?.data?.[0]?.value ? parseInt(fearGreedData.data[0].value) : 50;
+            const btcDom = data.market_cap_percentage?.btc || 54;
+            const altcoinSeasonValue = Math.min(100, Math.max(0, Math.round((100 - btcDom) * 2)));
             
             const result = {
               totalMarketCap: data.total_market_cap?.usd || 0,
               totalMarketCapChange: data.market_cap_change_percentage_24h_usd || 0,
               totalVolume: data.total_volume?.usd || 0,
               totalVolumeChange: 0,
-              btcDominance: data.market_cap_percentage?.btc || 0,
+              btcDominance: btcDom,
               ethDominance: data.market_cap_percentage?.eth || 0,
-              fearGreed: 65,
-              altcoinSeason: 75,
+              fearGreed: fearGreedValue,
+              fearGreedLabel: fearGreedData?.data?.[0]?.value_classification || 'Neutral',
+              altcoinSeason: altcoinSeasonValue,
               activeCryptocurrencies: data.active_cryptocurrencies || 0,
               markets: data.markets || 0,
               timestamp: Date.now()
@@ -988,7 +996,7 @@ export const mastra = new Mastra({
             
             apiCache.set('global-market-overview', result, 300);
             
-            logger?.info('✅ [GlobalMarketOverview] Data fetched', { btcDominance: result.btcDominance });
+            logger?.info('✅ [GlobalMarketOverview] Data fetched', { btcDominance: result.btcDominance, fearGreed: fearGreedValue });
             return c.json(result);
           } catch (error: any) {
             logger?.error('❌ [GlobalMarketOverview] Error', { error: error.message });
@@ -999,8 +1007,9 @@ export const mastra = new Mastra({
               totalVolumeChange: -1.8,
               btcDominance: 54.5,
               ethDominance: 12.3,
-              fearGreed: 65,
-              altcoinSeason: 75,
+              fearGreed: 50,
+              fearGreedLabel: 'Neutral',
+              altcoinSeason: 91,
               error: 'Using defaults'
             });
           }
@@ -1326,14 +1335,17 @@ export const mastra = new Mastra({
             let coins: any[] = [];
             let rawData: any[];
             
-            const mapCoins = (data: any[]) => data.map((coin: any) => ({
+            // Helper to map CoinGecko data with enhanced fields
+            const mapCoinWithExtras = (coin: any, priceChangeKey: string) => ({
               symbol: coin.symbol.toUpperCase(),
               name: coin.name,
               price: coin.current_price,
-              change24h: coin.price_change_percentage_24h || 0,
+              change: coin[priceChangeKey] || coin.price_change_percentage_24h || 0,
               volume: coin.total_volume,
+              marketCap: coin.market_cap,
+              marketCapChange: coin.market_cap_change_percentage_24h || 0,
               image: coin.image
-            }));
+            });
             
             const priceChangeKey = timeframe === '1h' ? 'price_change_percentage_1h_in_currency' : 'price_change_percentage_24h';
             const priceChangeParam = timeframe === '1h' ? '1h,24h' : '24h';
@@ -1341,50 +1353,22 @@ export const mastra = new Mastra({
             switch (category) {
               case 'top':
                 rawData = await coinGeckoClient.getMarkets({ per_page: 20, price_change_percentage: priceChangeParam });
-                coins = rawData.map((coin: any) => ({
-                  symbol: coin.symbol.toUpperCase(),
-                  name: coin.name,
-                  price: coin.current_price,
-                  change: coin[priceChangeKey] || coin.price_change_percentage_24h || 0,
-                  volume: coin.total_volume,
-                  image: coin.image
-                }));
+                coins = rawData.map((coin: any) => mapCoinWithExtras(coin, priceChangeKey));
                 break;
                 
               case 'meme':
                 rawData = await coinGeckoClient.getMarkets({ category: 'meme-token', per_page: 20, price_change_percentage: priceChangeParam });
-                coins = rawData.map((coin: any) => ({
-                  symbol: coin.symbol.toUpperCase(),
-                  name: coin.name,
-                  price: coin.current_price,
-                  change: coin[priceChangeKey] || coin.price_change_percentage_24h || 0,
-                  volume: coin.total_volume,
-                  image: coin.image
-                }));
+                coins = rawData.map((coin: any) => mapCoinWithExtras(coin, priceChangeKey));
                 break;
                 
               case 'defi':
                 rawData = await coinGeckoClient.getMarkets({ category: 'decentralized-finance-defi', per_page: 20, price_change_percentage: priceChangeParam });
-                coins = rawData.map((coin: any) => ({
-                  symbol: coin.symbol.toUpperCase(),
-                  name: coin.name,
-                  price: coin.current_price,
-                  change: coin[priceChangeKey] || coin.price_change_percentage_24h || 0,
-                  volume: coin.total_volume,
-                  image: coin.image
-                }));
+                coins = rawData.map((coin: any) => mapCoinWithExtras(coin, priceChangeKey));
                 break;
                 
               case 'dex':
                 rawData = await coinGeckoClient.getMarkets({ category: 'decentralized-exchange', per_page: 20, price_change_percentage: priceChangeParam });
-                coins = rawData.map((coin: any) => ({
-                  symbol: coin.symbol.toUpperCase(),
-                  name: coin.name,
-                  price: coin.current_price,
-                  change: coin[priceChangeKey] || coin.price_change_percentage_24h || 0,
-                  volume: coin.total_volume,
-                  image: coin.image
-                }));
+                coins = rawData.map((coin: any) => mapCoinWithExtras(coin, priceChangeKey));
                 break;
                 
               case 'gainers':
@@ -1397,14 +1381,7 @@ export const mastra = new Mastra({
                   .filter((coin: any) => (coin[priceChangeKey] || coin.price_change_percentage_24h || 0) > 0)
                   .sort((a: any, b: any) => (b[priceChangeKey] || b.price_change_percentage_24h || 0) - (a[priceChangeKey] || a.price_change_percentage_24h || 0))
                   .slice(0, 20)
-                  .map((coin: any) => ({
-                    symbol: coin.symbol.toUpperCase(),
-                    name: coin.name,
-                    price: coin.current_price,
-                    change: coin[priceChangeKey] || coin.price_change_percentage_24h || 0,
-                    volume: coin.total_volume,
-                    image: coin.image
-                  }));
+                  .map((coin: any) => mapCoinWithExtras(coin, priceChangeKey));
                 break;
                 
               case 'losers':
@@ -1417,18 +1394,55 @@ export const mastra = new Mastra({
                   .filter((coin: any) => (coin[priceChangeKey] || coin.price_change_percentage_24h || 0) < 0)
                   .sort((a: any, b: any) => (a[priceChangeKey] || a.price_change_percentage_24h || 0) - (b[priceChangeKey] || b.price_change_percentage_24h || 0))
                   .slice(0, 20)
-                  .map((coin: any) => ({
-                    symbol: coin.symbol.toUpperCase(),
-                    name: coin.name,
-                    price: coin.current_price,
-                    change: coin[priceChangeKey] || coin.price_change_percentage_24h || 0,
-                    volume: coin.total_volume,
-                    image: coin.image
-                  }));
+                  .map((coin: any) => mapCoinWithExtras(coin, priceChangeKey));
                 break;
                 
               default:
                 return c.json({ error: 'Invalid category' }, 400);
+            }
+            
+            // Fetch AI predictions from database and merge with coin data
+            try {
+              const { Pool } = await import('pg');
+              const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+              
+              // Get latest predictions for each symbol
+              const symbols = coins.map((c: any) => c.symbol.toUpperCase());
+              const predictionsResult = await pool.query(`
+                SELECT DISTINCT ON (UPPER(token_symbol))
+                  UPPER(token_symbol) as symbol,
+                  ai_recommendation,
+                  ai_score,
+                  created_at
+                FROM strikeagent_predictions
+                WHERE UPPER(token_symbol) = ANY($1)
+                ORDER BY UPPER(token_symbol), created_at DESC
+              `, [symbols]);
+              
+              await pool.end();
+              
+              // Create lookup map
+              const predictionsMap = new Map<string, { signal: string; score: number }>();
+              for (const pred of predictionsResult.rows) {
+                predictionsMap.set(pred.symbol, {
+                  signal: pred.ai_recommendation?.toUpperCase() || 'WATCH',
+                  score: pred.ai_score || 50
+                });
+              }
+              
+              // Merge predictions with coins
+              coins = coins.map((coin: any) => ({
+                ...coin,
+                aiSignal: predictionsMap.get(coin.symbol)?.signal || null,
+                aiScore: predictionsMap.get(coin.symbol)?.score || null
+              }));
+              
+              logger?.info('✅ [CryptoCategory] AI predictions merged', { 
+                coinsWithPredictions: coins.filter((c: any) => c.aiSignal).length 
+              });
+            } catch (dbError: any) {
+              logger?.warn('⚠️ [CryptoCategory] Could not fetch AI predictions', { error: dbError.message });
+              // Continue without predictions - coins still have market data
             }
             
             // Cache the result for 2 minutes

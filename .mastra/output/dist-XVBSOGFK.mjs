@@ -39,7 +39,6 @@ import 'uuid';
 import 'net';
 import 'tls';
 import '@solana/spl-token';
-import '@sqds/multisig';
 import 'bcrypt';
 import '@simplewebauthn/server';
 import 'rss-parser';

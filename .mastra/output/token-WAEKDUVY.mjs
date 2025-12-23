@@ -35,7 +35,6 @@ import 'tls';
 import 'child_process';
 import 'fs/promises';
 import '@solana/spl-token';
-import '@sqds/multisig';
 import 'bcrypt';
 import '@simplewebauthn/server';
 import 'rss-parser';

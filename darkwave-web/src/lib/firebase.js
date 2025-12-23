@@ -31,9 +31,16 @@ export function initFirebase() {
   if (!app) {
     try {
       app = initializeApp(firebaseConfig)
-      analytics = getAnalytics(app)
       auth = getAuth(app)
       console.log('[Firebase] Initialized with Auth')
+      
+      // Analytics is optional - don't let it block auth
+      try {
+        analytics = getAnalytics(app)
+      } catch (analyticsError) {
+        // Analytics may fail on unauthorized domains - that's OK
+        console.log('[Firebase] Analytics not available (domain not authorized)')
+      }
     } catch (error) {
       console.error('[Firebase] Initialization error:', error)
     }

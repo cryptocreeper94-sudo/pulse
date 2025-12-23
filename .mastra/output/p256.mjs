@@ -1,4 +1,4 @@
-import { X as ahash, Y as bytesToHex, $ as randomBytes, a0 as hexToBytes, a1 as concatBytes, a2 as anumber, a3 as isBytes, a4 as abytes, a5 as hmac, a6 as sha256$1, a7 as sha384, a8 as sha512 } from './mastra.mjs';
+import { X as anumber, Y as hexToBytes, $ as isBytes, a0 as abytes, a1 as bytesToHex, a2 as concatBytes, a3 as ahash, a4 as randomBytes, a5 as hmac, a6 as sha256$1, a7 as sha384, a8 as sha512 } from './mastra.mjs';
 import 'stream/web';
 import 'crypto';
 import 'node:url';
@@ -33,7 +33,6 @@ import 'tls';
 import 'child_process';
 import 'fs/promises';
 import '@solana/spl-token';
-import '@sqds/multisig';
 import 'bcrypt';
 import '@simplewebauthn/server';
 import 'rss-parser';
@@ -43,8 +42,8 @@ import 'rss-parser';
  * @module
  */
 /*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
-const _0n$3 = /* @__PURE__ */ BigInt(0);
-const _1n$3 = /* @__PURE__ */ BigInt(1);
+const _0n$2 = /* @__PURE__ */ BigInt(0);
+const _1n$2 = /* @__PURE__ */ BigInt(1);
 // tmp name until v2
 function _abool2(value, title = '') {
     if (typeof value !== 'boolean') {
@@ -75,7 +74,7 @@ function numberToHexUnpadded(num) {
 function hexToNumber(hex) {
     if (typeof hex !== 'string')
         throw new Error('hex string expected, got ' + typeof hex);
-    return hex === '' ? _0n$3 : BigInt('0x' + hex); // Big Endian
+    return hex === '' ? _0n$2 : BigInt('0x' + hex); // Big Endian
 }
 // BE: Big Endian, LE: Little Endian
 function bytesToNumberBE(bytes) {
@@ -130,7 +129,7 @@ function ensureBytes(title, hex, expectedLength) {
  */
 // export const bytesToUtf8: typeof bytesToUtf8_ = bytesToUtf8_;
 // Is positive bigint
-const isPosBig = (n) => typeof n === 'bigint' && _0n$3 <= n;
+const isPosBig = (n) => typeof n === 'bigint' && _0n$2 <= n;
 function inRange(n, min, max) {
     return isPosBig(n) && isPosBig(min) && isPosBig(max) && min <= n && n < max;
 }
@@ -156,7 +155,7 @@ function aInRange(title, n, min, max) {
  */
 function bitLen(n) {
     let len;
-    for (len = 0; n > _0n$3; n >>= _1n$3, len += 1)
+    for (len = 0; n > _0n$2; n >>= _1n$2, len += 1)
         ;
     return len;
 }
@@ -164,7 +163,7 @@ function bitLen(n) {
  * Calculate mask for N bits. Not using ** operator with bigints because of old engines.
  * Same as BigInt(`0b${Array(i).fill('1').join('')}`)
  */
-const bitMask = (n) => (_1n$3 << BigInt(n)) - _1n$3;
+const bitMask = (n) => (_1n$2 << BigInt(n)) - _1n$2;
 /**
  * Minimal HMAC-DRBG from NIST 800-90 for RFC6979 sigs.
  * @returns function that will call DRBG until 2nd arg returns something meaningful
@@ -263,7 +262,7 @@ function memoized(fn) {
  */
 /*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
 // prettier-ignore
-const _0n$2 = BigInt(0), _1n$2 = BigInt(1), _2n$1 = /* @__PURE__ */ BigInt(2), _3n$1 = /* @__PURE__ */ BigInt(3);
+const _0n$1 = BigInt(0), _1n$1 = BigInt(1), _2n$1 = /* @__PURE__ */ BigInt(2), _3n$1 = /* @__PURE__ */ BigInt(3);
 // prettier-ignore
 const _4n$1 = /* @__PURE__ */ BigInt(4), _5n = /* @__PURE__ */ BigInt(5), _7n = /* @__PURE__ */ BigInt(7);
 // prettier-ignore
@@ -271,23 +270,23 @@ const _8n = /* @__PURE__ */ BigInt(8), _9n = /* @__PURE__ */ BigInt(9), _16n = /
 // Calculates a modulo b
 function mod(a, b) {
     const result = a % b;
-    return result >= _0n$2 ? result : b + result;
+    return result >= _0n$1 ? result : b + result;
 }
 /**
  * Inverses number over modulo.
  * Implemented using [Euclidean GCD](https://brilliant.org/wiki/extended-euclidean-algorithm/).
  */
 function invert(number, modulo) {
-    if (number === _0n$2)
+    if (number === _0n$1)
         throw new Error('invert: expected non-zero number');
-    if (modulo <= _0n$2)
+    if (modulo <= _0n$1)
         throw new Error('invert: expected positive modulus, got ' + modulo);
     // Fermat's little theorem "CT-like" version inv(n) = n^(m-2) mod m is 30x slower.
     let a = mod(number, modulo);
     let b = modulo;
     // prettier-ignore
-    let x = _0n$2, u = _1n$2;
-    while (a !== _0n$2) {
+    let x = _0n$1, u = _1n$1;
+    while (a !== _0n$1) {
         // JIT applies optimization if those two lines follow each other
         const q = b / a;
         const r = b % a;
@@ -296,7 +295,7 @@ function invert(number, modulo) {
         b = a, a = r, x = u, u = m;
     }
     const gcd = b;
-    if (gcd !== _1n$2)
+    if (gcd !== _1n$1)
         throw new Error('invert: does not exist');
     return mod(x, modulo);
 }
@@ -309,7 +308,7 @@ function assertIsSquare(Fp, root, n) {
 // n = 72057594037927816n;
 // Fp = Field(BigInt('0x1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaaab'));
 function sqrt3mod4(Fp, n) {
-    const p1div4 = (Fp.ORDER + _1n$2) / _4n$1;
+    const p1div4 = (Fp.ORDER + _1n$1) / _4n$1;
     const root = Fp.pow(n, p1div4);
     assertIsSquare(Fp, root, n);
     return root;
@@ -361,9 +360,9 @@ function tonelliShanks(P) {
     if (P < _3n$1)
         throw new Error('sqrt is not defined for small field');
     // Factor P - 1 = Q * 2^S, where Q is odd
-    let Q = P - _1n$2;
+    let Q = P - _1n$1;
     let S = 0;
-    while (Q % _2n$1 === _0n$2) {
+    while (Q % _2n$1 === _0n$1) {
         Q /= _2n$1;
         S++;
     }
@@ -382,7 +381,7 @@ function tonelliShanks(P) {
     // Slow-path
     // TODO: test on Fp2 and others
     let cc = _Fp.pow(Z, Q); // c = z^Q
-    const Q1div2 = (Q + _1n$2) / _2n$1;
+    const Q1div2 = (Q + _1n$1) / _2n$1;
     return function tonelliSlow(Fp, n) {
         if (Fp.is0(n))
             return n;
@@ -409,7 +408,7 @@ function tonelliShanks(P) {
                     throw new Error('Cannot find square root');
             }
             // Calculate the exponent for b: 2^(M - i - 1)
-            const exponent = _1n$2 << BigInt(M - i - 1); // bigint is important
+            const exponent = _1n$1 << BigInt(M - i - 1); // bigint is important
             const b = Fp.pow(c, exponent); // b = 2^(M - i - 1)
             // Update variables
             M = i;
@@ -473,19 +472,19 @@ function validateField(field) {
  * Unsafe in some contexts: uses ladder, so can expose bigint bits.
  */
 function FpPow(Fp, num, power) {
-    if (power < _0n$2)
+    if (power < _0n$1)
         throw new Error('invalid exponent, negatives unsupported');
-    if (power === _0n$2)
+    if (power === _0n$1)
         return Fp.ONE;
-    if (power === _1n$2)
+    if (power === _1n$1)
         return num;
     let p = Fp.ONE;
     let d = num;
-    while (power > _0n$2) {
-        if (power & _1n$2)
+    while (power > _0n$1) {
+        if (power & _1n$1)
             p = Fp.mul(p, d);
         d = Fp.sqr(d);
-        power >>= _1n$2;
+        power >>= _1n$1;
     }
     return p;
 }
@@ -526,7 +525,7 @@ function FpInvertBatch(Fp, nums, passZero = false) {
 function FpLegendre(Fp, n) {
     // We can use 3rd argument as optional cache of this value
     // but seems unneeded for now. The operation is very fast.
-    const p1mod2 = (Fp.ORDER - _1n$2) / _2n$1;
+    const p1mod2 = (Fp.ORDER - _1n$1) / _2n$1;
     const powered = Fp.pow(n, p1mod2);
     const yes = Fp.eql(powered, Fp.ONE);
     const zero = Fp.eql(powered, Fp.ZERO);
@@ -565,7 +564,7 @@ function nLength(n, nBitLength) {
  */
 function Field(ORDER, bitLenOrOpts, // TODO: use opts only in v2?
 isLE = false, opts = {}) {
-    if (ORDER <= _0n$2)
+    if (ORDER <= _0n$1)
         throw new Error('invalid field: expected ORDER > 0, got ' + ORDER);
     let _nbitLength = undefined;
     let _sqrt = undefined;
@@ -601,19 +600,19 @@ isLE = false, opts = {}) {
         BITS,
         BYTES,
         MASK: bitMask(BITS),
-        ZERO: _0n$2,
-        ONE: _1n$2,
+        ZERO: _0n$1,
+        ONE: _1n$1,
         allowedLengths: allowedLengths,
         create: (num) => mod(num, ORDER),
         isValid: (num) => {
             if (typeof num !== 'bigint')
                 throw new Error('invalid field element: expected bigint, got ' + typeof num);
-            return _0n$2 <= num && num < ORDER; // 0 is valid element, but it's not invertible
+            return _0n$1 <= num && num < ORDER; // 0 is valid element, but it's not invertible
         },
-        is0: (num) => num === _0n$2,
+        is0: (num) => num === _0n$1,
         // is valid and invertible
         isValidNot0: (num) => !f.is0(num) && f.isValid(num),
-        isOdd: (num) => (num & _1n$2) === _1n$2,
+        isOdd: (num) => (num & _1n$1) === _1n$1,
         neg: (num) => mod(-num, ORDER),
         eql: (lhs, rhs) => lhs === rhs,
         sqr: (num) => mod(num * num, ORDER),
@@ -710,7 +709,7 @@ function mapHashToField(key, fieldOrder, isLE = false) {
         throw new Error('expected ' + minLen + '-1024 bytes of input, got ' + len);
     const num = isLE ? bytesToNumberLE(key) : bytesToNumberBE(key);
     // `mod(x, 11)` can sometimes produce 0. `mod(x, 10) + 1` is the same, but no 0
-    const reduced = mod(num, fieldOrder - _1n$2) + _1n$2;
+    const reduced = mod(num, fieldOrder - _1n$1) + _1n$1;
     return isLE ? numberToBytesLE(reduced, fieldLen) : numberToBytesBE(reduced, fieldLen);
 }
 
@@ -720,8 +719,8 @@ function mapHashToField(key, fieldOrder, isLE = false) {
  * @module
  */
 /*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
-const _0n$1 = BigInt(0);
-const _1n$1 = BigInt(1);
+const _0n$3 = BigInt(0);
+const _1n$3 = BigInt(1);
 function negateCt(condition, item) {
     const neg = item.negate();
     return condition ? neg : item;
@@ -761,7 +760,7 @@ function calcOffsets(n, window, wOpts) {
     if (wbits > windowSize) {
         // we skip zero, which means instead of `>= size-1`, we do `> size`
         wbits -= maxNumber; // -32, can be maxNumber - wbits, but then we need to set isNeg here.
-        nextN += _1n$1; // +256 (carry)
+        nextN += _1n$3; // +256 (carry)
     }
     const offsetStart = window * windowSize;
     const offset = offsetStart + Math.abs(wbits) - 1; // -1 because we skip zero
@@ -798,7 +797,7 @@ function getW(P) {
     return pointWindowSizes.get(P) || 1;
 }
 function assert0(n) {
-    if (n !== _0n$1)
+    if (n !== _0n$3)
         throw new Error('invalid wNAF');
 }
 /**
@@ -830,11 +829,11 @@ class wNAF {
     // non-const time multiplication ladder
     _unsafeLadder(elm, n, p = this.ZERO) {
         let d = elm;
-        while (n > _0n$1) {
-            if (n & _1n$1)
+        while (n > _0n$3) {
+            if (n & _1n$3)
                 p = p.add(d);
             d = d.double();
-            n >>= _1n$1;
+            n >>= _1n$3;
         }
         return p;
     }
@@ -914,7 +913,7 @@ class wNAF {
     wNAFUnsafe(W, precomputes, n, acc = this.ZERO) {
         const wo = calcWOpts(W, this.bits);
         for (let window = 0; window < wo.windows; window++) {
-            if (n === _0n$1)
+            if (n === _0n$3)
                 break; // Early-exit, skip 0 value
             const { nextN, offset, isZero, isNeg } = calcOffsets(n, window, wo);
             n = nextN;
@@ -975,14 +974,14 @@ function mulEndoUnsafe(Point, point, k1, k2) {
     let acc = point;
     let p1 = Point.ZERO;
     let p2 = Point.ZERO;
-    while (k1 > _0n$1 || k2 > _0n$1) {
-        if (k1 & _1n$1)
+    while (k1 > _0n$3 || k2 > _0n$3) {
+        if (k1 & _1n$3)
             p1 = p1.add(acc);
-        if (k2 & _1n$1)
+        if (k2 & _1n$3)
             p2 = p2.add(acc);
         acc = acc.double();
-        k1 >>= _1n$1;
-        k2 >>= _1n$1;
+        k1 >>= _1n$3;
+        k2 >>= _1n$3;
     }
     return { p1, p2 };
 }
@@ -1062,7 +1061,7 @@ function _createCurveFields(type, CURVE, curveOpts = {}, FpFnLE) {
         throw new Error(`expected valid ${type} CURVE object`);
     for (const p of ['p', 'n', 'h']) {
         const val = CURVE[p];
-        if (!(typeof val === 'bigint' && val > _0n$1))
+        if (!(typeof val === 'bigint' && val > _0n$3))
             throw new Error(`CURVE.${p} must be positive bigint`);
     }
     const Fp = createField(CURVE.p, curveOpts.Fp, FpFnLE);

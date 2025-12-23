@@ -48,6 +48,8 @@ function NewsCard({ source, title, time, url }) {
 function CoinRow({ coin, rank, onClick, isFavorite, onToggleFavorite }) {
   const changeNum = typeof coin.change === 'number' ? coin.change : parseFloat(coin.change)
   const isPositive = changeNum > 0
+  const mcChangeNum = typeof coin.marketCapChange === 'number' ? coin.marketCapChange : parseFloat(coin.marketCapChange || 0)
+  const isMcPositive = mcChangeNum > 0
   
   const formatPrice = (price) => {
     if (typeof price === 'string') return price
@@ -64,45 +66,49 @@ function CoinRow({ coin, rank, onClick, isFavorite, onToggleFavorite }) {
     return `$${vol.toFixed(2)}`
   }
   
+  const formatMarketCap = (mc) => {
+    if (!mc) return '--'
+    if (mc >= 1e12) return `$${(mc / 1e12).toFixed(2)}T`
+    if (mc >= 1e9) return `$${(mc / 1e9).toFixed(2)}B`
+    if (mc >= 1e6) return `$${(mc / 1e6).toFixed(2)}M`
+    return `$${mc.toLocaleString()}`
+  }
+  
   const formatChange = (change) => {
     const num = typeof change === 'number' ? change : parseFloat(change)
+    if (isNaN(num)) return '--'
     const sign = num >= 0 ? '+' : ''
     return `${sign}${num.toFixed(2)}%`
   }
   
-  const getAISignal = (coin) => {
+  const getAISignalStyle = (signal, score) => {
+    if (coin.aiSignal) {
+      const signalUpper = coin.aiSignal.toUpperCase()
+      if (signalUpper === 'SNIPE' || signalUpper === 'BUY') {
+        return { signal: signalUpper, score: coin.aiScore || score, color: '#00D4FF', bgColor: 'rgba(0, 212, 255, 0.15)' }
+      } else if (signalUpper === 'HOLD') {
+        return { signal: 'HOLD', score: coin.aiScore || score, color: '#FFB800', bgColor: 'rgba(255, 184, 0, 0.15)' }
+      } else if (signalUpper === 'WATCH') {
+        return { signal: 'WATCH', score: coin.aiScore || score, color: '#888', bgColor: 'rgba(136, 136, 136, 0.15)' }
+      } else if (signalUpper === 'SELL' || signalUpper === 'AVOID') {
+        return { signal: signalUpper, score: coin.aiScore || score, color: '#FF4444', bgColor: 'rgba(255, 68, 68, 0.15)' }
+      }
+    }
+    
     const change = typeof coin.change === 'number' ? coin.change : parseFloat(coin.change)
     const vol = coin.volume || 0
-    const price = coin.price || 0
-    
     const seed = (coin.symbol?.charCodeAt(0) || 65) + (coin.symbol?.charCodeAt(1) || 66)
     const volatilityFactor = Math.abs(change) > 5 ? 1.2 : 1
     const volumeFactor = vol > 1e9 ? 1.1 : vol > 1e8 ? 1.05 : 1
     
-    let score = 50 + (change * 3) + ((seed % 20) - 10)
-    score = score * volatilityFactor * volumeFactor
-    score = Math.max(0, Math.min(100, score))
+    let calcScore = 50 + (change * 3) + ((seed % 20) - 10)
+    calcScore = calcScore * volatilityFactor * volumeFactor
+    calcScore = Math.max(0, Math.min(100, calcScore))
     
-    let signal, color, bgColor
-    if (score >= 70) {
-      signal = 'BUY'
-      color = '#00D4FF'
-      bgColor = 'rgba(0, 212, 255, 0.15)'
-    } else if (score >= 55) {
-      signal = 'HOLD'
-      color = '#FFB800'
-      bgColor = 'rgba(255, 184, 0, 0.15)'
-    } else if (score >= 40) {
-      signal = 'WATCH'
-      color = '#888'
-      bgColor = 'rgba(136, 136, 136, 0.15)'
-    } else {
-      signal = 'SELL'
-      color = '#FF4444'
-      bgColor = 'rgba(255, 68, 68, 0.15)'
-    }
-    
-    return { signal, score: Math.round(score), color, bgColor }
+    if (calcScore >= 70) return { signal: 'BUY', score: Math.round(calcScore), color: '#00D4FF', bgColor: 'rgba(0, 212, 255, 0.15)' }
+    if (calcScore >= 55) return { signal: 'HOLD', score: Math.round(calcScore), color: '#FFB800', bgColor: 'rgba(255, 184, 0, 0.15)' }
+    if (calcScore >= 40) return { signal: 'WATCH', score: Math.round(calcScore), color: '#888', bgColor: 'rgba(136, 136, 136, 0.15)' }
+    return { signal: 'SELL', score: Math.round(calcScore), color: '#FF4444', bgColor: 'rgba(255, 68, 68, 0.15)' }
   }
   
   const handleClick = () => {
@@ -114,7 +120,7 @@ function CoinRow({ coin, rank, onClick, isFavorite, onToggleFavorite }) {
     if (onToggleFavorite) onToggleFavorite(coin)
   }
   
-  const aiSignal = getAISignal(coin)
+  const aiSignal = getAISignalStyle(coin.aiSignal, coin.aiScore)
   
   return (
     <tr className="clickable-row" onClick={handleClick}>
@@ -176,7 +182,18 @@ function CoinRow({ coin, rank, onClick, isFavorite, onToggleFavorite }) {
           </span>
         </div>
       </td>
-      <td style={{ color: isPositive ? '#00D4FF' : '#FF4444' }}>{formatVolume(coin.volume)}</td>
+      <td>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+          <span style={{ color: '#fff', fontSize: '13px' }}>{formatMarketCap(coin.marketCap)}</span>
+          <span style={{ 
+            fontSize: '11px', 
+            color: isMcPositive ? '#39FF14' : '#FF4444' 
+          }}>
+            {formatChange(coin.marketCapChange)}
+          </span>
+        </div>
+      </td>
+      <td style={{ color: '#888' }}>{formatVolume(coin.volume)}</td>
     </tr>
   )
 }
@@ -386,13 +403,14 @@ export default function MarketsTab() {
                   <th>Price</th>
                   <th>{timeframe === '1h' ? '1h %' : '24h %'}</th>
                   <th>AI Signal</th>
+                  <th>Market Cap</th>
                   <th>Volume</th>
                 </tr>
               </thead>
               <tbody>
                 {coinsLoading ? (
                   <tr>
-                    <td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: '#888' }}>
+                    <td colSpan={7} style={{ textAlign: 'center', padding: '40px', color: '#888' }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
                         <div className="loading-spinner" style={{ width: '20px', height: '20px' }}></div>
                         Loading coins...
