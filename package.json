@@ -7,7 +7,7 @@
     "dev": "mastra dev",
     "start": "node dist/bootstrap.js",
     "start:mastra": "mastra start",
-    "build": "mastra build && npx tsc src/bootstrap.ts src/mastra-child.ts --outDir dist --esModuleInterop --module NodeNext --moduleResolution NodeNext --target ES2022 --skipLibCheck && mv dist/bootstrap.js dist/bootstrap.mjs && ./scripts/patch-mastra.sh && npm install --prefix .mastra/output --legacy-peer-deps --omit=dev && ls -la .mastra/output/node_modules | head -5",
+    "build": "NODE_OPTIONS='--max-old-space-size=4096' mastra build && npx tsc src/bootstrap.ts src/mastra-child.ts --outDir dist --esModuleInterop --module NodeNext --moduleResolution NodeNext --target ES2022 --skipLibCheck && mv dist/bootstrap.js dist/bootstrap.mjs && ./scripts/patch-mastra.sh && npm install --prefix .mastra/output --legacy-peer-deps --omit=dev && ls -la .mastra/output/node_modules | head -5",
     "build:full": "rm -rf .mastra/output .mastra/.build && NODE_OPTIONS='--max-old-space-size=4096' MASTRA_DEV_NO_CACHE=1 mastra build && ./scripts/patch-mastra.sh && npm install --prefix darkwave-web && cd darkwave-web && npm run build && cp -r dist/* ../public/ && cd .. && npm run build",
     "check": "tsc",
     "check:format": "prettier --check '**/*.ts'",
