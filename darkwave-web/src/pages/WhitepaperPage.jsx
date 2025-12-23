@@ -207,6 +207,38 @@ export default function WhitepaperPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#0f0f0f' }}>
+      <a
+        href="/"
+        style={{
+          position: 'fixed',
+          top: '20px',
+          left: '20px',
+          zIndex: 1000,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '10px 16px',
+          background: 'rgba(26, 26, 26, 0.9)',
+          backdropFilter: 'blur(8px)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          borderRadius: '10px',
+          color: '#fff',
+          textDecoration: 'none',
+          fontSize: '14px',
+          fontWeight: '600',
+          transition: 'all 0.2s ease',
+        }}
+        onMouseOver={(e) => {
+          e.currentTarget.style.background = 'rgba(0, 212, 255, 0.2)';
+          e.currentTarget.style.borderColor = 'rgba(0, 212, 255, 0.5)';
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.background = 'rgba(26, 26, 26, 0.9)';
+          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        }}
+      >
+        <span style={{ fontSize: '16px' }}>←</span> Back to PULSE
+      </a>
       <div style={{
         background: 'linear-gradient(180deg, rgba(0, 212, 255, 0.08) 0%, transparent 50%)',
         padding: '60px 20px 40px',
