@@ -58,12 +58,14 @@
     "ethers": "^6.16.0",
     "exa-js": "^1.8.17",
     "expo-secure-store": "^15.0.8",
+    "firebase": "^12.7.0",
     "helius-sdk": "^2.0.2",
     "inngest": "^3.40.2",
     "inngest-cli": "^1.11.5",
     "jest": "^30.2.0",
     "jito-ts": "^4.2.1",
     "lightweight-charts": "^5.0.9",
+    "mastra": "^0.14.0",
     "openai": "^6.8.1",
     "pg": "^8.16.3",
     "pino": "^9.9.4",
@@ -73,8 +75,7 @@
     "ts-jest": "^29.4.6",
     "tsx": "^4.20.3",
     "uuid": "^8.3.2",
-    "zod": "^3.25.76",
-    "mastra": "^0.14.0"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/node": "^24.6.2",

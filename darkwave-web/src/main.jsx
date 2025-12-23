@@ -2,6 +2,9 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
 import { WalletProvider } from './context/WalletContext'
+import { initFirebase } from './lib/firebase'
+
+initFirebase()
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
