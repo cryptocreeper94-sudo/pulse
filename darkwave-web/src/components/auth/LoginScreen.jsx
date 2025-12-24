@@ -204,13 +204,15 @@ export default function LoginScreen() {
         .feature-item {
           display: flex;
           align-items: center;
-          gap: 12px;
+          gap: 16px;
           color: rgba(255, 255, 255, 0.7);
           font-size: 14px;
         }
 
         .feature-icon {
           font-size: 20px;
+          min-width: 28px;
+          text-align: center;
         }
 
         .login-footer {

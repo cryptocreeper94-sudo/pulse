@@ -2,6 +2,8 @@ import { initializeApp } from 'firebase/app'
 import { 
   getAuth, 
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider,
   GithubAuthProvider,
   signOut as firebaseSignOut,
@@ -60,8 +62,16 @@ export async function signInWithGoogle() {
     console.warn('[Firebase] Could not set persistence:', e)
   }
   
-  // Always use popup - it's more reliable than redirect
-  // Popup doesn't require state persistence between page loads
+  // Check if mobile - use redirect for mobile (popups don't work well on mobile Safari)
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+  
+  if (isMobile) {
+    console.log('[Firebase] Using redirect flow for mobile...')
+    await signInWithRedirect(auth, provider)
+    return null // Page will redirect
+  }
+  
+  // Desktop: use popup
   try {
     console.log('[Firebase] Starting Google popup sign-in...')
     const result = await signInWithPopup(auth, provider)
@@ -71,7 +81,10 @@ export async function signInWithGoogle() {
     console.error('[Firebase] Google sign-in error:', error.code, error.message)
     
     if (error.code === 'auth/popup-blocked') {
-      throw new Error('Popup was blocked. Please allow popups for this site and try again.')
+      // Try redirect as fallback
+      console.log('[Firebase] Popup blocked, trying redirect...')
+      await signInWithRedirect(auth, provider)
+      return null
     }
     
     if (error.code === 'auth/popup-closed-by-user') {
@@ -82,6 +95,26 @@ export async function signInWithGoogle() {
       return null
     }
     
+    throw error
+  }
+}
+
+// Handle redirect result on page load
+export async function handleRedirectResult() {
+  const auth = getFirebaseAuth()
+  if (!auth) return null
+  
+  try {
+    console.log('[Firebase] Checking for redirect result...')
+    const result = await getRedirectResult(auth)
+    if (result && result.user) {
+      console.log('[Firebase] Redirect sign-in successful:', result.user.email)
+      return result.user
+    }
+    console.log('[Firebase] No redirect result')
+    return null
+  } catch (error) {
+    console.error('[Firebase] Redirect result error:', error.code, error.message)
     throw error
   }
 }
