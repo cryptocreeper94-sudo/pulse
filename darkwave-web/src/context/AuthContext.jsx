@@ -6,7 +6,6 @@ import {
   signInWithGithub,
   signOut, 
   getIdToken,
-  handleRedirectResult,
   setAnalyticsUserId
 } from '../lib/firebase'
 
@@ -20,23 +19,7 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     initFirebase()
-    
-    // Handle redirect result from OAuth (runs on page load after Google redirect)
-    console.log('[Auth] Initializing, checking for redirect result...')
-    handleRedirectResult()
-      .then((redirectUser) => {
-        if (redirectUser) {
-          console.log('[Auth] User from redirect:', redirectUser.email)
-          // The onAuthChange callback will handle setting the user state
-        } else {
-          console.log('[Auth] No redirect user found')
-        }
-      })
-      .catch((err) => {
-        console.error('[Auth] Redirect error:', err.message, err)
-        setError(err.message || 'Authentication failed. Please try again.')
-        setLoading(false)
-      })
+    console.log('[Auth] Initializing...')
 
     // Safety timeout - if loading takes more than 10 seconds, something is wrong
     const loadingTimeout = setTimeout(() => {

@@ -3,8 +3,6 @@ import { getAnalytics, logEvent, setUserId, setUserProperties } from 'firebase/a
 import { 
   getAuth, 
   signInWithPopup, 
-  signInWithRedirect,
-  getRedirectResult,
   GoogleAuthProvider,
   GithubAuthProvider,
   signOut as firebaseSignOut,
@@ -64,30 +62,32 @@ export async function signInWithGoogle() {
   provider.addScope('email')
   provider.addScope('profile')
   
-  // Check if we're on mobile - prefer redirect for better UX
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-  
-  if (isMobile) {
-    // Mobile: use redirect flow directly (popups often fail)
-    console.log('[Firebase] Mobile detected, using redirect flow')
-    await signInWithRedirect(auth, provider)
-    return null
-  }
+  // IMPORTANT: Always use popup flow - redirect doesn't work in:
+  // - Iframes (like Replit preview)
+  // - Storage-partitioned browsers (Safari ITP, Chrome with 3rd party cookie blocking)
+  // - Mobile browsers with strict privacy settings
   
   try {
+    console.log('[Firebase] Starting Google popup sign-in...')
     const result = await signInWithPopup(auth, provider)
     console.log('[Firebase] Google sign-in successful:', result.user.email)
     return result.user
   } catch (error) {
-    // Handle various popup failure scenarios
-    if (error.code === 'auth/popup-blocked' || 
-        error.code === 'auth/popup-closed-by-user' ||
-        error.code === 'auth/cancelled-popup-request') {
-      console.log('[Firebase] Popup issue, trying redirect...', error.code)
-      await signInWithRedirect(auth, provider)
+    console.error('[Firebase] Google sign-in error:', error.code, error.message)
+    
+    if (error.code === 'auth/popup-blocked') {
+      throw new Error('Popup was blocked. Please allow popups for this site and try again.')
+    }
+    
+    if (error.code === 'auth/popup-closed-by-user') {
+      throw new Error('Sign-in cancelled. Please try again.')
+    }
+    
+    if (error.code === 'auth/cancelled-popup-request') {
+      // User clicked button multiple times - ignore
       return null
     }
-    console.error('[Firebase] Google sign-in error:', error.code, error.message)
+    
     throw error
   }
 }
@@ -100,56 +100,25 @@ export async function signInWithGithub() {
   provider.addScope('user:email')
   
   try {
+    console.log('[Firebase] Starting GitHub popup sign-in...')
     const result = await signInWithPopup(auth, provider)
     console.log('[Firebase] GitHub sign-in successful:', result.user.email)
     return result.user
   } catch (error) {
+    console.error('[Firebase] GitHub sign-in error:', error.code, error.message)
+    
     if (error.code === 'auth/popup-blocked') {
-      console.log('[Firebase] Popup blocked, trying redirect...')
-      await signInWithRedirect(auth, provider)
+      throw new Error('Popup was blocked. Please allow popups for this site and try again.')
+    }
+    
+    if (error.code === 'auth/popup-closed-by-user') {
+      throw new Error('Sign-in cancelled. Please try again.')
+    }
+    
+    if (error.code === 'auth/cancelled-popup-request') {
       return null
     }
-    console.error('[Firebase] GitHub sign-in error:', error)
-    throw error
-  }
-}
-
-export async function handleRedirectResult() {
-  const auth = getFirebaseAuth()
-  if (!auth) {
-    console.log('[Firebase] handleRedirectResult: No auth instance')
-    return null
-  }
-  
-  console.log('[Firebase] Checking for redirect result...')
-  
-  try {
-    const result = await getRedirectResult(auth)
-    console.log('[Firebase] getRedirectResult returned:', result ? 'has result' : 'null')
     
-    if (result && result.user) {
-      console.log('[Firebase] Redirect sign-in successful:', result.user.email)
-      return result.user
-    }
-    
-    // No redirect result - user came directly to page
-    console.log('[Firebase] No redirect result (normal page load)')
-    return null
-  } catch (error) {
-    // Log specific error types for debugging
-    console.error('[Firebase] Redirect result error:', error.code, error.message, error)
-    
-    // Common redirect errors that users should know about
-    if (error.code === 'auth/unauthorized-domain') {
-      console.error('[Firebase] Domain not authorized in Firebase Console!')
-      throw new Error('This domain is not authorized. Please add it to Firebase Console > Authentication > Settings > Authorized domains.')
-    }
-    
-    if (error.code === 'auth/operation-not-allowed') {
-      throw new Error('Google sign-in is not enabled. Please enable it in Firebase Console.')
-    }
-    
-    // Throw the error so we can see it
     throw error
   }
 }
