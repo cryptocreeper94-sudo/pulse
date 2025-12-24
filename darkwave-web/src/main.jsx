@@ -3,6 +3,9 @@ import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
 import { WalletProvider } from './context/WalletContext'
 import { initFirebase } from './lib/firebase'
+import './index.css'
+import './styles/dashboard.css'
+import './styles/components.css'
 
 initFirebase()
 
