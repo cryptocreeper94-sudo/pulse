@@ -1,6 +1,78 @@
 import { darkwaveChainClient } from '../../services/darkwaveChainClient.js';
+import crypto from 'crypto';
+
+function verifyWebhookSignatureServer(data: any, signature: string): boolean {
+  const webhookSecret = process.env.WEBHOOK_SECRET;
+  if (!webhookSecret) {
+    console.warn('[DarkWave Chain] WEBHOOK_SECRET not configured');
+    return false;
+  }
+  const expectedSig = crypto
+    .createHmac('sha256', webhookSecret)
+    .update(JSON.stringify(data))
+    .digest('hex');
+  return signature === expectedSig;
+}
 
 export const darkwaveChainRoutes = [
+  {
+    path: "/api/chain-events",
+    method: "POST" as const,
+    createHandler: async ({ mastra }: any) => async (c: any) => {
+      try {
+        const body = await c.req.json();
+        const { event, data, signature } = body;
+
+        if (!signature) {
+          return c.json({ error: 'Missing signature' }, 401);
+        }
+
+        if (!verifyWebhookSignatureServer(data, signature)) {
+          return c.json({ error: 'Invalid signature' }, 401);
+        }
+
+        console.log(`[DarkWave Chain Webhook] Received event: ${event}`, data);
+
+        switch (event) {
+          case 'swap.executed':
+            console.log('[DarkWave Chain] Swap executed:', data);
+            break;
+          case 'block.produced':
+            console.log('[DarkWave Chain] Block produced:', data);
+            break;
+          case 'stake.created':
+            console.log('[DarkWave Chain] Stake created:', data);
+            break;
+          case 'stake.claimed':
+            console.log('[DarkWave Chain] Stake claimed:', data);
+            break;
+          case 'transaction.confirmed':
+            console.log('[DarkWave Chain] Transaction confirmed:', data);
+            break;
+          case 'liquidity.added':
+            console.log('[DarkWave Chain] Liquidity added:', data);
+            break;
+          case 'token.launched':
+            console.log('[DarkWave Chain] Token launched:', data);
+            break;
+          case 'bridge.locked':
+            console.log('[DarkWave Chain] Bridge locked:', data);
+            break;
+          case 'bridge.released':
+            console.log('[DarkWave Chain] Bridge released:', data);
+            break;
+          default:
+            console.log(`[DarkWave Chain] Unknown event: ${event}`, data);
+        }
+
+        return c.json({ received: true, event });
+      } catch (error: any) {
+        console.error('[DarkWave Chain Webhook] Error:', error);
+        return c.json({ error: error.message }, 500);
+      }
+    },
+  },
+
   {
     path: "/api/darkwave-chain/status",
     method: "GET" as const,

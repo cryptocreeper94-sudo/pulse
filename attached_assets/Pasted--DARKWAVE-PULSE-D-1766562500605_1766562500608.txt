@@ -1,0 +1,291 @@
+================================================================================
+DARKWAVE PULSE ↔ DARKWAVE CHAIN COMPLETE INTEGRATION SPEC
+================================================================================
+
+SECTION 1: OVERVIEW
+-------------------
+Connect Pulse predictive/quant systems to DarkWave Chain's Layer 1 blockchain for:
+- AI-powered automated trading via DEX API
+- Staking optimization based on market predictions
+- Real-time blockchain event streaming via webhooks
+- Unified portfolio tracking across 9 chains
+- Cross-chain arbitrage opportunities
+
+Production API: https://darkwave-studios.replit.app
+All requests: Content-Type: application/json
+
+================================================================================
+
+SECTION 2: AI SIGNALS → AUTO-TRADING
+-------------------------------------
+When Pulse AI generates a trading signal, execute swaps on DarkWave DEX.
+
+Add this function to Pulse:
+
+async function executeSignal(signal) {
+  // signal = { action: 'BUY' | 'SELL', token: string, confidence: number, amount: string }
+  if (signal.confidence < 0.75) return null;
+  
+  const response = await fetch('https://darkwave-studios.replit.app/api/swap', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      fromToken: signal.action === 'BUY' ? 'USDC' : 'DWT',
+      toToken: signal.action === 'BUY' ? 'DWT' : 'USDC',
+      amount: signal.amount,
+      walletAddress: userWalletAddress,
+      slippage: 0.5
+    })
+  });
+  
+  return response.json();
+}
+
+Available trading pairs: DWT/USDC, DWT/wETH, DWT/wSOL, DWT/USDT, USDC/wETH
+
+================================================================================
+
+SECTION 3: STAKING OPTIMIZATION
+-------------------------------
+Pulse analyzes market conditions and optimizes staking timing.
+
+Add these functions to Pulse:
+
+async function stakeTokens(amount, walletAddress, lockPeriod = 30) {
+  const response = await fetch('https://darkwave-studios.replit.app/api/staking/stake', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ amount, walletAddress, lockPeriod })
+  });
+  return response.json();
+}
+
+async function unstakeTokens(positionId, walletAddress) {
+  const response = await fetch('https://darkwave-studios.replit.app/api/staking/unstake', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ positionId, walletAddress })
+  });
+  return response.json();
+}
+
+async function liquidStake(amount, walletAddress) {
+  // 12% APY, tokens remain liquid as stDWT
+  const response = await fetch('https://darkwave-studios.replit.app/api/liquid-staking/stake', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ amount, walletAddress })
+  });
+  return response.json();
+}
+
+================================================================================
+
+SECTION 4: WEBHOOK EVENTS REGISTRATION
+--------------------------------------
+Register Pulse to receive real-time blockchain events.
+
+Step 1 - Create webhook endpoint in Pulse (server/routes.ts):
+
+app.post('/api/chain-events', (req, res) => {
+  const { event, data, signature } = req.body;
+  
+  // Verify HMAC-SHA256 signature
+  const crypto = require('crypto');
+  const expectedSig = crypto.createHmac('sha256', process.env.WEBHOOK_SECRET)
+    .update(JSON.stringify(data)).digest('hex');
+  
+  if (signature !== expectedSig) {
+    return res.status(401).json({ error: 'Invalid signature' });
+  }
+  
+  // Process event in Pulse analytics
+  switch(event) {
+    case 'swap.executed':
+      // Feed swap data to quant models
+      pulseAnalytics.recordSwap(data);
+      break;
+    case 'block.produced':
+      // Update chain metrics
+      pulseAnalytics.updateBlockMetrics(data);
+      break;
+    case 'stake.created':
+      // Track staking activity
+      pulseAnalytics.recordStake(data);
+      break;
+    case 'transaction.confirmed':
+      // Update transaction history
+      pulseAnalytics.recordTransaction(data);
+      break;
+  }
+  
+  res.status(200).json({ received: true });
+});
+
+Step 2 - Register webhooks with DarkWave Chain:
+
+async function registerWebhooks() {
+  await fetch('https://darkwave-studios.replit.app/api/webhooks', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      url: 'https://your-pulse-url.replit.app/api/chain-events',
+      secret: process.env.WEBHOOK_SECRET,
+      events: [
+        'swap.executed',
+        'stake.created',
+        'stake.claimed',
+        'block.produced',
+        'transaction.confirmed',
+        'liquidity.added',
+        'token.launched',
+        'bridge.locked',
+        'bridge.released'
+      ]
+    })
+  });
+}
+
+================================================================================
+
+SECTION 5: SHARED WALLET (SAME SEED = SAME ADDRESSES)
+------------------------------------------------------
+Both apps use identical HD wallet derivation. Users have one wallet across both platforms.
+
+Pulse already has bip39 and ed25519-hd-key. DarkWave Chain uses the same:
+
+// Derivation paths (identical on both platforms)
+const PATHS = {
+  darkwave: "m/44'/60'/0'/0/0",
+  ethereum: "m/44'/60'/0'/0/0",
+  solana: "m/44'/501'/0'/0'"
+};
+
+// Get DarkWave address from mnemonic (same function works on both)
+function getDarkWaveAddress(mnemonic) {
+  const { ethers } = require('ethers');
+  const hdNode = ethers.HDNodeWallet.fromPhrase(mnemonic);
+  return hdNode.derivePath("m/44'/60'/0'/0/0").address;
+}
+
+================================================================================
+
+SECTION 6: PORTFOLIO SYNC
+-------------------------
+Fetch user balances and positions from DarkWave Chain.
+
+async function syncPortfolio(walletAddress) {
+  const [balances, staking, transactions] = await Promise.all([
+    fetch(`https://darkwave-studios.replit.app/api/portfolio/${walletAddress}`).then(r => r.json()),
+    fetch(`https://darkwave-studios.replit.app/api/staking/positions/${walletAddress}`).then(r => r.json()),
+    fetch(`https://darkwave-studios.replit.app/api/transactions/${walletAddress}?limit=50`).then(r => r.json())
+  ]);
+  
+  return { balances, staking, transactions };
+}
+
+async function getMultiChainBalances(walletAddress) {
+  const chains = ['darkwave', 'solana', 'ethereum', 'base', 'polygon', 'arbitrum', 'bsc', 'optimism', 'avalanche'];
+  
+  const balances = await Promise.all(chains.map(async chain => {
+    const res = await fetch(`https://darkwave-studios.replit.app/api/wallet/balance/${chain}/${walletAddress}`);
+    return { chain, ...(await res.json()) };
+  }));
+  
+  return balances;
+}
+
+================================================================================
+
+SECTION 7: DATA ENDPOINTS FOR PULSE DASHBOARDS
+----------------------------------------------
+Use these endpoints to populate Pulse analytics:
+
+GET /api/chain/stats
+Returns: { blockHeight, totalTransactions, tps, activeValidators, totalStaked }
+
+GET /api/charts/price-history?token=DWT&timeframe=24h
+Returns: { prices: [{ timestamp, price, volume }] }
+
+GET /api/portfolio/:walletAddress
+Returns: { tokens: [...], nfts: [...], stakingPositions: [...], lpPositions: [...] }
+
+GET /api/transactions/:walletAddress?limit=50
+Returns: { transactions: [{ hash, type, amount, timestamp, status }] }
+
+GET /api/staking/positions/:walletAddress
+Returns: { positions: [{ id, amount, apy, lockEnd, rewards }] }
+
+GET /api/swap/quote?from=DWT&to=USDC&amount=1000
+Returns: { fromAmount, toAmount, price, priceImpact, fee }
+
+================================================================================
+
+SECTION 8: CROSS-CHAIN ARBITRAGE
+--------------------------------
+Monitor price differentials and execute arbitrage via bridge.
+
+async function checkArbitrage(walletAddress) {
+  // Get DWT price on DarkWave DEX
+  const dwtQuote = await fetch('https://darkwave-studios.replit.app/api/swap/quote?from=DWT&to=USDC&amount=1000').then(r => r.json());
+  const dwtPrice = dwtQuote.toAmount / 1000;
+  
+  // Compare with wDWT on external chains (use your existing price feeds)
+  const wdwtEthPrice = await getUniswapPrice('wDWT');
+  const wdwtSolPrice = await getRaydiumPrice('wDWT');
+  
+  // If 2%+ profit exists, execute bridge arbitrage
+  if (wdwtEthPrice > dwtPrice * 1.02) {
+    await fetch('https://darkwave-studios.replit.app/api/bridge/lock', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        amount: '1000',
+        targetChain: 'ethereum',
+        walletAddress
+      })
+    });
+    return { opportunity: 'ETH', spread: ((wdwtEthPrice / dwtPrice) - 1) * 100 };
+  }
+  
+  return null;
+}
+
+================================================================================
+
+SECTION 9: IMPLEMENTATION CHECKLIST
+-----------------------------------
+1. [ ] Create file: server/darkwave-chain-client.ts with API functions above
+2. [ ] Add endpoint: POST /api/chain-events for webhook receiver
+3. [ ] Call registerWebhooks() on server startup
+4. [ ] Connect quant signal output to executeSignal() function
+5. [ ] Add stakeTokens/unstakeTokens to prediction pipeline
+6. [ ] Add syncPortfolio() to dashboard data layer
+7. [ ] Add getMultiChainBalances() to portfolio view
+8. [ ] Test: Generate mock signal → verify swap executes on DarkWave Chain
+9. [ ] Test: Stake via Pulse → verify appears in DarkWave staking dashboard
+
+================================================================================
+
+SECTION 10: AUTHENTICATION
+--------------------------
+Hub connection (already configured on both apps):
+- Hub URL: https://orbitstaffing.io
+- Auth method: HMAC-SHA256
+- Existing secrets: DARKWAVE_CHAIN_HUB_API_KEY, DARKWAVE_CHAIN_HUB_API_SECRET
+
+Add to Pulse .env:
+WEBHOOK_SECRET=generate-a-random-32-char-string
+
+================================================================================
+
+SECTION 11: TIMELINE
+--------------------
+- Public Launch: February 14, 2026
+- Integration testing: Begin immediately
+- Both apps share same wallet infrastructure
+- Marketing push begins now
+
+================================================================================
+END OF INTEGRATION SPEC - PASTE THIS ENTIRE BLOCK TO PULSE AGENT
+================================================================================
