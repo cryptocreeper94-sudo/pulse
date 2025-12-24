@@ -116,18 +116,28 @@ export async function signInWithGithub() {
 
 export async function handleRedirectResult() {
   const auth = getFirebaseAuth()
-  if (!auth) return null
+  if (!auth) {
+    console.log('[Firebase] handleRedirectResult: No auth instance')
+    return null
+  }
+  
+  console.log('[Firebase] Checking for redirect result...')
   
   try {
     const result = await getRedirectResult(auth)
+    console.log('[Firebase] getRedirectResult returned:', result ? 'has result' : 'null')
+    
     if (result && result.user) {
       console.log('[Firebase] Redirect sign-in successful:', result.user.email)
       return result.user
     }
+    
+    // No redirect result - user came directly to page
+    console.log('[Firebase] No redirect result (normal page load)')
     return null
   } catch (error) {
     // Log specific error types for debugging
-    console.error('[Firebase] Redirect result error:', error.code, error.message)
+    console.error('[Firebase] Redirect result error:', error.code, error.message, error)
     
     // Common redirect errors that users should know about
     if (error.code === 'auth/unauthorized-domain') {
@@ -139,8 +149,8 @@ export async function handleRedirectResult() {
       throw new Error('Google sign-in is not enabled. Please enable it in Firebase Console.')
     }
     
-    // Return null for other errors - let the user retry
-    return null
+    // Throw the error so we can see it
+    throw error
   }
 }
 

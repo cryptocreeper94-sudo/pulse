@@ -21,16 +21,20 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     initFirebase()
     
-    // Handle redirect result from OAuth
+    // Handle redirect result from OAuth (runs on page load after Google redirect)
+    console.log('[Auth] Initializing, checking for redirect result...')
     handleRedirectResult()
       .then((redirectUser) => {
         if (redirectUser) {
           console.log('[Auth] User from redirect:', redirectUser.email)
+          // The onAuthChange callback will handle setting the user state
+        } else {
+          console.log('[Auth] No redirect user found')
         }
       })
       .catch((err) => {
-        console.error('[Auth] Redirect error:', err.message)
-        setError(err.message)
+        console.error('[Auth] Redirect error:', err.message, err)
+        setError(err.message || 'Authentication failed. Please try again.')
         setLoading(false)
       })
 
@@ -109,18 +113,21 @@ export function AuthProvider({ children }) {
   async function loginWithGoogle() {
     setError(null)
     setLoading(true)
+    console.log('[Auth] Starting Google login...')
     try {
       const result = await signInWithGoogle()
-      // If popup succeeded, result will have a user - onAuthChange will handle the rest
-      // If redirect was used, result will be null - page will reload
+      console.log('[Auth] signInWithGoogle returned:', result ? 'user object' : 'null (redirect)')
+      
       if (!result) {
         // Redirect flow - page will reload, keep loading true
-        console.log('[Auth] Google redirect initiated...')
+        console.log('[Auth] Google redirect initiated, page will reload...')
       } else {
-        console.log('[Auth] Google popup sign-in completed')
+        // Popup succeeded - onAuthChange will fire and handle the user
+        console.log('[Auth] Google popup sign-in completed for:', result.email)
+        // Note: Don't setLoading(false) here - onAuthChange will do it after syncing
       }
     } catch (err) {
-      console.error('[Auth] Google sign-in error:', err)
+      console.error('[Auth] Google sign-in error:', err.code, err.message, err)
       setError(err.message || 'Sign-in failed. Please try again.')
       setLoading(false)
     }
