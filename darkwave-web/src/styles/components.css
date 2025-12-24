@@ -1053,6 +1053,122 @@ body {
   }
 }
 
+/* CRITICAL MOBILE BREAKPOINT - 640px for phone screens */
+@media (max-width: 640px) {
+  /* Global mobile font size minimum */
+  body {
+    font-size: 16px !important;
+    -webkit-text-size-adjust: 100%;
+  }
+  
+  /* Header stays compact */
+  .header {
+    height: 50px;
+    padding: 0 8px;
+    gap: 4px;
+  }
+  
+  .header-title {
+    font-size: 20px;
+    letter-spacing: 2px;
+  }
+  
+  /* All body text must be readable - KEEP header offset padding */
+  .app-content {
+    padding-top: var(--header-height, 50px);
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: 60px;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  /* Section headers bigger */
+  .section-title {
+    font-size: 16px !important;
+  }
+  
+  /* All metric text readable */
+  .metric-title {
+    font-size: 12px !important;
+  }
+  
+  .metric-value {
+    font-size: 28px !important;
+    font-weight: 700 !important;
+  }
+  
+  .metric-change {
+    font-size: 14px !important;
+  }
+  
+  /* Table text bigger */
+  .data-table th,
+  .data-table td {
+    padding: 14px 10px !important;
+    font-size: 14px !important;
+  }
+  
+  /* All small text scaled up */
+  .text-xs {
+    font-size: 12px !important;
+  }
+  
+  .text-sm {
+    font-size: 14px !important;
+  }
+  
+  /* Category pills readable */
+  .category-pill {
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  
+  /* Coin info */
+  .coin-name {
+    font-size: 14px !important;
+  }
+  
+  .coin-symbol {
+    font-size: 12px !important;
+  }
+  
+  /* Buttons - bigger touch targets */
+  .btn {
+    padding: 14px 24px;
+    font-size: 15px;
+    min-height: 44px;
+  }
+  
+  /* Cards more spacious */
+  .metric-card {
+    padding: 16px 14px;
+    min-width: 100%;
+  }
+  
+  /* News cards */
+  .news-card {
+    width: 100%;
+    padding: 16px;
+  }
+  
+  .news-title {
+    font-size: 15px !important;
+    line-height: 1.4;
+  }
+  
+  /* Chart metrics readable */
+  .chart-metrics .metric-label,
+  .chart-metrics span {
+    font-size: 13px !important;
+  }
+  
+  .chart-metrics .metric-value {
+    font-size: 20px !important;
+  }
+}
+
 @media (max-width: 480px) {
   .header {
     padding: 0 6px;
@@ -1069,31 +1185,31 @@ body {
   }
   
   .metric-card {
-    min-width: 120px;
-    padding: 12px 8px;
+    min-width: 100%;
+    padding: 14px 12px;
   }
   
   .metric-value {
-    font-size: 24px;
+    font-size: 26px !important;
   }
   
   .news-card {
-    width: 200px;
+    width: 100%;
   }
   
   .coin-card {
-    width: 110px;
+    width: 100%;
   }
   
   .data-table th,
   .data-table td {
-    padding: 8px 6px;
-    font-size: 11px;
+    padding: 12px 8px !important;
+    font-size: 13px !important;
   }
   
   .bento-grid {
     padding: 8px;
-    gap: 8px;
+    gap: 10px;
   }
 }
 

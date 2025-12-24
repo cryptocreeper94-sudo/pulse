@@ -65,6 +65,39 @@ body {
   }
 }
 
+/* CRITICAL MOBILE RESPONSIVE OVERRIDES */
+@media (max-width: 640px) {
+  /* Force proper mobile scaling */
+  html, body {
+    font-size: 16px !important;
+    -webkit-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
+    overflow-x: hidden;
+  }
+  
+  #root {
+    width: 100vw;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  
+  /* Global minimum font sizes for readability */
+  * {
+    min-font-size: 12px;
+  }
+  
+  /* Make all text elements readable */
+  p, span, div, td, th, li, a {
+    line-height: 1.5;
+  }
+  
+  /* Touch-friendly tap targets */
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
 [data-theme="light"] .bento-tile,
 [data-theme="light"] .bento-chart-section {
   background: #ffffff !important;

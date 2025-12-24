@@ -240,12 +240,13 @@
     font-size: 16px !important;
   }
   
+  /* CRITICAL: Single column layout for mobile */
   .top-carousels-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
-    padding: 6px;
-    padding-top: 55px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+    padding-top: 60px;
     overflow: visible;
     max-width: 100%;
   }
@@ -255,59 +256,79 @@
   }
   
   .carousel-section {
-    min-height: 295px;
+    min-height: 280px;
     width: 100%;
-    padding: 8px;
-    border-radius: 10px;
+    padding: 16px;
+    border-radius: 12px;
     overflow: hidden;
   }
   
-  /* Larger labels on mobile */
+  /* MUCH larger labels on mobile */
   .carousel-label {
-    font-size: 11px;
-    margin-bottom: 4px;
-    letter-spacing: 0.5px;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
   }
   
-  /* Scale up all small text on mobile */
+  /* Scale up ALL text on mobile for readability */
   .carousel-section span,
   .carousel-section div,
   .market-overview-card span,
   .market-overview-card div {
-    font-size: max(12px, 1em) !important;
+    font-size: max(14px, 1em) !important;
   }
   
   /* Mobile tile label sizing */
   .tile-label {
-    font-size: 12px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+  }
+  
+  /* Mobile metric values - make numbers BIG and readable */
+  .carousel-section .metric-value,
+  .carousel-section [class*="value"],
+  .market-overview-card .metric-value,
+  .market-overview-card [class*="value"] {
+    font-size: 24px !important;
+    font-weight: 700 !important;
   }
   
   /* Bento dashboard text scaling */
   .bento-dashboard span,
   .bento-dashboard div {
     min-height: auto;
+    font-size: max(14px, inherit) !important;
   }
   
-  /* Table header and content scaling */
+  /* Table header and content scaling - BIGGER */
   .bento-table span,
   .bento-table div {
-    font-size: max(12px, inherit) !important;
+    font-size: max(14px, inherit) !important;
   }
   
-  /* Chart section text */
+  /* Table rows need more padding */
+  .bento-table tr,
+  .bento-table td,
+  .bento-table th {
+    padding: 12px 8px !important;
+    font-size: 14px !important;
+  }
+  
+  /* Chart section text - BIGGER */
   .bento-chart-section span,
   .bento-chart-section div,
   .chart-metrics span,
   .chart-metrics div {
-    font-size: max(12px, inherit) !important;
+    font-size: max(14px, inherit) !important;
   }
   
   .market-overview-strip {
     display: flex;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    gap: 10px;
-    padding: 10px;
+    gap: 12px;
+    padding: 12px;
     padding-top: 60px;
     scroll-snap-type: x mandatory;
   }
@@ -321,24 +342,24 @@
     width: 100%;
     min-width: 0;
     max-width: 100%;
-    height: 235px;
-    min-height: 235px;
-    max-height: 235px;
+    height: auto;
+    min-height: 180px;
     box-sizing: border-box;
     overflow: hidden;
+    padding: 16px;
   }
   
   .metric-info-hint {
-    top: 4px;
-    right: 8px;
-    font-size: 10px;
+    top: 8px;
+    right: 12px;
+    font-size: 14px;
   }
   
   .bento-dashboard {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 10px;
+    gap: 16px;
+    padding: 12px;
     padding-top: 0;
   }
   .bento-ai-status, .bento-predict, .bento-quick { 
@@ -350,12 +371,12 @@
     -webkit-overflow-scrolling: touch;
   }
   .bento-chart-section { 
-    min-height: 500px;
+    min-height: 450px;
     grid-template-columns: 1fr;
     grid-template-rows: auto 1fr;
   }
   .chart-metrics {
-    padding: 12px;
+    padding: 16px;
   }
   .chart-container {
     min-height: 280px;
@@ -363,7 +384,7 @@
   .mobile-categories-wrapper {
     display: block !important;
     width: 100%;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
   }
 }
 
@@ -606,4 +627,84 @@
 .news-time {
   font-size: 11px;
   color: #666;
+}
+
+/* ============================================ */
+/* MOBILE INLINE STYLE OVERRIDES               */
+/* These override React inline styles on mobile */
+/* ============================================ */
+@media (max-width: 640px) {
+  /* Override ALL inline font-size styles under 12px */
+  .top-carousels-container *[style*="fontSize"],
+  .top-carousels-container *[style*="font-size"],
+  .bento-dashboard *[style*="fontSize"],
+  .bento-dashboard *[style*="font-size"],
+  .carousel-section *[style*="fontSize"],
+  .carousel-section *[style*="font-size"] {
+    font-size: max(13px, inherit) !important;
+  }
+  
+  /* Force ALL divs and spans in dashboard to minimum size */
+  .top-carousels-container div,
+  .top-carousels-container span,
+  .carousel-section div,
+  .carousel-section span {
+    font-size: max(13px, inherit) !important;
+  }
+  
+  /* Key metric values should be BIG */
+  .carousel-section div[style*="fontWeight: 800"],
+  .carousel-section div[style*="fontWeight: 700"],
+  .carousel-section div[style*="font-weight: 800"],
+  .carousel-section div[style*="font-weight: 700"] {
+    font-size: 26px !important;
+    font-weight: 800 !important;
+  }
+  
+  /* Coin table - critical for readability */
+  .bento-table div,
+  .bento-table span {
+    font-size: max(13px, inherit) !important;
+  }
+  
+  /* Coin names bigger */
+  .bento-table div[style*="fontWeight: 700"],
+  .bento-table div[style*="font-weight: 700"] {
+    font-size: 15px !important;
+  }
+  
+  /* Price displays */
+  .bento-table div[style*="fontWeight: 800"],
+  .bento-table div[style*="font-weight: 800"] {
+    font-size: 15px !important;
+  }
+  
+  /* Chart metrics - must be readable */
+  .bento-chart-section div,
+  .bento-chart-section span,
+  .chart-metrics div,
+  .chart-metrics span {
+    font-size: max(13px, inherit) !important;
+  }
+  
+  /* Bitcoin price display */
+  .chart-metrics div[style*="fontSize: 24"],
+  .chart-metrics div[style*="font-size: 24"] {
+    font-size: 28px !important;
+  }
+  
+  /* StrikeAgent widget */
+  div[style*="StrikeAgent"] div,
+  div[style*="StrikeAgent"] span {
+    font-size: max(13px, inherit) !important;
+  }
+  
+  /* All uppercase labels */
+  div[style*="textTransform: uppercase"],
+  div[style*="text-transform: uppercase"],
+  span[style*="textTransform: uppercase"],
+  span[style*="text-transform: uppercase"] {
+    font-size: 12px !important;
+    letter-spacing: 0.5px !important;
+  }
 }
