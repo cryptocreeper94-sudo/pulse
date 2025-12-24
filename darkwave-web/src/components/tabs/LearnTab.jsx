@@ -16,7 +16,7 @@ const faqs = [
   },
   {
     question: 'How much does it cost?',
-    answer: 'During our Beta V1 phase, Founders can lock in lifetime pricing at just $4/month. This includes access to all AI agents and trading signals.'
+    answer: 'During our Beta V1 phase, Founders can lock in lifetime pricing at just $4/month. This includes access to all AI agents, trading signals, and 35,000 DWT tokens on DarkWave Chain.'
   },
   {
     question: 'What is DarkWave Chain?',

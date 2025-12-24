@@ -29,7 +29,7 @@ const roadmapPhases = [
     title: 'Legacy Founders Program',
     status: 'active',
     date: 'Dec 2024 - Feb 2026',
-    items: ['$4/month founder pricing', 'Early access to DarkWave Chain', 'Stripe payment integration']
+    items: ['$4/month founder pricing', '35K DWT token rewards', 'Stripe payment integration']
   },
   {
     phase: 'Phase 4',
@@ -63,7 +63,7 @@ const pricingTiers = [
     features: [
       'Unlimited analyses',
       'All 18 AI agents',
-      'Early DarkWave Chain access',
+      '35,000 DWT tokens (Feb 14, 2026)',
       'Lifetime access after 6mo',
       'Priority support',
       'Early feature access'

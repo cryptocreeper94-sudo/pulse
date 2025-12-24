@@ -86,7 +86,7 @@ export const AGENT_TIPS = [
   { category: 'pulse', tip: "The Knowledge Base has detailed explanations of every feature." },
   { category: 'pulse', tip: "Portfolio tracking helps you monitor all your holdings in one place." },
   { category: 'pulse', tip: "Multi-chain wallet means one seed phrase for all your crypto." },
-  { category: 'pulse', tip: "DarkWave Chain launches February 14, 2026 - visit darkwavechain.com for DWT token info!" },
+  { category: 'pulse', tip: "DarkWave Chain launches February 14, 2026 - Legacy Founders get 35K DWT tokens!" },
   { category: 'pulse', tip: "RM+ subscribers get full access to StrikeAgent and voice AI." },
   { category: 'fun', tip: "The best time to plant a tree was 20 years ago. The second best is now." },
   { category: 'fun', tip: "Warren Buffett: Be fearful when others are greedy, greedy when others are fearful." },
