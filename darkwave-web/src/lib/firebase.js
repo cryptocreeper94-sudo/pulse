@@ -3,8 +3,6 @@ import { getAnalytics, logEvent, setUserId, setUserProperties } from 'firebase/a
 import { 
   getAuth, 
   signInWithPopup,
-  signInWithRedirect,
-  getRedirectResult, 
   GoogleAuthProvider,
   GithubAuthProvider,
   signOut as firebaseSignOut,
@@ -73,26 +71,8 @@ export async function signInWithGoogle() {
     console.warn('[Firebase] Could not set persistence:', e)
   }
   
-  // Check if we're in an iframe or on mobile
-  const isInIframe = window.self !== window.top
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-  
-  console.log('[Firebase] Auth context - iframe:', isInIframe, 'mobile:', isMobile)
-  
-  // For published site (not in iframe), try redirect flow
-  // For iframe/preview, try popup
-  if (!isInIframe) {
-    try {
-      console.log('[Firebase] Using redirect flow for standalone page...')
-      await signInWithRedirect(auth, provider)
-      return null // Page will reload
-    } catch (error) {
-      console.error('[Firebase] Redirect failed:', error)
-      // Fall through to popup
-    }
-  }
-  
-  // Try popup for iframe context
+  // Always use popup - it's more reliable than redirect
+  // Popup doesn't require state persistence between page loads
   try {
     console.log('[Firebase] Starting Google popup sign-in...')
     const result = await signInWithPopup(auth, provider)
@@ -117,25 +97,6 @@ export async function signInWithGoogle() {
   }
 }
 
-// Handle redirect result on page load
-export async function handleRedirectResult() {
-  const auth = getFirebaseAuth()
-  if (!auth) return null
-  
-  try {
-    console.log('[Firebase] Checking for redirect result...')
-    const result = await getRedirectResult(auth)
-    if (result && result.user) {
-      console.log('[Firebase] Redirect sign-in successful:', result.user.email)
-      return result.user
-    }
-    console.log('[Firebase] No redirect result')
-    return null
-  } catch (error) {
-    console.error('[Firebase] Redirect result error:', error.code, error.message)
-    throw error
-  }
-}
 
 export async function signInWithGithub() {
   const auth = getFirebaseAuth()
