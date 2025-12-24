@@ -2,11 +2,15 @@ import { initializeApp } from 'firebase/app'
 import { getAnalytics, logEvent, setUserId, setUserProperties } from 'firebase/analytics'
 import { 
   getAuth, 
-  signInWithPopup, 
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult, 
   GoogleAuthProvider,
   GithubAuthProvider,
   signOut as firebaseSignOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  browserLocalPersistence,
+  setPersistence
 } from 'firebase/auth'
 
 const firebaseConfig = {
@@ -62,11 +66,33 @@ export async function signInWithGoogle() {
   provider.addScope('email')
   provider.addScope('profile')
   
-  // IMPORTANT: Always use popup flow - redirect doesn't work in:
-  // - Iframes (like Replit preview)
-  // - Storage-partitioned browsers (Safari ITP, Chrome with 3rd party cookie blocking)
-  // - Mobile browsers with strict privacy settings
+  // Set persistence to local (survives browser restarts)
+  try {
+    await setPersistence(auth, browserLocalPersistence)
+  } catch (e) {
+    console.warn('[Firebase] Could not set persistence:', e)
+  }
   
+  // Check if we're in an iframe or on mobile
+  const isInIframe = window.self !== window.top
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+  
+  console.log('[Firebase] Auth context - iframe:', isInIframe, 'mobile:', isMobile)
+  
+  // For published site (not in iframe), try redirect flow
+  // For iframe/preview, try popup
+  if (!isInIframe) {
+    try {
+      console.log('[Firebase] Using redirect flow for standalone page...')
+      await signInWithRedirect(auth, provider)
+      return null // Page will reload
+    } catch (error) {
+      console.error('[Firebase] Redirect failed:', error)
+      // Fall through to popup
+    }
+  }
+  
+  // Try popup for iframe context
   try {
     console.log('[Firebase] Starting Google popup sign-in...')
     const result = await signInWithPopup(auth, provider)
@@ -84,10 +110,29 @@ export async function signInWithGoogle() {
     }
     
     if (error.code === 'auth/cancelled-popup-request') {
-      // User clicked button multiple times - ignore
       return null
     }
     
+    throw error
+  }
+}
+
+// Handle redirect result on page load
+export async function handleRedirectResult() {
+  const auth = getFirebaseAuth()
+  if (!auth) return null
+  
+  try {
+    console.log('[Firebase] Checking for redirect result...')
+    const result = await getRedirectResult(auth)
+    if (result && result.user) {
+      console.log('[Firebase] Redirect sign-in successful:', result.user.email)
+      return result.user
+    }
+    console.log('[Firebase] No redirect result')
+    return null
+  } catch (error) {
+    console.error('[Firebase] Redirect result error:', error.code, error.message)
     throw error
   }
 }

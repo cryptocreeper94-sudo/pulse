@@ -6,7 +6,8 @@ import {
   signInWithGithub,
   signOut, 
   getIdToken,
-  setAnalyticsUserId
+  setAnalyticsUserId,
+  handleRedirectResult
 } from '../lib/firebase'
 
 const AuthContext = createContext(null)
@@ -20,14 +21,25 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     initFirebase()
     console.log('[Auth] Initializing...')
-
-    // Safety timeout - if loading takes more than 10 seconds, something is wrong
-    const loadingTimeout = setTimeout(() => {
-      if (loading) {
-        console.warn('[Auth] Loading timeout - resetting state')
+    
+    // Handle redirect result from OAuth (for standalone/published site)
+    handleRedirectResult()
+      .then((user) => {
+        if (user) {
+          console.log('[Auth] Got user from redirect:', user.email)
+        }
+      })
+      .catch((err) => {
+        console.error('[Auth] Redirect error:', err)
+        setError(err.message)
         setLoading(false)
-      }
-    }, 10000)
+      })
+
+    // Safety timeout - if loading takes more than 15 seconds, reset state
+    const loadingTimeout = setTimeout(() => {
+      console.warn('[Auth] Loading timeout - resetting state')
+      setLoading(false)
+    }, 15000)
 
     const unsubscribe = onAuthChange(async (firebaseUser) => {
       if (firebaseUser) {
