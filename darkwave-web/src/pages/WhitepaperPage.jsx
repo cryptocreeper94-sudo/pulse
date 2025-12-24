@@ -27,7 +27,7 @@ const VESTING_SCHEDULE = [
 const ROADMAP = [
   { phase: 'Q4 2024 - Q1 2025', title: 'Foundation', status: 'complete', items: ['Core platform launch', 'AI Agent system (18 agents)', 'Blockchain audit trail', 'Multi-chain wallet'] },
   { phase: 'Q2 2025', title: 'Enhancement', status: 'current', items: ['ML accuracy tracking', 'StrikeAgent beta', 'Premium subscription launch', 'Telegram bot upgrade'] },
-  { phase: 'Q1 2026', title: 'Token Launch', status: 'upcoming', items: ['Smart contract deployment', 'DWAV token launch (Feb 14)', 'Staking system activation', 'Governance framework'] },
+  { phase: 'Q1 2026', title: 'DarkWave Chain Launch', status: 'upcoming', items: ['L1 blockchain deployment', 'DWT token launch (Feb 14)', 'Staking on darkwavechain.com', 'Governance framework'] },
   { phase: 'Q2-Q4 2026', title: 'Expansion', status: 'future', items: ['Mobile apps (iOS/Android)', 'NFT Trading Cards', 'Partner integrations', 'International expansion'] },
 ];
 
@@ -73,7 +73,7 @@ const PieChart = ({ data }) => {
         })}
         <circle cx="0" cy="0" r="0.5" fill="#0f0f0f" />
         <text x="0" y="0.05" textAnchor="middle" fill="#fff" fontSize="0.2" fontWeight="700" style={{ transform: 'rotate(90deg)' }}>100M</text>
-        <text x="0" y="0.22" textAnchor="middle" fill="#888" fontSize="0.1" style={{ transform: 'rotate(90deg)' }}>DWAV</text>
+        <text x="0" y="0.22" textAnchor="middle" fill="#888" fontSize="0.1" style={{ transform: 'rotate(90deg)' }}>DWT</text>
       </svg>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', width: '100%' }}>
         {data.map((item, i) => (
@@ -202,7 +202,7 @@ export default function WhitepaperPage() {
   const [activeSection, setActiveSection] = useState('overview');
 
   const handleDownload = () => {
-    window.open('/docs/DWAV_WHITEPAPER.md', '_blank');
+    window.open('https://darkwavechain.com', '_blank');
   };
 
   return (
@@ -266,7 +266,7 @@ export default function WhitepaperPage() {
             margin: '0 0 16px',
             letterSpacing: '-1px',
           }}>
-            DWAV Token <span style={{ color: '#00D4FF' }}>Whitepaper</span>
+            DarkWave Chain <span style={{ color: '#00D4FF' }}>Overview</span>
           </h1>
           
           <p style={{
@@ -276,7 +276,7 @@ export default function WhitepaperPage() {
             margin: '0 auto 32px',
             lineHeight: 1.6,
           }}>
-            The official documentation for DWAV, the utility token powering the DarkWave Studios ecosystem and PULSE trading platform.
+            DarkWave Chain is our Layer 1 blockchain launching February 14, 2026. Visit darkwavechain.com for full DWT token documentation.
           </p>
 
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -347,7 +347,7 @@ export default function WhitepaperPage() {
               DarkWave Studios is building the future of AI-powered trading intelligence. Our flagship platform, <strong style={{ color: '#00D4FF' }}>PULSE</strong>, combines advanced artificial intelligence, real-time market data, and blockchain technology to deliver institutional-grade analytics to retail traders worldwide.
             </p>
             <p style={{ color: '#ccc', lineHeight: 1.8, fontSize: '15px', marginBottom: '24px' }}>
-              <strong style={{ color: '#39FF14' }}>DWAV</strong> is the native utility token powering this ecosystem, providing holders with staking rewards, premium access discounts, governance rights, and exclusive benefits across all DarkWave products.
+              <strong style={{ color: '#39FF14' }}>DWT</strong> is the native utility token on DarkWave Chain, providing holders with staking rewards, premium access discounts, governance rights, and exclusive benefits across all DarkWave products. Visit <a href="https://darkwavechain.com" target="_blank" rel="noopener noreferrer" style={{ color: '#00D4FF' }}>darkwavechain.com</a> for full details.
             </p>
             <div style={{
               display: 'grid',
@@ -380,7 +380,7 @@ export default function WhitepaperPage() {
 
           <SectionCard id="problem" title="The Problem" icon="⚠️" color="#FF4444">
             <p style={{ color: '#ccc', lineHeight: 1.8, fontSize: '15px', marginBottom: '20px' }}>
-              The cryptocurrency and stock markets are dominated by institutional players with access to advanced analytics, real-time data, dedicated research teams, and sophisticated risk management systems. Meanwhile, retail traders face:
+              The cryptocurrency markets are dominated by institutional players with access to advanced analytics, real-time data, dedicated research teams, and sophisticated risk management systems. Meanwhile, retail traders face:
             </p>
             <div style={{
               display: 'grid',

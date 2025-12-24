@@ -47,8 +47,8 @@ export default function LegacyFoundersBanner({ onUpgrade }) {
         </h3>
         
         <p style={{ color: '#ccc', fontSize: 13, marginBottom: 16, lineHeight: 1.5 }}>
-          Lock in <strong style={{ color: '#39FF14' }}>$4/month</strong> pricing FOREVER + earn{' '}
-          <strong style={{ color: '#FFA500' }}>35,000 DWAV tokens</strong> on Feb 14, 2026
+          Lock in <strong style={{ color: '#39FF14' }}>$4/month</strong> pricing FOREVER + early access to{' '}
+          <strong style={{ color: '#FFA500' }}>DarkWave Chain</strong> launching Feb 14, 2026
         </p>
         
         <div style={{ 
@@ -73,9 +73,9 @@ export default function LegacyFoundersBanner({ onUpgrade }) {
             padding: '10px 12px',
             borderLeft: '3px solid #FFA500'
           }}>
-            <div style={{ fontSize: 10, color: '#888' }}>TOKEN REWARD</div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: '#FFA500' }}>35K</div>
-            <div style={{ fontSize: 9, color: '#666' }}>DWAV tokens</div>
+            <div style={{ fontSize: 10, color: '#888' }}>EARLY ACCESS</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: '#FFA500' }}>DWC</div>
+            <div style={{ fontSize: 9, color: '#666' }}>DarkWave Chain</div>
           </div>
         </div>
         
@@ -89,7 +89,7 @@ export default function LegacyFoundersBanner({ onUpgrade }) {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ color: '#39FF14' }}>✓</span>
-            <span>Unlimited AI analysis for crypto AND stocks</span>
+            <span>Unlimited AI analysis for cryptocurrency</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ color: '#39FF14' }}>✓</span>
@@ -97,7 +97,7 @@ export default function LegacyFoundersBanner({ onUpgrade }) {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ color: '#39FF14' }}>✓</span>
-            <span>Priority access to DWAV staking pools</span>
+            <span>Priority access to DarkWave Chain</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ color: '#39FF14' }}>✓</span>

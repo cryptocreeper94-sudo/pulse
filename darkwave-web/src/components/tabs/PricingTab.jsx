@@ -23,8 +23,7 @@ const PLANS = [
     ],
     notIncluded: [
       'StrikeAgent sniper bot',
-      'Multi-chain support',
-      'DWAV token rewards'
+      'Multi-chain support'
     ],
     cta: 'Start Free Trial',
     popular: true,
@@ -50,8 +49,7 @@ const PLANS = [
       '2-day free trial'
     ],
     notIncluded: [
-      'AI predictions (Pulse Pro)',
-      'DWAV token rewards'
+      'AI predictions (Pulse Pro)'
     ],
     cta: 'Start Free Trial',
     popular: false,
@@ -89,10 +87,10 @@ const PLANS = [
     badge: 'GRANDFATHERED',
     price: '$24',
     period: 'one-time',
-    description: '6 months access + 35K DWAV tokens',
+    description: '6 months access + DarkWave Chain early access',
     features: [
       'Full access for 6 months',
-      '35,000 DWAV tokens (Feb 14, 2026)',
+      'Early access to DarkWave Chain',
       'StrikeAgent access',
       'Founding member badge',
       'No recurring billing'
@@ -252,7 +250,7 @@ export default function PricingTab({ userId, currentTier }) {
             <span>🏆 Legacy Founder (Grandfathered - No longer available)</span>
           </summary>
           <div className="legacy-card">
-            <p>The Legacy Founder plan was available during our early launch. Existing Founders retain their 6-month access and 35,000 DWAV tokens.</p>
+            <p>The Legacy Founder plan was available during our early launch. Existing Founders retain their 6-month access and early access to DarkWave Chain.</p>
           </div>
         </details>
       </div>

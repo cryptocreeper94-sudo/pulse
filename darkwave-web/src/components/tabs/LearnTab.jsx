@@ -12,15 +12,15 @@ const learnCategories = [
 const faqs = [
   {
     question: 'What is Pulse?',
-    answer: 'Pulse is an AI-powered predictive trading analysis platform that provides institutional-grade market insights for crypto and stocks. Our AI agents analyze market data 24/7 to deliver actionable trading signals.'
+    answer: 'Pulse is an AI-powered predictive trading analysis platform that provides institutional-grade market insights for cryptocurrency. Our AI agents analyze market data 24/7 to deliver actionable trading signals.'
   },
   {
     question: 'How much does it cost?',
-    answer: 'During our Beta V1 phase, Founders can lock in lifetime pricing at just $4/month. This includes access to all AI agents, trading signals, and 35K DWAV token rewards.'
+    answer: 'During our Beta V1 phase, Founders can lock in lifetime pricing at just $4/month. This includes access to all AI agents and trading signals.'
   },
   {
-    question: 'What is the DWAV token?',
-    answer: 'DWAV is the DarkWave Studios ecosystem token on Solana. It provides staking rewards, premium access across all DarkWave apps, and governance rights. Launch date: February 14, 2026.'
+    question: 'What is DarkWave Chain?',
+    answer: 'DarkWave Chain is our upcoming Layer 1 blockchain. It will host the DWT token, staking rewards, and governance features. Visit darkwavechain.com for more information. Launch: February 14, 2026.'
   },
   {
     question: 'How accurate are the predictions?',
@@ -28,7 +28,7 @@ const faqs = [
   },
   {
     question: 'Is my data secure?',
-    answer: 'Yes. We use industry-standard encryption, secure authentication, and never share your personal data. All predictions are audited on Solana blockchain for transparency.'
+    answer: 'Yes. We use industry-standard encryption, secure authentication, and never share your personal data. All predictions are verified on blockchain for transparency.'
   },
 ]
 

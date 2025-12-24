@@ -61,11 +61,11 @@ const PLANS = [
     badge: 'LIMITED TIME',
     price: '$24',
     period: 'one-time',
-    savings: '6 months + 35K DWAV tokens',
+    savings: '6 months + DarkWave Chain access',
     description: 'Early supporter exclusive offer',
     features: [
       '6 months full access',
-      '35,000 DWAV tokens',
+      'Early DarkWave Chain access',
       'Founder badge',
       'No recurring billing',
       'Launch celebration access'

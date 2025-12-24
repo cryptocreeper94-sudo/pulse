@@ -2,10 +2,8 @@ import { useState, useEffect, Component } from 'react'
 import Layout from './components/layout/Layout'
 import { 
   MarketsTab, 
-  ProjectsTab, 
   LearnTab, 
   PortfolioTab, 
-  StakingTab, 
   SettingsTab,
   V2DetailsTab,
   DashboardTab,
@@ -185,7 +183,6 @@ function AppContent() {
   const isStrikeAgentDomain = window.location.hostname.includes('strikeagent')
   const isDemoPath = window.location.pathname.startsWith('/demo')
   const isWhitepaperPage = window.location.pathname === '/whitepaper'
-  const isStakingPage = window.location.pathname === '/staking'
   const isStrikeAgentLive = window.location.pathname === '/strikeagent/live' || window.location.pathname === '/live' || isStrikeAgentDomain
   const isDemoMode = isDemoPath
   
@@ -220,14 +217,10 @@ function AppContent() {
         return <DashboardTab userId={userId} userConfig={userConfig} onNavigate={setActiveTab} onAnalyzeCoin={handleAnalyzeCoin} />
       case 'markets':
         return <MarketsTab />
-      case 'projects':
-        return <ProjectsTab />
       case 'learn':
         return <LearnTab />
       case 'portfolio':
         return <PortfolioTab />
-      case 'staking':
-        return <StakingTab />
       case 'sniper':
         const canTrade = hasStrikeAgentAccess(userConfig)
         return <SniperBotErrorBoundary><SniperBotTab canTrade={canTrade} onNavigate={setActiveTab} /></SniperBotErrorBoundary>
@@ -260,25 +253,6 @@ function AppContent() {
 
   if (isWhitepaperPage) {
     return <WhitepaperPage />
-  }
-
-  if (isStakingPage) {
-    return (
-      <SkinsProvider>
-        <BuiltInWalletProvider>
-          <FavoritesProvider userId={userId}>
-            <GlossaryProvider>
-              <Layout activeTab="staking" onTabChange={setActiveTab} userTier={userConfig?.subscriptionTier} accessLevel={userConfig?.accessLevel}>
-                <div style={{ padding: '0 12px' }}>
-                  <StakingTab />
-                </div>
-              </Layout>
-              <GlossaryPopup />
-            </GlossaryProvider>
-          </FavoritesProvider>
-        </BuiltInWalletProvider>
-      </SkinsProvider>
-    )
   }
 
   if (isStrikeAgentLive) {

@@ -6,7 +6,7 @@ const categories = [
   { id: 'overview', icon: '🚀', label: 'Overview' },
   { id: 'pricing', icon: '💰', label: 'Pricing' },
   { id: 'roadmap', icon: '📅', label: 'Roadmap' },
-  { id: 'token', icon: '💎', label: 'DWAV Token' },
+  { id: 'token', icon: '💎', label: 'DarkWave Chain' },
 ]
 
 const roadmapPhases = [
@@ -29,14 +29,14 @@ const roadmapPhases = [
     title: 'Legacy Founders Program',
     status: 'active',
     date: 'Dec 2024 - Feb 2026',
-    items: ['$4/month founder pricing', '35K DWAV token rewards', 'Stripe payment integration']
+    items: ['$4/month founder pricing', 'Early access to DarkWave Chain', 'Stripe payment integration']
   },
   {
     phase: 'Phase 4',
-    title: 'DWAV Token Launch',
+    title: 'DarkWave Chain Launch',
     status: 'upcoming',
     date: 'Feb 14, 2026',
-    items: ['Token deployment on Solana', 'Staking pools live', 'Jupiter listing']
+    items: ['L1 blockchain deployment', 'DWT token launch', 'Staking on darkwavechain.com']
   },
   {
     phase: 'Phase 5',
@@ -63,7 +63,7 @@ const pricingTiers = [
     features: [
       'Unlimited analyses',
       'All 18 AI agents',
-      '35K DWAV tokens',
+      'Early DarkWave Chain access',
       'Lifetime access after 6mo',
       'Priority support',
       'Early feature access'
@@ -251,9 +251,9 @@ export default function V2DetailsTab() {
                   borderLeft: '3px solid #9D4EDD'
                 }}>
                   <div style={{ fontSize: 20, marginBottom: 8 }}>💎</div>
-                  <h4 style={{ marginBottom: 4 }}>DWAV Staking</h4>
+                  <h4 style={{ marginBottom: 4 }}>DarkWave Chain</h4>
                   <p style={{ fontSize: 12, color: '#888' }}>
-                    Earn hourly rewards by staking DWAV tokens in tiered pools
+                    Our L1 blockchain with DWT token staking at darkwavechain.com
                   </p>
                 </div>
                 
@@ -341,17 +341,17 @@ export default function V2DetailsTab() {
               background: 'linear-gradient(135deg, rgba(157, 78, 221, 0.1), rgba(255, 165, 0, 0.1))',
               border: '1px solid rgba(157, 78, 221, 0.3)'
             }}>
-              <div style={{ fontSize: 48, marginBottom: 12 }}>💎</div>
+              <div style={{ fontSize: 48, marginBottom: 12 }}>⛓️</div>
               <h2 style={{ 
                 background: 'linear-gradient(135deg, #9D4EDD, #FFA500)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 marginBottom: 8
               }}>
-                DWAV Token
+                DarkWave Chain
               </h2>
               <p style={{ color: '#888', fontSize: 13, marginBottom: 20 }}>
-                The DarkWave Studios ecosystem token on Solana
+                Our Layer 1 blockchain launching February 14, 2026
               </p>
               
               <div style={{ 
@@ -366,34 +366,54 @@ export default function V2DetailsTab() {
                 </div>
                 <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 12, padding: 16 }}>
                   <div style={{ fontSize: 10, color: '#888' }}>NETWORK</div>
-                  <div style={{ fontSize: 18, fontWeight: 700, color: '#9D4EDD' }}>Solana</div>
+                  <div style={{ fontSize: 18, fontWeight: 700, color: '#9D4EDD' }}>DarkWave L1</div>
                 </div>
                 <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 12, padding: 16 }}>
-                  <div style={{ fontSize: 10, color: '#888' }}>TOTAL SUPPLY</div>
-                  <div style={{ fontSize: 18, fontWeight: 700, color: '#fff' }}>1B</div>
+                  <div style={{ fontSize: 10, color: '#888' }}>TOKEN</div>
+                  <div style={{ fontSize: 18, fontWeight: 700, color: '#fff' }}>DWT</div>
                 </div>
                 <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 12, padding: 16 }}>
-                  <div style={{ fontSize: 10, color: '#888' }}>FOUNDERS ALLOCATION</div>
-                  <div style={{ fontSize: 18, fontWeight: 700, color: '#39FF14' }}>32%</div>
+                  <div style={{ fontSize: 10, color: '#888' }}>WEBSITE</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: '#39FF14' }}>darkwavechain.com</div>
                 </div>
               </div>
+              
+              <a 
+                href="https://darkwavechain.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-block',
+                  padding: '12px 24px',
+                  background: 'linear-gradient(135deg, #9D4EDD, #FFA500)',
+                  border: 'none',
+                  borderRadius: 8,
+                  color: '#000',
+                  fontSize: 14,
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                Visit DarkWave Chain
+              </a>
             </div>
             
             <div className="section-box" style={{ padding: 20, marginTop: 16 }}>
-              <h3 style={{ marginBottom: 16 }}>Token Utility</h3>
+              <h3 style={{ marginBottom: 16 }}>DarkWave Chain Features</h3>
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <span style={{ fontSize: 24 }}>⚡</span>
                   <div>
-                    <div style={{ fontWeight: 700 }}>Hourly Staking Rewards</div>
-                    <div style={{ fontSize: 11, color: '#888' }}>Earn passive income with tiered staking pools</div>
+                    <div style={{ fontWeight: 700 }}>DWT Token Staking</div>
+                    <div style={{ fontSize: 11, color: '#888' }}>Earn passive income with staking pools on DarkWave Chain</div>
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <span style={{ fontSize: 24 }}>🔓</span>
                   <div>
-                    <div style={{ fontWeight: 700 }}>Premium Access</div>
+                    <div style={{ fontWeight: 700 }}>Ecosystem Access</div>
                     <div style={{ fontSize: 11, color: '#888' }}>Unlock features across all DarkWave apps</div>
                   </div>
                 </div>

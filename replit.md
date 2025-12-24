@@ -1,7 +1,7 @@
-# Pulse - AI Trading Analysis Platform
+# Pulse - AI Crypto Trading & News Platform
 
 ## Overview
-Pulse, by DarkWave Studios, LLC, is an AI-driven trading platform that leverages the Mastra AI framework to deliver predictive signals and institutional-grade technical analysis for cryptocurrency and stocks. Its core purpose is to provide users with a competitive edge by identifying market trends early and offering sophisticated, risk-adjusted analytics. The platform integrates with the broader DarkWave Studios ecosystem, powered by the DWT token, aiming to empower traders with advanced AI capabilities and significant market potential.
+Pulse, by DarkWave Studios, LLC, is an AI-driven cryptocurrency trading platform that leverages the Mastra AI framework to deliver predictive signals, quant trading analysis, and comprehensive crypto news/information. The platform focuses exclusively on cryptocurrency - all DWT token and staking functionality is handled by DarkWave Chain (our separate L1 blockchain at darkwavechain.com, launching Feb 14, 2026).
 
 ## User Preferences
 - Preferred communication style: Simple, everyday language
@@ -9,10 +9,16 @@ Pulse, by DarkWave Studios, LLC, is an AI-driven trading platform that leverages
 - Agent diversity: Equal distribution across age groups, gender, race, and hair color
 - Design aesthetic: Solid black/dark gray backgrounds (#0f0f0f, #1a1a1a, #141414) with free-floating elements featuring glow effects. Glassmorphism (backdrop-filter blur + semi-transparent backgrounds) is ALLOWED for cards site-wide, but NOT for backgrounds, buttons, or other non-card elements.
 
-## Recent Updates (December 23, 2025)
+## Recent Updates (December 24, 2025)
+- **Platform Focus Shift**: Pulse is now crypto-only (removed all stock references). DWT token and staking moved to DarkWave Chain (darkwavechain.com).
+- **Removed Pages**: Projects page and Staking page removed from navigation.
+- **DarkWave Chain References**: All DWAV token references updated to DWT and redirect to darkwavechain.com.
+- **Wallet Handoff Doc**: Added `DARKWAVE-WALLET-HANDOFF.md` to Agent Team Hub for cross-team reference.
+
+## Previous Updates (December 23, 2025)
 - **Pre-Publish Sweep Completed**: Comprehensive platform audit verifying all critical systems are operational.
 - **Firebase Admin Fix**: Resolved ESM bundling issue with dynamic imports for Firebase Admin SDK.
-- **Direct Staking Route**: `/staking` URL now accessible as direct link for DarkWave Chain integration.
+- **Staking Removed**: Direct staking moved to DarkWave Chain (darkwavechain.com).
 - **Version**: 1.20.49 - Frontend and backend versions aligned.
 - **DarkWave Chain Verification Modal**: Fixed title to "Verified on DarkWave Chain" and added viewport-aware sizing (max-height: 85vh, overflow-y: auto) to prevent background scrolling.
 - **Telegram Broadcast Trigger**: Added `/api/internal/trigger-telegram` endpoint for external cron services to broadcast StrikeAgent signals to Telegram channel. Use GET with `?secret=YOUR_SECRET`. Returns top 3 signals from last 4 hours.

@@ -14,7 +14,7 @@ export default function LoginScreen() {
         <div className="login-content">
           <h1 className="login-title">Welcome to Pulse</h1>
           <p className="login-description">
-            AI-powered trading signals and institutional-grade analysis for crypto and stocks
+            AI-powered trading signals and institutional-grade analysis for cryptocurrency
           </p>
 
           <button 

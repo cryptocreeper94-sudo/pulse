@@ -12,10 +12,8 @@ const allMenuItems = [
   { id: 'ml-dashboard', icon: '🧠', label: 'ML Dashboard', highlight: true, adminOnly: true },
   { id: 'dev-portal', icon: '🛠️', label: 'Developers Portal', adminOnly: true },
   { id: 'pricing', icon: '💳', label: 'Pricing', highlight: true },
-  { id: 'projects', icon: '🚀', label: 'Projects' },
   { id: 'learn', icon: '💡', label: 'Learn' },
   { id: 'portfolio', icon: '📈', label: 'Portfolio' },
-  { id: 'staking', icon: '💎', label: 'Staking' },
   { id: 'settings', icon: '⚙️', label: 'Settings' },
   { id: 'v2-details', icon: '📅', label: 'V2 Details', highlight: true },
 ]

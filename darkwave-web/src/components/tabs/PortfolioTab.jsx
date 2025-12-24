@@ -8,7 +8,7 @@ export default function PortfolioTab() {
           <div style={{ fontSize: 48, marginBottom: 8 }}>📈</div>
           <h2 style={{ marginBottom: 8 }}>Portfolio Tracker</h2>
           <p style={{ color: '#888', fontSize: 13, marginBottom: 16 }}>
-            Track your crypto and stock holdings in one place
+            Track your cryptocurrency holdings in one place
           </p>
           <div style={{ 
             padding: 16, 

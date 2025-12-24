@@ -15,13 +15,11 @@ const DOC_CATEGORIES = [
   },
   {
     id: 'token',
-    title: 'DWAV Token',
-    icon: '🪙',
+    title: 'DarkWave Chain',
+    icon: '⛓️',
     color: '#39FF14',
     docs: [
-      { id: 'whitepaper', title: 'Whitepaper', icon: '📄', file: '/docs/DWAV_WHITEPAPER.md', description: 'Complete token documentation' },
-      { id: 'tokeninfo', title: 'Token Specifications', icon: '🔢', file: '/docs/DWAV_TOKEN_INFO.md', description: 'Technical specs & tokenomics' },
-      { id: 'contract', title: 'Smart Contract', icon: '⚡', file: '/docs/DWAV_SMART_CONTRACT.md', description: 'Anchor program documentation' },
+      { id: 'dwc', title: 'DarkWave Chain', icon: '⛓️', file: 'https://darkwavechain.com', description: 'Visit darkwavechain.com for DWT token info', external: true },
     ],
   },
   {
