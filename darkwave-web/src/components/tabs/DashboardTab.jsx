@@ -14,7 +14,7 @@ function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false)
   
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth <= 640)
+    const check = () => setIsMobile(window.innerWidth <= 1024)
     check()
     window.addEventListener('resize', check)
     return () => window.removeEventListener('resize', check)
@@ -82,7 +82,7 @@ function BentoTile({ children, className = '', style = {}, onClick }) {
 }
 
 function TileLabel({ children, color = 'var(--text-muted)' }) {
-  const isMobile = window.innerWidth <= 640
+  const isMobile = window.innerWidth <= 1024
   return (
     <div className="tile-label" style={{
       fontSize: isMobile ? 12 : 9,

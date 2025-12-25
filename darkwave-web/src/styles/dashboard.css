@@ -228,7 +228,7 @@
 }
 
 /* Mobile breakpoint - 640px (hide news, 2-col for remaining) */
-@media (max-width: 640px) {
+@media (max-width: 1024px) {
   /* Prevent horizontal overflow on mobile */
   body, html, #root {
     overflow-x: hidden;
@@ -505,7 +505,7 @@
   box-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 1024px) {
   .coin-filter-buttons {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -633,7 +633,7 @@
 /* MOBILE INLINE STYLE OVERRIDES               */
 /* These override React inline styles on mobile */
 /* ============================================ */
-@media (max-width: 640px) {
+@media (max-width: 1024px) {
   /* Override ALL inline font-size styles under 12px */
   .top-carousels-container *[style*="fontSize"],
   .top-carousels-container *[style*="font-size"],
