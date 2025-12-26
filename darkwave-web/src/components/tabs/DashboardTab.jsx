@@ -1125,6 +1125,198 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
     { type: 'metric', title: 'BTC Dominance', value: `${marketData.btcDominance?.toFixed(1) || '54.5'}%`, change: null },
   ]
 
+  const isMobileLayout = useMobileLayout()
+
+  if (isMobileLayout) {
+    return (
+      <div className="mobile-dashboard" style={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        gap: 16, 
+        padding: '70px 12px 80px 12px',
+        minHeight: '100vh',
+        background: 'var(--bg-dark)',
+      }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <div style={{ 
+            background: 'var(--bg-surface)', 
+            borderRadius: 12, 
+            padding: 12,
+            border: '1px solid var(--border-color)',
+          }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 12 }}>
+              Market Metrics
+            </div>
+            <MobileCardCarousel>
+              {marketOverviewItems.map((item, idx) => (
+                <div key={idx} onClick={() => setSelectedMetric(item.title)} style={{ cursor: 'pointer', height: 180 }}>
+                  {item.type === 'gauge' ? (
+                    <GaugeContent title={item.title} value={item.value} type={item.gaugeType} accentColor={item.color} isMobile={true} />
+                  ) : (
+                    <MetricContent title={item.title} value={item.value} change={item.change} />
+                  )}
+                </div>
+              ))}
+            </MobileCardCarousel>
+          </div>
+          <div style={{ 
+            background: 'var(--bg-surface)', 
+            borderRadius: 12, 
+            padding: 12,
+            border: '1px solid var(--border-color)',
+          }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 12 }}>
+              Quick Actions
+            </div>
+            <MobileCardCarousel>
+              {quickActions.map((action, idx) => (
+                <div 
+                  key={idx} 
+                  onClick={() => onNavigate && onNavigate(action.tab)}
+                  style={{ cursor: 'pointer', height: 180 }}
+                >
+                  <QuickActionContent action={action} fullCard={true} />
+                </div>
+              ))}
+            </MobileCardCarousel>
+          </div>
+        </div>
+
+        <div style={{ 
+          background: 'var(--bg-surface)', 
+          borderRadius: 16, 
+          padding: 16,
+          border: '1px solid var(--border-color)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ 
+                width: 48, 
+                height: 48, 
+                background: 'linear-gradient(135deg, #00D4FF, #39FF14)',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 24,
+              }}>
+                🎯
+              </div>
+              <div>
+                <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>StrikeAgent</div>
+                <div style={{ fontSize: 12, color: '#00D4FF' }}>AI Trading Bot</div>
+              </div>
+            </div>
+            <div style={{ 
+              background: 'linear-gradient(135deg, #9D4EDD, #FF006E)',
+              padding: '6px 12px',
+              borderRadius: 20,
+              fontSize: 11,
+              fontWeight: 700,
+              color: '#fff',
+            }}>
+              🔒 Pro
+            </div>
+          </div>
+          <div style={{ 
+            background: 'var(--bg-surface-2)', 
+            borderRadius: 12, 
+            padding: 16,
+            marginBottom: 16,
+          }}>
+            <div style={{ fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 4 }}>Signal Type</div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ fontSize: 24, fontWeight: 800, color: '#FF006E' }}>SNIPE</div>
+              <div style={{ 
+                background: '#39FF14',
+                color: '#000',
+                padding: '4px 12px',
+                borderRadius: 4,
+                fontSize: 11,
+                fontWeight: 700,
+              }}>HIGH</div>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12 }}>
+              <div>
+                <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>TOKEN</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)' }}>MOG</div>
+                <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Just now</div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>ENTRY</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)' }}>$0.3704</div>
+              </div>
+            </div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+            <div style={{ background: 'var(--bg-surface-2)', borderRadius: 8, padding: 12, textAlign: 'center' }}>
+              <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>SIGNALS ⓘ</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: '#00D4FF' }}>16,474</div>
+            </div>
+            <div style={{ background: 'var(--bg-surface-2)', borderRadius: 8, padding: 12, textAlign: 'center' }}>
+              <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>WIN RATE ⓘ</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: '#39FF14' }}>61.4%</div>
+            </div>
+            <div style={{ background: 'var(--bg-surface-2)', borderRadius: 8, padding: 12, textAlign: 'center' }}>
+              <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>SNIPES ⓘ</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: '#FF006E' }}>3,734</div>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ 
+          background: 'var(--bg-surface)', 
+          borderRadius: 12, 
+          padding: 12,
+          border: '1px solid var(--border-color)',
+        }}>
+          <BitcoinChart coin={selectedCoin} isMobile={true} />
+        </div>
+
+        <div style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: 16,
+          padding: '12px 16px',
+          background: '#0a0a0a',
+          borderTop: '1px solid #1a1a1a',
+          zIndex: 50,
+        }}>
+          <a href="https://x.com/DarkWaveStudios" target="_blank" rel="noopener noreferrer" style={{ opacity: 0.6 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+          </a>
+          <a href="https://t.me/DarkWavePulse_bot" target="_blank" rel="noopener noreferrer" style={{ opacity: 0.6 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff">
+              <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+            </svg>
+          </a>
+          <a href="https://facebook.com/DarkWaveStudios" target="_blank" rel="noopener noreferrer" style={{ opacity: 0.6 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+          </a>
+          <span style={{ color: '#333' }}>|</span>
+          <span style={{ color: '#444', fontSize: 11 }}>
+            Powered by DarkWave Studios, LLC © 2025 | v{versionData.version}
+          </span>
+        </div>
+
+        <MetricInfoModal
+          isOpen={!!selectedMetric}
+          onClose={() => setSelectedMetric(null)}
+          metric={selectedMetric}
+        />
+      </div>
+    )
+  }
+
   return (
     <>
       {/* Three-Column Top Section with Self-Contained Carousels */}
