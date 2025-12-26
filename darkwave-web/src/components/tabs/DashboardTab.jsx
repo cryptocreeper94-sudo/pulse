@@ -1132,24 +1132,26 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
       <div className="mobile-dashboard" style={{ 
         display: 'flex', 
         flexDirection: 'column', 
-        gap: 16, 
-        padding: '70px 12px 80px 12px',
+        gap: 20, 
+        padding: '70px 16px 100px 16px',
         minHeight: '100vh',
-        background: 'var(--bg-dark)',
+        background: '#0a0a0a',
+        overflowY: 'auto',
       }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <div style={{ 
-            background: 'var(--bg-surface)', 
-            borderRadius: 12, 
-            padding: 12,
-            border: '1px solid var(--border-color)',
+            background: '#111', 
+            borderRadius: 16, 
+            padding: 16,
+            border: '1px solid #222',
+            minHeight: 280,
           }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 12 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#666', textTransform: 'uppercase', marginBottom: 16 }}>
               Market Metrics
             </div>
             <MobileCardCarousel>
               {marketOverviewItems.map((item, idx) => (
-                <div key={idx} onClick={() => setSelectedMetric(item.title)} style={{ cursor: 'pointer', height: 180 }}>
+                <div key={idx} onClick={() => setSelectedMetric(item.title)} style={{ cursor: 'pointer', height: 200 }}>
                   {item.type === 'gauge' ? (
                     <GaugeContent title={item.title} value={item.value} type={item.gaugeType} accentColor={item.color} isMobile={true} />
                   ) : (
@@ -1160,12 +1162,13 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
             </MobileCardCarousel>
           </div>
           <div style={{ 
-            background: 'var(--bg-surface)', 
-            borderRadius: 12, 
-            padding: 12,
-            border: '1px solid var(--border-color)',
+            background: '#111', 
+            borderRadius: 16, 
+            padding: 16,
+            border: '1px solid #222',
+            minHeight: 280,
           }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 12 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#666', textTransform: 'uppercase', marginBottom: 16 }}>
               Quick Actions
             </div>
             <MobileCardCarousel>
@@ -1173,7 +1176,7 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
                 <div 
                   key={idx} 
                   onClick={() => onNavigate && onNavigate(action.tab)}
-                  style={{ cursor: 'pointer', height: 180 }}
+                  style={{ cursor: 'pointer', height: 200 }}
                 >
                   <QuickActionContent action={action} fullCard={true} />
                 </div>
@@ -1183,35 +1186,35 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
         </div>
 
         <div style={{ 
-          background: 'var(--bg-surface)', 
+          background: '#111', 
           borderRadius: 16, 
-          padding: 16,
-          border: '1px solid var(--border-color)',
+          padding: 20,
+          border: '1px solid #222',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
               <div style={{ 
-                width: 48, 
-                height: 48, 
+                width: 52, 
+                height: 52, 
                 background: 'linear-gradient(135deg, #00D4FF, #39FF14)',
                 borderRadius: '50%',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: 24,
+                fontSize: 26,
               }}>
                 🎯
               </div>
               <div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>StrikeAgent</div>
-                <div style={{ fontSize: 12, color: '#00D4FF' }}>AI Trading Bot</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: '#fff' }}>StrikeAgent</div>
+                <div style={{ fontSize: 14, color: '#00D4FF' }}>AI Trading Bot</div>
               </div>
             </div>
             <div style={{ 
               background: 'linear-gradient(135deg, #9D4EDD, #FF006E)',
-              padding: '6px 12px',
-              borderRadius: 20,
-              fontSize: 11,
+              padding: '8px 16px',
+              borderRadius: 24,
+              fontSize: 13,
               fontWeight: 700,
               color: '#fff',
             }}>
@@ -1219,59 +1222,95 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
             </div>
           </div>
           <div style={{ 
-            background: 'var(--bg-surface-2)', 
-            borderRadius: 12, 
-            padding: 16,
-            marginBottom: 16,
+            background: '#0a0a0a', 
+            borderRadius: 14, 
+            padding: 20,
+            marginBottom: 20,
           }}>
-            <div style={{ fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 4 }}>Signal Type</div>
+            <div style={{ fontSize: 12, color: '#666', textTransform: 'uppercase', marginBottom: 6 }}>Signal Type</div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ fontSize: 24, fontWeight: 800, color: '#FF006E' }}>SNIPE</div>
+              <div style={{ fontSize: 28, fontWeight: 800, color: '#FF006E' }}>SNIPE</div>
               <div style={{ 
                 background: '#39FF14',
                 color: '#000',
-                padding: '4px 12px',
-                borderRadius: 4,
-                fontSize: 11,
+                padding: '6px 16px',
+                borderRadius: 6,
+                fontSize: 13,
                 fontWeight: 700,
               }}>HIGH</div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16 }}>
               <div>
-                <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>TOKEN</div>
-                <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)' }}>MOG</div>
-                <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Just now</div>
+                <div style={{ fontSize: 12, color: '#666' }}>TOKEN</div>
+                <div style={{ fontSize: 24, fontWeight: 700, color: '#fff' }}>MOG</div>
+                <div style={{ fontSize: 13, color: '#666' }}>Just now</div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>ENTRY</div>
-                <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)' }}>$0.3704</div>
+                <div style={{ fontSize: 12, color: '#666' }}>ENTRY</div>
+                <div style={{ fontSize: 24, fontWeight: 700, color: '#fff' }}>$0.3704</div>
               </div>
             </div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
-            <div style={{ background: 'var(--bg-surface-2)', borderRadius: 8, padding: 12, textAlign: 'center' }}>
-              <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>SIGNALS ⓘ</div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: '#00D4FF' }}>16,474</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+            <div style={{ background: '#0a0a0a', borderRadius: 10, padding: 16, textAlign: 'center' }}>
+              <div style={{ fontSize: 12, color: '#666' }}>SIGNALS ⓘ</div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: '#00D4FF' }}>16,474</div>
             </div>
-            <div style={{ background: 'var(--bg-surface-2)', borderRadius: 8, padding: 12, textAlign: 'center' }}>
-              <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>WIN RATE ⓘ</div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: '#39FF14' }}>61.4%</div>
+            <div style={{ background: '#0a0a0a', borderRadius: 10, padding: 16, textAlign: 'center' }}>
+              <div style={{ fontSize: 12, color: '#666' }}>WIN RATE ⓘ</div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: '#39FF14' }}>61.4%</div>
             </div>
-            <div style={{ background: 'var(--bg-surface-2)', borderRadius: 8, padding: 12, textAlign: 'center' }}>
-              <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>SNIPES ⓘ</div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: '#FF006E' }}>3,734</div>
+            <div style={{ background: '#0a0a0a', borderRadius: 10, padding: 16, textAlign: 'center' }}>
+              <div style={{ fontSize: 12, color: '#666' }}>SNIPES ⓘ</div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: '#FF006E' }}>3,734</div>
             </div>
           </div>
         </div>
 
         <div style={{ 
-          background: 'var(--bg-surface)', 
-          borderRadius: 12, 
-          padding: 12,
-          border: '1px solid var(--border-color)',
+          background: '#111', 
+          borderRadius: 16, 
+          padding: 16,
+          border: '1px solid #222',
         }}>
           <BitcoinChart coin={selectedCoin} isMobile={true} />
         </div>
+
+        <div style={{ 
+          background: '#111', 
+          borderRadius: 16, 
+          padding: 16,
+          border: '1px solid #222',
+        }}>
+          <MiniCoinTable 
+            coins={coins} 
+            onCoinClick={handleCoinClick} 
+            favorites={favorites} 
+            selectedCoinId={selectedCoin?.id}
+          />
+        </div>
+
+        {news.length > 0 && (
+          <div style={{ 
+            background: '#111', 
+            borderRadius: 16, 
+            padding: 16,
+            border: '1px solid #222',
+          }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#00D4FF', textTransform: 'uppercase', marginBottom: 16 }}>
+              Latest News
+            </div>
+            <div style={{ height: 280 }}>
+              <FlipCarousel
+                items={news}
+                renderItem={(item) => <MobileNewsCard news={item} />}
+                showDots={true}
+                autoPlay={true}
+                interval={8000}
+              />
+            </div>
+          </div>
+        )}
 
         <div style={{
           position: 'fixed',
