@@ -194,7 +194,7 @@ function QuickActionContent({ action, fullCard = false }) {
   )
 }
 
-function MetricContent({ title, value, change }) {
+function MetricContent({ title, value, change, isMobile = false }) {
   const isPositive = change >= 0
   const hasChange = change !== null && change !== undefined
   const valueColor = hasChange ? (isPositive ? 'var(--neon-green)' : 'var(--accent-red)') : 'var(--text-primary)'
@@ -205,25 +205,25 @@ function MetricContent({ title, value, change }) {
       alignItems: 'center',
       justifyContent: 'center',
       height: '100%',
-      minHeight: 110,
-      padding: 12,
+      minHeight: isMobile ? 80 : 110,
+      padding: isMobile ? 6 : 12,
       textAlign: 'center',
     }}>
-      <div style={{ fontSize: 10, color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', marginBottom: 10, letterSpacing: 1 }}>
+      <div style={{ fontSize: isMobile ? 8 : 10, color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', marginBottom: isMobile ? 6 : 10, letterSpacing: isMobile ? 0.5 : 1 }}>
         {title}
       </div>
-      <div style={{ fontSize: 24, fontWeight: 800, color: valueColor, marginBottom: hasChange ? 6 : 0 }}>
+      <div style={{ fontSize: isMobile ? 16 : 24, fontWeight: 800, color: valueColor, marginBottom: hasChange ? (isMobile ? 4 : 6) : 0 }}>
         {value}
       </div>
       {hasChange && (
         <div style={{ 
-          fontSize: 13, 
+          fontSize: isMobile ? 10 : 13, 
           fontWeight: 600, 
           color: isPositive ? 'var(--neon-green)' : 'var(--accent-red)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: 4,
+          gap: isMobile ? 2 : 4,
         }}>
           <span>{isPositive ? '▲' : '▼'}</span>
           <span>{Math.abs(change).toFixed(1)}%</span>
@@ -234,7 +234,7 @@ function MetricContent({ title, value, change }) {
 }
 
 function GaugeContent({ title, value, type, accentColor, isMobile = false }) {
-  const gaugeSize = isMobile ? 90 : 160
+  const gaugeSize = isMobile ? 70 : 160
   return (
     <div style={{ 
       display: 'flex', 
@@ -242,17 +242,17 @@ function GaugeContent({ title, value, type, accentColor, isMobile = false }) {
       alignItems: 'center',
       justifyContent: 'center',
       height: '100%',
-      minHeight: isMobile ? 120 : 180,
-      padding: isMobile ? 8 : 12,
+      minHeight: isMobile ? 90 : 180,
+      padding: isMobile ? 4 : 12,
       overflow: 'hidden',
     }}>
       <div style={{ 
         color: accentColor, 
-        fontSize: isMobile ? 10 : 12, 
+        fontSize: isMobile ? 8 : 12, 
         fontWeight: 700, 
         textTransform: 'uppercase', 
-        letterSpacing: isMobile ? 0.5 : 1,
-        marginBottom: isMobile ? 6 : 12,
+        letterSpacing: isMobile ? 0.3 : 1,
+        marginBottom: isMobile ? 4 : 12,
         textAlign: 'center',
         width: '100%',
       }}>
@@ -992,6 +992,7 @@ function TrendingModal({ coins, onClose, onSelectCoin, favorites }) {
 export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyzeCoin }) {
   const { favorites } = useFavorites()
   const isMobile = useIsMobile()
+  const isMobileLayout = useMobileLayout()
   const [coins, setCoins] = useState([])
   const [coinsLoading, setCoinsLoading] = useState(true)
   const [selectedCoin, setSelectedCoin] = useState(null)
@@ -1124,54 +1125,87 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
     <>
       {/* Three-Column Top Section with Self-Contained Carousels */}
       <div className="top-carousels-container">
-        {/* Metrics Carousel - 1/3 width */}
+        {/* Metrics Carousel - 1/3 width on desktop, 1/2 on mobile */}
         <div className="carousel-section metrics-carousel-section">
           <div className="carousel-label">Market Metrics</div>
-          <div style={{ height: 220, width: '100%', flex: 1 }}>
-            <FlipCarousel
-              items={marketOverviewItems}
-              renderItem={(item) => (
-                <div 
-                  className="market-overview-card market-overview-card--clickable"
-                  onClick={() => setSelectedMetric(item.title)}
-                  title={`Click for info about ${item.title}`}
-                  style={{ height: '100%', cursor: 'pointer', margin: '0 8px' }}
-                >
-                  {item.type === 'metric' ? (
-                    <MetricContent title={item.title} value={item.value} change={item.change} />
-                  ) : (
-                    <GaugeContent title={item.title} value={item.value} type={item.gaugeType} accentColor={item.color} isMobile={isMobile} />
-                  )}
-                  <div className="metric-info-hint">
-                    <span>ℹ️</span>
+          <div style={{ height: isMobileLayout ? 180 : 220, width: '100%', flex: 1 }}>
+            {isMobileLayout ? (
+              <MobileCardCarousel
+                items={marketOverviewItems}
+                renderItem={(item) => (
+                  <div 
+                    className="market-overview-card"
+                    onClick={() => setSelectedMetric(item.title)}
+                    style={{ height: '100%', cursor: 'pointer' }}
+                  >
+                    {item.type === 'metric' ? (
+                      <MetricContent title={item.title} value={item.value} change={item.change} isMobile={true} />
+                    ) : (
+                      <GaugeContent title={item.title} value={item.value} type={item.gaugeType} accentColor={item.color} isMobile={true} />
+                    )}
                   </div>
-                </div>
-              )}
-              showDots={true}
-              showArrows={true}
-              autoPlay={false}
-            />
+                )}
+              />
+            ) : (
+              <FlipCarousel
+                items={marketOverviewItems}
+                renderItem={(item) => (
+                  <div 
+                    className="market-overview-card market-overview-card--clickable"
+                    onClick={() => setSelectedMetric(item.title)}
+                    title={`Click for info about ${item.title}`}
+                    style={{ height: '100%', cursor: 'pointer', margin: '0 8px' }}
+                  >
+                    {item.type === 'metric' ? (
+                      <MetricContent title={item.title} value={item.value} change={item.change} />
+                    ) : (
+                      <GaugeContent title={item.title} value={item.value} type={item.gaugeType} accentColor={item.color} isMobile={false} />
+                    )}
+                    <div className="metric-info-hint">
+                      <span>ℹ️</span>
+                    </div>
+                  </div>
+                )}
+                showDots={true}
+                showArrows={true}
+                autoPlay={false}
+              />
+            )}
           </div>
         </div>
 
-        {/* Quick Actions Carousel - 1/3 width */}
+        {/* Quick Actions Carousel - 1/3 width on desktop, 1/2 on mobile */}
         <div className="carousel-section quick-actions-carousel-section">
           <div className="carousel-label">Quick Actions</div>
-          <div style={{ height: 220, width: '100%', flex: 1 }}>
-            <FlipCarousel
-              items={quickActions}
-              renderItem={(action) => (
-                <div 
-                  onClick={() => onNavigate && onNavigate(action.tab)}
-                  style={{ height: '100%', cursor: 'pointer', margin: '0 8px' }}
-                >
-                  <QuickActionContent action={action} fullCard={true} />
-                </div>
-              )}
-              showDots={true}
-              showArrows={true}
-              autoPlay={false}
-            />
+          <div style={{ height: isMobileLayout ? 180 : 220, width: '100%', flex: 1 }}>
+            {isMobileLayout ? (
+              <MobileCardCarousel
+                items={quickActions}
+                renderItem={(action) => (
+                  <div 
+                    onClick={() => onNavigate && onNavigate(action.tab)}
+                    style={{ height: '100%', cursor: 'pointer' }}
+                  >
+                    <QuickActionContent action={action} fullCard={true} isMobile={true} />
+                  </div>
+                )}
+              />
+            ) : (
+              <FlipCarousel
+                items={quickActions}
+                renderItem={(action) => (
+                  <div 
+                    onClick={() => onNavigate && onNavigate(action.tab)}
+                    style={{ height: '100%', cursor: 'pointer', margin: '0 8px' }}
+                  >
+                    <QuickActionContent action={action} fullCard={true} />
+                  </div>
+                )}
+                showDots={true}
+                showArrows={true}
+                autoPlay={false}
+              />
+            )}
           </div>
         </div>
 

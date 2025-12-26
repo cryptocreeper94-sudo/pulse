@@ -1,12 +1,15 @@
 import { useState, useRef } from 'react'
 
-export default function MobileCardCarousel({ children }) {
+export default function MobileCardCarousel({ children, items, renderItem }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const touchStartRef = useRef(null)
   const touchStartYRef = useRef(null)
   const containerRef = useRef(null)
   
-  const childArray = Array.isArray(children) ? children : [children]
+  // Support both children and items/renderItem patterns
+  const childArray = items && renderItem 
+    ? items.map((item, idx) => renderItem(item, idx))
+    : (Array.isArray(children) ? children : [children])
   const totalCards = childArray.length
 
   const goTo = (index) => {
