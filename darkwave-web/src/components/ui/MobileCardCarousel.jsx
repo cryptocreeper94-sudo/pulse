@@ -65,19 +65,19 @@ export default function MobileCardCarousel({ children }) {
           display: flex;
           justify-content: center;
           align-items: center;
-          gap: 8px;
-          margin-top: 8px;
-          padding: 4px 0;
+          gap: 12px;
+          margin-top: 10px;
+          padding: 6px 0;
         }
         
         .mcc-arrow {
-          width: 24px;
-          height: 24px;
+          width: 28px;
+          height: 28px;
           border-radius: 6px;
           background: #1a1a1a;
           border: 1px solid #333;
           color: #fff;
-          font-size: 12px;
+          font-size: 14px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -103,12 +103,12 @@ export default function MobileCardCarousel({ children }) {
         
         .mcc-dots {
           display: flex;
-          gap: 4px;
+          gap: 6px;
         }
         
         .mcc-dot {
-          width: 6px;
-          height: 6px;
+          width: 8px;
+          height: 8px;
           border-radius: 50%;
           background: #444;
           cursor: pointer;
@@ -117,7 +117,7 @@ export default function MobileCardCarousel({ children }) {
         
         .mcc-dot.active {
           background: #00D4FF;
-          box-shadow: 0 0 4px rgba(0, 212, 255, 0.5);
+          box-shadow: 0 0 6px rgba(0, 212, 255, 0.5);
         }
         
         .mcc-label {
