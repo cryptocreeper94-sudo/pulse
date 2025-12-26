@@ -10,17 +10,38 @@ import MetricInfoModal from '../modals/MetricInfoModal'
 import versionData from '../../data/version.json'
 import '../../styles/dashboard.css'
 
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false)
+// Layout hook - uses 1024px to match CSS breakpoints for mobile webviews
+function useMobileLayout() {
+  const [isMobileLayout, setIsMobileLayout] = useState(false)
   
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth <= 640)
-    check()
-    window.addEventListener('resize', check)
-    return () => window.removeEventListener('resize', check)
+    const mq = window.matchMedia('(max-width: 1024px)')
+    const check = (e) => setIsMobileLayout(e.matches)
+    check(mq)
+    mq.addEventListener('change', check)
+    return () => mq.removeEventListener('change', check)
   }, [])
   
-  return isMobile
+  return isMobileLayout
+}
+
+// Device hook - detects actual mobile devices for data fetching (keeps desktop data paths working)
+function useIsMobileDevice() {
+  const [isMobileDevice, setIsMobileDevice] = useState(false)
+  
+  useEffect(() => {
+    const ua = navigator.userAgent || ''
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua) ||
+                     (navigator.maxTouchPoints > 0 && window.matchMedia('(pointer: coarse)').matches)
+    setIsMobileDevice(isMobile)
+  }, [])
+  
+  return isMobileDevice
+}
+
+// Legacy hook for backwards compatibility - uses device detection for data, not viewport
+function useIsMobile() {
+  return useIsMobileDevice()
 }
 
 function formatMarketCap(value) {
@@ -82,10 +103,10 @@ function BentoTile({ children, className = '', style = {}, onClick }) {
 }
 
 function TileLabel({ children, color = 'var(--text-muted)' }) {
-  const isMobile = window.innerWidth <= 640
+  const isMobileLayout = window.matchMedia('(max-width: 1024px)').matches
   return (
     <div className="tile-label" style={{
-      fontSize: isMobile ? 12 : 9,
+      fontSize: isMobileLayout ? 12 : 9,
       fontWeight: 700,
       color,
       textTransform: 'uppercase',
