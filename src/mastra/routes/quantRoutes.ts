@@ -4,7 +4,7 @@ import { desc, eq, and, gte, sql, inArray, count } from 'drizzle-orm';
 import { SUPPORTED_CHAINS } from '../../services/topSignalsService.js';
 import { ChainId } from '../../services/multiChainProvider.js';
 
-const QUANT_PIN = '0424';
+const QUANT_PIN = process.env.QUANT_PIN || '0424';
 
 export const quantRoutes = [
   {
