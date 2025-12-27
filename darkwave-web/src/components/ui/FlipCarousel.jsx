@@ -1,15 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-
-function useIsMobileView() {
-  const [isMobile, setIsMobile] = useState(false)
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth <= 1024)
-    check()
-    window.addEventListener('resize', check)
-    return () => window.removeEventListener('resize', check)
-  }, [])
-  return isMobile
-}
+import { useViewportBreakpoint } from '../../hooks/useViewportBreakpoint'
 
 export default function FlipCarousel({ 
   items, 
@@ -27,7 +17,7 @@ export default function FlipCarousel({
   const [isFlipping, setIsFlipping] = useState(false)
   const [flipDirection, setFlipDirection] = useState('next')
   const touchStartRef = useRef({ x: 0, y: 0 })
-  const isMobileView = useIsMobileView()
+  const { isMobile: isMobileView, arrowSize, dotSize } = useViewportBreakpoint()
 
   const goTo = useCallback((index, direction = 'next') => {
     if (isFlipping || items.length <= 1) return
@@ -151,8 +141,8 @@ export default function FlipCarousel({
               onClick={prev}
               disabled={isFlipping}
               style={{
-                width: isMobileView ? 24 : 32,
-                height: isMobileView ? 24 : 32,
+                width: arrowSize,
+                height: arrowSize,
                 borderRadius: isMobileView ? 6 : '50%',
                 background: isMobileView ? '#1a1a1a' : '#141414',
                 border: isMobileView ? '1px solid #333' : '1px solid #00D4FF',
@@ -186,7 +176,7 @@ export default function FlipCarousel({
                 {(() => {
                   const maxDots = 5;
                   const total = items.length;
-                  const dotSize = isMobileView ? 6 : 8;
+                  const dotSizeVal = dotSize;
                   if (total <= maxDots) {
                     return items.map((_, idx) => (
                       <button
@@ -194,8 +184,8 @@ export default function FlipCarousel({
                         onClick={() => goTo(idx, idx > currentIndex ? 'next' : 'prev')}
                         disabled={isFlipping}
                         style={{
-                          width: dotSize,
-                          height: dotSize,
+                          width: dotSizeVal,
+                          height: dotSizeVal,
                           borderRadius: '50%',
                           background: idx === currentIndex ? '#00D4FF' : '#444',
                           border: 'none',
@@ -221,8 +211,8 @@ export default function FlipCarousel({
                         onClick={() => goTo(idx, idx > currentIndex ? 'next' : 'prev')}
                         disabled={isFlipping}
                         style={{
-                          width: dotSize,
-                          height: dotSize,
+                          width: dotSizeVal,
+                          height: dotSizeVal,
                           borderRadius: '50%',
                           background: idx === currentIndex ? '#00D4FF' : '#444',
                           border: 'none',
@@ -252,8 +242,8 @@ export default function FlipCarousel({
               onClick={next}
               disabled={isFlipping}
               style={{
-                width: isMobileView ? 24 : 32,
-                height: isMobileView ? 24 : 32,
+                width: arrowSize,
+                height: arrowSize,
                 borderRadius: isMobileView ? 6 : '50%',
                 background: isMobileView ? '#1a1a1a' : '#141414',
                 border: isMobileView ? '1px solid #333' : '1px solid #00D4FF',

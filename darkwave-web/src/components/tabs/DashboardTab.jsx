@@ -8,21 +8,12 @@ import AIStatusWidget from '../ui/AIStatusWidget'
 import StrikeAgentLiveWidget from '../ui/StrikeAgentLiveWidget'
 import MetricInfoModal from '../modals/MetricInfoModal'
 import versionData from '../../data/version.json'
+import { useIsMobile, useViewportBreakpoint } from '../../hooks/useViewportBreakpoint'
 import '../../styles/dashboard.css'
 
-// Layout hook - uses 1024px to match CSS breakpoints for mobile webviews
+// Layout hook - uses shared viewport breakpoint hook for consistent mobile detection
 function useMobileLayout() {
-  const [isMobileLayout, setIsMobileLayout] = useState(false)
-  
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 1024px)')
-    const check = (e) => setIsMobileLayout(e.matches)
-    check(mq)
-    mq.addEventListener('change', check)
-    return () => mq.removeEventListener('change', check)
-  }, [])
-  
-  return isMobileLayout
+  return useIsMobile()
 }
 
 // Device hook - detects actual mobile devices for data fetching (keeps desktop data paths working)
@@ -40,7 +31,7 @@ function useIsMobileDevice() {
 }
 
 // Legacy hook for backwards compatibility - uses device detection for data, not viewport
-function useIsMobile() {
+function useLegacyIsMobile() {
   return useIsMobileDevice()
 }
 
@@ -234,8 +225,9 @@ function MetricContent({ title, value, change, isMobile = false }) {
 }
 
 function GaugeContent({ title, value, type, accentColor, isMobile = false }) {
-  const isMobileScreen = typeof window !== 'undefined' && window.innerWidth <= 1024
-  const gaugeSize = (isMobile || isMobileScreen) ? 140 : 160
+  const { gaugeSize: hookGaugeSize, isMobile: hookIsMobile } = useViewportBreakpoint()
+  const effectiveIsMobile = isMobile || hookIsMobile
+  const gaugeSize = effectiveIsMobile ? 140 : 160
   return (
     <div style={{ 
       display: 'flex', 
@@ -243,24 +235,24 @@ function GaugeContent({ title, value, type, accentColor, isMobile = false }) {
       alignItems: 'center',
       justifyContent: 'center',
       height: '100%',
-      minHeight: isMobile ? 160 : 180,
-      padding: isMobile ? 8 : 12,
+      minHeight: effectiveIsMobile ? 160 : 180,
+      padding: effectiveIsMobile ? 8 : 12,
       overflow: 'hidden',
     }}>
       <div style={{ 
         color: accentColor, 
-        fontSize: isMobile ? 11 : 12, 
+        fontSize: effectiveIsMobile ? 11 : 12, 
         fontWeight: 700, 
         textTransform: 'uppercase', 
-        letterSpacing: isMobile ? 0.5 : 1,
-        marginBottom: isMobile ? 8 : 12,
+        letterSpacing: effectiveIsMobile ? 0.5 : 1,
+        marginBottom: effectiveIsMobile ? 8 : 12,
         textAlign: 'center',
         width: '100%',
       }}>
         {title}
       </div>
       <div style={{ width: '100%', maxWidth: gaugeSize, display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
-        <Gauge value={value} type={type} size={gaugeSize} showLabels={!isMobile} />
+        <Gauge value={value} type={type} size={gaugeSize} showLabels={!effectiveIsMobile} />
       </div>
     </div>
   )
