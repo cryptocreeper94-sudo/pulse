@@ -9,7 +9,7 @@ const COINGECKO_FREE_URL = 'https://api.coingecko.com/api/v3';
 const FALLBACK_APIS = [
   { name: 'CoinCap', baseUrl: 'https://api.coincap.io/v2', rateLimit: 200 },
   { name: 'CryptoCompare', baseUrl: 'https://min-api.cryptocompare.com', rateLimit: 100 },
-  { name: 'Binance', baseUrl: 'https://api.binance.com/api/v3', rateLimit: 1200 },
+  { name: 'Kraken', baseUrl: 'https://api.kraken.com/0/public', rateLimit: 60 },
 ];
 
 interface FallbackState {
@@ -180,7 +180,7 @@ class CoinGeckoClient {
     throw new Error('Endpoint not supported by CryptoCompare fallback');
   }
 
-  private async fetchFromBinance(endpoint: string, params: any): Promise<any> {
+  private async fetchFromKraken(endpoint: string, params: any): Promise<any> {
     const api = FALLBACK_APIS[2];
     
     if (endpoint.includes('/simple/price')) {
@@ -188,20 +188,23 @@ class CoinGeckoClient {
       const results: Record<string, any> = {};
       
       for (const id of ids.slice(0, 10)) {
-        const symbol = this.coinIdToSymbol(id);
+        const symbol = this.coinIdToKrakenPair(id);
         if (!symbol) continue;
         
         try {
-          const response = await axios.get(`${api.baseUrl}/ticker/24hr`, {
+          const response = await axios.get(`${api.baseUrl}/Ticker`, {
             timeout: 5000,
-            params: { symbol: `${symbol}USDT` }
+            params: { pair: symbol }
           });
           
-          results[id] = {
-            usd: parseFloat(response.data.lastPrice),
-            usd_24h_change: parseFloat(response.data.priceChangePercent),
-            usd_24h_vol: parseFloat(response.data.volume)
-          };
+          if (response.data.result) {
+            const pairData = Object.values(response.data.result)[0] as any;
+            results[id] = {
+              usd: parseFloat(pairData.c[0]),
+              usd_24h_change: ((parseFloat(pairData.c[0]) - parseFloat(pairData.o)) / parseFloat(pairData.o)) * 100,
+              usd_24h_vol: parseFloat(pairData.v[1])
+            };
+          }
         } catch (e) {
           continue;
         }
@@ -210,7 +213,60 @@ class CoinGeckoClient {
       return results;
     }
     
-    throw new Error('Endpoint not supported by Binance fallback');
+    if (endpoint.includes('/coins/markets')) {
+      const response = await axios.get(`${api.baseUrl}/Ticker`, {
+        timeout: 10000,
+        params: { pair: 'BTCUSD,ETHUSD,SOLUSD,XRPUSD,ADAUSD,DOGEUSD,DOTUSD,LINKUSD,LTCUSD,UNIUSD' }
+      });
+      
+      if (response.data.result) {
+        const coins = [];
+        const pairMapping: Record<string, { id: string; name: string; symbol: string }> = {
+          'XXBTZUSD': { id: 'bitcoin', name: 'Bitcoin', symbol: 'btc' },
+          'XETHZUSD': { id: 'ethereum', name: 'Ethereum', symbol: 'eth' },
+          'SOLUSD': { id: 'solana', name: 'Solana', symbol: 'sol' },
+          'XXRPZUSD': { id: 'ripple', name: 'XRP', symbol: 'xrp' },
+          'ADAUSD': { id: 'cardano', name: 'Cardano', symbol: 'ada' },
+          'XDGUSD': { id: 'dogecoin', name: 'Dogecoin', symbol: 'doge' },
+          'DOTUSD': { id: 'polkadot', name: 'Polkadot', symbol: 'dot' },
+          'LINKUSD': { id: 'chainlink', name: 'Chainlink', symbol: 'link' },
+          'XLTCZUSD': { id: 'litecoin', name: 'Litecoin', symbol: 'ltc' },
+          'UNIUSD': { id: 'uniswap', name: 'Uniswap', symbol: 'uni' }
+        };
+        
+        let rank = 1;
+        for (const [pair, data] of Object.entries(response.data.result)) {
+          const mapping = pairMapping[pair];
+          if (mapping) {
+            const pairData = data as any;
+            coins.push({
+              id: mapping.id,
+              symbol: mapping.symbol,
+              name: mapping.name,
+              current_price: parseFloat(pairData.c[0]),
+              market_cap: 0,
+              market_cap_rank: rank++,
+              total_volume: parseFloat(pairData.v[1]) * parseFloat(pairData.c[0]),
+              price_change_percentage_24h: ((parseFloat(pairData.c[0]) - parseFloat(pairData.o)) / parseFloat(pairData.o)) * 100,
+              image: `https://assets.coincap.io/assets/icons/${mapping.symbol}@2x.png`
+            });
+          }
+        }
+        return coins;
+      }
+    }
+    
+    throw new Error('Endpoint not supported by Kraken fallback');
+  }
+
+  private coinIdToKrakenPair(coinId: string): string | null {
+    const mapping: Record<string, string> = {
+      'bitcoin': 'XBTUSD', 'ethereum': 'ETHUSD', 'solana': 'SOLUSD',
+      'ripple': 'XRPUSD', 'cardano': 'ADAUSD', 'dogecoin': 'DOGEUSD',
+      'polkadot': 'DOTUSD', 'chainlink': 'LINKUSD', 'litecoin': 'LTCUSD',
+      'uniswap': 'UNIUSD', 'stellar': 'XLMUSD', 'cosmos': 'ATOMUSD'
+    };
+    return mapping[coinId] || null;
   }
 
   private coinIdToSymbol(coinId: string): string | null {
@@ -246,8 +302,8 @@ class CoinGeckoClient {
           case 'CryptoCompare':
             result = await this.fetchFromCryptoCompare(endpoint, params);
             break;
-          case 'Binance':
-            result = await this.fetchFromBinance(endpoint, params);
+          case 'Kraken':
+            result = await this.fetchFromKraken(endpoint, params);
             break;
           default:
             throw new Error(`Unknown API: ${api.name}`);
