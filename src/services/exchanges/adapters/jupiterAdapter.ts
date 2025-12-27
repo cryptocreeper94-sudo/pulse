@@ -18,7 +18,10 @@ import {
 const JUPITER_API_URL = 'https://quote-api.jup.ag/v6';
 const JUPITER_PRICE_API = 'https://price.jup.ag/v4';
 const HELIUS_API_KEY = process.env.HELIUS_API_KEY;
-const SOLANA_RPC = `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`;
+const PUBLIC_SOLANA_RPC = 'https://api.mainnet-beta.solana.com';
+const SOLANA_RPC = HELIUS_API_KEY 
+  ? `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}` 
+  : PUBLIC_SOLANA_RPC;
 
 interface JupiterQuote {
   inputMint: string;

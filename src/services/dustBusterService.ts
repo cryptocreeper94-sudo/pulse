@@ -6,7 +6,10 @@ import { dustBusterHistory, dustBusterStats } from '../db/schema';
 import { eq, sql } from 'drizzle-orm';
 
 const HELIUS_API_KEY = process.env.HELIUS_API_KEY;
-const HELIUS_RPC = `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`;
+const PUBLIC_SOLANA_RPC = 'https://api.mainnet-beta.solana.com';
+const HELIUS_RPC = HELIUS_API_KEY 
+  ? `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}` 
+  : PUBLIC_SOLANA_RPC;
 
 export const RENT_PER_ACCOUNT = 0.00203928;
 export const FEE_PERCENTAGE = 0.125;

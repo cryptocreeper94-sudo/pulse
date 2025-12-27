@@ -53,13 +53,17 @@ export interface LiquidityInfo {
 }
 
 const HELIUS_API_KEY = process.env.HELIUS_API_KEY;
+const PUBLIC_SOLANA_RPC = 'https://api.mainnet-beta.solana.com';
+const SOLANA_RPC_URL = HELIUS_API_KEY 
+  ? `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}` 
+  : PUBLIC_SOLANA_RPC;
 
 export const CHAIN_CONFIGS: Record<ChainId, ChainConfig> = {
   solana: {
     id: 'solana',
     name: 'Solana',
     symbol: 'SOL',
-    rpcUrl: `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`,
+    rpcUrl: SOLANA_RPC_URL,
     explorerUrl: 'https://solscan.io',
     dexScreenerChainId: 'solana',
     coingeckoId: 'solana',

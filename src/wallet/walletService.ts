@@ -5,7 +5,10 @@ import bs58 from 'bs58';
 import crypto from 'crypto';
 
 const HELIUS_API_KEY = process.env.HELIUS_API_KEY;
-const SOLANA_RPC = `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`;
+const PUBLIC_SOLANA_RPC = 'https://api.mainnet-beta.solana.com';
+const SOLANA_RPC = HELIUS_API_KEY 
+  ? `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}` 
+  : PUBLIC_SOLANA_RPC;
 
 interface ChainConfig {
   id: string;

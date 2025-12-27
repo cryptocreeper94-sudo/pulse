@@ -3,7 +3,10 @@ import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import axios from 'axios';
 
 const HELIUS_API_KEY = process.env.HELIUS_API_KEY;
-const HELIUS_RPC = `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`;
+const PUBLIC_SOLANA_RPC = 'https://api.mainnet-beta.solana.com';
+const HELIUS_RPC = HELIUS_API_KEY 
+  ? `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}` 
+  : PUBLIC_SOLANA_RPC;
 const RUGCHECK_API = 'https://api.rugcheck.xyz/v1';
 
 export interface TokenSafetyReport {
