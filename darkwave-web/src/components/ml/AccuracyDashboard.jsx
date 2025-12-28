@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useIsMobile } from '../../hooks/useViewportBreakpoint'
 
 const getWinRateColor = (rate) => {
   if (rate > 55) return '#14F195'
@@ -6,25 +7,25 @@ const getWinRateColor = (rate) => {
   return '#FF6B6B'
 }
 
-const StatCard = ({ title, value, icon, color = '#00D4FF' }) => (
+const StatCard = ({ title, value, icon, color = '#00D4FF', isMobile }) => (
   <div style={{
     background: '#1a1a1a',
     borderRadius: '12px',
-    padding: '20px',
-    minWidth: '140px',
+    padding: isMobile ? '12px' : '20px',
+    minWidth: isMobile ? '100px' : '140px',
     flex: 1
   }}>
     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-      <span style={{ fontSize: '20px' }}>{icon}</span>
-      <span style={{ color: '#888', fontSize: '13px', fontWeight: 500 }}>{title}</span>
+      <span style={{ fontSize: isMobile ? '16px' : '20px' }}>{icon}</span>
+      <span style={{ color: '#888', fontSize: isMobile ? '11px' : '13px', fontWeight: 500 }}>{title}</span>
     </div>
-    <div style={{ fontSize: '28px', fontWeight: 700, color }}>
+    <div style={{ fontSize: isMobile ? '20px' : '28px', fontWeight: 700, color }}>
       {value}
     </div>
   </div>
 )
 
-const WinRateCard = ({ horizon, data, trend }) => {
+const WinRateCard = ({ horizon, data, trend, isMobile }) => {
   const winRate = parseFloat(data?.winRate || 0)
   const total = data?.total || 0
   const correct = data?.correct || 0
@@ -44,8 +45,8 @@ const WinRateCard = ({ horizon, data, trend }) => {
     <div style={{
       background: '#1a1a1a',
       borderRadius: '12px',
-      padding: '20px',
-      minWidth: '200px',
+      padding: isMobile ? '12px' : '20px',
+      minWidth: isMobile ? '140px' : '200px',
       flex: 1
     }}>
       <div style={{ 
@@ -87,7 +88,7 @@ const WinRateCard = ({ horizon, data, trend }) => {
       </div>
       
       <div style={{ 
-        fontSize: '36px', 
+        fontSize: isMobile ? '24px' : '36px', 
         fontWeight: 700, 
         color,
         marginBottom: '8px'
@@ -97,7 +98,7 @@ const WinRateCard = ({ horizon, data, trend }) => {
       
       <div style={{ marginBottom: '8px' }}>
         <div style={{ 
-          height: '8px',
+          height: isMobile ? '6px' : '8px',
           background: '#0f0f0f',
           borderRadius: '4px',
           overflow: 'hidden'
@@ -115,7 +116,7 @@ const WinRateCard = ({ horizon, data, trend }) => {
         display: 'flex', 
         justifyContent: 'space-between',
         color: '#666',
-        fontSize: '12px'
+        fontSize: isMobile ? '10px' : '12px'
       }}>
         <span>{correct} correct</span>
         <span>{total} total</span>
@@ -236,7 +237,7 @@ const ModelCard = ({ model }) => {
   )
 }
 
-const PredictionRow = ({ prediction }) => {
+const PredictionRow = ({ prediction, isMobile }) => {
   const signalColors = {
     'BUY': '#14F195',
     'STRONG_BUY': '#14F195',
@@ -247,6 +248,26 @@ const PredictionRow = ({ prediction }) => {
   }
   
   const signalColor = signalColors[prediction.signalType] || '#888'
+  
+  if (isMobile) {
+    return (
+      <div style={{
+        padding: '12px',
+        background: '#141414',
+        borderRadius: '8px',
+        fontSize: '13px'
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+          <span style={{ color: '#fff', fontWeight: 600 }}>{prediction.ticker}</span>
+          <span style={{ color: signalColor, fontWeight: 600 }}>{prediction.signalType}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', color: '#888', fontSize: '12px' }}>
+          <span>{(prediction.confidence * 100).toFixed(0)}%</span>
+          <span style={{ color: '#00D4FF' }}>${parseFloat(prediction.price || 0).toFixed(4)}</span>
+        </div>
+      </div>
+    )
+  }
   
   return (
     <div style={{
@@ -383,6 +404,7 @@ export default function AccuracyDashboard() {
   const [driftStatus, setDriftStatus] = useState(null)
   const [loading, setLoading] = useState(true)
   const [lastRefresh, setLastRefresh] = useState(null)
+  const isMobile = useIsMobile()
 
   const fetchData = useCallback(async () => {
     try {
@@ -446,11 +468,13 @@ export default function AccuracyDashboard() {
 
   return (
     <div style={{ 
-      padding: '20px', 
+      padding: isMobile ? '12px' : '20px', 
       maxWidth: '1200px', 
       margin: '0 auto',
       background: '#0f0f0f',
-      minHeight: '100vh'
+      minHeight: '100vh',
+      overflowX: 'hidden',
+      boxSizing: 'border-box'
     }}>
       <div style={{ 
         display: 'flex', 
@@ -515,24 +539,28 @@ export default function AccuracyDashboard() {
           title="Total Predictions" 
           value={stats?.totalPredictions || 0}
           color="#00D4FF"
+          isMobile={isMobile}
         />
         <StatCard 
           icon="🟢" 
           title="Buy Signals" 
           value={stats?.buySignals || 0}
           color="#14F195"
+          isMobile={isMobile}
         />
         <StatCard 
           icon="🔴" 
           title="Sell Signals" 
           value={stats?.sellSignals || 0}
           color="#FF6B6B"
+          isMobile={isMobile}
         />
         <StatCard 
           icon="🟡" 
           title="Hold Signals" 
           value={stats?.holdSignals || 0}
           color="#F3BA2F"
+          isMobile={isMobile}
         />
       </div>
 
@@ -586,8 +614,8 @@ export default function AccuracyDashboard() {
         
         <div style={{ 
           display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: '16px'
+          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: isMobile ? '8px' : '16px'
         }}>
           {horizons.map(h => (
             <WinRateCard 
@@ -595,6 +623,7 @@ export default function AccuracyDashboard() {
               horizon={h}
               data={stats?.outcomesByHorizon?.[h]}
               trend={trendsByHorizon[h]}
+              isMobile={isMobile}
             />
           ))}
         </div>
@@ -679,11 +708,11 @@ export default function AccuracyDashboard() {
         <div style={{
           background: '#1a1a1a',
           borderRadius: '16px',
-          padding: '24px'
+          padding: isMobile ? '16px' : '24px'
         }}>
           <h2 style={{ 
             color: '#fff', 
-            fontSize: '18px', 
+            fontSize: isMobile ? '16px' : '18px', 
             margin: '0 0 16px 0',
             display: 'flex',
             alignItems: 'center',
@@ -693,23 +722,25 @@ export default function AccuracyDashboard() {
             Recent Predictions
           </h2>
           
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 100px 80px 100px 120px',
-            gap: '12px',
-            padding: '8px 16px',
-            color: '#666',
-            fontSize: '11px',
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            marginBottom: '8px'
-          }}>
-            <span>Ticker</span>
-            <span>Signal</span>
-            <span>Confidence</span>
-            <span>Price</span>
-            <span>Time</span>
-          </div>
+          {!isMobile && (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 100px 80px 100px 120px',
+              gap: '12px',
+              padding: '8px 16px',
+              color: '#666',
+              fontSize: '11px',
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              marginBottom: '8px'
+            }}>
+              <span>Ticker</span>
+              <span>Signal</span>
+              <span>Confidence</span>
+              <span>Price</span>
+              <span>Time</span>
+            </div>
+          )}
           
           <div style={{ 
             display: 'flex', 
@@ -717,7 +748,7 @@ export default function AccuracyDashboard() {
             gap: '6px' 
           }}>
             {stats.recentPredictions.map((prediction, idx) => (
-              <PredictionRow key={prediction.id || idx} prediction={prediction} />
+              <PredictionRow key={prediction.id || idx} prediction={prediction} isMobile={isMobile} />
             ))}
           </div>
         </div>
