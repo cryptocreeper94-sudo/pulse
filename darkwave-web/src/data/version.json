@@ -1,9 +1,9 @@
 {
-  "version": "1.20.81",
+  "version": "1.20.82",
   "major": 1,
   "minor": 20,
-  "patch": 81,
+  "patch": 82,
   "releaseGate": false,
-  "lastUpdated": "2025-12-28T06:24:22.978Z",
+  "lastUpdated": "2025-12-28T06:28:46.423Z",
   "notes": "StrikeAgent API optimization - SQL aggregation queries for faster stats loading."
 }

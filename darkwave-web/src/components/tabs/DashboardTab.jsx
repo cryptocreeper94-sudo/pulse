@@ -139,8 +139,8 @@ function QuickActionContent({ action, fullCard = false }) {
           padding: '40px 16px 16px',
           background: 'linear-gradient(transparent, rgba(0,0,0,0.9))',
         }}>
-          <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>{action.title}</div>
-          <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{action.subtitle}</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>{action.title}</div>
+          <div style={{ fontSize: 12, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{action.subtitle}</div>
         </div>
       </div>
     )

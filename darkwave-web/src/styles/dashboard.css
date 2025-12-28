@@ -289,15 +289,9 @@
     width: 100% !important;
   }
   
-  /* Constrain text overflow in cards */
+  /* Constrain text overflow in cards - but not titles */
   .carousel-section,
   .market-overview-card {
-    text-overflow: ellipsis;
-    word-wrap: break-word;
-  }
-  .carousel-section div,
-  .market-overview-card div {
-    overflow: hidden;
     text-overflow: ellipsis;
   }
   .mobile-categories-wrapper {
