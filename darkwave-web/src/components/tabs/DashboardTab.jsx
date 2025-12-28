@@ -992,13 +992,13 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
   const [showTrendingModal, setShowTrendingModal] = useState(false)
   const [selectedMetric, setSelectedMetric] = useState(null)
   const [marketData, setMarketData] = useState({
-    fearGreed: 65,
-    altcoinSeason: 75,
-    totalMarketCap: 3.2e12,
-    totalMarketCapChange: 2.1,
-    totalVolume: 98e9,
-    totalVolumeChange: -1.8,
-    btcDominance: 54.5,
+    fearGreed: null,
+    altcoinSeason: null,
+    totalMarketCap: null,
+    totalMarketCapChange: null,
+    totalVolume: null,
+    totalVolumeChange: null,
+    btcDominance: null,
   })
   const [news, setNews] = useState([
     { source: 'CoinDesk', title: 'Market Analysis: Key Levels to Watch This Week', time: 'Today', url: 'https://coindesk.com' },
@@ -1013,10 +1013,29 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
         const response = await fetch('/api/crypto/market-overview')
         if (response.ok) {
           const data = await response.json()
-          setMarketData(prev => ({ ...prev, ...data }))
+          setMarketData(data)
+        } else {
+          setMarketData({
+            fearGreed: 50,
+            altcoinSeason: 50,
+            totalMarketCap: 3.2e12,
+            totalMarketCapChange: 0,
+            totalVolume: 98e9,
+            totalVolumeChange: 0,
+            btcDominance: 54.5,
+          })
         }
       } catch (err) {
         console.log('Using default market data')
+        setMarketData({
+          fearGreed: 50,
+          altcoinSeason: 50,
+          totalMarketCap: 3.2e12,
+          totalMarketCapChange: 0,
+          totalVolume: 98e9,
+          totalVolumeChange: 0,
+          btcDominance: 54.5,
+        })
       }
     }
     fetchMarketData()

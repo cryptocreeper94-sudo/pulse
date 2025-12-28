@@ -9,6 +9,7 @@ export default function FlipCarousel({
   showArrows = true,
   showDots = true,
   showCounter = true,
+  navPosition = 'below',
   className = '',
   style = {}
 }) {
