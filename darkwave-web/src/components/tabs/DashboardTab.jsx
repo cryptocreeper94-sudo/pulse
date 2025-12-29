@@ -109,15 +109,37 @@ function TileLabel({ children, color = 'var(--text-muted)' }) {
   )
 }
 
-function QuickActionContent({ action, fullCard = false }) {
-  if (fullCard) {
-    return (
+function QuickActionContent({ action, isMobile = false }) {
+  return (
+    <div style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      alignItems: 'center', 
+      justifyContent: 'center',
+      height: '100%',
+      minHeight: isMobile ? 160 : 180,
+      gap: isMobile ? 8 : 12,
+      padding: isMobile ? 8 : 16,
+    }}>
       <div style={{ 
-        position: 'relative',
-        width: '100%',
-        height: '100%',
-        borderRadius: 12,
+        color: action.color, 
+        fontSize: isMobile ? 11 : 12, 
+        fontWeight: 700, 
+        textTransform: 'uppercase', 
+        letterSpacing: isMobile ? 0.5 : 1,
+        textAlign: 'center',
+      }}>
+        {action.title}
+      </div>
+      <div style={{ 
+        width: isMobile ? 80 : 100,
+        height: isMobile ? 80 : 100,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         overflow: 'hidden',
+        borderRadius: 16,
+        background: 'rgba(255,255,255,0.05)',
       }}>
         <img 
           src={action.image} 
@@ -126,61 +148,15 @@ function QuickActionContent({ action, fullCard = false }) {
             width: '100%', 
             height: '100%', 
             objectFit: 'cover',
+            borderRadius: 16,
           }}
           onError={(e) => {
             e.target.style.display = 'none'
-          }}
-        />
-        <div style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          padding: '40px 16px 16px',
-          background: 'linear-gradient(transparent, rgba(0,0,0,0.9))',
-        }}>
-          <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>{action.title}</div>
-          <div style={{ fontSize: 12, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{action.subtitle}</div>
-        </div>
-      </div>
-    )
-  }
-  
-  return (
-    <div style={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
-      alignItems: 'center', 
-      justifyContent: 'center',
-      height: '100%',
-      gap: 8,
-      padding: 12,
-    }}>
-      <div style={{ 
-        width: 64,
-        height: 64,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden',
-      }}>
-        <img 
-          src={action.image} 
-          alt={action.title}
-          style={{ 
-            width: 56, 
-            height: 56, 
-            objectFit: 'cover',
-            borderRadius: 12,
-          }}
-          onError={(e) => {
-            e.target.style.display = 'none'
-            e.target.parentElement.innerHTML = '<span style="font-size: 28px">📊</span>'
+            e.target.parentElement.innerHTML = '<span style="font-size: 36px">📊</span>'
           }}
         />
       </div>
-      <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>{action.title}</div>
-      <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{action.subtitle}</div>
+      <div style={{ fontSize: isMobile ? 10 : 11, color: 'var(--text-secondary)', textAlign: 'center' }}>{action.subtitle}</div>
     </div>
   )
 }
@@ -1121,8 +1097,9 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
   const quickActions = [
     { image: '/assets/generated_images/ai_trading_strikeagent_icon.png', title: 'StrikeAgent', subtitle: 'AI Predictive Trading', color: '#00D4FF', tab: 'sniper' },
     { image: '/assets/generated_images/multi-chain_wallet_icon.png', title: 'Wallet', subtitle: 'Multi-chain', color: '#9D4EDD', tab: 'wallet' },
-    { image: '/assets/generated_images/cyber_dust_buster_cleaning_coins.png', title: 'Dust Buster', subtitle: '12.5% Fee - Beat Competition!', color: '#39FF14', tab: 'dust-buster' },
+    { image: '/assets/generated_images/cyber_dust_buster_cleaning_coins.png', title: 'Dust Buster', subtitle: '12.5% Fee', color: '#39FF14', tab: 'dust-buster' },
     { image: '/assets/generated_images/crypto_watchlist_trading_targets.png', title: 'Watchlist', subtitle: 'Limit orders', color: 'var(--neon-green)', tab: 'watchlist' },
+    { image: '/assets/dashboard/prediction_tracker.png', title: 'AI Signals', subtitle: '71.5% Accuracy', color: '#FF006E', tab: 'predictions' },
   ]
 
   const marketOverviewItems = [
@@ -1195,10 +1172,11 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
                 items={quickActions}
                 renderItem={(action) => (
                   <div 
+                    className="market-overview-card"
                     onClick={() => onNavigate && onNavigate(action.tab)}
                     style={{ height: '100%', cursor: 'pointer' }}
                   >
-                    <QuickActionContent action={action} fullCard={true} isMobile={true} />
+                    <QuickActionContent action={action} isMobile={true} />
                   </div>
                 )}
               />
@@ -1207,10 +1185,11 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
                 items={quickActions}
                 renderItem={(action) => (
                   <div 
+                    className="market-overview-card market-overview-card--clickable"
                     onClick={() => onNavigate && onNavigate(action.tab)}
                     style={{ height: '100%', cursor: 'pointer' }}
                   >
-                    <QuickActionContent action={action} fullCard={true} />
+                    <QuickActionContent action={action} isMobile={false} />
                   </div>
                 )}
                 showDots={true}
