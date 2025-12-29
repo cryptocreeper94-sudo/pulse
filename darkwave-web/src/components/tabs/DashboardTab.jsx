@@ -112,51 +112,35 @@ function TileLabel({ children, color = 'var(--text-muted)' }) {
 function QuickActionContent({ action, isMobile = false }) {
   return (
     <div style={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
-      alignItems: 'center', 
-      justifyContent: 'center',
+      position: 'relative',
+      width: '100%',
       height: '100%',
-      minHeight: isMobile ? 160 : 180,
-      gap: isMobile ? 8 : 12,
-      padding: isMobile ? 8 : 16,
+      borderRadius: 12,
+      overflow: 'hidden',
     }}>
-      <div style={{ 
-        color: action.color, 
-        fontSize: isMobile ? 11 : 12, 
-        fontWeight: 700, 
-        textTransform: 'uppercase', 
-        letterSpacing: isMobile ? 0.5 : 1,
-        textAlign: 'center',
+      <img 
+        src={action.image} 
+        alt={action.title}
+        style={{ 
+          width: '100%', 
+          height: '100%', 
+          objectFit: 'cover',
+        }}
+        onError={(e) => {
+          e.target.style.display = 'none'
+        }}
+      />
+      <div style={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        padding: isMobile ? '30px 12px 12px' : '40px 16px 16px',
+        background: 'linear-gradient(transparent, rgba(0,0,0,0.9))',
       }}>
-        {action.title}
+        <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: action.color, whiteSpace: 'nowrap' }}>{action.title}</div>
+        <div style={{ fontSize: isMobile ? 11 : 12, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{action.subtitle}</div>
       </div>
-      <div style={{ 
-        width: isMobile ? 80 : 100,
-        height: isMobile ? 80 : 100,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden',
-        borderRadius: 16,
-        background: 'rgba(255,255,255,0.05)',
-      }}>
-        <img 
-          src={action.image} 
-          alt={action.title}
-          style={{ 
-            width: '100%', 
-            height: '100%', 
-            objectFit: 'cover',
-            borderRadius: 16,
-          }}
-          onError={(e) => {
-            e.target.style.display = 'none'
-            e.target.parentElement.innerHTML = '<span style="font-size: 36px">📊</span>'
-          }}
-        />
-      </div>
-      <div style={{ fontSize: isMobile ? 10 : 11, color: 'var(--text-secondary)', textAlign: 'center' }}>{action.subtitle}</div>
     </div>
   )
 }
