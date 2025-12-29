@@ -1158,7 +1158,7 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
                   <div 
                     className="market-overview-card"
                     onClick={() => onNavigate && onNavigate(action.tab)}
-                    style={{ height: '100%', cursor: 'pointer' }}
+                    style={{ height: '100%', cursor: 'pointer', overflow: 'hidden', borderRadius: 12 }}
                   >
                     <QuickActionContent action={action} isMobile={true} />
                   </div>
@@ -1171,7 +1171,7 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
                   <div 
                     className="market-overview-card market-overview-card--clickable"
                     onClick={() => onNavigate && onNavigate(action.tab)}
-                    style={{ height: '100%', cursor: 'pointer' }}
+                    style={{ height: '100%', cursor: 'pointer', overflow: 'hidden', borderRadius: 12 }}
                   >
                     <QuickActionContent action={action} isMobile={false} />
                   </div>
