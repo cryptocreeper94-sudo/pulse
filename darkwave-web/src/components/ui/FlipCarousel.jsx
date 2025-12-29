@@ -86,7 +86,7 @@ export default function FlipCarousel({
           flex: 1,
           perspective: '1200px',
           overflow: 'visible',
-          paddingBottom: (showArrows || showDots) && items.length > 1 ? 44 : 0,
+          marginBottom: (showArrows || showDots) && items.length > 1 ? 44 : 0,
         }}
       >
         <div

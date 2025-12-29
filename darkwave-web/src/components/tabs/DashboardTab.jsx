@@ -114,7 +114,7 @@ function QuickActionContent({ action, isMobile = false }) {
     <div style={{ 
       position: 'relative',
       width: '100%',
-      height: 'calc(100% - 44px)',
+      height: '100%',
       borderRadius: 12,
       overflow: 'hidden',
       background: '#1a1a1a',
