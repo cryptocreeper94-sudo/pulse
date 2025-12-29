@@ -1101,7 +1101,7 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
         {/* Metrics Carousel - 1/3 width on desktop, 1/2 on mobile */}
         <div className="carousel-section metrics-carousel-section">
           <div className="carousel-label">Market Metrics</div>
-          <div style={{ height: isMobileLayout ? 260 : 220, width: '100%', flex: 1 }}>
+          <div style={{ height: isMobileLayout ? 280 : 260, width: '100%', flex: 1 }}>
             {isMobileLayout ? (
               <MobileCardCarousel
                 items={marketOverviewItems}
@@ -1150,7 +1150,7 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
         {/* Quick Actions Carousel - 1/3 width on desktop, 1/2 on mobile */}
         <div className="carousel-section quick-actions-carousel-section">
           <div className="carousel-label">Quick Actions</div>
-          <div style={{ height: isMobileLayout ? 260 : 220, width: '100%', flex: 1 }}>
+          <div style={{ height: isMobileLayout ? 280 : 260, width: '100%', flex: 1 }}>
             {isMobileLayout ? (
               <MobileCardCarousel
                 items={quickActions}
@@ -1187,7 +1187,7 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
         {/* News Carousel - 1/3 width (hidden on mobile via CSS) */}
         <div className="carousel-section news-carousel-section">
           <div className="carousel-label">Latest News</div>
-          <div style={{ height: 220, width: '100%', flex: 1 }}>
+          <div style={{ height: 260, width: '100%', flex: 1 }}>
             <FlipCarousel
               items={news.length > 0 ? news : [{ title: 'No news available', source: 'System', time: 'Now', url: '#' }]}
               renderItem={(item) => (
