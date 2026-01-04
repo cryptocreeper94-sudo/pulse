@@ -1231,130 +1231,353 @@ export default function DevelopersPortalTab() {
       )}
       
       {activeTab === 'health' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
-          <SectionCard title="Server Status" icon="🖥️" glowColor={healthData?.server === 'healthy' ? '#39FF14' : '#FF4444'}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '16px' }}>
+          {/* Server Status - Large Hero Card */}
+          <div 
+            className="health-card"
+            style={{
+              gridColumn: 'span 6',
+              ...glassmorphism,
+              borderRadius: '20px',
+              padding: '24px',
+              border: `1px solid ${healthData?.server === 'healthy' ? 'rgba(57, 255, 20, 0.3)' : 'rgba(255, 68, 68, 0.3)'}`,
+              boxShadow: `0 0 40px ${healthData?.server === 'healthy' ? 'rgba(57, 255, 20, 0.15)' : 'rgba(255, 68, 68, 0.15)'}`,
+              transition: 'all 0.3s ease',
+              cursor: 'default',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-4px)';
+              e.currentTarget.style.boxShadow = `0 0 60px ${healthData?.server === 'healthy' ? 'rgba(57, 255, 20, 0.25)' : 'rgba(255, 68, 68, 0.25)'}`;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = `0 0 40px ${healthData?.server === 'healthy' ? 'rgba(57, 255, 20, 0.15)' : 'rgba(255, 68, 68, 0.15)'}`;
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+              <span style={{ fontSize: '24px' }}>🖥️</span>
+              <h3 style={{ margin: 0, color: '#fff', fontSize: '18px', fontWeight: '600' }}>Server Status</h3>
+            </div>
             {healthLoading ? (
               <div style={{ color: '#888', fontSize: '14px' }}>Checking status...</div>
             ) : (
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
                   <div style={{
-                    width: '16px', height: '16px', borderRadius: '50%',
+                    width: '20px', height: '20px', borderRadius: '50%',
                     background: healthData?.server === 'healthy' ? '#39FF14' : '#FF4444',
-                    boxShadow: `0 0 15px ${healthData?.server === 'healthy' ? '#39FF14' : '#FF4444'}`,
+                    boxShadow: `0 0 20px ${healthData?.server === 'healthy' ? '#39FF14' : '#FF4444'}`,
                     animation: 'pulse 2s infinite',
                   }} />
-                  <span style={{ color: healthData?.server === 'healthy' ? '#39FF14' : '#FF4444', fontWeight: '600', fontSize: '18px' }}>
+                  <span style={{ color: healthData?.server === 'healthy' ? '#39FF14' : '#FF4444', fontWeight: '700', fontSize: '22px' }}>
                     {healthData?.server === 'healthy' ? 'All Systems Operational' : 'System Issue Detected'}
                   </span>
                 </div>
-                <div style={{ fontSize: '12px', color: '#666' }}>
+                <div style={{ fontSize: '13px', color: '#666' }}>
                   Last check: {healthData?.lastCheck ? new Date(healthData.lastCheck).toLocaleString() : 'N/A'}
                 </div>
               </div>
             )}
-          </SectionCard>
+          </div>
 
-          <SectionCard title="UptimeRobot Endpoint" icon="📡" glowColor="#00D4FF">
-            <div style={{ marginBottom: '12px' }}>
-              <div style={{ color: '#888', fontSize: '12px', marginBottom: '6px' }}>Health Check URL (ping every 5 min):</div>
-              <div style={{
-                background: 'rgba(15, 15, 15, 0.8)',
-                borderRadius: '8px',
-                padding: '12px',
-                fontFamily: 'monospace',
-                fontSize: '12px',
-                color: '#00D4FF',
-                wordBreak: 'break-all',
-              }}>
-                {window.location.origin}/healthz
-              </div>
+          {/* UptimeRobot Endpoint */}
+          <div 
+            className="health-card"
+            style={{
+              gridColumn: 'span 6',
+              ...glassmorphism,
+              borderRadius: '20px',
+              padding: '24px',
+              border: '1px solid rgba(0, 212, 255, 0.3)',
+              boxShadow: '0 0 40px rgba(0, 212, 255, 0.15)',
+              transition: 'all 0.3s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-4px)';
+              e.currentTarget.style.boxShadow = '0 0 60px rgba(0, 212, 255, 0.25)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 0 40px rgba(0, 212, 255, 0.15)';
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+              <span style={{ fontSize: '24px' }}>📡</span>
+              <h3 style={{ margin: 0, color: '#fff', fontSize: '18px', fontWeight: '600' }}>UptimeRobot Endpoint</h3>
+            </div>
+            <div style={{ color: '#888', fontSize: '12px', marginBottom: '8px' }}>Health Check URL (ping every 5 min):</div>
+            <div style={{
+              background: 'rgba(15, 15, 15, 0.8)',
+              borderRadius: '10px',
+              padding: '14px',
+              fontFamily: 'monospace',
+              fontSize: '13px',
+              color: '#00D4FF',
+              wordBreak: 'break-all',
+              marginBottom: '16px',
+              border: '1px solid rgba(0, 212, 255, 0.2)',
+            }}>
+              {window.location.origin}/healthz
             </div>
             <button
-              onClick={() => {
-                navigator.clipboard.writeText(`${window.location.origin}/healthz`);
-              }}
+              onClick={() => navigator.clipboard.writeText(`${window.location.origin}/healthz`)}
               style={{
                 background: 'linear-gradient(135deg, #00D4FF, #0099CC)',
                 border: 'none',
-                borderRadius: '8px',
-                padding: '10px 16px',
+                borderRadius: '10px',
+                padding: '12px 20px',
                 color: '#fff',
-                fontSize: '13px',
+                fontSize: '14px',
                 fontWeight: '600',
                 cursor: 'pointer',
                 width: '100%',
+                transition: 'all 0.2s ease',
+                boxShadow: '0 4px 15px rgba(0, 212, 255, 0.3)',
               }}
+              onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
+              onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
             >
               Copy URL
             </button>
-          </SectionCard>
+          </div>
 
-          <SectionCard title="Prediction Generation" icon="🔮" glowColor="#8B5CF6">
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              <div style={{ textAlign: 'center', padding: '12px', background: 'rgba(15, 15, 15, 0.6)', borderRadius: '8px' }}>
-                <div style={{ fontSize: '24px', fontWeight: '700', color: '#8B5CF6' }}>
-                  {healthData?.predStats?.totalPredictions?.toLocaleString() || '—'}
-                </div>
-                <div style={{ fontSize: '11px', color: '#888' }}>Total Predictions</div>
-              </div>
-              <div style={{ textAlign: 'center', padding: '12px', background: 'rgba(15, 15, 15, 0.6)', borderRadius: '8px' }}>
-                <div style={{ fontSize: '24px', fontWeight: '700', color: '#39FF14' }}>
-                  {healthData?.aiStatus?.accuracy?.oneHour ? `${(healthData.aiStatus.accuracy.oneHour * 100).toFixed(1)}%` : '—'}
-                </div>
-                <div style={{ fontSize: '11px', color: '#888' }}>1H Accuracy</div>
-              </div>
+          {/* Prediction Stats Cards */}
+          <div 
+            className="health-card"
+            style={{
+              gridColumn: 'span 3',
+              ...glassmorphism,
+              borderRadius: '20px',
+              padding: '24px',
+              border: '1px solid rgba(139, 92, 246, 0.3)',
+              boxShadow: '0 0 30px rgba(139, 92, 246, 0.15)',
+              transition: 'all 0.3s ease',
+              textAlign: 'center',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-4px)';
+              e.currentTarget.style.boxShadow = '0 0 50px rgba(139, 92, 246, 0.25)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 0 30px rgba(139, 92, 246, 0.15)';
+            }}
+          >
+            <span style={{ fontSize: '28px', display: 'block', marginBottom: '12px' }}>🔮</span>
+            <div style={{ fontSize: '36px', fontWeight: '700', color: '#8B5CF6', marginBottom: '4px' }}>
+              {healthData?.predStats?.totalPredictions?.toLocaleString() || '—'}
             </div>
-            <div style={{ marginTop: '12px', fontSize: '12px', color: '#666' }}>
-              Predictions run every 5 minutes via Inngest cron jobs
-            </div>
-          </SectionCard>
+            <div style={{ fontSize: '13px', color: '#888' }}>Total Predictions</div>
+          </div>
 
-          <SectionCard title="Background Jobs" icon="⚙️" glowColor="#FFB800">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div 
+            className="health-card"
+            style={{
+              gridColumn: 'span 3',
+              ...glassmorphism,
+              borderRadius: '20px',
+              padding: '24px',
+              border: '1px solid rgba(57, 255, 20, 0.3)',
+              boxShadow: '0 0 30px rgba(57, 255, 20, 0.15)',
+              transition: 'all 0.3s ease',
+              textAlign: 'center',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-4px)';
+              e.currentTarget.style.boxShadow = '0 0 50px rgba(57, 255, 20, 0.25)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 0 30px rgba(57, 255, 20, 0.15)';
+            }}
+          >
+            <span style={{ fontSize: '28px', display: 'block', marginBottom: '12px' }}>🎯</span>
+            <div style={{ fontSize: '36px', fontWeight: '700', color: '#39FF14', marginBottom: '4px' }}>
+              {healthData?.aiStatus?.accuracy?.oneHour ? `${(healthData.aiStatus.accuracy.oneHour * 100).toFixed(1)}%` : '—'}
+            </div>
+            <div style={{ fontSize: '13px', color: '#888' }}>1H Accuracy</div>
+          </div>
+
+          {/* Background Jobs - Accordion Style */}
+          <div 
+            className="health-card"
+            style={{
+              gridColumn: 'span 6',
+              ...glassmorphism,
+              borderRadius: '20px',
+              padding: '24px',
+              border: '1px solid rgba(255, 184, 0, 0.3)',
+              boxShadow: '0 0 30px rgba(255, 184, 0, 0.15)',
+              transition: 'all 0.3s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-4px)';
+              e.currentTarget.style.boxShadow = '0 0 50px rgba(255, 184, 0, 0.25)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 0 30px rgba(255, 184, 0, 0.15)';
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+              <span style={{ fontSize: '24px' }}>⚙️</span>
+              <h3 style={{ margin: 0, color: '#fff', fontSize: '18px', fontWeight: '600' }}>Background Jobs</h3>
+              <span style={{ 
+                marginLeft: 'auto', 
+                background: 'rgba(57, 255, 20, 0.2)', 
+                color: '#39FF14', 
+                padding: '4px 10px', 
+                borderRadius: '12px', 
+                fontSize: '11px',
+                fontWeight: '600',
+              }}>5 Active</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {[
-                { name: 'Background Predictions', schedule: 'Every 5 min', status: 'active' },
-                { name: 'Top Signals Scanner', schedule: 'Every 3 min', status: 'active' },
-                { name: 'Quant Scanner', schedule: 'Every 5 min', status: 'active' },
-                { name: 'Limit Order Monitor', schedule: 'Every 1 min', status: 'active' },
-                { name: 'Auto Trade Executor', schedule: 'Every 1 min', status: 'active' },
+                { name: 'Background Predictions', schedule: 'Every 5 min', icon: '🔮', status: 'active' },
+                { name: 'Top Signals Scanner', schedule: 'Every 3 min', icon: '📊', status: 'active' },
+                { name: 'Quant Scanner', schedule: 'Every 5 min', icon: '📈', status: 'active' },
+                { name: 'Limit Order Monitor', schedule: 'Every 1 min', icon: '⏱️', status: 'active' },
+                { name: 'Auto Trade Executor', schedule: 'Every 1 min', icon: '🤖', status: 'active' },
               ].map((job, i) => (
-                <div key={i} style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: '8px 12px',
-                  background: 'rgba(15, 15, 15, 0.6)',
-                  borderRadius: '8px',
-                }}>
-                  <div>
-                    <div style={{ color: '#fff', fontSize: '13px' }}>{job.name}</div>
-                    <div style={{ color: '#666', fontSize: '11px' }}>{job.schedule}</div>
+                <div 
+                  key={i} 
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '12px 16px',
+                    background: 'rgba(15, 15, 15, 0.6)',
+                    borderRadius: '12px',
+                    border: '1px solid rgba(255, 184, 0, 0.1)',
+                    transition: 'all 0.2s ease',
+                    cursor: 'default',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(255, 184, 0, 0.1)';
+                    e.currentTarget.style.borderColor = 'rgba(255, 184, 0, 0.3)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'rgba(15, 15, 15, 0.6)';
+                    e.currentTarget.style.borderColor = 'rgba(255, 184, 0, 0.1)';
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '16px' }}>{job.icon}</span>
+                    <div>
+                      <div style={{ color: '#fff', fontSize: '14px', fontWeight: '500' }}>{job.name}</div>
+                      <div style={{ color: '#666', fontSize: '11px' }}>{job.schedule}</div>
+                    </div>
                   </div>
                   <div style={{
-                    width: '10px', height: '10px', borderRadius: '50%',
+                    width: '12px', height: '12px', borderRadius: '50%',
                     background: job.status === 'active' ? '#39FF14' : '#FF4444',
-                    boxShadow: `0 0 8px ${job.status === 'active' ? '#39FF14' : '#FF4444'}`,
+                    boxShadow: `0 0 10px ${job.status === 'active' ? '#39FF14' : '#FF4444'}`,
                   }} />
                 </div>
               ))}
             </div>
-          </SectionCard>
+          </div>
 
-          <SectionCard title="Keep-Alive Instructions" icon="💡" glowColor="#00D4FF" fullWidth>
-            <div style={{ color: '#ccc', fontSize: '13px', lineHeight: '1.6' }}>
-              <p style={{ margin: '0 0 12px' }}>
-                To ensure predictions generate 24/7, set up UptimeRobot to ping the health endpoint:
-              </p>
-              <ol style={{ margin: 0, paddingLeft: '20px' }}>
-                <li style={{ marginBottom: '8px' }}>Go to <a href="https://uptimerobot.com" target="_blank" rel="noopener noreferrer" style={{ color: '#00D4FF' }}>uptimerobot.com</a> and create a free account</li>
-                <li style={{ marginBottom: '8px' }}>Click "Add New Monitor" → Select "HTTP(s)"</li>
-                <li style={{ marginBottom: '8px' }}>Enter the health check URL above</li>
-                <li style={{ marginBottom: '8px' }}>Set monitoring interval to 5 minutes</li>
-                <li>Save and activate the monitor</li>
-              </ol>
+          {/* Keep-Alive Instructions - Full Width Accordion */}
+          <div 
+            className="health-card"
+            style={{
+              gridColumn: '1 / -1',
+              ...glassmorphism,
+              borderRadius: '20px',
+              padding: '24px',
+              border: '1px solid rgba(0, 212, 255, 0.3)',
+              boxShadow: '0 0 30px rgba(0, 212, 255, 0.1)',
+              transition: 'all 0.3s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = '0 0 50px rgba(0, 212, 255, 0.2)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 212, 255, 0.1)';
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+              <span style={{ fontSize: '24px' }}>💡</span>
+              <h3 style={{ margin: 0, color: '#fff', fontSize: '18px', fontWeight: '600' }}>Keep-Alive Setup Instructions</h3>
             </div>
-          </SectionCard>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(5, 1fr)', 
+              gap: '16px',
+            }}>
+              {[
+                { step: '1', title: 'Create Account', desc: 'Go to uptimerobot.com', icon: '🌐' },
+                { step: '2', title: 'Add Monitor', desc: 'Click "Add New Monitor"', icon: '➕' },
+                { step: '3', title: 'Select HTTP(s)', desc: 'Choose monitor type', icon: '🔗' },
+                { step: '4', title: 'Enter URL', desc: 'Paste health check URL', icon: '📝' },
+                { step: '5', title: 'Set 5 Min', desc: 'Configure interval', icon: '⏰' },
+              ].map((item, i) => (
+                <div 
+                  key={i}
+                  style={{
+                    background: 'rgba(15, 15, 15, 0.6)',
+                    borderRadius: '14px',
+                    padding: '20px',
+                    textAlign: 'center',
+                    border: '1px solid rgba(0, 212, 255, 0.1)',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(0, 212, 255, 0.1)';
+                    e.currentTarget.style.borderColor = 'rgba(0, 212, 255, 0.3)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'rgba(15, 15, 15, 0.6)';
+                    e.currentTarget.style.borderColor = 'rgba(0, 212, 255, 0.1)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
+                  <div style={{ 
+                    fontSize: '28px', 
+                    marginBottom: '10px',
+                  }}>{item.icon}</div>
+                  <div style={{ 
+                    background: 'linear-gradient(135deg, #00D4FF, #0099CC)',
+                    width: '28px', height: '28px',
+                    borderRadius: '50%',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    margin: '0 auto 10px',
+                    fontSize: '14px', fontWeight: '700', color: '#fff',
+                  }}>{item.step}</div>
+                  <div style={{ color: '#fff', fontSize: '13px', fontWeight: '600', marginBottom: '4px' }}>{item.title}</div>
+                  <div style={{ color: '#666', fontSize: '11px' }}>{item.desc}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ marginTop: '20px', textAlign: 'center' }}>
+              <a 
+                href="https://uptimerobot.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  background: 'linear-gradient(135deg, #00D4FF, #0099CC)',
+                  padding: '12px 24px',
+                  borderRadius: '12px',
+                  color: '#fff',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  textDecoration: 'none',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 4px 20px rgba(0, 212, 255, 0.3)',
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
+                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+              >
+                Open UptimeRobot →
+              </a>
+            </div>
+          </div>
         </div>
       )}
       
