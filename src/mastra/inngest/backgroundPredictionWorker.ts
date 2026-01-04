@@ -34,8 +34,10 @@ interface IndicatorSnapshot {
   ema9: number;
   ema21: number;
   ema50: number;
+  ema200: number;
   sma20: number;
   sma50: number;
+  sma200: number;
   bollingerBands: { upper: number; middle: number; lower: number; bandwidth: number };
   support: number;
   resistance: number;
@@ -109,6 +111,7 @@ function calculateIndicators(
   let currentEMA9 = safeCurrentPrice;
   let currentEMA21 = safeCurrentPrice;
   let currentEMA50 = safeCurrentPrice;
+  let currentEMA200 = safeCurrentPrice;
   
   if (safePrices.length >= 10) {
     const ema9Values = EMA.calculate({ values: safePrices, period: 9 });
@@ -122,9 +125,14 @@ function calculateIndicators(
     const ema50Values = EMA.calculate({ values: safePrices, period: 50 });
     currentEMA50 = safeNumber(getLastValue(ema50Values, safeCurrentPrice), safeCurrentPrice);
   }
+  if (safePrices.length >= 201) {
+    const ema200Values = EMA.calculate({ values: safePrices, period: 200 });
+    currentEMA200 = safeNumber(getLastValue(ema200Values, safeCurrentPrice), safeCurrentPrice);
+  }
 
   let currentSMA20 = safeCurrentPrice;
   let currentSMA50 = safeCurrentPrice;
+  let currentSMA200 = safeCurrentPrice;
   
   if (safePrices.length >= 21) {
     const sma20Values = SMA.calculate({ values: safePrices, period: 20 });
@@ -133,6 +141,10 @@ function calculateIndicators(
   if (safePrices.length >= 51) {
     const sma50Values = SMA.calculate({ values: safePrices, period: 50 });
     currentSMA50 = safeNumber(getLastValue(sma50Values, safeCurrentPrice), safeCurrentPrice);
+  }
+  if (safePrices.length >= 201) {
+    const sma200Values = SMA.calculate({ values: safePrices, period: 200 });
+    currentSMA200 = safeNumber(getLastValue(sma200Values, safeCurrentPrice), safeCurrentPrice);
   }
 
   let currentBB = { upper: safeCurrentPrice * 1.05, middle: safeCurrentPrice, lower: safeCurrentPrice * 0.95 };
@@ -256,8 +268,10 @@ function calculateIndicators(
     ema9: safeFixed(currentEMA9, 4, safeCurrentPrice),
     ema21: safeFixed(currentEMA21, 4, safeCurrentPrice),
     ema50: safeFixed(currentEMA50, 4, safeCurrentPrice),
+    ema200: safeFixed(currentEMA200, 4, safeCurrentPrice),
     sma20: safeFixed(currentSMA20, 4, safeCurrentPrice),
     sma50: safeFixed(currentSMA50, 4, safeCurrentPrice),
+    sma200: safeFixed(currentSMA200, 4, safeCurrentPrice),
     bollingerBands: {
       upper: safeFixed(currentBB.upper, 4, safeCurrentPrice * 1.05),
       middle: safeFixed(currentBB.middle, 4, safeCurrentPrice),
