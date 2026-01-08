@@ -138,4 +138,57 @@ server.listen(PORT, '0.0.0.0', () => {
       console.error('Mastra init error:', e);
     }
   }, 2000);
+
+  setTimeout(() => {
+    startInngestDevServer();
+  }, 5000);
 });
+
+let inngestProcess: ReturnType<typeof spawn> | null = null;
+let inngestRestartCount = 0;
+const MAX_INNGEST_RESTARTS = 10;
+
+function startInngestDevServer() {
+  if (inngestRestartCount >= MAX_INNGEST_RESTARTS) {
+    console.error('[Inngest] Max restarts reached, not restarting');
+    return;
+  }
+
+  console.log('[Inngest] Starting dev server (attempt ' + (inngestRestartCount + 1) + ')...');
+  
+  inngestProcess = spawn('npx', [
+    'inngest-cli', 
+    'dev', 
+    '-u', 'http://localhost:5000/api/inngest',
+    '--no-discovery'
+  ], {
+    env: process.env,
+    stdio: ['pipe', 'inherit', 'inherit'],
+    shell: true
+  });
+
+  inngestProcess.stdin?.write('y\n');
+  inngestProcess.stdin?.end();
+
+  inngestProcess.on('exit', (code) => {
+    console.log('[Inngest] Dev server exited with code ' + code);
+    inngestProcess = null;
+    
+    if (code !== 0) {
+      inngestRestartCount++;
+      console.log('[Inngest] Restarting in 10 seconds...');
+      setTimeout(startInngestDevServer, 10000);
+    }
+  });
+
+  inngestProcess.on('error', (err) => {
+    console.error('[Inngest] Dev server error:', err.message);
+    inngestProcess = null;
+    inngestRestartCount++;
+    setTimeout(startInngestDevServer, 10000);
+  });
+
+  setTimeout(() => {
+    inngestRestartCount = 0;
+  }, 300000);
+}
