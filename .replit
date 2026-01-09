@@ -14,7 +14,7 @@ packages = ["freetype", "imagemagick", "jq", "lcms2", "libimagequant", "libjpeg"
 MASTRA_HIDE_CLOUD_CTA = "true"
 
 [deployment]
-build = ["npm", "run", "build"]
+build = ["bash", "scripts/deploy-build.sh"]
 run = ["node", "dist/bootstrap.mjs"]
 deploymentTarget = "vm"
 publicDir = "public"
