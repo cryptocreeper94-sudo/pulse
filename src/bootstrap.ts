@@ -57,24 +57,41 @@ function serveStatic(req: http.IncomingMessage, res: http.ServerResponse, urlPat
   }
 }
 
+// Minimal loading HTML for instant response before index.html is loaded
+const LOADING_HTML = '<!DOCTYPE html><html><head><title>Pulse</title></head><body style="background:#0f0f0f;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;font-family:system-ui"><h1 style="color:#00D4FF">Loading Pulse...</h1></body></html>';
+
 const server = http.createServer((req, res) => {
   const urlPath = req.url?.split('?')[0] || '/';
   
+  // Fast health check endpoints - respond immediately
   if (urlPath === '/healthz' || urlPath === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end('{"status":"ok"}');
     return;
   }
   
+  // Root endpoint - always respond fast for health checks
   if (urlPath === '/') {
     const accept = req.headers['accept'] || '';
-    if (!accept.includes('text/html')) {
+    const userAgent = req.headers['user-agent'] || '';
+    
+    // Health check requests (no accept header, or JSON, or from Cloud Run/monitoring)
+    const isHealthCheck = !accept || 
+                          accept === '*/*' || 
+                          accept.includes('application/json') ||
+                          userAgent.includes('GoogleHC') ||
+                          userAgent.includes('kube-probe') ||
+                          userAgent.includes('curl');
+    
+    if (isHealthCheck) {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end('{"status":"ok"}');
       return;
     }
+    
+    // Browser request - serve HTML (use loading page if index not ready)
     res.writeHead(200, { 'Content-Type': 'text/html', 'Cache-Control': 'no-cache' });
-    res.end(indexHtml);
+    res.end(indexHtml || LOADING_HTML);
     return;
   }
   
