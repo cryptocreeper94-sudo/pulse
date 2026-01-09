@@ -139,9 +139,19 @@ server.listen(PORT, '0.0.0.0', () => {
     }
   }, 2000);
 
-  setTimeout(() => {
-    startInngestDevServer();
-  }, 5000);
+  // Only start Inngest dev server in development, not in production
+  // In production, Inngest Cloud handles events directly
+  const isProduction = process.env.NODE_ENV === 'production' || 
+                       process.env.REPLIT_DEPLOYMENT === '1' ||
+                       process.env.REPLIT_DEV_DOMAIN === undefined;
+  
+  if (!isProduction) {
+    setTimeout(() => {
+      startInngestDevServer();
+    }, 5000);
+  } else {
+    console.log('[Inngest] Production mode - using Inngest Cloud directly');
+  }
 });
 
 let inngestProcess: ReturnType<typeof spawn> | null = null;
