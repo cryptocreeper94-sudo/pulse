@@ -17,6 +17,7 @@ import {
 } from './components/tabs'
 import WhitepaperPage from './pages/WhitepaperPage'
 import StrikeAgentPublicView from './pages/StrikeAgentPublicView'
+import TermsOfServicePage from './pages/TermsOfServicePage'
 import useAnalytics from './hooks/useAnalytics'
 import AccuracyDashboard from './components/ml/AccuracyDashboard'
 import AutoTradeConfig from './components/ml/AutoTradeConfig'
@@ -183,6 +184,7 @@ function AppContent() {
   const isStrikeAgentDomain = window.location.hostname.includes('strikeagent')
   const isDemoPath = window.location.pathname.startsWith('/demo')
   const isWhitepaperPage = window.location.pathname === '/whitepaper'
+  const isTermsPage = window.location.pathname === '/terms' || window.location.pathname === '/terms-of-service' || window.location.pathname === '/tos'
   const isStrikeAgentLive = window.location.pathname === '/strikeagent/live' || window.location.pathname === '/live' || isStrikeAgentDomain
   const isDemoMode = isDemoPath
   
@@ -253,6 +255,10 @@ function AppContent() {
 
   if (isWhitepaperPage) {
     return <WhitepaperPage />
+  }
+
+  if (isTermsPage) {
+    return <TermsOfServicePage />
   }
 
   if (isStrikeAgentLive) {
