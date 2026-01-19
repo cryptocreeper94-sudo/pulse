@@ -1,0 +1,81 @@
+=== PULSE AGENT INTEGRATION REQUIREMENTS ===
+
+Base URL: https://darkwavepulse.com
+Auth Header: X-Pulse-Api-Key: [your-api-key]
+
+REQUIRED API ENDPOINTS:
+
+1. GET /api/crypto/market-overview
+   Response: {
+     "totalMarketCap": 2500000000000,
+     "totalMarketCapChange": 2.5,
+     "btcDominance": 52.3,
+     "ethDominance": 17.8,
+     "fearGreed": 65,
+     "fearGreedLabel": "Greed",
+     "altcoinSeason": 45
+   }
+
+2. GET /api/v1/signals
+   Response: {
+     "data": [{
+       "id": "sig_xxx",
+       "ticker": "BTC",
+       "signal": "STRONG_BUY" | "BUY" | "HOLD" | "SELL" | "STRONG_SELL",
+       "confidence": "HIGH" | "MEDIUM" | "LOW",
+       "priceAtPrediction": "45000.00",
+       "createdAt": "2026-01-19T10:00:00Z"
+     }]
+   }
+
+3. GET /api/v1/accuracy
+   Response: {
+     "data": [{
+       "ticker": "BTC",
+       "signal": "BUY",
+       "horizon": "24h",
+       "totalPredictions": 100,
+       "correctPredictions": 72,
+       "winRate": "72.00",
+       "avgReturn": "3.5"
+     }]
+   }
+
+4. GET /api/v1/strike-agent/recommendations
+   Response: {
+     "data": [{
+       "tokenSymbol": "TOKEN",
+       "tokenAddress": "0x...",
+       "priceUsd": "0.0001",
+       "marketCapUsd": "50000",
+       "liquidityUsd": "25000",
+       "aiRecommendation": "snipe" | "watch" | "avoid",
+       "aiScore": 85,
+       "aiReasoning": "Strong momentum, safe contract",
+       "isHoneypot": false,
+       "liquidityLocked": true
+     }]
+   }
+
+5. GET /api/v1/safety-score/:tokenAddress
+   Response: {
+     "score": 85,
+     "grade": "A",
+     "isHoneypot": false,
+     "hasMintAuthority": false,
+     "hasFreezeAuthority": false,
+     "risks": []
+   }
+
+WEBHOOK (push new signals in real-time):
+POST https://dwtl.io/api/webhooks/pulse
+Header: X-Pulse-Signature: HMAC-SHA256(body, WEBHOOK_SECRET)
+Body: {
+  "event": "new_signal" | "signal_outcome" | "strike_alert",
+  "data": { ... signal or alert payload ... },
+  "timestamp": "2026-01-19T10:00:00Z"
+}
+
+WEBHOOK SECRET: 97c05418d9e0caf5f786915590e7991855d7224380a2f1f6a70659828c85fce6
+
+===
