@@ -86,7 +86,6 @@ export default function FlipCarousel({
           flex: 1,
           perspective: '1200px',
           overflow: 'visible',
-          marginBottom: (showArrows || showDots) && items.length > 1 ? 44 : 0,
         }}
       >
         <div
@@ -133,16 +132,13 @@ export default function FlipCarousel({
 
       {(showArrows || showDots) && items.length > 1 && (
         <div style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           gap: 12,
           padding: '8px 0',
-          zIndex: 10,
+          marginTop: 8,
+          flexShrink: 0,
         }}>
           {showArrows && (
             <button
