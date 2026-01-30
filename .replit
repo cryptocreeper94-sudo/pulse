@@ -71,7 +71,7 @@ VITE_FIREBASE_STORAGE_BUCKET = "darkwave-auth.firebasestorage.app"
 VITE_FIREBASE_MESSAGING_SENDER_ID = "41307406912"
 VITE_FIREBASE_APP_ID = "1:41307406912:web:ef0ee3a2f7b6a1df2a55a5"
 VITE_FIREBASE_MEASUREMENT_ID = "G-R67X95HJ84"
-DARKWAVE_CHAIN_URL = "https://trust-layer-portal.replit.app"
+DARKWAVE_CHAIN_URL = "https://dwtl.io"
 
 [[ports]]
 localPort = 3000
