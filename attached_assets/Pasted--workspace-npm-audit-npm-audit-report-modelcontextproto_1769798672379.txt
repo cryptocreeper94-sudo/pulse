@@ -1,0 +1,216 @@
+/workspace$ npm audit
+# npm audit report
+
+@modelcontextprotocol/sdk  <=1.25.1
+Severity: high
+Model Context Protocol (MCP) TypeScript SDK does not enable DNS rebinding protection by default - https://github.com/advisories/GHSA-w48q-cv73-mx4w
+Anthropic's MCP TypeScript SDK has a ReDoS vulnerability - https://github.com/advisories/GHSA-8r9q-7v3j-jr4g
+fix available via `npm audit fix`
+node_modules/@modelcontextprotocol/sdk
+
+ai  <=5.0.51
+Severity: moderate
+Vercel’s AI SDK's filetype whitelists can be bypassed when uploading files - https://github.com/advisories/GHSA-rwvc-j5jr-mgvh
+Depends on vulnerable versions of jsondiffpatch
+fix available via `npm audit fix --force`
+Will install @mastra/memory@1.0.1, which is a breaking change
+node_modules/@mastra/core/node_modules/ai
+node_modules/@mastra/memory/node_modules/ai
+  @mastra/core  <=0.0.0-zod-v4-stuff-20250825154219 || 0.1.4 - 0.24.10-alpha.0
+  Depends on vulnerable versions of ai
+  node_modules/@mastra/core
+    @mastra/deployer  <=0.20.2 || 0.21.2-alpha.0 - 1.0.0
+    Depends on vulnerable versions of @mastra/core
+    Depends on vulnerable versions of @mastra/server
+    node_modules/@mastra/deployer
+      mastra  0.1.57-alpha.0 - 0.18.10-alpha.0
+      Depends on vulnerable versions of @mastra/core
+      Depends on vulnerable versions of @mastra/deployer
+      Depends on vulnerable versions of @mastra/loggers
+      Depends on vulnerable versions of @mastra/mcp
+      node_modules/mastra
+    @mastra/inngest  <=0.18.6
+    Depends on vulnerable versions of @mastra/core
+    node_modules/@mastra/inngest
+    @mastra/libsql  <=0.16.4
+    Depends on vulnerable versions of @mastra/core
+    node_modules/@mastra/libsql
+    @mastra/loggers  <=0.10.19
+    Depends on vulnerable versions of @mastra/core
+    node_modules/@mastra/loggers
+    @mastra/mcp  <=0.14.5
+    Depends on vulnerable versions of @mastra/core
+    node_modules/@mastra/mcp
+    @mastra/memory  <=1.0.0-beta.15
+    Depends on vulnerable versions of @mastra/core
+    Depends on vulnerable versions of ai
+    node_modules/@mastra/memory
+    @mastra/pg  <=0.17.10
+    Depends on vulnerable versions of @mastra/core
+    node_modules/@mastra/pg
+    @mastra/server  <=0.20.2 || 0.21.2-alpha.0 - 1.0.4-alpha.2 || >=2.0.0-alpha.3
+    Depends on vulnerable versions of @mastra/core
+    node_modules/@mastra/server
+
+bigint-buffer  *
+Severity: high
+bigint-buffer Vulnerable to Buffer Overflow via toBigIntLE() Function - https://github.com/advisories/GHSA-3gc7-fjrx-p6mg
+fix available via `npm audit fix --force`
+Will install @solana/spl-token@0.1.8, which is a breaking change
+node_modules/bigint-buffer
+  @solana/buffer-layout-utils  *
+  Depends on vulnerable versions of bigint-buffer
+  node_modules/@solana/buffer-layout-utils
+    @solana/spl-token  >=0.2.0-alpha.0
+    Depends on vulnerable versions of @solana/buffer-layout-utils
+    node_modules/@solana/spl-token
+    node_modules/@sqds/multisig/node_modules/@solana/spl-token
+      @sqds/multisig  >=1.4.0
+      Depends on vulnerable versions of @solana/spl-token
+      node_modules/@sqds/multisig
+  @solana/web3.js  1.43.1 - 1.98.0
+  Depends on vulnerable versions of bigint-buffer
+  node_modules/jito-ts/node_modules/@solana/web3.js
+    jito-ts  >=3.0.0
+    Depends on vulnerable versions of @solana/web3.js
+    node_modules/jito-ts
+
+body-parser  <=1.20.3 || 2.0.0-beta.1 - 2.0.2 || 2.2.0
+Severity: high
+body-parser is vulnerable to denial of service when url encoding is used - https://github.com/advisories/GHSA-wqch-xfxh-vrr4
+Depends on vulnerable versions of qs
+fix available via `npm audit fix`
+node_modules/body-parser
+node_modules/express/node_modules/body-parser
+  express  2.5.8 - 2.5.11 || 3.2.1 - 3.2.3 || 4.0.0-rc1 - 4.21.2 || 5.0.0-alpha.1 - 5.0.1
+  Depends on vulnerable versions of body-parser
+  Depends on vulnerable versions of qs
+  node_modules/express
+
+diff  4.0.0 - 4.0.3
+jsdiff has a Denial of Service vulnerability in parsePatch and applyPatch - https://github.com/advisories/GHSA-73rr-hh4g-fpgx
+fix available via `npm audit fix`
+node_modules/diff
+
+esbuild  <=0.24.2
+Severity: moderate
+esbuild enables any website to send any requests to the development server and read the response - https://github.com/advisories/GHSA-67mh-4wv8-2f99
+fix available via `npm audit fix --force`
+Will install drizzle-kit@0.18.1, which is a breaking change
+node_modules/@esbuild-kit/core-utils/node_modules/esbuild
+  @esbuild-kit/core-utils  *
+  Depends on vulnerable versions of esbuild
+  node_modules/@esbuild-kit/core-utils
+    @esbuild-kit/esm-loader  *
+    Depends on vulnerable versions of @esbuild-kit/core-utils
+    node_modules/@esbuild-kit/esm-loader
+      drizzle-kit  0.17.5-6b7793f - 0.17.5-e5944eb || 0.18.1-065de38 - 0.18.1-f3800bf || 0.19.0-07024c4 - 1.0.0-beta.1-fd8bfcc
+      Depends on vulnerable versions of @esbuild-kit/esm-loader
+      node_modules/drizzle-kit
+
+glob  10.2.0 - 10.4.5
+Severity: high
+glob CLI: Command injection via -c/--cmd executes matches with shell:true - https://github.com/advisories/GHSA-5j98-mcp5-4vw2
+fix available via `npm audit fix`
+node_modules/glob
+
+hono  <=4.11.6
+Severity: high
+Hono Improper Authorization vulnerability - https://github.com/advisories/GHSA-m732-5p4w-x69g
+Hono vulnerable to Vary Header Injection leading to potential CORS Bypass - https://github.com/advisories/GHSA-q7jf-gf43-6x6p
+Hono JWK Auth Middleware has JWT algorithm confusion when JWK lacks "alg" (untrusted header.alg fallback) - https://github.com/advisories/GHSA-3vhc-576x-3qv4
+Hono JWT Middleware's JWT Algorithm Confusion via Unsafe Default (HS256) Allows Token Forgery and Auth Bypass - https://github.com/advisories/GHSA-f67f-6cw9-8mq4
+Hono vulnerable to XSS through ErrorBoundary component  - https://github.com/advisories/GHSA-9r54-q6cx-xmh5
+Hono has an Arbitrary Key Read in Serve static Middleware (Cloudflare Workers Adapter) - https://github.com/advisories/GHSA-w332-q679-j88p
+Hono cache middleware ignores "Cache-Control: private" leading to Web Cache Deception - https://github.com/advisories/GHSA-6wqw-2p9w-4vw4
+Hono IPv4 address validation bypass in IP Restriction Middleware allows IP spoofing - https://github.com/advisories/GHSA-r354-f388-2fhh
+fix available via `npm audit fix`
+node_modules/hono
+
+js-yaml  4.0.0 - 4.1.0
+Severity: moderate
+js-yaml has prototype pollution in merge (<<) - https://github.com/advisories/GHSA-mh29-5h37-fv8m
+fix available via `npm audit fix`
+node_modules/js-yaml
+
+jsondiffpatch  <0.7.2
+Severity: moderate
+jsondiffpatch is vulnerable to Cross-site Scripting (XSS) via HtmlFormatter::nodeBegin - https://github.com/advisories/GHSA-33vc-wfww-vjfv
+fix available via `npm audit fix --force`
+Will install @mastra/memory@1.0.1, which is a breaking change
+node_modules/jsondiffpatch
+
+qs  <6.14.1
+Severity: high
+qs's arrayLimit bypass in its bracket notation allows DoS via memory exhaustion - https://github.com/advisories/GHSA-6rw7-vpxm-498p
+fix available via `npm audit fix`
+node_modules/express/node_modules/qs
+node_modules/qs
+
+tar  <=7.5.6
+Severity: high
+node-tar is Vulnerable to Arbitrary File Overwrite and Symlink Poisoning via Insufficient Path Sanitization - https://github.com/advisories/GHSA-8qq5-rm4j-mr97
+Race Condition in node-tar Path Reservations via Unicode Ligature Collisions on macOS APFS - https://github.com/advisories/GHSA-r6q2-hw4h-h46w
+node-tar Vulnerable to Arbitrary File Creation/Overwrite via Hardlink Path Traversal - https://github.com/advisories/GHSA-34x7-hfp2-rc4v
+fix available via `npm audit fix`
+node_modules/@expo/cli/node_modules/tar
+node_modules/tar
+  inngest-cli  <=1.16.0 || >=1.52.2-test.5
+  Depends on vulnerable versions of tar
+  node_modules/inngest-cli
+
+undici  <6.23.0
+Severity: moderate
+Undici has an unbounded decompression chain in HTTP responses on Node.js Fetch API via Content-Encoding leads to resource exhaustion - https://github.com/advisories/GHSA-g9mf-h72j-4rw9
+fix available via `npm audit fix`
+node_modules/undici
+
+33 vulnerabilities (11 low, 8 moderate, 14 high)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+npm notice
+npm notice New major version of npm available! 10.9.4 -> 11.8.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.8.0
+npm notice To update run: npm install -g npm@11.8.0
+npm notice
+~/workspace$  npm audit fix --force
+npm warn using --force Recommended protections disabled.
+npm warn audit Updating @mastra/memory to 1.0.1, which is a SemVer major change.
+npm warn audit Updating @mastra/core to 1.1.0, which is a SemVer major change.
+npm warn audit Updating @mastra/mcp to 1.0.0, which is a SemVer major change.
+npm warn audit Updating @mastra/inngest to 1.0.1, which is a SemVer major change.
+npm warn audit Updating @mastra/pg to 1.1.0, which is a SemVer major change.
+npm warn audit Updating @mastra/loggers to 1.0.1, which is a SemVer major change.
+npm warn audit Updating @mastra/libsql to 1.1.0, which is a SemVer major change.
+npm warn audit Updating mastra to 1.1.0, which is a SemVer major change.
+npm warn audit Updating @solana/spl-token to 0.1.8, which is a SemVer major change.
+npm warn audit Updating jito-ts to 2.2.0, which is a SemVer major change.
+npm warn audit Updating drizzle-kit to 0.18.1, which is a SemVer major change.
+npm warn audit Updating @sqds/multisig to 1.3.1, which is a SemVer major change.
+npm warn deprecated glob@8.1.0: Glob versions prior to v9 are no longer supported
+
+added 119 packages, removed 226 packages, changed 168 packages, and audited 1866 packages in 35s
+
+214 packages are looking for funding
+  run `npm fund` for details
+
+# npm audit report
+
+esbuild  <=0.24.2
+Severity: moderate
+esbuild enables any website to send any requests to the development server and read the response - https://github.com/advisories/GHSA-67mh-4wv8-2f99
+fix available via `npm audit fix --force`
+Will install drizzle-kit@0.31.8, which is a breaking change
+node_modules/drizzle-kit/node_modules/esbuild
+  drizzle-kit  0.9.1 - 0.9.54 || 0.12.9 - 0.18.1 || 0.19.2-9340465 - 0.30.6 || 1.0.0-beta.1 - 1.0.0-beta.1-fd5d1e8
+  Depends on vulnerable versions of esbuild
+  node_modules/drizzle-kit
+
+2 moderate severity vulnerabilities
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force

@@ -188,7 +188,8 @@ function MetricContent({ title, value, change, isMobile = false }) {
 function GaugeContent({ title, value, type, accentColor, isMobile = false }) {
   const { gaugeSize: hookGaugeSize, isMobile: hookIsMobile, isVerySmall } = useViewportBreakpoint()
   const effectiveIsMobile = isMobile || hookIsMobile
-  const gaugeSize = effectiveIsMobile ? Math.max(hookGaugeSize, 140) : Math.max(hookGaugeSize, 160)
+  // Make gauge at least twice as big - minimum 280px on desktop, 220px on mobile
+  const gaugeSize = effectiveIsMobile ? Math.max(hookGaugeSize * 1.5, 220) : Math.max(hookGaugeSize * 2, 280)
   return (
     <div style={{ 
       display: 'flex', 
@@ -196,7 +197,7 @@ function GaugeContent({ title, value, type, accentColor, isMobile = false }) {
       alignItems: 'center',
       justifyContent: 'center',
       height: '100%',
-      minHeight: effectiveIsMobile ? 180 : 200,
+      minHeight: effectiveIsMobile ? 260 : 300,
       padding: effectiveIsMobile ? 8 : 16,
       overflow: 'hidden',
     }}>
@@ -1102,7 +1103,7 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
         {/* Metrics Carousel - 1/3 width on desktop, 1/2 on mobile */}
         <div className="carousel-section metrics-carousel-section">
           <div className="carousel-label">Market Metrics</div>
-          <div style={{ height: isMobileLayout ? 280 : 260, width: '100%', flex: 1 }}>
+          <div style={{ height: isMobileLayout ? 300 : 320, width: '100%', flex: 1 }}>
             {isMobileLayout ? (
               <MobileCardCarousel
                 items={marketOverviewItems}
@@ -1151,7 +1152,7 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
         {/* Quick Actions Carousel - 1/3 width on desktop, 1/2 on mobile */}
         <div className="carousel-section quick-actions-carousel-section">
           <div className="carousel-label">Quick Actions</div>
-          <div style={{ height: isMobileLayout ? 280 : 260, width: '100%', flex: 1 }}>
+          <div style={{ height: isMobileLayout ? 300 : 320, width: '100%', flex: 1 }}>
             {isMobileLayout ? (
               <MobileCardCarousel
                 items={quickActions}
