@@ -1049,7 +1049,14 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
         const response = await fetch('/api/news')
         if (response.ok) {
           const data = await response.json()
-          setNews(data.news || data || defaultNews)
+          const articles = data.articles || data.news || data || []
+          const formattedNews = articles.map(article => ({
+            source: article.source || 'Unknown',
+            title: article.title || 'No title',
+            time: article.publishedAt ? new Date(article.publishedAt).toLocaleDateString() : 'Today',
+            url: article.url || '#'
+          }))
+          setNews(formattedNews.length > 0 ? formattedNews : defaultNews)
         } else {
           setNews(defaultNews)
         }

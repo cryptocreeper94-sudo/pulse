@@ -32,19 +32,30 @@ interface ChainStatus {
 
 export class DarkWaveChainClient {
   private baseUrl: string;
+  private webhookUrl: string;
   private apiKey: string;
   private apiSecret: string;
   private sessionToken: string | null = null;
   private sessionExpiresAt: number = 0;
+  private useWebhookMode: boolean = true;
 
   constructor() {
-    this.baseUrl = process.env.DARKWAVE_CHAIN_URL || 'https://chain.darkwave.io';
+    this.baseUrl = process.env.DARKWAVE_CHAIN_URL || 'https://dwtl.io';
+    this.webhookUrl = process.env.DARKWAVE_WEBHOOK_URL || 'https://trust-layer-portal.replit.app/api/pulse/webhook';
     this.apiKey = process.env.DARKWAVE_API_KEY || '';
     this.apiSecret = process.env.DARKWAVE_API_SECRET || '';
   }
 
   private isConfigured(): boolean {
     return !!(this.apiKey && this.apiSecret);
+  }
+
+  private generateWebhookSignature(timestamp: string, body: string): string {
+    const message = `${timestamp}${body}`;
+    return crypto
+      .createHmac('sha256', this.apiSecret)
+      .update(message)
+      .digest('hex');
   }
 
   private generateSignature(method: string, path: string, body: string, timestamp: string): string {
@@ -55,7 +66,37 @@ export class DarkWaveChainClient {
       .digest('hex');
   }
 
+  private async sendWebhook<T>(type: string, data: any): Promise<T> {
+    if (!this.isConfigured()) {
+      throw new Error('DarkWave Smart Chain not configured. Set DARKWAVE_API_KEY and DARKWAVE_API_SECRET.');
+    }
+
+    const timestamp = Date.now().toString();
+    const body = JSON.stringify({ type, data });
+    const signature = this.generateWebhookSignature(timestamp, body);
+
+    const response = await fetch(this.webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': this.apiKey,
+        'x-timestamp': timestamp,
+        'x-signature': signature,
+      },
+      body,
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`DarkWave webhook error: ${response.status} - ${error}`);
+    }
+
+    return response.json() as T;
+  }
+
   private async ensureSession(): Promise<void> {
+    if (this.useWebhookMode) return;
+    
     if (this.sessionToken && Date.now() < this.sessionExpiresAt) {
       return;
     }
@@ -156,6 +197,15 @@ export class DarkWaveChainClient {
     blockNumber?: number;
     timestamp?: string;
   }> {
+    if (this.useWebhookMode) {
+      return this.sendWebhook(submission.dataType, {
+        hash: submission.hash,
+        sourceApp: 'pulse',
+        metadata: submission.metadata || {},
+        timestamp: new Date().toISOString(),
+      });
+    }
+    
     return this.request('POST', '/api/hash/submit', {
       hash: submission.hash,
       dataType: submission.dataType,
@@ -176,6 +226,15 @@ export class DarkWaveChainClient {
   }
 
   async generateHallmark(request: HallmarkRequest): Promise<HallmarkResponse> {
+    if (this.useWebhookMode) {
+      return this.sendWebhook('hallmark', {
+        productType: request.productType,
+        productId: request.productId,
+        sourceApp: 'pulse',
+        metadata: request.metadata || {},
+      });
+    }
+    
     return this.request('POST', '/api/hallmark/generate', {
       productType: request.productType,
       productId: request.productId,
