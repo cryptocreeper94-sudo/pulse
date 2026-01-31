@@ -203,6 +203,14 @@
   box-shadow: 0 4px 15px rgba(139, 92, 246, 0.5);
 }
 
+/* Hide beta badge on tablets and mobile to save screen space */
+@media (max-width: 1024px) {
+  .beta-badge,
+  .beta-badge-minimized {
+    display: none !important;
+  }
+}
+
 @media (max-width: 480px) {
   .beta-badge {
     right: 8px;
