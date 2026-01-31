@@ -115,7 +115,7 @@ function QuickActionContent({ action, isMobile = false }) {
       position: 'relative',
       width: '100%',
       height: '100%',
-      borderRadius: 12,
+      borderRadius: isMobile ? 8 : 12,
       overflow: 'hidden',
       background: '#1a1a1a',
     }}>
@@ -136,11 +136,11 @@ function QuickActionContent({ action, isMobile = false }) {
         bottom: 0,
         left: 0,
         right: 0,
-        padding: isMobile ? '30px 12px 12px' : '40px 16px 16px',
+        padding: isMobile ? '20px 8px 8px' : '40px 16px 16px',
         background: 'linear-gradient(transparent, rgba(0,0,0,0.9))',
       }}>
-        <div style={{ fontSize: isMobile ? 16 : 18, fontWeight: 700, color: action.color, whiteSpace: 'nowrap' }}>{action.title}</div>
-        <div style={{ fontSize: isMobile ? 11 : 12, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{action.subtitle}</div>
+        <div style={{ fontSize: isMobile ? 12 : 18, fontWeight: 700, color: action.color, whiteSpace: 'nowrap' }}>{action.title}</div>
+        <div style={{ fontSize: isMobile ? 9 : 12, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{action.subtitle}</div>
       </div>
     </div>
   )
@@ -157,19 +157,19 @@ function MetricContent({ title, value, change, isMobile = false }) {
       alignItems: 'center',
       justifyContent: 'center',
       height: '100%',
-      minHeight: isMobile ? 80 : 110,
-      padding: isMobile ? 6 : 12,
+      minHeight: isMobile ? 120 : 110,
+      padding: isMobile ? 8 : 12,
       textAlign: 'center',
     }}>
-      <div style={{ fontSize: isMobile ? 8 : 10, color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', marginBottom: isMobile ? 6 : 10, letterSpacing: isMobile ? 0.5 : 1 }}>
+      <div style={{ fontSize: isMobile ? 9 : 10, color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', marginBottom: isMobile ? 4 : 10, letterSpacing: isMobile ? 0.5 : 1 }}>
         {title}
       </div>
-      <div style={{ fontSize: isMobile ? 16 : 24, fontWeight: 800, color: valueColor, marginBottom: hasChange ? (isMobile ? 4 : 6) : 0 }}>
+      <div style={{ fontSize: isMobile ? 18 : 24, fontWeight: 800, color: valueColor, marginBottom: hasChange ? (isMobile ? 3 : 6) : 0 }}>
         {value}
       </div>
       {hasChange && (
         <div style={{ 
-          fontSize: isMobile ? 10 : 13, 
+          fontSize: isMobile ? 11 : 13, 
           fontWeight: 600, 
           color: isPositive ? 'var(--neon-green)' : 'var(--accent-red)',
           display: 'flex',
@@ -188,8 +188,8 @@ function MetricContent({ title, value, change, isMobile = false }) {
 function GaugeContent({ title, value, type, accentColor, isMobile = false }) {
   const { gaugeSize: hookGaugeSize, isMobile: hookIsMobile, isVerySmall } = useViewportBreakpoint()
   const effectiveIsMobile = isMobile || hookIsMobile
-  // Make gauge at least twice as big - minimum 280px on desktop, 220px on mobile
-  const gaugeSize = effectiveIsMobile ? Math.max(hookGaugeSize * 1.5, 220) : Math.max(hookGaugeSize * 2, 280)
+  // Compact gauge sizes - 140px on mobile, 200px on desktop for tight DexScreener-style layout
+  const gaugeSize = effectiveIsMobile ? 140 : Math.min(hookGaugeSize * 1.5, 200)
   return (
     <div style={{ 
       display: 'flex', 
@@ -197,17 +197,17 @@ function GaugeContent({ title, value, type, accentColor, isMobile = false }) {
       alignItems: 'center',
       justifyContent: 'center',
       height: '100%',
-      minHeight: effectiveIsMobile ? 260 : 300,
-      padding: effectiveIsMobile ? 8 : 16,
+      minHeight: effectiveIsMobile ? 160 : 220,
+      padding: effectiveIsMobile ? 4 : 12,
       overflow: 'hidden',
     }}>
       <div style={{ 
         color: accentColor, 
-        fontSize: effectiveIsMobile ? 14 : 16, 
+        fontSize: effectiveIsMobile ? 10 : 14, 
         fontWeight: 700, 
         textTransform: 'uppercase', 
-        letterSpacing: effectiveIsMobile ? 1 : 1.5,
-        marginBottom: effectiveIsMobile ? 10 : 14,
+        letterSpacing: effectiveIsMobile ? 0.5 : 1,
+        marginBottom: effectiveIsMobile ? 4 : 10,
         textAlign: 'center',
         width: '100%',
       }}>
@@ -532,9 +532,10 @@ function MiniCoinTable({ coins: initialCoins, onCoinClick, favorites, selectedCo
   
   const displayCoins = getFilteredCoins()
   
+  const isMobileView = window.matchMedia('(max-width: 1024px)').matches
   return (
-    <div style={{ height: 600, display: 'flex', flexDirection: 'column' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8, flexWrap: 'wrap', gap: 8 }}>
+    <div style={{ height: isMobileView ? 380 : 600, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobileView ? 6 : 8, flexWrap: 'wrap', gap: isMobileView ? 4 : 8 }}>
         <TileLabel>{category === 'top' ? 'Top Coins' : category === 'gainers' ? 'Top Gainers' : category === 'losers' ? 'Top Losers' : category === 'meme' ? 'Meme Coins' : category === 'defi' ? 'DeFi' : 'DEX Tokens'}</TileLabel>
         <div style={{ display: 'flex', gap: 4, background: 'var(--bg-surface-2)', borderRadius: 6, padding: 2 }}>
           <button
@@ -1110,7 +1111,7 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
         {/* Metrics Carousel - 1/3 width on desktop, 1/2 on mobile */}
         <div className="carousel-section metrics-carousel-section">
           <div className="carousel-label">Market Metrics</div>
-          <div style={{ height: isMobileLayout ? 300 : 320, width: '100%', flex: 1 }}>
+          <div style={{ height: isMobileLayout ? 160 : 280, width: '100%', flex: 1 }}>
             {isMobileLayout ? (
               <MobileCardCarousel
                 items={marketOverviewItems}
@@ -1159,7 +1160,7 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
         {/* Quick Actions Carousel - 1/3 width on desktop, 1/2 on mobile */}
         <div className="carousel-section quick-actions-carousel-section">
           <div className="carousel-label">Quick Actions</div>
-          <div style={{ height: isMobileLayout ? 300 : 320, width: '100%', flex: 1 }}>
+          <div style={{ height: isMobileLayout ? 160 : 280, width: '100%', flex: 1 }}>
             {isMobileLayout ? (
               <MobileCardCarousel
                 items={quickActions}
