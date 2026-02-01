@@ -1886,3 +1886,588 @@ export const ecosystemApps = pgTable('ecosystem_apps', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
+
+// ============================================
+// PORTFOLIO & WEALTH MANAGEMENT SYSTEM
+// Multi-wallet aggregation, P&L tracking, tax reports
+// ============================================
+
+export const portfolioWallets = pgTable('portfolio_wallets', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  address: varchar('address', { length: 255 }).notNull(),
+  chain: varchar('chain', { length: 50 }).notNull(),
+  nickname: varchar('nickname', { length: 100 }),
+  walletType: varchar('wallet_type', { length: 50 }).default('external'),
+  isConnected: boolean('is_connected').default(true),
+  lastSyncAt: timestamp('last_sync_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const portfolioHoldings = pgTable('portfolio_holdings', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  walletId: varchar('wallet_id', { length: 255 }),
+  tokenAddress: varchar('token_address', { length: 255 }).notNull(),
+  tokenSymbol: varchar('token_symbol', { length: 50 }).notNull(),
+  tokenName: varchar('token_name', { length: 255 }),
+  chain: varchar('chain', { length: 50 }).notNull(),
+  balance: decimal('balance', { precision: 36, scale: 18 }).notNull(),
+  balanceUsd: decimal('balance_usd', { precision: 18, scale: 2 }),
+  price: decimal('price', { precision: 24, scale: 12 }),
+  priceChange24h: decimal('price_change_24h', { precision: 10, scale: 4 }),
+  costBasisUsd: decimal('cost_basis_usd', { precision: 18, scale: 2 }),
+  unrealizedPnlUsd: decimal('unrealized_pnl_usd', { precision: 18, scale: 2 }),
+  unrealizedPnlPercent: decimal('unrealized_pnl_percent', { precision: 10, scale: 4 }),
+  lastUpdated: timestamp('last_updated').defaultNow().notNull(),
+});
+
+export const portfolioSnapshots = pgTable('portfolio_snapshots', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  snapshotDate: timestamp('snapshot_date').notNull(),
+  totalValueUsd: decimal('total_value_usd', { precision: 18, scale: 2 }).notNull(),
+  totalCostBasisUsd: decimal('total_cost_basis_usd', { precision: 18, scale: 2 }),
+  totalPnlUsd: decimal('total_pnl_usd', { precision: 18, scale: 2 }),
+  totalPnlPercent: decimal('total_pnl_percent', { precision: 10, scale: 4 }),
+  holdingsCount: integer('holdings_count').default(0),
+  topHoldings: text('top_holdings'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const portfolioTransactions = pgTable('portfolio_transactions', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  walletId: varchar('wallet_id', { length: 255 }),
+  txHash: varchar('tx_hash', { length: 255 }),
+  chain: varchar('chain', { length: 50 }).notNull(),
+  txType: varchar('tx_type', { length: 50 }).notNull(),
+  tokenIn: varchar('token_in', { length: 255 }),
+  tokenOut: varchar('token_out', { length: 255 }),
+  amountIn: decimal('amount_in', { precision: 36, scale: 18 }),
+  amountOut: decimal('amount_out', { precision: 36, scale: 18 }),
+  priceUsd: decimal('price_usd', { precision: 24, scale: 12 }),
+  valueUsd: decimal('value_usd', { precision: 18, scale: 2 }),
+  feeUsd: decimal('fee_usd', { precision: 18, scale: 6 }),
+  realizedPnlUsd: decimal('realized_pnl_usd', { precision: 18, scale: 2 }),
+  costBasisMethod: varchar('cost_basis_method', { length: 20 }).default('FIFO'),
+  txTimestamp: timestamp('tx_timestamp').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const costBasisLots = pgTable('cost_basis_lots', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  tokenAddress: varchar('token_address', { length: 255 }).notNull(),
+  chain: varchar('chain', { length: 50 }).notNull(),
+  acquiredAmount: decimal('acquired_amount', { precision: 36, scale: 18 }).notNull(),
+  remainingAmount: decimal('remaining_amount', { precision: 36, scale: 18 }).notNull(),
+  costBasisPerUnit: decimal('cost_basis_per_unit', { precision: 24, scale: 12 }).notNull(),
+  totalCostBasis: decimal('total_cost_basis', { precision: 18, scale: 2 }).notNull(),
+  acquiredAt: timestamp('acquired_at').notNull(),
+  txHash: varchar('tx_hash', { length: 255 }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// ============================================
+// ALERTS & NOTIFICATIONS SYSTEM
+// Price alerts, whale alerts, smart money tracking
+// ============================================
+
+export const priceAlerts = pgTable('price_alerts', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  tokenAddress: varchar('token_address', { length: 255 }),
+  tokenSymbol: varchar('token_symbol', { length: 50 }).notNull(),
+  chain: varchar('chain', { length: 50 }).default('all'),
+  alertType: varchar('alert_type', { length: 50 }).notNull(),
+  condition: varchar('condition', { length: 20 }).notNull(),
+  targetPrice: decimal('target_price', { precision: 24, scale: 12 }),
+  targetPercent: decimal('target_percent', { precision: 10, scale: 4 }),
+  currentPrice: decimal('current_price', { precision: 24, scale: 12 }),
+  isActive: boolean('is_active').default(true),
+  isTriggered: boolean('is_triggered').default(false),
+  triggeredAt: timestamp('triggered_at'),
+  notifyTelegram: boolean('notify_telegram').default(true),
+  notifyEmail: boolean('notify_email').default(false),
+  notifyPush: boolean('notify_push').default(false),
+  note: text('note'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const whaleAlerts = pgTable('whale_alerts', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  watchedAddress: varchar('watched_address', { length: 255 }).notNull(),
+  addressLabel: varchar('address_label', { length: 100 }),
+  chain: varchar('chain', { length: 50 }).notNull(),
+  minAmountUsd: decimal('min_amount_usd', { precision: 18, scale: 2 }).default('10000'),
+  alertOnBuy: boolean('alert_on_buy').default(true),
+  alertOnSell: boolean('alert_on_sell').default(true),
+  alertOnTransfer: boolean('alert_on_transfer').default(false),
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const whaleTransactions = pgTable('whale_transactions', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  whaleAddress: varchar('whale_address', { length: 255 }).notNull(),
+  chain: varchar('chain', { length: 50 }).notNull(),
+  txHash: varchar('tx_hash', { length: 255 }).notNull(),
+  txType: varchar('tx_type', { length: 50 }).notNull(),
+  tokenAddress: varchar('token_address', { length: 255 }),
+  tokenSymbol: varchar('token_symbol', { length: 50 }),
+  amount: decimal('amount', { precision: 36, scale: 18 }),
+  valueUsd: decimal('value_usd', { precision: 18, scale: 2 }),
+  fromAddress: varchar('from_address', { length: 255 }),
+  toAddress: varchar('to_address', { length: 255 }),
+  txTimestamp: timestamp('tx_timestamp').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const smartMoneyWallets = pgTable('smart_money_wallets', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  address: varchar('address', { length: 255 }).notNull().unique(),
+  chain: varchar('chain', { length: 50 }).notNull(),
+  label: varchar('label', { length: 100 }),
+  category: varchar('category', { length: 50 }),
+  winRate: decimal('win_rate', { precision: 5, scale: 2 }),
+  totalPnlUsd: decimal('total_pnl_usd', { precision: 18, scale: 2 }),
+  tradesCount: integer('trades_count').default(0),
+  avgHoldTime: varchar('avg_hold_time', { length: 50 }),
+  isVerified: boolean('is_verified').default(false),
+  lastActiveAt: timestamp('last_active_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const notificationChannels = pgTable('notification_channels', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  channelType: varchar('channel_type', { length: 50 }).notNull(),
+  channelValue: varchar('channel_value', { length: 255 }).notNull(),
+  isVerified: boolean('is_verified').default(false),
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const notificationLogs = pgTable('notification_logs', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  alertId: varchar('alert_id', { length: 255 }),
+  alertType: varchar('alert_type', { length: 50 }).notNull(),
+  channelType: varchar('channel_type', { length: 50 }).notNull(),
+  message: text('message').notNull(),
+  status: varchar('status', { length: 50 }).notNull().default('pending'),
+  sentAt: timestamp('sent_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// ============================================
+// SOCIAL & COMMUNITY SYSTEM
+// Profiles, follows, leaderboards, signal sharing
+// ============================================
+
+export const traderProfiles = pgTable('trader_profiles', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull().unique(),
+  displayName: varchar('display_name', { length: 100 }),
+  username: varchar('username', { length: 50 }).unique(),
+  bio: text('bio'),
+  avatarUrl: text('avatar_url'),
+  isPublic: boolean('is_public').default(false),
+  showPnl: boolean('show_pnl').default(true),
+  showTrades: boolean('show_trades').default(true),
+  totalPnlUsd: decimal('total_pnl_usd', { precision: 18, scale: 2 }).default('0'),
+  winRate: decimal('win_rate', { precision: 5, scale: 2 }).default('0'),
+  tradesCount: integer('trades_count').default(0),
+  followersCount: integer('followers_count').default(0),
+  followingCount: integer('following_count').default(0),
+  rank: integer('rank'),
+  badges: text('badges'),
+  verifiedTrader: boolean('verified_trader').default(false),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const traderFollows = pgTable('trader_follows', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  followerId: varchar('follower_id', { length: 255 }).notNull(),
+  followingId: varchar('following_id', { length: 255 }).notNull(),
+  copyTrading: boolean('copy_trading').default(false),
+  copyPercent: decimal('copy_percent', { precision: 5, scale: 2 }),
+  maxCopyAmountUsd: decimal('max_copy_amount_usd', { precision: 18, scale: 2 }),
+  notifyOnTrade: boolean('notify_on_trade').default(true),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const sharedSignals = pgTable('shared_signals', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  tokenSymbol: varchar('token_symbol', { length: 50 }).notNull(),
+  tokenAddress: varchar('token_address', { length: 255 }),
+  chain: varchar('chain', { length: 50 }),
+  signalType: varchar('signal_type', { length: 20 }).notNull(),
+  entryPrice: decimal('entry_price', { precision: 24, scale: 12 }),
+  targetPrice: decimal('target_price', { precision: 24, scale: 12 }),
+  stopLoss: decimal('stop_loss', { precision: 24, scale: 12 }),
+  reasoning: text('reasoning'),
+  confidence: varchar('confidence', { length: 20 }),
+  isPublic: boolean('is_public').default(true),
+  likesCount: integer('likes_count').default(0),
+  commentsCount: integer('comments_count').default(0),
+  copiesCount: integer('copies_count').default(0),
+  outcome: varchar('outcome', { length: 20 }),
+  outcomePercent: decimal('outcome_percent', { precision: 10, scale: 4 }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  closedAt: timestamp('closed_at'),
+});
+
+export const signalComments = pgTable('signal_comments', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  signalId: varchar('signal_id', { length: 255 }).notNull(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  comment: text('comment').notNull(),
+  likesCount: integer('likes_count').default(0),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const leaderboardSnapshots = pgTable('leaderboard_snapshots', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  period: varchar('period', { length: 20 }).notNull(),
+  periodStart: timestamp('period_start').notNull(),
+  periodEnd: timestamp('period_end').notNull(),
+  rankings: text('rankings').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// ============================================
+// DEFI DASHBOARD SYSTEM
+// Staking, yield farming, LP positions, APY tracking
+// ============================================
+
+export const defiPositions = pgTable('defi_positions', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  walletAddress: varchar('wallet_address', { length: 255 }).notNull(),
+  chain: varchar('chain', { length: 50 }).notNull(),
+  protocol: varchar('protocol', { length: 100 }).notNull(),
+  protocolLogo: text('protocol_logo'),
+  positionType: varchar('position_type', { length: 50 }).notNull(),
+  poolName: varchar('pool_name', { length: 255 }),
+  poolAddress: varchar('pool_address', { length: 255 }),
+  token0Symbol: varchar('token0_symbol', { length: 50 }),
+  token0Address: varchar('token0_address', { length: 255 }),
+  token0Amount: decimal('token0_amount', { precision: 36, scale: 18 }),
+  token1Symbol: varchar('token1_symbol', { length: 50 }),
+  token1Address: varchar('token1_address', { length: 255 }),
+  token1Amount: decimal('token1_amount', { precision: 36, scale: 18 }),
+  stakedAmount: decimal('staked_amount', { precision: 36, scale: 18 }),
+  rewardToken: varchar('reward_token', { length: 50 }),
+  pendingRewards: decimal('pending_rewards', { precision: 36, scale: 18 }),
+  valueUsd: decimal('value_usd', { precision: 18, scale: 2 }),
+  apy: decimal('apy', { precision: 10, scale: 4 }),
+  apr: decimal('apr', { precision: 10, scale: 4 }),
+  dailyYieldUsd: decimal('daily_yield_usd', { precision: 18, scale: 6 }),
+  impermanentLossPercent: decimal('impermanent_loss_percent', { precision: 10, scale: 4 }),
+  healthFactor: decimal('health_factor', { precision: 10, scale: 4 }),
+  lastUpdated: timestamp('last_updated').defaultNow().notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const defiProtocols = pgTable('defi_protocols', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  name: varchar('name', { length: 100 }).notNull(),
+  slug: varchar('slug', { length: 100 }).notNull().unique(),
+  chain: varchar('chain', { length: 50 }).notNull(),
+  category: varchar('category', { length: 50 }).notNull(),
+  logoUrl: text('logo_url'),
+  websiteUrl: text('website_url'),
+  tvl: decimal('tvl', { precision: 24, scale: 2 }),
+  tvlChange24h: decimal('tvl_change_24h', { precision: 10, scale: 4 }),
+  avgApy: decimal('avg_apy', { precision: 10, scale: 4 }),
+  riskScore: varchar('risk_score', { length: 20 }),
+  isAudited: boolean('is_audited').default(false),
+  lastUpdated: timestamp('last_updated').defaultNow().notNull(),
+});
+
+export const yieldOpportunities = pgTable('yield_opportunities', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  protocolId: varchar('protocol_id', { length: 255 }).notNull(),
+  chain: varchar('chain', { length: 50 }).notNull(),
+  poolName: varchar('pool_name', { length: 255 }).notNull(),
+  poolAddress: varchar('pool_address', { length: 255 }),
+  tokens: text('tokens'),
+  apy: decimal('apy', { precision: 10, scale: 4 }).notNull(),
+  apr: decimal('apr', { precision: 10, scale: 4 }),
+  baseApy: decimal('base_apy', { precision: 10, scale: 4 }),
+  rewardApy: decimal('reward_apy', { precision: 10, scale: 4 }),
+  tvl: decimal('tvl', { precision: 24, scale: 2 }),
+  riskLevel: varchar('risk_level', { length: 20 }),
+  ilRisk: varchar('il_risk', { length: 20 }),
+  depositFee: decimal('deposit_fee', { precision: 5, scale: 4 }),
+  withdrawFee: decimal('withdraw_fee', { precision: 5, scale: 4 }),
+  lockupPeriod: varchar('lockup_period', { length: 50 }),
+  minDeposit: decimal('min_deposit', { precision: 24, scale: 2 }),
+  featured: boolean('featured').default(false),
+  lastUpdated: timestamp('last_updated').defaultNow().notNull(),
+});
+
+// ============================================
+// CALENDAR & EVENTS SYSTEM
+// Token unlocks, airdrops, IDOs, network upgrades
+// ============================================
+
+export const cryptoEvents = pgTable('crypto_events', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  eventType: varchar('event_type', { length: 50 }).notNull(),
+  title: varchar('title', { length: 255 }).notNull(),
+  description: text('description'),
+  tokenSymbol: varchar('token_symbol', { length: 50 }),
+  tokenAddress: varchar('token_address', { length: 255 }),
+  chain: varchar('chain', { length: 50 }),
+  eventDate: timestamp('event_date').notNull(),
+  eventEndDate: timestamp('event_end_date'),
+  valueUsd: decimal('value_usd', { precision: 24, scale: 2 }),
+  impactLevel: varchar('impact_level', { length: 20 }),
+  sourceUrl: text('source_url'),
+  isConfirmed: boolean('is_confirmed').default(true),
+  metadata: text('metadata'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const tokenUnlocks = pgTable('token_unlocks', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  tokenSymbol: varchar('token_symbol', { length: 50 }).notNull(),
+  tokenAddress: varchar('token_address', { length: 255 }),
+  chain: varchar('chain', { length: 50 }),
+  unlockDate: timestamp('unlock_date').notNull(),
+  unlockAmount: decimal('unlock_amount', { precision: 36, scale: 18 }).notNull(),
+  unlockValueUsd: decimal('unlock_value_usd', { precision: 24, scale: 2 }),
+  percentOfSupply: decimal('percent_of_supply', { precision: 10, scale: 4 }),
+  unlockType: varchar('unlock_type', { length: 50 }),
+  recipientType: varchar('recipient_type', { length: 50 }),
+  sourceUrl: text('source_url'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const airdropTracking = pgTable('airdrop_tracking', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  projectName: varchar('project_name', { length: 255 }).notNull(),
+  tokenSymbol: varchar('token_symbol', { length: 50 }),
+  chain: varchar('chain', { length: 50 }),
+  status: varchar('status', { length: 50 }).notNull().default('upcoming'),
+  estimatedDate: timestamp('estimated_date'),
+  snapshotDate: timestamp('snapshot_date'),
+  claimStartDate: timestamp('claim_start_date'),
+  claimEndDate: timestamp('claim_end_date'),
+  eligibilityCriteria: text('eligibility_criteria'),
+  estimatedValueUsd: decimal('estimated_value_usd', { precision: 18, scale: 2 }),
+  websiteUrl: text('website_url'),
+  twitterUrl: text('twitter_url'),
+  discordUrl: text('discord_url'),
+  isFeatured: boolean('is_featured').default(false),
+  riskLevel: varchar('risk_level', { length: 20 }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const userEventReminders = pgTable('user_event_reminders', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  eventId: varchar('event_id', { length: 255 }).notNull(),
+  eventType: varchar('event_type', { length: 50 }).notNull(),
+  reminderTime: timestamp('reminder_time').notNull(),
+  notified: boolean('notified').default(false),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// ============================================
+// ON-CHAIN ANALYTICS SYSTEM
+// DEX volume, holder distribution, token flows, gas tracker
+// ============================================
+
+export const tokenHolderStats = pgTable('token_holder_stats', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  tokenAddress: varchar('token_address', { length: 255 }).notNull(),
+  chain: varchar('chain', { length: 50 }).notNull(),
+  totalHolders: integer('total_holders').notNull(),
+  top10Percent: decimal('top10_percent', { precision: 10, scale: 4 }),
+  top50Percent: decimal('top50_percent', { precision: 10, scale: 4 }),
+  top100Percent: decimal('top100_percent', { precision: 10, scale: 4 }),
+  holdersChange24h: integer('holders_change_24h'),
+  distribution: text('distribution'),
+  snapshotAt: timestamp('snapshot_at').defaultNow().notNull(),
+});
+
+export const tokenFlows = pgTable('token_flows', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  tokenAddress: varchar('token_address', { length: 255 }).notNull(),
+  chain: varchar('chain', { length: 50 }).notNull(),
+  flowType: varchar('flow_type', { length: 50 }).notNull(),
+  fromCategory: varchar('from_category', { length: 50 }),
+  toCategory: varchar('to_category', { length: 50 }),
+  amount: decimal('amount', { precision: 36, scale: 18 }).notNull(),
+  valueUsd: decimal('value_usd', { precision: 18, scale: 2 }),
+  txCount: integer('tx_count').default(1),
+  periodStart: timestamp('period_start').notNull(),
+  periodEnd: timestamp('period_end').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const dexVolumeStats = pgTable('dex_volume_stats', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  chain: varchar('chain', { length: 50 }).notNull(),
+  dexName: varchar('dex_name', { length: 100 }),
+  tokenAddress: varchar('token_address', { length: 255 }),
+  tokenSymbol: varchar('token_symbol', { length: 50 }),
+  volume24h: decimal('volume_24h', { precision: 24, scale: 2 }).notNull(),
+  volumeChange24h: decimal('volume_change_24h', { precision: 10, scale: 4 }),
+  trades24h: integer('trades_24h'),
+  uniqueBuyers24h: integer('unique_buyers_24h'),
+  uniqueSellers24h: integer('unique_sellers_24h'),
+  buyVolume: decimal('buy_volume', { precision: 24, scale: 2 }),
+  sellVolume: decimal('sell_volume', { precision: 24, scale: 2 }),
+  snapshotAt: timestamp('snapshot_at').defaultNow().notNull(),
+});
+
+export const gasPrices = pgTable('gas_prices', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  chain: varchar('chain', { length: 50 }).notNull(),
+  slowGwei: decimal('slow_gwei', { precision: 18, scale: 9 }),
+  standardGwei: decimal('standard_gwei', { precision: 18, scale: 9 }),
+  fastGwei: decimal('fast_gwei', { precision: 18, scale: 9 }),
+  instantGwei: decimal('instant_gwei', { precision: 18, scale: 9 }),
+  baseFee: decimal('base_fee', { precision: 18, scale: 9 }),
+  priorityFee: decimal('priority_fee', { precision: 18, scale: 9 }),
+  estimatedSwapCostUsd: decimal('estimated_swap_cost_usd', { precision: 10, scale: 4 }),
+  congestionLevel: varchar('congestion_level', { length: 20 }),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// ============================================
+// NFT PORTFOLIO SYSTEM
+// NFT holdings, floor prices, collection tracking
+// ============================================
+
+export const nftHoldings = pgTable('nft_holdings', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  walletAddress: varchar('wallet_address', { length: 255 }).notNull(),
+  chain: varchar('chain', { length: 50 }).notNull(),
+  collectionAddress: varchar('collection_address', { length: 255 }).notNull(),
+  collectionName: varchar('collection_name', { length: 255 }),
+  tokenId: varchar('token_id', { length: 255 }).notNull(),
+  name: varchar('name', { length: 255 }),
+  imageUrl: text('image_url'),
+  rarity: varchar('rarity', { length: 50 }),
+  rarityRank: integer('rarity_rank'),
+  lastSalePrice: decimal('last_sale_price', { precision: 24, scale: 12 }),
+  estimatedValue: decimal('estimated_value', { precision: 18, scale: 2 }),
+  acquiredAt: timestamp('acquired_at'),
+  acquiredPrice: decimal('acquired_price', { precision: 24, scale: 12 }),
+  lastUpdated: timestamp('last_updated').defaultNow().notNull(),
+});
+
+export const nftCollections = pgTable('nft_collections', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  address: varchar('address', { length: 255 }).notNull(),
+  chain: varchar('chain', { length: 50 }).notNull(),
+  name: varchar('name', { length: 255 }).notNull(),
+  symbol: varchar('symbol', { length: 50 }),
+  imageUrl: text('image_url'),
+  bannerUrl: text('banner_url'),
+  description: text('description'),
+  floorPrice: decimal('floor_price', { precision: 24, scale: 12 }),
+  floorPriceUsd: decimal('floor_price_usd', { precision: 18, scale: 2 }),
+  floorChange24h: decimal('floor_change_24h', { precision: 10, scale: 4 }),
+  volume24h: decimal('volume_24h', { precision: 24, scale: 2 }),
+  volumeChange24h: decimal('volume_change_24h', { precision: 10, scale: 4 }),
+  totalSupply: integer('total_supply'),
+  holders: integer('holders'),
+  listedCount: integer('listed_count'),
+  websiteUrl: text('website_url'),
+  twitterUrl: text('twitter_url'),
+  discordUrl: text('discord_url'),
+  lastUpdated: timestamp('last_updated').defaultNow().notNull(),
+});
+
+// ============================================
+// REFERRAL PROGRAM SYSTEM
+// Referral codes, tracking, payouts
+// ============================================
+
+export const referralCodes = pgTable('referral_codes', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  code: varchar('code', { length: 50 }).notNull().unique(),
+  rewardPercent: decimal('reward_percent', { precision: 5, scale: 2 }).default('10'),
+  lifetimeReferrals: integer('lifetime_referrals').default(0),
+  lifetimeEarningsUsd: decimal('lifetime_earnings_usd', { precision: 18, scale: 2 }).default('0'),
+  pendingPayoutUsd: decimal('pending_payout_usd', { precision: 18, scale: 2 }).default('0'),
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const referralAttributions = pgTable('referral_attributions', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  referrerUserId: varchar('referrer_user_id', { length: 255 }).notNull(),
+  referredUserId: varchar('referred_user_id', { length: 255 }).notNull(),
+  referralCode: varchar('referral_code', { length: 50 }).notNull(),
+  signupDate: timestamp('signup_date').defaultNow().notNull(),
+  firstPurchaseDate: timestamp('first_purchase_date'),
+  totalSpendUsd: decimal('total_spend_usd', { precision: 18, scale: 2 }).default('0'),
+  commissionPaidUsd: decimal('commission_paid_usd', { precision: 18, scale: 2 }).default('0'),
+  status: varchar('status', { length: 50 }).default('active'),
+});
+
+export const referralPayouts = pgTable('referral_payouts', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  amountUsd: decimal('amount_usd', { precision: 18, scale: 2 }).notNull(),
+  payoutMethod: varchar('payout_method', { length: 50 }).notNull(),
+  payoutAddress: varchar('payout_address', { length: 255 }),
+  txHash: varchar('tx_hash', { length: 255 }),
+  status: varchar('status', { length: 50 }).default('pending'),
+  processedAt: timestamp('processed_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// ============================================
+// ARBITRAGE SCANNER SYSTEM
+// Cross-exchange price comparison
+// ============================================
+
+export const arbitrageOpportunities = pgTable('arbitrage_opportunities', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  tokenSymbol: varchar('token_symbol', { length: 50 }).notNull(),
+  tokenAddress: varchar('token_address', { length: 255 }),
+  buyExchange: varchar('buy_exchange', { length: 100 }).notNull(),
+  buyChain: varchar('buy_chain', { length: 50 }),
+  buyPrice: decimal('buy_price', { precision: 24, scale: 12 }).notNull(),
+  sellExchange: varchar('sell_exchange', { length: 100 }).notNull(),
+  sellChain: varchar('sell_chain', { length: 50 }),
+  sellPrice: decimal('sell_price', { precision: 24, scale: 12 }).notNull(),
+  spreadPercent: decimal('spread_percent', { precision: 10, scale: 4 }).notNull(),
+  estimatedProfitUsd: decimal('estimated_profit_usd', { precision: 18, scale: 2 }),
+  minTradeSize: decimal('min_trade_size', { precision: 18, scale: 2 }),
+  maxTradeSize: decimal('max_trade_size', { precision: 18, scale: 2 }),
+  bridgeFeeUsd: decimal('bridge_fee_usd', { precision: 18, scale: 6 }),
+  gasFeeUsd: decimal('gas_fee_usd', { precision: 18, scale: 6 }),
+  netProfitUsd: decimal('net_profit_usd', { precision: 18, scale: 2 }),
+  expiresAt: timestamp('expires_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// ============================================
+// MULTI-LANGUAGE SUPPORT (i18n)
+// ============================================
+
+export const userLocalePrefs = pgTable('user_locale_prefs', {
+  userId: varchar('user_id', { length: 255 }).primaryKey(),
+  locale: varchar('locale', { length: 10 }).notNull().default('en'),
+  timezone: varchar('timezone', { length: 100 }),
+  dateFormat: varchar('date_format', { length: 50 }),
+  numberFormat: varchar('number_format', { length: 50 }),
+  currency: varchar('currency', { length: 10 }).default('USD'),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
