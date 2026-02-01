@@ -1,0 +1,51 @@
+🔗 ECOSYSTEM DOMAIN INTEGRATION HANDOFF
+For: DarkWave Studios, DarkWave Games, and All Ecosystem Apps
+Updated: February 1, 2026
+
+Official Ecosystem Domains
+Domain	Purpose	Status
+dwsc.io	Trust Layer Portal (Main Hub)	✅ Active
+darkwavestudios.io	Game Development Studio	✅ Active
+darkwavegames.io	Gaming Platform	✅ Active
+yourlegacy.io	Chronicles Game	✅ Active
+tlid.io	Trust Layer ID Domains	✅ Active
+trustshield.tech	Guardian Shield Security	✅ NEW - ACTIVE
+Pages to Link
+Feature	URL	Icon	Description
+Guardian AI	https://dwsc.io/guardian-ai	🤖🛡️	AI agent certification system
+Guardian AI Registry	https://dwsc.io/guardian-ai-registry	📋	Public list of certified agents
+AI Agent Marketplace	https://dwsc.io/ai-agents	🤖	Create & discover AI agents
+Guardian Shield	https://trustshield.tech	🛡️	Continuous security monitoring
+Presale	https://dwsc.io/presale	💰	Token presale
+Signal Chat	https://dwsc.io/signal-chat	💬	Community chat platform
+Chronicles	https://dwsc.io/chronicles	🎮	Main game entry
+Guardian Security Product Family
+Product	URL	What It Does	Pricing
+Guardian AI	https://dwsc.io/guardian-ai	Certify AI agents for trust verification	$999 - $14,999
+Guardian Shield	https://trustshield.tech	24/7 continuous security monitoring	Enterprise
+Guardian Security	https://dwsc.io/guardian-whitepaper	Smart contract audits & penetration testing	$5,999 - $14,999
+Recommended Menu Structure
+🛡️ Security
+├── Guardian AI Certification → https://dwsc.io/guardian-ai
+├── Certified Agents Registry → https://dwsc.io/guardian-ai-registry
+├── Guardian Shield → https://trustshield.tech
+└── Security Whitepaper → https://dwsc.io/guardian-whitepaper
+🤖 AI & Agents
+├── AI Agent Marketplace → https://dwsc.io/ai-agents
+└── Get Your Agent Certified → https://dwsc.io/guardian-ai
+User Flow
+Create AI Agent → dwsc.io/ai-agents
+       ↓
+Get Certified → dwsc.io/guardian-ai
+       ↓
+Listed in Registry → dwsc.io/guardian-ai-registry
+       ↓
+Enterprise Monitoring → trustshield.tech
+Integration Checklist
+ Add "Guardian AI" menu item → https://dwsc.io/guardian-ai
+ Add "AI Agents" menu item → https://dwsc.io/ai-agents
+ Add "Guardian Shield" menu item → https://trustshield.tech
+ Use 🛡️ shield icon for security features
+ Use 🤖 robot icon for AI features
+ Update any old/placeholder domain references
+All features live and ready for linking!

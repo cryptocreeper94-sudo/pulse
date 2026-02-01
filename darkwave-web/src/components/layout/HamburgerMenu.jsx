@@ -114,6 +114,128 @@ export default function HamburgerMenu({ isOpen, activeTab, onTabChange, onClose,
           </div>
           
           <div className="menu-section">
+            <div className="menu-section-title">🛡️ Security</div>
+            <a
+              href="https://dwsc.io/guardian-ai"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="menu-item"
+              onClick={onClose}
+            >
+              <span className="menu-icon">🤖🛡️</span>
+              Guardian AI Certification
+            </a>
+            <a
+              href="https://dwsc.io/guardian-ai-registry"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="menu-item"
+              onClick={onClose}
+            >
+              <span className="menu-icon">📋</span>
+              Certified Agents Registry
+            </a>
+            <a
+              href="https://trustshield.tech"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="menu-item"
+              onClick={onClose}
+            >
+              <span className="menu-icon">🛡️</span>
+              Guardian Shield
+            </a>
+            <a
+              href="https://dwsc.io/guardian-whitepaper"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="menu-item"
+              onClick={onClose}
+            >
+              <span className="menu-icon">📄</span>
+              Security Whitepaper
+            </a>
+          </div>
+
+          <div className="menu-section">
+            <div className="menu-section-title">🤖 AI & Agents</div>
+            <a
+              href="https://dwsc.io/ai-agents"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="menu-item"
+              onClick={onClose}
+            >
+              <span className="menu-icon">🤖</span>
+              AI Agent Marketplace
+            </a>
+            <a
+              href="https://dwsc.io/signal-chat"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="menu-item"
+              onClick={onClose}
+            >
+              <span className="menu-icon">💬</span>
+              Signal Chat
+            </a>
+          </div>
+
+          <div className="menu-section">
+            <div className="menu-section-title">🌐 Ecosystem</div>
+            <a
+              href="https://dwsc.io"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="menu-item"
+              onClick={onClose}
+            >
+              <span className="menu-icon">🌐</span>
+              DWSC.io Hub
+            </a>
+            <a
+              href="https://dwsc.io/presale"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="menu-item"
+              onClick={onClose}
+            >
+              <span className="menu-icon">💰</span>
+              Token Presale
+            </a>
+            <a
+              href="https://dwsc.io/chronicles"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="menu-item"
+              onClick={onClose}
+            >
+              <span className="menu-icon">🎮</span>
+              Chronicles Game
+            </a>
+            <a
+              href="https://darkwavestudios.io"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="menu-item"
+              onClick={onClose}
+            >
+              <span className="menu-icon">🏢</span>
+              DarkWave Studios
+            </a>
+            <a
+              href="https://darkwavegames.io"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="menu-item"
+              onClick={onClose}
+            >
+              <span className="menu-icon">🎮</span>
+              DarkWave Games
+            </a>
+          </div>
+
+          <div className="menu-section">
             <div className="menu-section-title">Official Documents</div>
             <a
               href="/docs/DWC_WHITEPAPER.md"
