@@ -1,8 +1,16 @@
 .referral-tab {
-  padding: 16px;
-  max-width: 1000px;
+  padding: 16px 24px;
+  width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
   min-height: 100vh;
+}
+
+@media (min-width: 1800px) {
+  .referral-tab {
+    max-width: none;
+    padding: 16px 48px;
+  }
 }
 
 .referral-header {
@@ -130,6 +138,14 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   margin-bottom: 28px;
+}
+
+@media (min-width: 1800px) {
+  .referral-stats { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (min-width: 2400px) {
+  .referral-stats { grid-template-columns: repeat(6, 1fr); }
 }
 
 .stat-card {

@@ -1,8 +1,13 @@
 .portfolio-tab {
-  padding: 16px;
-  max-width: 1600px;
-  margin: 0 auto;
+  padding: 16px 24px;
+  width: 100%;
   min-height: 100vh;
+}
+
+@media (min-width: 2000px) {
+  .portfolio-tab {
+    padding: 20px 48px;
+  }
 }
 
 .portfolio-header {

@@ -1,8 +1,13 @@
 .defi-tab {
-  padding: 16px;
-  max-width: 1600px;
-  margin: 0 auto;
+  padding: 16px 24px;
+  width: 100%;
   min-height: 100vh;
+}
+
+@media (min-width: 2000px) {
+  .defi-tab {
+    padding: 20px 48px;
+  }
 }
 
 .defi-header {
@@ -31,6 +36,14 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
   margin-bottom: 20px;
+}
+
+@media (min-width: 1800px) {
+  .defi-summary { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (min-width: 2400px) {
+  .defi-summary { grid-template-columns: repeat(6, 1fr); }
 }
 
 @media (max-width: 900px) {

@@ -1,8 +1,13 @@
 .alerts-tab {
-  padding: 16px;
-  max-width: 1600px;
-  margin: 0 auto;
+  padding: 16px 24px;
+  width: 100%;
   min-height: 100vh;
+}
+
+@media (min-width: 2000px) {
+  .alerts-tab {
+    padding: 20px 48px;
+  }
 }
 
 .alerts-header {
@@ -55,6 +60,14 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
   margin-bottom: 20px;
+}
+
+@media (min-width: 1800px) {
+  .alerts-bento-stats { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (min-width: 2400px) {
+  .alerts-bento-stats { grid-template-columns: repeat(6, 1fr); }
 }
 
 @media (max-width: 900px) {
