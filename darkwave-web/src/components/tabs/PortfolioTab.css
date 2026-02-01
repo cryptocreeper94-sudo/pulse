@@ -167,6 +167,12 @@
   }
 }
 
+@media (max-width: 500px) {
+  .portfolio-stats-bento {
+    grid-template-columns: 1fr;
+  }
+}
+
 .stat-card {
   background: rgba(26, 58, 92, 0.3);
   backdrop-filter: blur(12px);
