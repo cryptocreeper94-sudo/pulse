@@ -3,6 +3,7 @@ import SkinsSelector from './SkinsSelector';
 
 const allMenuItems = [
   { id: 'dashboard', icon: '🏠', label: 'My Dashboard' },
+  { id: 'guardian-ai', icon: '🛡️', label: 'Guardian AI', highlight: true, badge: 'NEW' },
   { id: 'wallet', icon: '💼', label: 'Wallet', highlight: true },
   { id: 'dust-buster', icon: '🧹', label: 'Dust Buster', highlight: true, badge: '12.5% Fee' },
   { id: 'sniper', icon: '🎯', label: 'StrikeAgent', highlight: true },

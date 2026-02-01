@@ -23,7 +23,8 @@ import {
   TaxTab,
   CopyTradingTab,
   ArbitrageTab,
-  NFTTab
+  NFTTab,
+  GuardianAITab
 } from './components/tabs'
 import WhitepaperPage from './pages/WhitepaperPage'
 import StrikeAgentPublicView from './pages/StrikeAgentPublicView'
@@ -275,6 +276,8 @@ function AppContent() {
         return <ArbitrageTab userId={userId} />
       case 'nft':
         return <NFTTab userId={userId} />
+      case 'guardian-ai':
+        return <GuardianAITab />
       case 'whitepaper':
         return <WhitepaperPage />
       default:
