@@ -1,0 +1,362 @@
+.copy-trading-tab {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.copy-header {
+  margin-bottom: 24px;
+}
+
+.copy-header h1 {
+  font-size: 28px;
+  background: linear-gradient(135deg, #00D4FF, #00a8cc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+
+.copy-header p {
+  color: #8892b0;
+}
+
+.copy-nav {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, #1a3a5c, #0d2137);
+  padding: 8px;
+  border-radius: 12px;
+  width: fit-content;
+}
+
+.copy-nav button {
+  padding: 12px 24px;
+  background: transparent;
+  border: none;
+  color: #8892b0;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.copy-nav button.active {
+  background: rgba(0, 212, 255, 0.2);
+  color: #00D4FF;
+}
+
+.copy-nav button:hover:not(.active) {
+  color: white;
+}
+
+.copy-loading {
+  display: flex;
+  justify-content: center;
+  padding: 60px;
+  color: #8892b0;
+}
+
+.traders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.trader-card {
+  background: linear-gradient(135deg, #1a3a5c, #0d2137);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+}
+
+.trader-avatar {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 16px;
+}
+
+.trader-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00D4FF, #0099cc);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 700;
+  color: white;
+}
+
+.verified-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  background: #00D4FF;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #0d2137;
+}
+
+.trader-card h3 {
+  font-size: 18px;
+  color: white;
+  margin-bottom: 16px;
+}
+
+.trader-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.trader-stats .stat {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.trader-stats .stat span {
+  display: block;
+  font-size: 11px;
+  color: #8892b0;
+  margin-bottom: 4px;
+}
+
+.trader-stats .stat strong {
+  font-size: 16px;
+  color: white;
+}
+
+.trader-stats .stat strong.positive {
+  color: #00D4FF;
+}
+
+.trader-stats .stat strong.negative {
+  color: #ff4d6a;
+}
+
+.copy-btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #00D4FF, #0099cc);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.copy-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+}
+
+.no-traders {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px;
+  color: #8892b0;
+  background: linear-gradient(135deg, #1a3a5c, #0d2137);
+  border-radius: 16px;
+}
+
+.my-copies-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.copy-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #1a3a5c, #0d2137);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 12px;
+  padding: 20px 24px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.copy-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.copy-avatar {
+  width: 50px;
+  height: 50px;
+}
+
+.copy-avatar img,
+.copy-avatar .avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.copy-details h4 {
+  font-size: 16px;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.copy-details span {
+  font-size: 13px;
+  color: #8892b0;
+}
+
+.copy-stats {
+  display: flex;
+  gap: 24px;
+}
+
+.copy-stats .stat span {
+  display: block;
+  font-size: 11px;
+  color: #8892b0;
+  margin-bottom: 2px;
+}
+
+.copy-stats .stat strong {
+  color: white;
+  font-size: 14px;
+}
+
+.copy-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.toggle-btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+}
+
+.toggle-btn.enabled {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.toggle-btn.disabled {
+  background: rgba(255, 77, 106, 0.2);
+  color: #ff4d6a;
+}
+
+.stop-btn {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid rgba(255, 77, 106, 0.5);
+  color: #ff4d6a;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.stop-btn:hover {
+  background: rgba(255, 77, 106, 0.1);
+}
+
+.no-copies {
+  text-align: center;
+  padding: 60px;
+  background: linear-gradient(135deg, #1a3a5c, #0d2137);
+  border-radius: 16px;
+}
+
+.no-copies h3 {
+  color: white;
+  margin-bottom: 8px;
+}
+
+.no-copies p {
+  color: #8892b0;
+  margin-bottom: 20px;
+}
+
+.no-copies button {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #00D4FF, #0099cc);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.history-table-container {
+  overflow-x: auto;
+  background: linear-gradient(135deg, #1a3a5c, #0d2137);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.history-table th,
+.history-table td {
+  padding: 14px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.history-table th {
+  font-size: 12px;
+  color: #8892b0;
+  text-transform: uppercase;
+}
+
+.history-table td {
+  color: #ccd6f6;
+}
+
+.history-table td.buy {
+  color: #22c55e;
+}
+
+.history-table td.sell {
+  color: #ff4d6a;
+}
+
+.history-table td.positive {
+  color: #00D4FF;
+}
+
+.history-table td.negative {
+  color: #ff4d6a;
+}
+
+.no-history {
+  text-align: center;
+  color: #8892b0;
+  padding: 40px !important;
+}

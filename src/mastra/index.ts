@@ -75,6 +75,11 @@ import { defiRoutes } from "./routes/defiRoutes";
 import { onchainRoutes } from "./routes/onchainRoutes";
 import { referralRoutes } from "./routes/referralRoutes";
 import { socialRoutes } from "./routes/socialRoutes";
+import { taxRoutes } from "./routes/taxRoutes";
+import { copyTradingRoutes } from "./routes/copyTradingRoutes";
+import { arbitrageRoutes } from "./routes/arbitrageRoutes";
+import { nftRoutes } from "./routes/nftRoutes";
+import { i18nRoutes } from "./routes/i18nRoutes";
 
 class ProductionPinoLogger extends MastraLogger {
   protected logger: pino.Logger;
@@ -6393,6 +6398,21 @@ export const mastra = new Mastra({
       
       // Social Trading Routes
       ...socialRoutes,
+      
+      // Tax Report Routes
+      ...taxRoutes,
+      
+      // Copy Trading Routes
+      ...copyTradingRoutes,
+      
+      // Arbitrage Scanner Routes
+      ...arbitrageRoutes,
+      
+      // NFT Portfolio Routes
+      ...nftRoutes,
+      
+      // Internationalization Routes
+      ...i18nRoutes,
       
       // Catch-all static file handler (MUST BE LAST) - serves all assets from public/
       {

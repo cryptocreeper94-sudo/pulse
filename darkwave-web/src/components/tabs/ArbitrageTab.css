@@ -1,0 +1,355 @@
+.arbitrage-tab {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.arbitrage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.header-text h1 {
+  font-size: 28px;
+  background: linear-gradient(135deg, #00D4FF, #00a8cc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+
+.header-text p {
+  color: #8892b0;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.min-spread-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #1a3a5c, #0d2137);
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.min-spread-control label {
+  color: #8892b0;
+  font-size: 13px;
+}
+
+.min-spread-control input {
+  width: 60px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.min-spread-control span {
+  color: #8892b0;
+}
+
+.refresh-btn {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #00D4FF, #0099cc);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.refresh-btn:hover {
+  transform: translateY(-2px);
+}
+
+.arbitrage-nav {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #1a3a5c, #0d2137);
+  padding: 8px;
+  border-radius: 12px;
+  width: fit-content;
+}
+
+.arbitrage-nav button {
+  padding: 12px 24px;
+  background: transparent;
+  border: none;
+  color: #8892b0;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.arbitrage-nav button.active {
+  background: rgba(0, 212, 255, 0.2);
+  color: #00D4FF;
+}
+
+.last-updated {
+  color: #8892b0;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.arbitrage-loading {
+  display: flex;
+  justify-content: center;
+  padding: 60px;
+  color: #8892b0;
+  font-size: 16px;
+}
+
+.opportunities-table-container {
+  background: linear-gradient(135deg, #1a3a5c, #0d2137);
+  border-radius: 12px;
+  padding: 20px;
+  overflow-x: auto;
+}
+
+.opportunities-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.opportunities-table th,
+.opportunities-table td {
+  padding: 14px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.opportunities-table th {
+  font-size: 12px;
+  color: #8892b0;
+  text-transform: uppercase;
+}
+
+.opportunities-table td {
+  color: #ccd6f6;
+}
+
+.opportunities-table td.symbol {
+  font-weight: 600;
+  color: white;
+}
+
+.opportunities-table td.exchange.buy {
+  color: #22c55e;
+}
+
+.opportunities-table td.exchange.sell {
+  color: #ff4d6a;
+}
+
+.opportunities-table td.spread {
+  color: #00D4FF;
+  font-weight: 600;
+}
+
+.opportunities-table td.profit {
+  color: #22c55e;
+  font-weight: 600;
+}
+
+.no-opportunities {
+  text-align: center;
+  color: #8892b0;
+  padding: 40px !important;
+}
+
+.dex-opportunities {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.dex-card {
+  background: linear-gradient(135deg, #1a3a5c, #0d2137);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.dex-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.dex-header .symbol {
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+}
+
+.dex-header .chain {
+  font-size: 12px;
+  padding: 4px 10px;
+  background: rgba(0, 212, 255, 0.2);
+  color: #00D4FF;
+  border-radius: 4px;
+}
+
+.dex-route {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.route-step {
+  text-align: center;
+}
+
+.route-step span {
+  display: block;
+  font-size: 11px;
+  color: #8892b0;
+}
+
+.route-step strong {
+  display: block;
+  font-size: 14px;
+  color: white;
+  margin: 4px 0;
+}
+
+.route-step .price {
+  font-size: 13px;
+}
+
+.route-step.buy .price {
+  color: #22c55e;
+}
+
+.route-step.sell .price {
+  color: #ff4d6a;
+}
+
+.route-arrow {
+  font-size: 24px;
+  color: #00D4FF;
+}
+
+.dex-profit {
+  text-align: center;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dex-profit span {
+  display: block;
+  font-size: 12px;
+  color: #8892b0;
+}
+
+.dex-profit strong {
+  font-size: 24px;
+  color: #00D4FF;
+}
+
+.no-dex,
+.no-triangular {
+  text-align: center;
+  padding: 60px;
+  color: #8892b0;
+  background: linear-gradient(135deg, #1a3a5c, #0d2137);
+  border-radius: 12px;
+}
+
+.triangular-opportunities {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.triangular-card {
+  background: linear-gradient(135deg, #1a3a5c, #0d2137);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.triangular-path {
+  margin-bottom: 16px;
+}
+
+.path-label {
+  display: block;
+  font-size: 12px;
+  color: #8892b0;
+  margin-bottom: 4px;
+}
+
+.path-route {
+  font-size: 18px;
+  font-weight: 600;
+  color: #00D4FF;
+}
+
+.triangular-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 12px;
+}
+
+.triangular-details .detail span {
+  display: block;
+  font-size: 11px;
+  color: #8892b0;
+}
+
+.triangular-details .detail strong {
+  color: white;
+}
+
+.triangular-details .detail strong.profit {
+  color: #22c55e;
+}
+
+.complexity {
+  font-size: 13px;
+  color: #8892b0;
+}
+
+.complexity span.high {
+  color: #ff4d6a;
+}
+
+.complexity span.medium {
+  color: #f59e0b;
+}
+
+.complexity span.low {
+  color: #22c55e;
+}
+
+.arbitrage-disclaimer {
+  margin-top: 24px;
+  padding: 16px;
+  background: rgba(255, 193, 7, 0.1);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  border-radius: 8px;
+  color: #ffc107;
+  font-size: 13px;
+  text-align: center;
+}

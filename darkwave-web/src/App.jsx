@@ -19,7 +19,11 @@ import {
   DeFiTab,
   OnChainTab,
   ReferralTab,
-  SocialTab
+  SocialTab,
+  TaxTab,
+  CopyTradingTab,
+  ArbitrageTab,
+  NFTTab
 } from './components/tabs'
 import WhitepaperPage from './pages/WhitepaperPage'
 import StrikeAgentPublicView from './pages/StrikeAgentPublicView'
@@ -263,6 +267,14 @@ function AppContent() {
         return <ReferralTab userId={userId} />
       case 'social':
         return <SocialTab userId={userId} />
+      case 'tax':
+        return <TaxTab userId={userId} />
+      case 'copy-trading':
+        return <CopyTradingTab userId={userId} />
+      case 'arbitrage':
+        return <ArbitrageTab userId={userId} />
+      case 'nft':
+        return <NFTTab userId={userId} />
       case 'whitepaper':
         return <WhitepaperPage />
       default:
