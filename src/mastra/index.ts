@@ -308,16 +308,79 @@ export const mastra = new Mastra({
           const logger = mastra.getLogger();
           logger?.info('📰 [News] Request received');
           
-          const articles = [
-            { title: "Bitcoin Surges Past $95K", source: "CoinDesk", url: "https://www.coindesk.com", publishedAt: new Date().toISOString() },
-            { title: "Ethereum 2.0 Update Released", source: "CoinTelegraph", url: "https://cointelegraph.com", publishedAt: new Date().toISOString() },
-            { title: "Tech Stocks Rally on AI News", source: "Bloomberg", url: "https://www.bloomberg.com", publishedAt: new Date().toISOString() },
-            { title: "Fed Holds Rates Steady", source: "CNBC", url: "https://www.cnbc.com", publishedAt: new Date().toISOString() },
-            { title: "NFT Market Shows Recovery", source: "Decrypt", url: "https://decrypt.co", publishedAt: new Date().toISOString() },
-            { title: "Altcoin Season Approaching", source: "CryptoSlate", url: "https://cryptoslate.com", publishedAt: new Date().toISOString() }
+          // Check cache first (5 minute TTL)
+          const cached = apiCache.get<any>('crypto-news');
+          if (cached) {
+            logger?.info('📰 [News] Returning cached news', { count: cached.length });
+            return c.json({ success: true, articles: cached });
+          }
+          
+          const rssSources = [
+            { name: 'CoinDesk', url: 'https://www.coindesk.com/arc/outboundfeeds/rss/' },
+            { name: 'CoinTelegraph', url: 'https://cointelegraph.com/rss' },
+            { name: 'Decrypt', url: 'https://decrypt.co/feed' },
+            { name: 'The Block', url: 'https://www.theblock.co/rss.xml' },
+            { name: 'CryptoSlate', url: 'https://cryptoslate.com/feed/' }
           ];
           
-          return c.json({ success: true, articles });
+          const articles: any[] = [];
+          
+          // Fetch from RSS feeds in parallel
+          const feedPromises = rssSources.map(async (source) => {
+            try {
+              const response = await fetch(source.url, { 
+                headers: { 'User-Agent': 'Pulse/1.0' },
+                signal: AbortSignal.timeout(5000)
+              });
+              if (!response.ok) return [];
+              
+              const xml = await response.text();
+              
+              // Parse RSS XML manually (simple extraction)
+              const itemMatches = xml.match(/<item>([\s\S]*?)<\/item>/g) || [];
+              
+              return itemMatches.slice(0, 5).map((item: string) => {
+                const titleMatch = item.match(/<title[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/title>/);
+                const linkMatch = item.match(/<link[^>]*>(.*?)<\/link>/) || item.match(/<link[^>]*href="([^"]+)"/);
+                const pubDateMatch = item.match(/<pubDate>(.*?)<\/pubDate>/);
+                
+                const title = titleMatch?.[1]?.replace(/<!\[CDATA\[|\]\]>/g, '').trim() || '';
+                let url = linkMatch?.[1]?.trim() || `https://${source.name.toLowerCase().replace(/\s/g, '')}.com`;
+                
+                // Clean CDATA from URL if present
+                url = url.replace(/<!\[CDATA\[|\]\]>/g, '').trim();
+                
+                return {
+                  title,
+                  source: source.name,
+                  url,
+                  publishedAt: pubDateMatch?.[1] ? new Date(pubDateMatch[1]).toISOString() : new Date().toISOString()
+                };
+              }).filter((a: any) => a.title);
+            } catch (err) {
+              logger?.warn(`📰 [News] Failed to fetch ${source.name}`, { error: (err as Error).message });
+              return [];
+            }
+          });
+          
+          const results = await Promise.all(feedPromises);
+          results.forEach(feedArticles => articles.push(...feedArticles));
+          
+          // Sort by date, newest first
+          articles.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+          
+          // Take top 20 articles
+          const topArticles = articles.slice(0, 20);
+          
+          // Cache for 5 minutes
+          if (topArticles.length > 0) {
+            apiCache.set('crypto-news', topArticles, 300);
+          }
+          
+          logger?.info('📰 [News] Fetched articles', { count: topArticles.length });
+          return c.json({ success: true, articles: topArticles.length > 0 ? topArticles : [
+            { title: "Loading latest crypto news...", source: "Pulse", url: "https://dwsc.io/pulse", publishedAt: new Date().toISOString() }
+          ]});
         }
       },
       // Multi-Model Streaming Analysis endpoint

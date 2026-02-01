@@ -985,7 +985,7 @@ export default function DashboardTab({ userId, userConfig, onNavigate, onAnalyze
   useEffect(() => {
     const fetchMarketData = async () => {
       try {
-        const response = await fetch('/api/global-overview')
+        const response = await fetch('/api/crypto/market-overview')
         if (response.ok) {
           const data = await response.json()
           setMarketData(data)
