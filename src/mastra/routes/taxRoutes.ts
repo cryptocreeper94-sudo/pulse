@@ -10,6 +10,7 @@ export const taxRoutes = [
       try {
         const userId = c.req.param('userId');
         const year = parseInt(c.req.query('year') || new Date().getFullYear().toString());
+        const method = c.req.query('method') || 'fifo';
         
         const transactions = await db.select()
           .from(portfolioTransactions)
@@ -52,20 +53,30 @@ export const taxRoutes = [
             let costBasisUsed = 0;
             let remainingToSell = sellQuantity;
             
+            let purchaseDate: Date | null = null;
+            
             while (remainingToSell > 0 && holdings[symbol].purchases.length > 0) {
-              const oldest = holdings[symbol].purchases[0];
-              const takeFromOldest = Math.min(remainingToSell, oldest.quantity);
-              costBasisUsed += takeFromOldest * oldest.price;
-              oldest.quantity -= takeFromOldest;
-              remainingToSell -= takeFromOldest;
+              const lotIndex = method === 'lifo' ? holdings[symbol].purchases.length - 1 : 0;
+              const lot = holdings[symbol].purchases[lotIndex];
+              const takeFromLot = Math.min(remainingToSell, lot.quantity);
+              costBasisUsed += takeFromLot * lot.price;
+              purchaseDate = purchaseDate || new Date(lot.date);
+              lot.quantity -= takeFromLot;
+              remainingToSell -= takeFromLot;
               
-              if (oldest.quantity <= 0) {
-                holdings[symbol].purchases.shift();
+              if (lot.quantity <= 0) {
+                if (method === 'lifo') {
+                  holdings[symbol].purchases.pop();
+                } else {
+                  holdings[symbol].purchases.shift();
+                }
               }
             }
             
             const gain = sellTotal - costBasisUsed;
-            const isLongTerm = false;
+            const sellDate = new Date(tx.timestamp!);
+            const holdingDays = purchaseDate ? Math.floor((sellDate.getTime() - purchaseDate.getTime()) / (1000 * 60 * 60 * 24)) : 0;
+            const isLongTerm = holdingDays > 365;
             
             if (gain > 0) {
               totalGains += gain;
@@ -83,7 +94,8 @@ export const taxRoutes = [
               proceeds: sellTotal,
               costBasis: costBasisUsed,
               gainLoss: gain,
-              term: isLongTerm ? 'long' : 'short'
+              term: isLongTerm ? 'long' : 'short',
+              holdingDays
             });
             
             holdings[symbol].quantity -= sellQuantity;
@@ -93,6 +105,7 @@ export const taxRoutes = [
         
         return c.json({
           year,
+          method,
           summary: {
             totalGains,
             totalLosses,
