@@ -1,0 +1,464 @@
+.quick-trade-panel {
+  background: rgba(15, 15, 15, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 360px;
+  width: 100%;
+}
+
+.qtp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.qtp-token-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.qtp-chain-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.qtp-title {
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.qtp-subtitle {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+  margin: 0;
+}
+
+.qtp-close-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.qtp-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.qtp-chain-selector {
+  position: relative;
+}
+
+.qtp-chain-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.qtp-chain-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.qtp-chain-selected {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+.qtp-chevron {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+  transition: transform 0.2s;
+}
+
+.qtp-chevron.open {
+  transform: rotate(180deg);
+}
+
+.qtp-chain-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 8px;
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  z-index: 50;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.qtp-chain-option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+}
+
+.qtp-chain-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.qtp-chain-option.active {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.qtp-check {
+  margin-left: auto;
+  color: #39FF14;
+}
+
+.qtp-chain-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #fff;
+}
+
+.qtp-chain-type {
+  margin-left: auto;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.qtp-connect-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.qtp-connect-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.qtp-balance-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+}
+
+.qtp-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0 4px 0;
+}
+
+.qtp-balance {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.qtp-connected {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.qtp-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #39FF14;
+  box-shadow: 0 0 8px #39FF14;
+}
+
+.qtp-address {
+  font-size: 11px;
+  font-family: monospace;
+  color: #39FF14;
+}
+
+.qtp-amount-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.qtp-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.qtp-preset {
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.qtp-preset:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.qtp-preset.active {
+  color: #fff;
+}
+
+.qtp-custom-input {
+  width: 100%;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.qtp-custom-input:focus {
+  border-color: rgba(0, 212, 255, 0.5);
+}
+
+.qtp-custom-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.qtp-quote-btn {
+  width: 100%;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.qtp-quote-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.qtp-quote-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.qtp-quote-box {
+  background: rgba(57, 255, 20, 0.1);
+  border: 1px solid rgba(57, 255, 20, 0.3);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.qtp-quote-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.qtp-quote-header span:first-child {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.qtp-impact {
+  font-size: 11px;
+  color: #39FF14;
+}
+
+.qtp-quote-amount {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.qtp-output {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.qtp-symbol {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.qtp-min {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 6px 0 12px 0;
+}
+
+.qtp-execute-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: linear-gradient(135deg, #39FF14, #00D4FF);
+}
+
+.qtp-execute-btn.snipe {
+  background: linear-gradient(135deg, #39FF14, #00D4FF);
+}
+
+.qtp-execute-btn.watch {
+  background: linear-gradient(135deg, #FFB800, #FF8C00);
+}
+
+.qtp-execute-btn.avoid {
+  background: linear-gradient(135deg, #FF4444, #FF1744);
+}
+
+.qtp-execute-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.qtp-execute-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.qtp-result {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 12px;
+}
+
+.qtp-result.success {
+  background: rgba(57, 255, 20, 0.2);
+  border: 1px solid rgba(57, 255, 20, 0.3);
+  color: #39FF14;
+}
+
+.qtp-result.failed {
+  background: rgba(255, 68, 68, 0.2);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  color: #FF4444;
+}
+
+.qtp-explorer-link {
+  margin-left: auto;
+  font-size: 11px;
+  color: #00D4FF;
+  text-decoration: none;
+}
+
+.qtp-explorer-link:hover {
+  text-decoration: underline;
+}
+
+.qtp-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: rgba(255, 68, 68, 0.2);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  border-radius: 10px;
+  color: #FF4444;
+  font-size: 12px;
+}
+
+.qtp-dex-links {
+  margin-top: 4px;
+}
+
+.qtp-dex-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.qtp-dex-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.qtp-dex-link:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.qtp-dex-link.primary {
+  grid-column: span 2;
+  background: linear-gradient(135deg, rgba(57, 255, 20, 0.3), rgba(0, 212, 255, 0.3));
+}
+
+.qtp-dex-link.primary:hover {
+  background: linear-gradient(135deg, rgba(57, 255, 20, 0.4), rgba(0, 212, 255, 0.4));
+}
