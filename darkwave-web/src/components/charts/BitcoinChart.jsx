@@ -81,7 +81,7 @@ export default function BitcoinChart() {
 
   const fetchLivePrice = useCallback(async () => {
     try {
-      const response = await fetch('/api/btc-price')
+      const response = await fetch('/api/crypto/btc-price')
       if (response.ok) {
         const priceData = await response.json()
         if (priceData && priceData.price) {
@@ -143,7 +143,7 @@ export default function BitcoinChart() {
     }
     
     try {
-      const response = await fetch(`/api/btc-history?days=${selectedTimeframe.days}`)
+      const response = await fetch(`/api/crypto/btc-history?days=${selectedTimeframe.days}`)
       if (response.ok) {
         const apiData = await response.json()
         if (apiData && apiData.length > 0) {
