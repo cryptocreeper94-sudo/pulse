@@ -1,0 +1,111 @@
+# StrikeAgent.io by DarkWave Studios, LLC
+
+## Platform Overview
+
+StrikeAgent is an autonomous AI-powered token discovery and trading system designed for cryptocurrency traders who demand speed, precision, and safety. Operating 24/7, StrikeAgent scans multiple blockchains in real-time to identify emerging trading opportunities before they hit mainstream awareness.
+
+## Core Mission
+
+To give every trader the edge of institutional-grade token discovery and risk assessment, powered by AI that never sleeps and learns from every trade.
+
+## Key Features
+
+### Real-Time Token Discovery
+- **Multi-Chain Scanning**: Monitors Solana, Ethereum, Base, Arbitrum, Polygon, and 18+ additional chains simultaneously
+- **New Token Alerts**: Instant notifications when tokens launch with favorable metrics
+- **Trending Detection**: Identifies tokens gaining momentum before price spikes
+- **Volume Surge Tracking**: Spots unusual trading activity indicating potential moves
+
+### AI Safety Engine
+- **Honeypot Detection**: Multi-source verification to identify scam tokens that trap funds
+- **Rug Pull Risk Assessment**: Analyzes liquidity locks, ownership renouncement, and contract patterns
+- **Safety Scoring**: A-F grading system (0-100 score) for every token
+- **RugCheck Integration**: Cross-references with RugCheck.xyz for additional verification
+- **Authority Checks**: Verifies mint authority, freeze authority, and contract permissions
+
+### Smart Trading Modes
+- **Observer Mode**: Watch and learn without executing trades
+- **Manual Mode**: Receive signals, confirm trades yourself
+- **Semi-Auto Mode**: AI suggests, you approve with one click
+- **Full Auto Mode**: Autonomous trading with configurable parameters
+
+### Risk Management
+- **Position Sizing**: Automatic allocation based on safety score and conviction
+- **Stop-Loss Automation**: Configurable exit points to protect capital
+- **Take-Profit Targets**: Multi-tier profit-taking strategies
+- **Max Drawdown Limits**: Daily and per-trade loss limits
+
+### Token Watchlist & Limit Orders
+- **4-Slot Watchlist**: Monitor up to 4 tokens with custom entry/exit points
+- **Limit Order System**: Set entry price, exit target, and stop-loss for each slot
+- **Inngest-Powered Monitoring**: Background jobs continuously check price conditions
+- **Multi-Chain Support**: Set orders across any supported blockchain
+
+## Safety Scoring System
+
+| Grade | Score | Risk Level | Recommendation |
+|-------|-------|------------|----------------|
+| A | 80-100 | Low | Safe to trade |
+| B | 60-79 | Moderate | Proceed with caution |
+| C | 40-59 | Elevated | Small positions only |
+| D | 20-39 | High | Avoid or minimal exposure |
+| F | 0-19 | Extreme | Do not trade |
+
+## Supported Chains
+
+### Primary Chains
+- Solana (SOL)
+- Ethereum (ETH)
+- Base
+- Arbitrum One
+
+### Additional EVM Chains
+- Polygon, Optimism, Avalanche, BSC, Fantom, Cronos, Gnosis, Celo, Moonbeam, Moonriver, Aurora, Harmony, Metis, Boba, zkSync Era, Linea, Scroll, Mantle, Blast
+
+## Technology Stack
+
+- **AI Framework**: Mastra AI with custom trading agents
+- **Data Sources**: DexScreener, Jupiter, Helius, Alchemy, RugCheck
+- **Execution**: Jupiter Aggregator (Solana), DEX routers (EVM)
+- **Background Jobs**: Inngest for continuous monitoring
+- **Wallet Integration**: Built-in HD wallet with BIP39 mnemonic support
+
+## Subscription Tiers
+
+### StrikeAgent Elite
+- Full access to all trading modes
+- Unlimited token scans
+- Priority signal delivery
+- Advanced safety analytics
+- 4-slot watchlist with limit orders
+
+### Included with DarkWave Complete
+- Everything in StrikeAgent Elite
+- Plus full Pulse platform access
+- Plus DarkWave Smart Chain integration
+
+## Integration with Pulse
+
+StrikeAgent is a core component of the Pulse ecosystem, sharing:
+- Unified wallet system
+- Cross-platform authentication
+- Shared prediction tracking
+- Combined analytics dashboard
+
+## Key Differentiators
+
+1. **Safety First**: Every token is scanned before signals are generated
+2. **Multi-Source Verification**: Cross-references multiple honeypot detection services
+3. **Blockchain Agnostic**: Same powerful engine across 23+ chains
+4. **Learning System**: AI improves accuracy from every prediction outcome
+5. **Transparent Tracking**: All predictions logged and accuracy publicly verifiable
+
+## Contact
+
+- Website: StrikeAgent.io
+- Parent Platform: DWSC.io/Pulse
+- Developer: DarkWave Studios, LLC
+
+---
+
+*StrikeAgent: Strike First. Strike Smart.*
