@@ -1,4 +1,5 @@
 process.env.PORT = process.env.PORT || '4111';
+// @ts-ignore - dynamic import of Mastra build output
 import('../.mastra/output/index.mjs')
     .then(() => {
     if (process.send) {

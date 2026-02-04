@@ -24,4 +24,10 @@ if [ -f "./scripts/patch-mastra.sh" ]; then
   ./scripts/patch-mastra.sh
 fi
 
+# Fix uuid ESM import issue
+if [ -f ".mastra/output/mastra.mjs" ]; then
+  sed -i "s/import require\$\$0\$8\$1, { v4 as v4\$1 } from 'uuid';/import * as require\$\$0\$8\$1 from 'uuid'; const { v4: v4\$1 } = require\$\$0\$8\$1;/g" .mastra/output/mastra.mjs 2>/dev/null || true
+  echo "✅ Fixed uuid import"
+fi
+
 echo "✅ Deployment build complete!"
