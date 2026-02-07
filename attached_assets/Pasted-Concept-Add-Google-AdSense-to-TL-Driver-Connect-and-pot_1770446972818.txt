@@ -1,0 +1,59 @@
+Concept
+Add Google AdSense to TL Driver Connect (and potentially other ecosystem service apps) with a $5/month "Ad-Free" subscription upgrade per individual account. This creates a freemium revenue layer on top of existing app functionality.
+
+Strategy
+Trust Layer Portal (dwsc.io): NO ads. This is institutional-grade financial infrastructure. Ads undermine investor/enterprise credibility.
+DarkWave Studios (darkwavestudios.io): Already has AdSense. Keep as-is.
+GarageBot (garagebot.io): Already has AdSense. Keep as-is.
+TL Driver Connect (HappyEats.app / TLDriverConnect.com): Add AdSense + $5/month ad-free tier.
+Other ecosystem service apps: Same model can be replicated on any non-financial app (Orby, PaintPros, Brew & Board, etc.)
+Implementation Steps
+1. Google AdSense Integration
+Add the AdSense script tag to the app's HTML head:
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+Place ad units in natural locations: between content sections, sidebar, footer area
+Use responsive ad units so they work on mobile-first layouts
+Avoid placing ads on login/signup/payment flows
+2. Ad-Free Subscription ($5/month)
+Create a Stripe subscription product: "Ad-Free Experience" at $5.00/month
+Store subscription status on the user record (e.g., adFreeSubscription: boolean, adFreeExpiresAt: timestamp)
+Use Stripe webhooks to handle: checkout.session.completed, customer.subscription.deleted, invoice.payment_failed
+3. Conditional Ad Rendering
+// Wrap all ad placements in a conditional component
+function AdUnit({ slot, format = "auto" }: { slot: string; format?: string }) {
+  const { user } = useAuth();
+  
+  // Don't render ads for ad-free subscribers
+  if (user?.adFreeSubscription) return null;
+  
+  return (
+    <ins className="adsbygoogle"
+      style={{ display: "block" }}
+      data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+      data-ad-slot={slot}
+      data-ad-format={format}
+      data-full-width-responsive="true" />
+  );
+}
+4. Cross-App Option (via Trust Layer Ecosystem Sync)
+If you want the $5/month subscription purchased on Trust Layer to remove ads across ALL ecosystem apps:
+
+Use the existing Ecosystem Credential Sync system (POST /api/ecosystem/verify-credentials)
+Add a new endpoint: GET /api/ecosystem/subscription-status?email=user@example.com
+Ecosystem apps call Trust Layer to check if the user has an active ad-free subscription
+Secured with existing HMAC-SHA256 signed requests using each app's dw_* API keys
+Reference: docs/GARAGEBOT-CREDENTIAL-SYNC-HANDOFF.md for the existing sync pattern
+5. User Experience
+Show a subtle "Go Ad-Free for $5/mo" banner or button near ad placements
+After subscribing, ads disappear immediately (no page refresh needed if using React state)
+Include ad-free status on the user's account/settings page
+Cancellation returns ads at end of billing period
+Key Decisions
+$5/month per individual account (not per app - one subscription removes ads everywhere)
+Stripe handles billing, webhooks handle status changes
+Trust Layer is the single source of truth for subscription status
+Each ecosystem app checks subscription status via the Ecosystem Sync API
+Revenue Model
+AdSense revenue from free-tier users
+$5/month recurring from users who upgrade
+Both revenue streams compound as more ecosystem apps adopt the model
