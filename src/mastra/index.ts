@@ -67,6 +67,7 @@ import { webauthnRoutes } from "./routes/webauthnRoutes";
 import { ecosystemRoutes } from "./routes/ecosystemRoutes";
 import { darkwaveChainRoutes } from "./routes/darkwaveChainRoutes";
 import { firebaseAuthRoutes } from "./routes/firebaseAuthRoutes";
+import { ssoRoutes } from "./routes/ssoRoutes";
 import { newsRoutes } from "./routes/newsRoutes";
 import { portfolioRoutes } from "./routes/portfolioRoutes";
 import { alertsRoutes } from "./routes/alertsRoutes";
@@ -6437,6 +6438,9 @@ export const mastra = new Mastra({
       
       // Firebase Authentication Routes
       ...firebaseAuthRoutes,
+      
+      // SSO Inter-App Trust Layer Routes
+      ...ssoRoutes,
       
       // Crypto News Routes (RSS feed aggregation)
       ...newsRoutes,

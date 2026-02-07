@@ -1,6 +1,7 @@
 import http from 'http';
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 import { spawn } from 'child_process';
 
 const PORT = Number(process.env.PORT || 5000);
@@ -111,6 +112,12 @@ const server = http.createServer((req, res) => {
     return;
   }
   
+  // SSO Inter-App Trust Layer - handled directly (no Mastra dependency)
+  if (urlPath.startsWith('/api/sso/')) {
+    handleSsoRequest(req, res, urlPath);
+    return;
+  }
+
   // API proxy - only if server is ready
   if (urlPath.startsWith('/api/')) {
     const proxyReq = http.request({
@@ -215,6 +222,193 @@ function startWorkers() {
   } else {
     console.log('[Inngest] Autoscale deployment - using Inngest Cloud directly');
   }
+}
+
+// ============================================
+// SSO Inter-App Trust Layer
+// ============================================
+const SSO_SECRET = process.env.SSO_JWT_SECRET || '';
+const DARKWAVE_API_SECRET = process.env.DARKWAVE_API_SECRET || '';
+const SSO_TOKEN_TTL = 5 * 60;
+const SSO_SESSION_TTL = 24 * 60 * 60;
+const ALLOWED_SOURCE_APPS = ['pulse', 'darkwavestudios', 'orbit', 'dsc', 'darkwave-dex'];
+
+function b64url(str: string): string {
+  return Buffer.from(str).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function b64urlDecode(str: string): string {
+  str = str.replace(/-/g, '+').replace(/_/g, '/');
+  while (str.length % 4) str += '=';
+  return Buffer.from(str, 'base64').toString('utf8');
+}
+
+function hmac(data: string): string {
+  return crypto.createHmac('sha256', SSO_SECRET).update(data).digest('base64')
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function mintJwt(payload: any, ttl: number): string {
+  const h = b64url(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+  const now = Math.floor(Date.now() / 1000);
+  const p = b64url(JSON.stringify({ ...payload, iat: now, exp: now + ttl, iss: 'darkwave-pulse' }));
+  return `${h}.${p}.${hmac(`${h}.${p}`)}`;
+}
+
+function verifyJwt(token: string): any | null {
+  if (!SSO_SECRET) return null;
+  try {
+    const [h, p, s] = token.split('.');
+    if (!h || !p || !s) return null;
+    if (s !== hmac(`${h}.${p}`)) return null;
+    const payload = JSON.parse(b64urlDecode(p));
+    if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) return null;
+    return payload;
+  } catch { return null; }
+}
+
+function jsonResponse(res: http.ServerResponse, status: number, data: any) {
+  res.writeHead(status, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
+  res.end(JSON.stringify(data));
+}
+
+function readBody(req: http.IncomingMessage): Promise<any> {
+  return new Promise((resolve) => {
+    let body = '';
+    req.on('data', (chunk: Buffer) => { body += chunk.toString(); });
+    req.on('end', () => {
+      try { resolve(JSON.parse(body)); } catch { resolve({}); }
+    });
+    req.on('error', () => resolve({}));
+  });
+}
+
+async function handleSsoRequest(req: http.IncomingMessage, res: http.ServerResponse, urlPath: string) {
+  if (urlPath === '/api/sso/status' && req.method === 'GET') {
+    jsonResponse(res, 200, {
+      success: true,
+      ssoEnabled: !!SSO_SECRET,
+      issuer: 'darkwave-pulse',
+      tokenExpiry: `${SSO_TOKEN_TTL}s`,
+      sessionExpiry: `${SSO_SESSION_TTL}s`,
+      endpoints: {
+        issue: '/api/sso/issue',
+        verify: '/api/sso/verify',
+        exchange: '/api/sso/exchange',
+        status: '/api/sso/status',
+      },
+    });
+    return;
+  }
+
+  if (urlPath === '/api/sso/issue' && req.method === 'POST') {
+    if (!SSO_SECRET) { jsonResponse(res, 503, { success: false, error: 'SSO not configured' }); return; }
+
+    const appSecret = req.headers['x-darkwave-secret'] as string;
+    if (!appSecret || !DARKWAVE_API_SECRET || appSecret !== DARKWAVE_API_SECRET) {
+      jsonResponse(res, 401, { success: false, error: 'Invalid or missing x-darkwave-secret header' });
+      return;
+    }
+
+    const body = await readBody(req);
+    const { uid, email, displayName, photoURL, sourceApp, hallmarkId } = body;
+    if (!uid || !email) { jsonResponse(res, 400, { success: false, error: 'uid and email required' }); return; }
+    if (sourceApp && !ALLOWED_SOURCE_APPS.includes(sourceApp)) {
+      jsonResponse(res, 400, { success: false, error: 'Unrecognized sourceApp' }); return;
+    }
+
+    const token = mintJwt({
+      sub: uid, email, displayName: displayName || null,
+      photoURL: photoURL || null, hallmarkId: hallmarkId || null,
+      sourceApp: sourceApp || 'pulse', type: 'cross_app',
+    }, SSO_TOKEN_TTL);
+
+    console.log(`[SSO] Cross-app token issued for ${email} from ${sourceApp || 'pulse'}`);
+    jsonResponse(res, 200, { success: true, token, expiresIn: SSO_TOKEN_TTL, type: 'cross_app' });
+    return;
+  }
+
+  if (urlPath === '/api/sso/verify' && req.method === 'POST') {
+    if (!SSO_SECRET) { jsonResponse(res, 503, { success: false, error: 'SSO not configured' }); return; }
+
+    let token: string | null = null;
+    const authHeader = req.headers['authorization'];
+    if (typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
+      token = authHeader.slice(7);
+    }
+    if (!token) {
+      const body = await readBody(req);
+      token = body.token;
+    }
+    if (!token) { jsonResponse(res, 400, { success: false, error: 'Token required' }); return; }
+
+    const payload = verifyJwt(token);
+    if (!payload) {
+      console.log('[SSO] Token verification failed');
+      jsonResponse(res, 401, { success: false, error: 'Invalid or expired token' });
+      return;
+    }
+
+    if (payload.sourceApp && !ALLOWED_SOURCE_APPS.includes(payload.sourceApp)) {
+      jsonResponse(res, 403, { success: false, error: 'Unrecognized source app' });
+      return;
+    }
+
+    console.log(`[SSO] Token verified for ${payload.email} (source: ${payload.sourceApp})`);
+    jsonResponse(res, 200, {
+      success: true, valid: true,
+      user: {
+        uid: payload.sub, email: payload.email,
+        displayName: payload.displayName, photoURL: payload.photoURL,
+        hallmarkId: payload.hallmarkId, sourceApp: payload.sourceApp,
+      },
+      issuedAt: new Date(payload.iat * 1000).toISOString(),
+      expiresAt: new Date(payload.exp * 1000).toISOString(),
+    });
+    return;
+  }
+
+  if (urlPath === '/api/sso/exchange' && req.method === 'POST') {
+    if (!SSO_SECRET) { jsonResponse(res, 503, { success: false, error: 'SSO not configured' }); return; }
+
+    let token: string | null = null;
+    const authHeader = req.headers['authorization'];
+    if (typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
+      token = authHeader.slice(7);
+    }
+    if (!token) {
+      const body = await readBody(req);
+      token = body.token;
+    }
+    if (!token) { jsonResponse(res, 400, { success: false, error: 'Cross-app token required' }); return; }
+
+    const payload = verifyJwt(token);
+    if (!payload) { jsonResponse(res, 401, { success: false, error: 'Invalid or expired token' }); return; }
+    if (payload.type !== 'cross_app') { jsonResponse(res, 400, { success: false, error: 'Only cross_app tokens can be exchanged' }); return; }
+    if (payload.sourceApp && !ALLOWED_SOURCE_APPS.includes(payload.sourceApp)) {
+      jsonResponse(res, 403, { success: false, error: 'Unrecognized source app' }); return;
+    }
+
+    const sessionToken = mintJwt({
+      sub: payload.sub, email: payload.email,
+      displayName: payload.displayName, photoURL: payload.photoURL,
+      hallmarkId: payload.hallmarkId, sourceApp: payload.sourceApp,
+      targetApp: 'pulse', type: 'session',
+    }, SSO_SESSION_TTL);
+
+    console.log(`[SSO] Token exchanged for session: ${payload.email} (${payload.sourceApp} → pulse)`);
+    jsonResponse(res, 200, {
+      success: true, sessionToken, expiresIn: SSO_SESSION_TTL,
+      user: {
+        uid: payload.sub, email: payload.email,
+        displayName: payload.displayName, photoURL: payload.photoURL,
+        hallmarkId: payload.hallmarkId,
+      },
+    });
+    return;
+  }
+
+  jsonResponse(res, 404, { success: false, error: 'SSO endpoint not found' });
 }
 
 let inngestProcess: ReturnType<typeof spawn> | null = null;

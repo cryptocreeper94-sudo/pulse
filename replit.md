@@ -18,7 +18,7 @@ The platform utilizes a dark theme exclusively, featuring solid black/dark gray 
 - **Frontend**: React 19 and Vite 7 web app, with a React Native + Expo mobile app.
 - **Backend**: Mastra AI framework using an Express server, powered by the DarkWave-V2 AI agent.
 - **Database**: PostgreSQL (Neon-backed).
-- **Authentication**: Firebase Authentication (Google, GitHub OAuth) with backend user syncing and optional WebAuthn for wallet transactions.
+- **Authentication**: Firebase Authentication (Google, GitHub OAuth) with backend user syncing and optional WebAuthn for wallet transactions. SSO inter-app trust layer using JWT (HS256) with DARKWAVE_API_SECRET-protected token issuance, cross-app verify, and session exchange endpoints (`/api/sso/*`).
 - **Workflow Management**: Inngest for event-driven processing and cron jobs.
 - **Prediction Tracking**: Logs AI signals, tracks outcomes, calculates accuracy, and hashes predictions on Solana and DarkWave Smart Chain (DSC) for dual-layer verification, incorporating a logistic regression ML system.
 - **DarkWave Smart Chain Integration**: Comprehensive L1 blockchain integration for hash verification, hallmark generation, and prediction stamping, including API routes for status, hash submit/verify, and hallmark operations. Also enables automated DWC swaps on DarkWave DEX and staking optimization.
