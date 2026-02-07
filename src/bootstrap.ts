@@ -118,6 +118,12 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // PIN management for ecosystem login
+  if (urlPath.startsWith('/api/pin/')) {
+    handlePinRequest(req, res, urlPath);
+    return;
+  }
+
   // API proxy - only if server is ready
   if (urlPath.startsWith('/api/')) {
     const proxyReq = http.request({
@@ -371,13 +377,13 @@ async function handleSsoRequest(req: http.IncomingMessage, res: http.ServerRespo
   if (urlPath === '/api/sso/exchange' && req.method === 'POST') {
     if (!SSO_SECRET) { jsonResponse(res, 503, { success: false, error: 'SSO not configured' }); return; }
 
+    const body = await readBody(req);
     let token: string | null = null;
     const authHeader = req.headers['authorization'];
     if (typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
       token = authHeader.slice(7);
     }
     if (!token) {
-      const body = await readBody(req);
       token = body.token;
     }
     if (!token) { jsonResponse(res, 400, { success: false, error: 'Cross-app token required' }); return; }
@@ -387,6 +393,48 @@ async function handleSsoRequest(req: http.IncomingMessage, res: http.ServerRespo
     if (payload.type !== 'cross_app') { jsonResponse(res, 400, { success: false, error: 'Only cross_app tokens can be exchanged' }); return; }
     if (payload.sourceApp && !ALLOWED_SOURCE_APPS.includes(payload.sourceApp)) {
       jsonResponse(res, 403, { success: false, error: 'Unrecognized source app' }); return;
+    }
+
+    const pinProvided = body.pin;
+
+    const dbUrl = process.env.DATABASE_URL;
+    if (!dbUrl) {
+      console.error('[SSO] Database not available - cannot verify PIN');
+      jsonResponse(res, 503, { success: false, error: 'Database unavailable for PIN verification' });
+      return;
+    }
+
+    try {
+      const { Pool } = await import('pg');
+      const pool = new Pool({ connectionString: dbUrl });
+      const userResult = await pool.query('SELECT pin_hash, pin_failed_attempts, pin_locked_until FROM users WHERE email = $1', [payload.email]);
+      if (userResult.rows.length > 0 && userResult.rows[0].pin_hash) {
+        const u = userResult.rows[0];
+        if (u.pin_locked_until && new Date(u.pin_locked_until) > new Date()) {
+          await pool.end();
+          jsonResponse(res, 429, { success: false, error: 'Account locked due to failed PIN attempts', requiresPin: true });
+          return;
+        }
+        if (!pinProvided) {
+          await pool.end();
+          jsonResponse(res, 403, { success: false, error: 'PIN required for session exchange', requiresPin: true });
+          return;
+        }
+        if (!verifyPinStr(pinProvided, u.pin_hash)) {
+          const attempts = (u.pin_failed_attempts || 0) + 1;
+          const lockUntil = attempts >= PIN_MAX_ATTEMPTS ? new Date(Date.now() + PIN_LOCKOUT_MINUTES * 60000).toISOString() : null;
+          await pool.query('UPDATE users SET pin_failed_attempts = $1, pin_locked_until = $2 WHERE email = $3', [attempts, lockUntil, payload.email]);
+          await pool.end();
+          jsonResponse(res, 401, { success: false, error: 'Incorrect PIN', requiresPin: true });
+          return;
+        }
+        await pool.query('UPDATE users SET pin_failed_attempts = 0, pin_locked_until = NULL WHERE email = $1', [payload.email]);
+      }
+      await pool.end();
+    } catch (dbErr: any) {
+      console.error('[SSO] PIN check failed - blocking exchange:', dbErr.message);
+      jsonResponse(res, 503, { success: false, error: 'PIN verification service unavailable' });
+      return;
     }
 
     const sessionToken = mintJwt({
@@ -409,6 +457,218 @@ async function handleSsoRequest(req: http.IncomingMessage, res: http.ServerRespo
   }
 
   jsonResponse(res, 404, { success: false, error: 'SSO endpoint not found' });
+}
+
+// ============================================
+// PIN System for Ecosystem Login
+// ============================================
+const PIN_MAX_ATTEMPTS = 5;
+const PIN_LOCKOUT_MINUTES = 15;
+
+function validatePinRules(pin: string): { valid: boolean; error?: string } {
+  if (pin.length < 8) return { valid: false, error: 'PIN must be at least 8 characters' };
+  if (!/[A-Z]/.test(pin)) return { valid: false, error: 'PIN must contain at least 1 capital letter' };
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(pin)) return { valid: false, error: 'PIN must contain at least 1 special character' };
+  return { valid: true };
+}
+
+function hashPin(pin: string): string {
+  const salt = crypto.randomBytes(16).toString('hex');
+  const hash = crypto.pbkdf2Sync(pin, salt, 100000, 64, 'sha512').toString('hex');
+  return `${salt}:${hash}`;
+}
+
+function verifyPin(pin: string, stored: string): boolean {
+  const [salt, hash] = stored.split(':');
+  if (!salt || !hash) return false;
+  const check = crypto.pbkdf2Sync(pin, salt, 100000, 64, 'sha512').toString('hex');
+  return check === hash;
+}
+
+const verifyPinStr = verifyPin;
+
+async function getDbPool() {
+  const dbUrl = process.env.DATABASE_URL;
+  if (!dbUrl) return null;
+  const { Pool } = await import('pg');
+  return new Pool({ connectionString: dbUrl });
+}
+
+async function handlePinRequest(req: http.IncomingMessage, res: http.ServerResponse, urlPath: string) {
+
+  if (urlPath === '/api/pin/set' && req.method === 'POST') {
+    const body = await readBody(req);
+    const { email, pin, currentPin, ssoToken } = body;
+    if (!email || !pin) { jsonResponse(res, 400, { success: false, error: 'email and pin required' }); return; }
+
+    const appSecret = req.headers['x-darkwave-secret'] as string;
+    let authenticated = false;
+
+    if (appSecret && DARKWAVE_API_SECRET && appSecret === DARKWAVE_API_SECRET) {
+      authenticated = true;
+    }
+
+    if (!authenticated) {
+      let authToken = ssoToken;
+      const authHeader = req.headers['authorization'];
+      if (!authToken && typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
+        authToken = authHeader.slice(7);
+      }
+      if (authToken) {
+        const tokenPayload = verifyJwt(authToken);
+        if (tokenPayload && tokenPayload.email === email) {
+          authenticated = true;
+        }
+      }
+    }
+
+    if (!authenticated) {
+      jsonResponse(res, 401, { success: false, error: 'Authentication required (SSO token or x-darkwave-secret header)' });
+      return;
+    }
+
+    const validation = validatePinRules(pin);
+    if (!validation.valid) { jsonResponse(res, 400, { success: false, error: validation.error }); return; }
+
+    const pool = await getDbPool();
+    if (!pool) { jsonResponse(res, 503, { success: false, error: 'Database not available' }); return; }
+
+    try {
+      const user = await pool.query('SELECT id, pin_hash FROM users WHERE email = $1', [email]);
+      if (user.rows.length === 0) { await pool.end(); jsonResponse(res, 404, { success: false, error: 'User not found' }); return; }
+
+      if (user.rows[0].pin_hash) {
+        if (!currentPin) { await pool.end(); jsonResponse(res, 400, { success: false, error: 'Current PIN required to change PIN' }); return; }
+        if (!verifyPin(currentPin, user.rows[0].pin_hash)) { await pool.end(); jsonResponse(res, 401, { success: false, error: 'Current PIN incorrect' }); return; }
+      }
+
+      const pinHash = hashPin(pin);
+      await pool.query('UPDATE users SET pin_hash = $1, pin_set_at = NOW(), pin_failed_attempts = 0, pin_locked_until = NULL WHERE email = $2', [pinHash, email]);
+      await pool.end();
+
+      console.log(`[PIN] PIN set for ${email}`);
+      jsonResponse(res, 200, { success: true, message: 'PIN set successfully' });
+      return;
+    } catch (err: any) {
+      await pool.end();
+      console.error('[PIN] Set error:', err.message);
+      jsonResponse(res, 500, { success: false, error: 'Failed to set PIN' });
+      return;
+    }
+  }
+
+  if (urlPath === '/api/pin/verify' && req.method === 'POST') {
+    const body = await readBody(req);
+    const { email, pin } = body;
+    if (!email || !pin) { jsonResponse(res, 400, { success: false, error: 'email and pin required' }); return; }
+
+    const pool = await getDbPool();
+    if (!pool) { jsonResponse(res, 503, { success: false, error: 'Database not available' }); return; }
+
+    try {
+      const user = await pool.query('SELECT id, pin_hash, pin_failed_attempts, pin_locked_until FROM users WHERE email = $1', [email]);
+      if (user.rows.length === 0) { await pool.end(); jsonResponse(res, 404, { success: false, error: 'User not found' }); return; }
+
+      const u = user.rows[0];
+      if (!u.pin_hash) { await pool.end(); jsonResponse(res, 400, { success: false, error: 'No PIN set for this user' }); return; }
+
+      if (u.pin_locked_until && new Date(u.pin_locked_until) > new Date()) {
+        const remaining = Math.ceil((new Date(u.pin_locked_until).getTime() - Date.now()) / 60000);
+        await pool.end();
+        jsonResponse(res, 429, { success: false, error: `Account locked. Try again in ${remaining} minutes`, lockedUntil: u.pin_locked_until });
+        return;
+      }
+
+      if (!verifyPin(pin, u.pin_hash)) {
+        const attempts = (u.pin_failed_attempts || 0) + 1;
+        const lockUntil = attempts >= PIN_MAX_ATTEMPTS ? new Date(Date.now() + PIN_LOCKOUT_MINUTES * 60000).toISOString() : null;
+
+        await pool.query(
+          'UPDATE users SET pin_failed_attempts = $1, pin_locked_until = $2 WHERE email = $3',
+          [attempts, lockUntil, email]
+        );
+        await pool.end();
+
+        const remaining = PIN_MAX_ATTEMPTS - attempts;
+        console.log(`[PIN] Failed attempt for ${email} (${attempts}/${PIN_MAX_ATTEMPTS})`);
+        jsonResponse(res, 401, {
+          success: false,
+          error: remaining > 0 ? `Incorrect PIN. ${remaining} attempts remaining` : `Account locked for ${PIN_LOCKOUT_MINUTES} minutes`,
+          attemptsRemaining: Math.max(0, remaining),
+          locked: remaining <= 0,
+        });
+        return;
+      }
+
+      await pool.query('UPDATE users SET pin_failed_attempts = 0, pin_locked_until = NULL, last_login = NOW() WHERE email = $1', [email]);
+      await pool.end();
+
+      console.log(`[PIN] Verified for ${email}`);
+      jsonResponse(res, 200, { success: true, verified: true });
+      return;
+    } catch (err: any) {
+      await pool.end();
+      console.error('[PIN] Verify error:', err.message);
+      jsonResponse(res, 500, { success: false, error: 'Verification failed' });
+      return;
+    }
+  }
+
+  if (urlPath === '/api/pin/status' && req.method === 'POST') {
+    const body = await readBody(req);
+    const { email } = body;
+    if (!email) { jsonResponse(res, 400, { success: false, error: 'email required' }); return; }
+
+    const pool = await getDbPool();
+    if (!pool) { jsonResponse(res, 503, { success: false, error: 'Database not available' }); return; }
+
+    try {
+      const user = await pool.query('SELECT pin_hash, pin_set_at, pin_failed_attempts, pin_locked_until FROM users WHERE email = $1', [email]);
+      await pool.end();
+
+      if (user.rows.length === 0) { jsonResponse(res, 404, { success: false, error: 'User not found' }); return; }
+
+      const u = user.rows[0];
+      const isLocked = u.pin_locked_until && new Date(u.pin_locked_until) > new Date();
+
+      jsonResponse(res, 200, {
+        success: true,
+        hasPin: !!u.pin_hash,
+        pinSetAt: u.pin_set_at,
+        isLocked: !!isLocked,
+        lockedUntil: isLocked ? u.pin_locked_until : null,
+        failedAttempts: u.pin_failed_attempts || 0,
+        rules: { minLength: 8, requireCapital: true, requireSpecial: true },
+      });
+      return;
+    } catch (err: any) {
+      await pool.end();
+      jsonResponse(res, 500, { success: false, error: 'Failed to check status' });
+      return;
+    }
+  }
+
+  if (urlPath === '/api/pin/validate-rules' && req.method === 'POST') {
+    const body = await readBody(req);
+    const { pin } = body;
+    if (!pin) { jsonResponse(res, 400, { success: false, error: 'pin required' }); return; }
+
+    const validation = validatePinRules(pin);
+    jsonResponse(res, 200, {
+      success: true,
+      valid: validation.valid,
+      error: validation.error || null,
+      rules: { minLength: 8, requireCapital: true, requireSpecial: true },
+      checks: {
+        length: pin.length >= 8,
+        capital: /[A-Z]/.test(pin),
+        special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(pin),
+      },
+    });
+    return;
+  }
+
+  jsonResponse(res, 404, { success: false, error: 'PIN endpoint not found' });
 }
 
 let inngestProcess: ReturnType<typeof spawn> | null = null;
