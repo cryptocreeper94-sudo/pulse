@@ -314,7 +314,7 @@ export default function MarketsTab() {
     
     const fetchMarketData = async () => {
       try {
-        const response = await fetch('/api/global-overview')
+        const response = await fetch('/api/crypto/market-overview')
         if (response.ok) {
           const data = await response.json()
           setMarketData({
@@ -438,8 +438,6 @@ export default function MarketsTab() {
         />
       </div>
       
-      <BitcoinChart />
-      
       <div className="section-box mb-md">
         <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
           <h3 className="section-title">📊 Live Prices</h3>
@@ -503,6 +501,8 @@ export default function MarketsTab() {
           </div>
         </div>
       </div>
+      
+      <BitcoinChart />
       
       <div className="section-box mb-md">
         <div className="section-header">
