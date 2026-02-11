@@ -10,7 +10,7 @@ const generateId = () => `qs_${Date.now().toString(36)}_${randomBytes(4).toStrin
 
 export const quantCategoryScanner = inngest.createFunction(
   { id: 'quant-category-scanner', name: 'Quant System Category Scanner' },
-  { cron: '*/5 * * * *' },
+  { cron: '*/15 * * * *' },
   async ({ event, step }) => {
     const scanResults = await step.run('scan-enabled-categories', async () => {
       try {

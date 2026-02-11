@@ -3,7 +3,7 @@ import { topSignalsService } from '../../services/topSignalsService.js';
 
 export const topSignalsScanner = inngest.createFunction(
   { id: 'top-signals-scanner', name: 'Top Signals Market Scanner' },
-  { cron: '*/3 * * * *' },
+  { cron: '*/15 * * * *' },
   async ({ event, step }) => {
     const result = await step.run('scan-markets', async () => {
       try {

@@ -303,7 +303,7 @@ export const backgroundPredictionWorker = inngest.createFunction(
     name: "Generate Background Predictions",
   },
   [
-    { cron: "*/5 * * * *" },  // Run every 5 minutes
+    { cron: "*/30 * * * *" },  // Run every 30 minutes
     { event: "prediction/generate-background" },
   ],
   async ({ event, step }) => {

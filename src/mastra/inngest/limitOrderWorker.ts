@@ -7,7 +7,7 @@ export const limitOrderMonitorWorker = inngest.createFunction(
     name: "Monitor Limit Orders",
   },
   [
-    { cron: "* * * * *" },
+    { cron: "*/5 * * * *" },
     { event: "limit-order/monitor" },
   ],
   async ({ step }) => {

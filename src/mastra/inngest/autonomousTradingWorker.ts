@@ -27,7 +27,7 @@ export const signalCurationWorker = inngest.createFunction(
     name: "Curate High-Confidence Signals",
   },
   [
-    { cron: "*/5 * * * *" },
+    { cron: "*/15 * * * *" },
     { event: "autonomous-trading/curate-signals" },
   ],
   async ({ event, step }) => {
@@ -122,7 +122,7 @@ export const semiAutoExecutorWorker = inngest.createFunction(
     name: "Execute Semi-Auto Trades",
   },
   [
-    { cron: "* * * * *" },
+    { cron: "*/5 * * * *" },
     { event: "autonomous-trading/execute-semi-auto" },
   ],
   async ({ event, step }) => {
