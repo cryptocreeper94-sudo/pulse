@@ -60,7 +60,7 @@ class CoinGeckoClient {
   private usingFallback = false;
   private coinGeckoFailures = 0;
   private readonly MAX_COINGECKO_FAILURES = 3;
-  private readonly COOLDOWN_DURATION = 60000;
+  private readonly COOLDOWN_DURATION = 30000;
 
   private responseCache = new Map<string, CacheEntry>();
   private dailyCallCount = 0;
@@ -255,6 +255,76 @@ class CoinGeckoClient {
         image: `https://www.cryptocompare.com${item.CoinInfo.ImageUrl}`
       }));
     }
+
+    if (endpoint.includes('/ohlc') || endpoint.includes('/market_chart')) {
+      const coinMatch = endpoint.match(/\/coins\/([^/]+)\//);
+      const coinId = coinMatch ? coinMatch[1] : 'bitcoin';
+      const symbol = this.coinIdToSymbol(coinId) || coinId.toUpperCase();
+      const days = params.days || 7;
+      const daysNum = typeof days === 'string' ? parseInt(days) : days;
+
+      let apiEndpoint: string;
+      let limit: number;
+      if (daysNum <= 1) {
+        apiEndpoint = `${api.baseUrl}/data/v2/histohour`;
+        limit = 24;
+      } else if (daysNum <= 30) {
+        apiEndpoint = `${api.baseUrl}/data/v2/histohour`;
+        limit = Math.min(daysNum * 24, 720);
+      } else {
+        apiEndpoint = `${api.baseUrl}/data/v2/histoday`;
+        limit = Math.min(daysNum, 365);
+      }
+
+      const response = await axios.get(apiEndpoint, {
+        timeout: 10000,
+        params: { fsym: symbol, tsym: 'USD', limit }
+      });
+
+      const histData = response.data?.Data?.Data || [];
+      if (endpoint.includes('/ohlc')) {
+        return histData.map((d: any) => ([
+          d.time * 1000,
+          d.open,
+          d.high,
+          d.low,
+          d.close
+        ]));
+      }
+      return {
+        prices: histData.map((d: any) => [d.time * 1000, d.close]),
+        market_caps: histData.map((d: any) => [d.time * 1000, 0]),
+        total_volumes: histData.map((d: any) => [d.time * 1000, d.volumeto])
+      };
+    }
+
+    if (endpoint.includes('/global')) {
+      const response = await axios.get(`${api.baseUrl}/data/top/mktcapfull`, {
+        timeout: 10000,
+        params: { limit: 10, tsym: 'USD' }
+      });
+      let totalMcap = 0;
+      let btcMcap = 0;
+      let ethMcap = 0;
+      for (const item of (response.data.Data || [])) {
+        const mcap = item.RAW?.USD?.MKTCAP || 0;
+        totalMcap += mcap;
+        if (item.CoinInfo.Name === 'BTC') btcMcap = mcap;
+        if (item.CoinInfo.Name === 'ETH') ethMcap = mcap;
+      }
+      return {
+        data: {
+          total_market_cap: { usd: totalMcap },
+          market_cap_change_percentage_24h_usd: 0,
+          market_cap_percentage: {
+            btc: totalMcap > 0 ? (btcMcap / totalMcap) * 100 : 54,
+            eth: totalMcap > 0 ? (ethMcap / totalMcap) * 100 : 12,
+          },
+          active_cryptocurrencies: 15000,
+          markets: 800
+        }
+      };
+    }
     
     throw new Error('Endpoint not supported by CryptoCompare fallback');
   }
@@ -365,9 +435,7 @@ class CoinGeckoClient {
     for (let attempt = 0; attempt < FALLBACK_APIS.length; attempt++) {
       const api = this.getNextFallbackApi();
       if (!api) {
-        console.warn('[Fallback] All APIs on cooldown - waiting...');
-        await new Promise(resolve => setTimeout(resolve, 5000));
-        continue;
+        throw new Error(`All fallback APIs on cooldown: ${errors.join('; ')}`);
       }
       
       try {

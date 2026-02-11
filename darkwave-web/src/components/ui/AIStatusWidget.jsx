@@ -12,6 +12,8 @@ export default function AIStatusWidget() {
   const [activeTab, setActiveTab] = useState('howItWorks')
 
   useEffect(() => {
+    let retryTimeout = null
+    let retryCount = 0
     const fetchStats = async () => {
       try {
         const response = await fetch('/api/ml/stats')
@@ -19,11 +21,21 @@ export default function AIStatusWidget() {
           const data = await response.json()
           setStats(data)
           setError(false)
+          retryCount = 0
         } else {
+          if (retryCount < 5) {
+            retryCount++
+            retryTimeout = setTimeout(fetchStats, 3000)
+            return
+          }
           setError(true)
         }
       } catch (err) {
-        console.log('Failed to fetch AI stats')
+        if (retryCount < 5) {
+          retryCount++
+          retryTimeout = setTimeout(fetchStats, 3000)
+          return
+        }
         setError(true)
       } finally {
         setLoading(false)
@@ -32,7 +44,7 @@ export default function AIStatusWidget() {
 
     fetchStats()
     const interval = setInterval(fetchStats, 60000)
-    return () => clearInterval(interval)
+    return () => { clearInterval(interval); if (retryTimeout) clearTimeout(retryTimeout) }
   }, [])
 
   useEffect(() => {
