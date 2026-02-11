@@ -39,7 +39,7 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "node dist/bootstrap.mjs"
+args = "node dist/maintenance-server.mjs"
 waitForPort = 5000
 
 [userenv]
