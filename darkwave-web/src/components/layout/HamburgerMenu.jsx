@@ -11,6 +11,7 @@ const allMenuItems = [
   { id: 'auto-trade', icon: '🤖', label: 'Auto-Trade', highlight: true },
   { id: 'risk', icon: '🛡️', label: 'Risk Dashboard', highlight: true },
   { id: 'ml-dashboard', icon: '🧠', label: 'ML Dashboard', highlight: true, adminOnly: true },
+  { id: 'command-center', icon: '🚀', label: 'Command Center', adminOnly: true },
   { id: 'dev-portal', icon: '🛠️', label: 'Developers Portal', adminOnly: true },
   { id: 'pricing', icon: '💳', label: 'Pricing', highlight: true },
   { id: 'learn', icon: '💡', label: 'Learn' },

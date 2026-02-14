@@ -45,6 +45,7 @@ The platform utilizes a dark theme exclusively, featuring solid black/dark gray 
 - **Arbitrage Scanner**: CEX arbitrage (Binance/KuCoin price comparison), DEX arbitrage opportunities (Uniswap/Sushiswap/PancakeSwap/Raydium/Orca), and triangular arbitrage detection.
 - **NFT Portfolio**: Multi-chain NFT tracking (Ethereum/Solana/Polygon) with Helius and Alchemy API integrations, floor price alerts, trending collections display, and collection analytics.
 - **Multi-language Support**: i18n infrastructure supporting 7 languages (English, Spanish, Chinese, Japanese, Korean, Russian, Portuguese) with user preference persistence.
+- **Command Center**: PIN-protected (741963) admin-only dashboard serving as the central operations hub. Organizes all platform tools into 8 categorized sections (Mission Control, AI & Predictions, Trading Operations, Wallet & Assets, Intelligence & Alerts, Finance & Revenue, Developer & Technical, Learning & Resources) with photorealistic card backgrounds, horizontal carousel navigation, glow effects, and badge system. Session-based PIN auth with 30-min TTL. Located at `darkwave-web/src/components/tabs/CommandCenterTab.jsx`.
 
 ## External Dependencies
 

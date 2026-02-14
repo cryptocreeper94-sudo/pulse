@@ -24,7 +24,8 @@ import {
   CopyTradingTab,
   ArbitrageTab,
   NFTTab,
-  GuardianAITab
+  GuardianAITab,
+  CommandCenterTab
 } from './components/tabs'
 import WhitepaperPage from './pages/WhitepaperPage'
 import StrikeAgentPublicView from './pages/StrikeAgentPublicView'
@@ -334,6 +335,11 @@ function AppContent() {
         return <NFTTab userId={userId} />
       case 'guardian-ai':
         return <GuardianAITab />
+      case 'command-center':
+        if (userConfig?.accessLevel !== 'admin' && userConfig?.accessLevel !== 'owner') {
+          return <DashboardTab userId={userId} userConfig={userConfig} onNavigate={handleTabChange} onAnalyzeCoin={handleAnalyzeCoin} />
+        }
+        return <CommandCenterTab onNavigate={handleTabChange} userConfig={userConfig} />
       case 'whitepaper':
         return <WhitepaperPage />
       default:
