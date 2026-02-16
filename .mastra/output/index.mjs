@@ -16,6 +16,8 @@ var __export = (target, all) => {
 
 // src/lib/coinGeckoClient.ts
 import axios from "axios";
+import * as _nodeFs from "node:fs";
+import * as _nodePath from "node:path";
 function getCacheTTL(endpoint) {
   for (const [pattern, ttl] of Object.entries(CACHE_TTLS)) {
     if (endpoint.match(new RegExp(pattern))) return ttl;
@@ -36,14 +38,31 @@ var init_coinGeckoClient = __esm({
       { name: "Kraken", baseUrl: "https://api.kraken.com/0/public", rateLimit: 60 }
     ];
     CACHE_TTLS = {
-      "/simple/price": 6e4,
-      "/coins/markets": 12e4,
-      "/coins/": 3e5,
-      "/global": 3e5,
-      "/search/trending": 3e5,
-      "/coins/.*/ohlc": 12e4,
-      "/coins/.*/market_chart": 12e4
+      "/simple/price": 3e5,
+      "/coins/markets": 6e5,
+      "/coins/": 6e5,
+      "/global": 6e5,
+      "/search/trending": 6e5,
+      "/coins/.*/ohlc": 6e5,
+      "/coins/.*/market_chart": 6e5
     };
+    var STALE_MULTIPLIER = 5;
+    var DISK_CACHE_DIR = _nodePath.join(process.cwd(), ".cache");
+    try { if (!_nodeFs.existsSync(DISK_CACHE_DIR)) _nodeFs.mkdirSync(DISK_CACHE_DIR, { recursive: true }); } catch {}
+    function saveToDisk(key, data) {
+      try {
+        var safeKey = key.replace(/[^a-zA-Z0-9_-]/g, "_").slice(0, 100);
+        _nodeFs.writeFileSync(_nodePath.join(DISK_CACHE_DIR, safeKey + ".json"), JSON.stringify({ data, timestamp: Date.now() }), "utf-8");
+      } catch {}
+    }
+    function loadFromDisk(key) {
+      try {
+        var safeKey = key.replace(/[^a-zA-Z0-9_-]/g, "_").slice(0, 100);
+        var filePath = _nodePath.join(DISK_CACHE_DIR, safeKey + ".json");
+        if (!_nodeFs.existsSync(filePath)) return null;
+        return JSON.parse(_nodeFs.readFileSync(filePath, "utf-8"));
+      } catch { return null; }
+    }
     console.log(`[CoinGecko] Using ${USE_PRO_API ? "PRO" : "Demo"} API at ${USE_PRO_API ? COINGECKO_PRO_URL : COINGECKO_FREE_URL}`);
     CoinGeckoClient = class {
       client;
@@ -105,6 +124,7 @@ var init_coinGeckoClient = __esm({
           }
         );
         setInterval(() => this.cleanCache(), 12e4);
+        this.loadDiskCacheOnStartup();
       }
       getCacheKey(endpoint, config) {
         const params = config?.params ? JSON.stringify(config.params, Object.keys(config.params).sort()) : "";
@@ -114,10 +134,20 @@ var init_coinGeckoClient = __esm({
         const entry = this.responseCache.get(key);
         if (!entry) return null;
         if (Date.now() - entry.timestamp > entry.ttl) {
-          this.responseCache.delete(key);
           return null;
         }
         return entry.data;
+      }
+      getStaleFromCache(key) {
+        const entry = this.responseCache.get(key);
+        if (entry && Date.now() - entry.timestamp < entry.ttl * STALE_MULTIPLIER) {
+          return entry.data;
+        }
+        const diskEntry = loadFromDisk(key);
+        if (diskEntry && Date.now() - diskEntry.timestamp < 3600000) {
+          return diskEntry.data;
+        }
+        return null;
       }
       setCache(key, data, endpoint) {
         this.responseCache.set(key, {
@@ -125,14 +155,32 @@ var init_coinGeckoClient = __esm({
           timestamp: Date.now(),
           ttl: getCacheTTL(endpoint)
         });
+        saveToDisk(key, data);
       }
       cleanCache() {
         const now = Date.now();
         for (const [key, entry] of this.responseCache.entries()) {
-          if (now - entry.timestamp > entry.ttl) {
+          if (now - entry.timestamp > entry.ttl * STALE_MULTIPLIER) {
             this.responseCache.delete(key);
           }
         }
+      }
+      loadDiskCacheOnStartup() {
+        try {
+          const files = _nodeFs.readdirSync(DISK_CACHE_DIR);
+          for (const file of files) {
+            if (!file.endsWith(".json")) continue;
+            try {
+              const raw = _nodeFs.readFileSync(_nodePath.join(DISK_CACHE_DIR, file), "utf-8");
+              const { data, timestamp } = JSON.parse(raw);
+              if (Date.now() - timestamp < 3600000) {
+                const key = file.replace(".json", "");
+                this.responseCache.set(key, { data, timestamp, ttl: 600000 });
+              }
+            } catch {}
+          }
+          console.log(`[Cache] Loaded ${this.responseCache.size} entries from disk`);
+        } catch {}
       }
       trackDailyCall() {
         const today = (/* @__PURE__ */ new Date()).toDateString();
@@ -442,49 +490,56 @@ var init_coinGeckoClient = __esm({
         if (cached !== null) {
           return cached;
         }
+        const staleData = this.getStaleFromCache(cacheKey);
         return this.throttledRequest(async () => {
           const cachedAgain = this.getFromCache(cacheKey);
           if (cachedAgain !== null) return cachedAgain;
           this.trackDailyCall();
-          if (!this.usingFallback) {
-            try {
-              const response = await this.client.get(endpoint, config);
-              this.setCache(cacheKey, response.data, endpoint);
-              return response.data;
-            } catch (error) {
-              if (error.response?.status === 429 || error.response?.status >= 500) {
-                console.warn(`[CoinGecko] Pro API failed (${error.response?.status}), trying fallback APIs...`);
-                try {
-                  const result = await this.tryFallbackApis(endpoint, config?.params || {});
-                  this.setCache(cacheKey, result, endpoint);
-                  return result;
-                } catch (fallbackError) {
-                  console.warn(`[CoinGecko] All fallbacks failed: ${fallbackError.message}`);
-                  throw error;
-                }
-              }
-              throw error;
-            }
-          } else {
-            const now = Date.now();
-            if (now - this.fallbackState.lastRotation > 3e5) {
-              console.log("[CoinGecko] Attempting to restore primary API...");
-              this.usingFallback = false;
-              this.coinGeckoFailures = 0;
-              this.fallbackState.lastRotation = now;
+          const tryFetchFresh = async () => {
+            if (!this.usingFallback) {
               try {
                 const response = await this.client.get(endpoint, config);
-                console.log("[CoinGecko] Primary API restored successfully");
                 this.setCache(cacheKey, response.data, endpoint);
                 return response.data;
               } catch (error) {
-                console.warn("[CoinGecko] Primary API still failing, continuing with fallbacks");
-                this.usingFallback = true;
+                if (error.response?.status === 429 || error.response?.status >= 500) {
+                  console.warn(`[CoinGecko] Pro API failed (${error.response?.status}), trying fallback APIs...`);
+                  const result = await this.tryFallbackApis(endpoint, config?.params || {});
+                  this.setCache(cacheKey, result, endpoint);
+                  return result;
+                }
+                throw error;
               }
+            } else {
+              const now = Date.now();
+              if (now - this.fallbackState.lastRotation > 6e5) {
+                console.log("[CoinGecko] Attempting to restore primary API...");
+                this.usingFallback = false;
+                this.coinGeckoFailures = 0;
+                this.fallbackState.lastRotation = now;
+                try {
+                  const response = await this.client.get(endpoint, config);
+                  console.log("[CoinGecko] Primary API restored successfully");
+                  this.setCache(cacheKey, response.data, endpoint);
+                  return response.data;
+                } catch (error) {
+                  console.warn("[CoinGecko] Primary API still failing, continuing with fallbacks");
+                  this.usingFallback = true;
+                }
+              }
+              const result = await this.tryFallbackApis(endpoint, config?.params || {});
+              this.setCache(cacheKey, result, endpoint);
+              return result;
             }
-            const result = await this.tryFallbackApis(endpoint, config?.params || {});
-            this.setCache(cacheKey, result, endpoint);
-            return result;
+          };
+          try {
+            return await tryFetchFresh();
+          } catch (error) {
+            if (staleData !== null) {
+              console.warn(`[Cache] Serving stale data for ${endpoint} (all APIs failed)`);
+              return staleData;
+            }
+            throw error;
           }
         });
       }
