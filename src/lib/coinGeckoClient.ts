@@ -89,6 +89,8 @@ class CoinGeckoClient {
     cooldowns: {}
   };
   private usingFallback = false;
+  private fallbackSwitchedAt = 0;
+  private readonly FALLBACK_RECOVERY_INTERVAL = 300_000;
   private coinGeckoFailures = 0;
   private readonly MAX_COINGECKO_FAILURES = 3;
   private readonly COOLDOWN_DURATION = 30000;
@@ -133,8 +135,9 @@ class CoinGeckoClient {
           console.warn(`[CoinGecko] API error (${error.response?.status}) - failure count: ${this.coinGeckoFailures}/${this.MAX_COINGECKO_FAILURES}`);
           
           if (this.coinGeckoFailures >= this.MAX_COINGECKO_FAILURES) {
-            console.warn('[CoinGecko] Max failures reached - switching to fallback APIs');
+            console.warn('[CoinGecko] Max failures reached - switching to fallback APIs for 5 minutes');
             this.usingFallback = true;
+            this.fallbackSwitchedAt = Date.now();
           }
         }
         throw error;
@@ -217,6 +220,9 @@ class CoinGeckoClient {
       console.log(`[CoinGecko] Daily reset - yesterday: ${this.dailyCallCount} calls`);
       this.dailyCallCount = 0;
       this.dailyCallDate = today;
+      this.usingFallback = false;
+      this.coinGeckoFailures = 0;
+      console.log('[CoinGecko] Daily reset - restored primary API');
     }
     this.dailyCallCount++;
     if (this.dailyCallCount % 100 === 0) {
@@ -575,11 +581,12 @@ class CoinGeckoClient {
           }
         } else {
           const now = Date.now();
-          if (now - this.fallbackState.lastRotation > 600000) {
-            console.log('[CoinGecko] Attempting to restore primary API...');
+          const timeSinceFallback = now - this.fallbackSwitchedAt;
+          if (timeSinceFallback > this.FALLBACK_RECOVERY_INTERVAL) {
+            console.log(`[CoinGecko] ${Math.round(timeSinceFallback / 60000)}min on fallback - attempting to restore primary API...`);
             this.usingFallback = false;
             this.coinGeckoFailures = 0;
-            this.fallbackState.lastRotation = now;
+            this.fallbackSwitchedAt = now;
             
             try {
               const response = await this.client.get<T>(endpoint, config);
@@ -589,6 +596,7 @@ class CoinGeckoClient {
             } catch (error) {
               console.warn('[CoinGecko] Primary API still failing, continuing with fallbacks');
               this.usingFallback = true;
+              this.fallbackSwitchedAt = now;
             }
           }
           
