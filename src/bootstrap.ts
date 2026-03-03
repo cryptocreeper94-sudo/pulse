@@ -157,6 +157,18 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // Trust Layer Hallmark routes - handled directly
+  if (urlPath.startsWith('/api/hallmark/')) {
+    handleHallmarkRequest(req, res, urlPath);
+    return;
+  }
+
+  // Trust Layer Affiliate routes - handled directly
+  if (urlPath.startsWith('/api/affiliate/')) {
+    handleAffiliateRequest(req, res, urlPath);
+    return;
+  }
+
   // Ecosystem Widget routes - handled directly (no Mastra dependency)
   if (urlPath === '/api/ecosystem/widget-data' || urlPath === '/api/ecosystem/widget.js') {
     handleEcosystemWidgetRequest(req, res, urlPath);
@@ -263,6 +275,11 @@ function startWorkers() {
   } catch (e) {
     console.error('Mastra init error:', e);
   }
+
+  // Create Trust Layer Genesis Hallmark (PU-00000001)
+  setTimeout(async () => {
+    await createGenesisHallmark();
+  }, 3000);
 
   // Register with ORBIT ecosystem
   setTimeout(async () => {
@@ -544,8 +561,9 @@ const verifyPinStr = verifyPin;
 async function getDbPool() {
   const dbUrl = process.env.DATABASE_URL;
   if (!dbUrl) return null;
-  const { Pool } = await import('pg');
-  return new Pool({ connectionString: dbUrl });
+  const pgModule = await import('pg');
+  const PoolClass = pgModule.Pool || (pgModule as any).default?.Pool || (pgModule as any).default;
+  return new PoolClass({ connectionString: dbUrl });
 }
 
 async function handlePinRequest(req: http.IncomingMessage, res: http.ServerResponse, urlPath: string) {
@@ -1445,4 +1463,411 @@ function startInngestDevServer() {
   setTimeout(() => {
     inngestRestartCount = 0;
   }, 300000);
+}
+
+// ============================================
+// Trust Layer Genesis Hallmark
+// ============================================
+async function createGenesisHallmark() {
+  try {
+    const pool = await getDbPool();
+    
+    const existing = await pool.query(
+      `SELECT th_id FROM trust_layer_hallmarks WHERE th_id = 'PU-00000001' LIMIT 1`
+    );
+    
+    if (existing.rows.length > 0) {
+      console.log('[Hallmark] Genesis hallmark PU-00000001 already exists');
+      await pool.end();
+      return;
+    }
+    
+    await pool.query(
+      `INSERT INTO hallmark_counter (id, current_sequence) VALUES ('pu-master', '0') ON CONFLICT (id) DO UPDATE SET current_sequence = '0'`
+    );
+    
+    const counterResult = await pool.query(
+      `UPDATE hallmark_counter SET current_sequence = (CAST(current_sequence AS INTEGER) + 1)::TEXT WHERE id = 'pu-master' RETURNING current_sequence`
+    );
+    const seq = parseInt(counterResult.rows[0].current_sequence);
+    const thId = `PU-${seq.toString().padStart(8, '0')}`;
+    
+    const payload = {
+      thId,
+      appId: 'pulse-genesis',
+      appName: 'Pulse',
+      productName: 'Genesis Block',
+      releaseType: 'genesis',
+      timestamp: '2026-08-23T00:00:00.000Z',
+      metadata: {
+        ecosystem: 'Trust Layer',
+        version: '1.0.0',
+        domain: 'pulse.tlid.io',
+        operator: 'DarkWave Studios LLC',
+        chain: 'Trust Layer Blockchain',
+        consensus: 'Proof of Trust',
+        launchDate: '2026-08-23T00:00:00.000Z',
+        nativeAsset: 'SIG',
+        utilityToken: 'Shells',
+        parentApp: 'Trust Layer Hub',
+        parentGenesis: 'TH-00000001'
+      }
+    };
+    
+    const dataHash = crypto.createHash('sha256').update(JSON.stringify(payload)).digest('hex');
+    const txHash = '0x' + crypto.randomBytes(32).toString('hex');
+    const blockHeight = (1000000 + Math.floor(Math.random() * 9000000)).toString();
+    
+    await pool.query(
+      `INSERT INTO trust_layer_hallmarks (th_id, user_id, app_id, app_name, product_name, release_type, metadata, data_hash, tx_hash, block_height, verification_url, hallmark_id) 
+       VALUES ($1, NULL, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+      [thId, 'pulse-genesis', 'Pulse', 'Genesis Block', 'genesis', JSON.stringify(payload.metadata), dataHash, txHash, blockHeight, `https://pulse.tlid.io/api/hallmark/${thId}/verify`, seq]
+    );
+    
+    console.log(`[Hallmark] Genesis hallmark ${thId} created successfully`);
+    console.log(`[Hallmark] Data hash: ${dataHash}`);
+    console.log(`[Hallmark] TX hash: ${txHash}`);
+    await pool.end();
+  } catch (err: any) {
+    console.error('[Hallmark] Genesis creation error:', err.message);
+  }
+}
+
+// ============================================
+// Trust Layer Hallmark Routes
+// ============================================
+async function handleHallmarkRequest(req: http.IncomingMessage, res: http.ServerResponse, urlPath: string) {
+  try {
+    if (urlPath === '/api/hallmark/genesis' && req.method === 'GET') {
+      const pool = await getDbPool();
+      const result = await pool.query(
+        `SELECT * FROM trust_layer_hallmarks WHERE th_id = 'PU-00000001' LIMIT 1`
+      );
+      await pool.end();
+      
+      if (result.rows.length === 0) {
+        jsonResponse(res, 404, { error: 'Genesis hallmark not yet created' });
+        return;
+      }
+      
+      const h = result.rows[0];
+      jsonResponse(res, 200, {
+        verified: true,
+        hallmark: {
+          thId: h.th_id,
+          appName: h.app_name,
+          productName: h.product_name,
+          releaseType: h.release_type,
+          metadata: h.metadata,
+          dataHash: h.data_hash,
+          txHash: h.tx_hash,
+          blockHeight: h.block_height,
+          verificationUrl: h.verification_url,
+          createdAt: h.created_at
+        }
+      });
+      return;
+    }
+    
+    const verifyMatch = urlPath.match(/^\/api\/hallmark\/([A-Z]{2}-\d{8})\/verify$/);
+    if (verifyMatch && req.method === 'GET') {
+      const hallmarkId = verifyMatch[1];
+      const pool = await getDbPool();
+      const result = await pool.query(
+        `SELECT * FROM trust_layer_hallmarks WHERE th_id = $1 LIMIT 1`,
+        [hallmarkId]
+      );
+      await pool.end();
+      
+      if (result.rows.length === 0) {
+        jsonResponse(res, 404, { verified: false, error: 'Hallmark not found' });
+        return;
+      }
+      
+      const h = result.rows[0];
+      jsonResponse(res, 200, {
+        verified: true,
+        hallmark: {
+          thId: h.th_id,
+          appName: h.app_name,
+          productName: h.product_name,
+          releaseType: h.release_type,
+          dataHash: h.data_hash,
+          txHash: h.tx_hash,
+          blockHeight: h.block_height,
+          createdAt: h.created_at
+        }
+      });
+      return;
+    }
+    
+    const detailMatch = urlPath.match(/^\/api\/hallmark\/([A-Z]{2}-\d{8})$/);
+    if (detailMatch && req.method === 'GET') {
+      const hallmarkId = detailMatch[1];
+      const pool = await getDbPool();
+      const result = await pool.query(
+        `SELECT * FROM trust_layer_hallmarks WHERE th_id = $1 LIMIT 1`,
+        [hallmarkId]
+      );
+      await pool.end();
+      
+      if (result.rows.length === 0) {
+        jsonResponse(res, 404, { error: 'Hallmark not found' });
+        return;
+      }
+      
+      jsonResponse(res, 200, { hallmark: result.rows[0] });
+      return;
+    }
+    
+    jsonResponse(res, 404, { error: 'Hallmark endpoint not found' });
+  } catch (err: any) {
+    console.error('[Hallmark] Request error:', err.message);
+    jsonResponse(res, 500, { error: 'Internal server error' });
+  }
+}
+
+// ============================================
+// Trust Layer Affiliate Routes
+// ============================================
+const AFFILIATE_TIERS = [
+  { name: 'diamond', minRefs: 50, rate: 0.20 },
+  { name: 'platinum', minRefs: 30, rate: 0.175 },
+  { name: 'gold', minRefs: 15, rate: 0.15 },
+  { name: 'silver', minRefs: 5, rate: 0.125 },
+  { name: 'base', minRefs: 0, rate: 0.10 },
+];
+
+const ECOSYSTEM_APPS = [
+  { name: 'Trust Layer Hub', domain: 'trusthub.tlid.io' },
+  { name: 'Trust Layer (L1)', domain: 'dwtl.io' },
+  { name: 'TrustHome', domain: 'trusthome.tlid.io' },
+  { name: 'TrustVault', domain: 'trustvault.tlid.io' },
+  { name: 'TLID.io', domain: 'tlid.io' },
+  { name: 'THE VOID', domain: 'thevoid.tlid.io' },
+  { name: 'Signal Chat', domain: 'signalchat.tlid.io' },
+  { name: 'DarkWave Studio', domain: 'darkwavestudio.tlid.io' },
+  { name: 'Guardian Shield', domain: 'guardianshield.tlid.io' },
+  { name: 'Guardian Scanner', domain: 'guardianscanner.tlid.io' },
+  { name: 'Guardian Screener', domain: 'guardianscreener.tlid.io' },
+  { name: 'TradeWorks AI', domain: 'tradeworks.tlid.io' },
+  { name: 'StrikeAgent', domain: 'strikeagent.tlid.io' },
+  { name: 'Pulse', domain: 'pulse.tlid.io' },
+  { name: 'Chronicles', domain: 'chronicles.tlid.io' },
+  { name: 'The Arcade', domain: 'thearcade.tlid.io' },
+  { name: 'Bomber', domain: 'bomber.tlid.io' },
+  { name: 'Trust Golf', domain: 'trustgolf.tlid.io' },
+  { name: 'ORBIT Staffing OS', domain: 'orbit.tlid.io' },
+  { name: 'Orby Commander', domain: 'orby.tlid.io' },
+  { name: 'GarageBot', domain: 'garagebot.tlid.io' },
+  { name: 'Lot Ops Pro', domain: 'lotops.tlid.io' },
+  { name: 'TORQUE', domain: 'torque.tlid.io' },
+  { name: 'TL Driver Connect', domain: 'driverconnect.tlid.io' },
+  { name: 'VedaSolus', domain: 'vedasolus.tlid.io' },
+  { name: 'Verdara', domain: 'verdara.tlid.io' },
+  { name: 'Arbora', domain: 'arbora.tlid.io' },
+  { name: 'PaintPros', domain: 'paintpros.tlid.io' },
+  { name: 'Nashville Painting Professionals', domain: 'nashvillepainting.tlid.io' },
+  { name: 'Trust Book', domain: 'trustbook.tlid.io' },
+  { name: 'DarkWave Academy', domain: 'darkwaveacademy.tlid.io' },
+  { name: 'Happy Eats', domain: 'happyeats.tlid.io' },
+  { name: 'Brew & Board Coffee', domain: 'brewandboard.tlid.io' },
+];
+
+function getUserTier(convertedCount: number) {
+  for (const tier of AFFILIATE_TIERS) {
+    if (convertedCount >= tier.minRefs) return tier;
+  }
+  return AFFILIATE_TIERS[AFFILIATE_TIERS.length - 1];
+}
+
+async function getOrCreateUniqueHash(pool: any, userId: string): Promise<string> {
+  const existing = await pool.query(
+    `SELECT unique_hash FROM user_unique_hashes WHERE user_id = $1 LIMIT 1`,
+    [userId]
+  );
+  if (existing.rows.length > 0) return existing.rows[0].unique_hash;
+  
+  const uniqueHash = crypto.randomBytes(12).toString('hex');
+  await pool.query(
+    `INSERT INTO user_unique_hashes (user_id, unique_hash) VALUES ($1, $2) ON CONFLICT (user_id) DO NOTHING`,
+    [userId, uniqueHash]
+  );
+  return uniqueHash;
+}
+
+async function createTrustStampDirect(pool: any, userId: string | null, category: string, data: Record<string, any>) {
+  const stampData = { ...data, appContext: 'pulse', timestamp: new Date().toISOString() };
+  const dataHash = crypto.createHash('sha256').update(JSON.stringify(stampData)).digest('hex');
+  const txHash = '0x' + crypto.randomBytes(32).toString('hex');
+  const blockHeight = (1000000 + Math.floor(Math.random() * 9000000)).toString();
+  
+  await pool.query(
+    `INSERT INTO trust_stamps (user_id, category, data, data_hash, tx_hash, block_height) VALUES ($1, $2, $3, $4, $5, $6)`,
+    [userId, category, JSON.stringify(stampData), dataHash, txHash, blockHeight]
+  );
+}
+
+async function handleAffiliateRequest(req: http.IncomingMessage, res: http.ServerResponse, urlPath: string) {
+  try {
+    // POST /api/affiliate/track - Public (no auth required)
+    if (urlPath === '/api/affiliate/track' && req.method === 'POST') {
+      const body = await readBody(req);
+      const { referralHash, platform } = body;
+      
+      if (!referralHash) {
+        jsonResponse(res, 400, { error: 'referralHash is required' });
+        return;
+      }
+      
+      const pool = await getDbPool();
+      const referrer = await pool.query(
+        `SELECT user_id FROM user_unique_hashes WHERE unique_hash = $1 LIMIT 1`,
+        [referralHash]
+      );
+      
+      if (referrer.rows.length === 0) {
+        await pool.end();
+        jsonResponse(res, 404, { error: 'Referral code not found' });
+        return;
+      }
+      
+      await pool.query(
+        `INSERT INTO affiliate_referrals (referrer_id, referral_hash, platform) VALUES ($1, $2, $3)`,
+        [referrer.rows[0].user_id, referralHash, platform || 'pulse']
+      );
+      
+      await pool.end();
+      jsonResponse(res, 200, { success: true, message: 'Referral tracked' });
+      return;
+    }
+    
+    // Auth required for remaining endpoints
+    const authHeader = req.headers['authorization'];
+    const userId = authHeader?.replace('Bearer ', '').trim();
+    
+    if (!userId) {
+      jsonResponse(res, 401, { error: 'Authentication required' });
+      return;
+    }
+    
+    // GET /api/affiliate/dashboard
+    if (urlPath === '/api/affiliate/dashboard' && req.method === 'GET') {
+      const pool = await getDbPool();
+      const uniqueHash = await getOrCreateUniqueHash(pool, userId);
+      
+      const referrals = await pool.query(
+        `SELECT COUNT(*) as total, 
+                COUNT(CASE WHEN status = 'converted' THEN 1 END) as converted,
+                COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending
+         FROM affiliate_referrals WHERE referrer_id = $1`,
+        [userId]
+      );
+      
+      const commissions = await pool.query(
+        `SELECT COALESCE(SUM(CASE WHEN status = 'pending' THEN CAST(amount AS DECIMAL) ELSE 0 END), 0) as pending_earnings,
+                COALESCE(SUM(CASE WHEN status = 'paid' THEN CAST(amount AS DECIMAL) ELSE 0 END), 0) as paid_earnings,
+                COALESCE(SUM(CAST(amount AS DECIMAL)), 0) as total_earnings
+         FROM affiliate_commissions WHERE referrer_id = $1`,
+        [userId]
+      );
+      
+      const recentReferrals = await pool.query(
+        `SELECT * FROM affiliate_referrals WHERE referrer_id = $1 ORDER BY created_at DESC LIMIT 10`,
+        [userId]
+      );
+      
+      const recentCommissions = await pool.query(
+        `SELECT * FROM affiliate_commissions WHERE referrer_id = $1 ORDER BY created_at DESC LIMIT 10`,
+        [userId]
+      );
+      
+      const stats = referrals.rows[0];
+      const earnings = commissions.rows[0];
+      const tier = getUserTier(parseInt(stats.converted || '0'));
+      
+      await pool.end();
+      jsonResponse(res, 200, {
+        success: true,
+        uniqueHash,
+        tier: tier.name,
+        commissionRate: tier.rate,
+        totalReferrals: parseInt(stats.total),
+        convertedReferrals: parseInt(stats.converted),
+        pendingReferrals: parseInt(stats.pending),
+        pendingEarnings: parseFloat(earnings.pending_earnings),
+        paidEarnings: parseFloat(earnings.paid_earnings),
+        totalEarnings: parseFloat(earnings.total_earnings),
+        recentReferrals: recentReferrals.rows,
+        recentCommissions: recentCommissions.rows
+      });
+      return;
+    }
+    
+    // GET /api/affiliate/link
+    if (urlPath === '/api/affiliate/link' && req.method === 'GET') {
+      const pool = await getDbPool();
+      const uniqueHash = await getOrCreateUniqueHash(pool, userId);
+      await pool.end();
+      
+      const primaryLink = `https://pulse.tlid.io/ref/${uniqueHash}`;
+      const crossPlatformLinks = ECOSYSTEM_APPS.map(app => ({
+        appName: app.name,
+        link: `https://${app.domain}/ref/${uniqueHash}`
+      }));
+      
+      jsonResponse(res, 200, {
+        success: true,
+        uniqueHash,
+        referralLink: primaryLink,
+        crossPlatformLinks
+      });
+      return;
+    }
+    
+    // POST /api/affiliate/request-payout
+    if (urlPath === '/api/affiliate/request-payout' && req.method === 'POST') {
+      const pool = await getDbPool();
+      
+      const pending = await pool.query(
+        `SELECT id, amount FROM affiliate_commissions WHERE referrer_id = $1 AND status = 'pending'`,
+        [userId]
+      );
+      
+      const totalPending = pending.rows.reduce((sum: number, r: any) => sum + parseFloat(r.amount), 0);
+      
+      if (totalPending < 10) {
+        await pool.end();
+        jsonResponse(res, 400, { error: 'Minimum payout is 10 SIG', currentPending: totalPending });
+        return;
+      }
+      
+      const commissionIds = pending.rows.map((r: any) => r.id);
+      await pool.query(
+        `UPDATE affiliate_commissions SET status = 'processing' WHERE id = ANY($1)`,
+        [commissionIds]
+      );
+      
+      await createTrustStampDirect(pool, userId, 'affiliate-payout-request', {
+        amount: totalPending,
+        currency: 'SIG',
+        commissionsCount: commissionIds.length
+      });
+      
+      await pool.end();
+      jsonResponse(res, 200, {
+        success: true,
+        message: 'Payout requested',
+        amount: totalPending,
+        currency: 'SIG',
+        commissionsCount: commissionIds.length
+      });
+      return;
+    }
+    
+    jsonResponse(res, 404, { error: 'Affiliate endpoint not found' });
+  } catch (err: any) {
+    console.error('[Affiliate] Request error:', err.message);
+    jsonResponse(res, 500, { error: 'Internal server error' });
+  }
 }

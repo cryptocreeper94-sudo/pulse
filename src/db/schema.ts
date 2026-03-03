@@ -2520,3 +2520,66 @@ export const leaderboardHistory = pgTable('leaderboard_history', {
   tradesCount: integer('trades_count').default(0),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
+
+export const trustLayerHallmarks = pgTable('trust_layer_hallmarks', {
+  id: serial('id').primaryKey(),
+  thId: text('th_id').notNull().unique(),
+  userId: varchar('user_id', { length: 255 }),
+  appId: text('app_id'),
+  appName: text('app_name'),
+  productName: text('product_name'),
+  releaseType: text('release_type'),
+  metadata: json('metadata'),
+  dataHash: text('data_hash').notNull(),
+  txHash: text('tx_hash'),
+  blockHeight: text('block_height'),
+  qrCodeSvg: text('qr_code_svg'),
+  verificationUrl: text('verification_url'),
+  hallmarkId: integer('hallmark_id').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const trustStamps = pgTable('trust_stamps', {
+  id: serial('id').primaryKey(),
+  userId: varchar('user_id', { length: 255 }),
+  category: text('category').notNull(),
+  data: json('data'),
+  dataHash: text('data_hash').notNull(),
+  txHash: text('tx_hash'),
+  blockHeight: text('block_height'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const hallmarkCounter = pgTable('hallmark_counter', {
+  id: text('id').primaryKey(),
+  currentSequence: text('current_sequence').notNull().default('0'),
+});
+
+export const userUniqueHashes = pgTable('user_unique_hashes', {
+  userId: varchar('user_id', { length: 255 }).primaryKey(),
+  uniqueHash: varchar('unique_hash', { length: 64 }).notNull().unique(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const affiliateReferrals = pgTable('affiliate_referrals', {
+  id: serial('id').primaryKey(),
+  referrerId: varchar('referrer_id', { length: 255 }).notNull(),
+  referredUserId: varchar('referred_user_id', { length: 255 }),
+  referralHash: text('referral_hash').notNull(),
+  platform: text('platform').notNull().default('pulse'),
+  status: text('status').notNull().default('pending'),
+  convertedAt: timestamp('converted_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const affiliateCommissions = pgTable('affiliate_commissions', {
+  id: serial('id').primaryKey(),
+  referrerId: varchar('referrer_id', { length: 255 }).notNull(),
+  referralId: integer('referral_id'),
+  amount: text('amount').notNull(),
+  currency: text('currency').default('SIG'),
+  tier: text('tier').default('base'),
+  status: text('status').default('pending'),
+  paidAt: timestamp('paid_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});

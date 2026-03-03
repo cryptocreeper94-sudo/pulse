@@ -1,7 +1,7 @@
 # Pulse - AI Crypto Trading & News Platform
 
 ## Overview
-Pulse, by DarkWave Studios, LLC, is an AI-driven cryptocurrency trading platform that leverages the Mastra AI framework to deliver predictive signals, quant trading analysis, and comprehensive crypto news/information. The platform focuses exclusively on cryptocurrency, with all DWC coin and staking functionality handled by DarkWave Smart Chain (DSC), a separate L1 blockchain.
+Pulse, by DarkWave Studios, LLC, is an AI-driven cryptocurrency trading platform in the Trust Layer ecosystem (dwtl.io). It leverages the Mastra AI framework to deliver predictive signals, quant trading analysis, and comprehensive crypto news/information. The platform focuses exclusively on cryptocurrency, with Signal ($SIG) as the native asset and staking launching July 4, 2026. Part of a 33-app ecosystem connected via SSO Trust Layer. Pulse is app #14 with hallmark prefix `PU` and domain pulse.tlid.io.
 
 ## User Preferences
 - Preferred communication style: Simple, everyday language
@@ -39,7 +39,9 @@ The platform utilizes a dark theme exclusively, featuring solid black/dark gray 
 - **Crypto Calendar**: Token unlock schedules, upcoming airdrops, IDOs, conferences, and crypto events with impact levels and reminders.
 - **DeFi Dashboard**: Multi-chain DeFi position tracking (staking, LPs, vaults), protocol TVL rankings, yield opportunity finder with risk levels.
 - **On-Chain Analytics**: Real-time gas tracker for all chains, DEX volume analysis, holder distribution lookup, token flow tracking (inflow/outflow by category).
-- **Referral Program**: 10% lifetime commission on referral subscriptions, unique referral codes, earnings tracking, $10 minimum payout in crypto.
+- **Trust Layer Hallmark System**: Ecosystem-wide audit trail using Pulse prefix `PU`. Genesis hallmark `PU-00000001` created on boot, referencing parent genesis `TH-00000001`. SHA-256 hashed payloads with simulated blockchain txHash/blockHeight. Public verification at `/api/hallmark/:id/verify`. Trust stamps (Tier 2) for lightweight events (auth, wallet, purchases) with standardized categories. Tables: `trust_layer_hallmarks`, `trust_stamps`, `hallmark_counter`, `user_unique_hashes`. Services: `trustLayerHallmarkService.ts`, `trustStampService.ts`.
+- **Trust Layer Affiliate Program**: 5-tier commission system (Base 10%, Silver 12.5%, Gold 15%, Platinum 17.5%, Diamond 20%) based on converted referral count. Universal `uniqueHash` per user works across all 33 ecosystem apps. Referral links: `https://pulse.tlid.io/ref/[hash]`. Payouts in SIG (10 SIG minimum). API endpoints: `/api/affiliate/dashboard`, `/api/affiliate/link`, `/api/affiliate/track` (public), `/api/affiliate/request-payout`. Tables: `affiliate_referrals`, `affiliate_commissions`. Service: `trustLayerAffiliateService.ts`.
+- **Referral Program (Legacy)**: 10% lifetime commission on referral subscriptions, unique referral codes, earnings tracking, $10 minimum payout in crypto.
 - **Social Trading Hub**: Trader leaderboards (daily/weekly/monthly/all-time), trading signal sharing with outcome tracking, follow/copy trading system, verified trader badges.
 - **Copy Trading System**: Auto-mirror trades from top performers with allocation controls, max trade size limits, and performance tracking per followed trader.
 - **Tax Reports**: Comprehensive tax reporting with FIFO/LIFO cost-basis calculation, long-term vs short-term gains classification (based on 365+ day holding period), CSV export, and TurboTax (.txf) format export.
