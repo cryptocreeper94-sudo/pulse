@@ -798,9 +798,35 @@ export default function AutoTradeConfig({ userId }) {
           <span>🌐</span>
           Solana RPC
         </h2>
-        <p style={{ color: '#666', fontSize: '12px', margin: '0 0 20px 0' }}>
-          Use your own Solana RPC endpoint for trade execution. Leave empty to use the default.
+        <p style={{ color: '#666', fontSize: '12px', margin: '0 0 12px 0' }}>
+          Use your own Solana RPC endpoint for trade execution. Leave empty to use the default (Helius).
         </p>
+
+        <div style={{
+          background: 'rgba(0, 212, 255, 0.06)',
+          border: '1px solid rgba(0, 212, 255, 0.15)',
+          borderRadius: '10px',
+          padding: '14px 16px',
+          marginBottom: '16px',
+          fontSize: '12px',
+          lineHeight: 1.7,
+          color: '#999'
+        }}>
+          <div style={{ color: '#7dd3fc', fontWeight: 600, marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ fontSize: '14px' }}>&#9432;</span> Why RPC matters for trading
+          </div>
+          <div>
+            Your RPC endpoint determines how fast your trades reach the Solana network. Public RPCs are rate-limited and have low transaction landing rates (30-60%), meaning your swaps may fail or execute at a worse price during volatile markets. A premium RPC (like Helius) gives you faster confirmation, higher landing rates (90%+), and priority transaction routing.
+          </div>
+          <div style={{ marginTop: '10px', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+            <span style={{ color: '#666' }}>Recommended providers:</span>
+            <a href="https://helius.dev" target="_blank" rel="noopener noreferrer" style={{ color: '#00D4FF', textDecoration: 'none' }}>Helius</a>
+            <span style={{ color: '#333' }}>|</span>
+            <a href="https://triton.one" target="_blank" rel="noopener noreferrer" style={{ color: '#00D4FF', textDecoration: 'none' }}>Triton</a>
+            <span style={{ color: '#333' }}>|</span>
+            <a href="https://quicknode.com" target="_blank" rel="noopener noreferrer" style={{ color: '#00D4FF', textDecoration: 'none' }}>QuickNode</a>
+          </div>
+        </div>
 
         <div style={{ position: 'relative' }}>
           <input
@@ -860,11 +886,26 @@ export default function AutoTradeConfig({ userId }) {
             width: '8px', 
             height: '8px', 
             borderRadius: '50%', 
-            background: config?.customRpcUrl ? '#00D4FF' : '#555',
+            background: config?.customRpcUrl ? '#00D4FF' : '#14F195',
             display: 'inline-block'
           }} />
-          {config?.customRpcUrl ? 'Using custom RPC endpoint' : 'Using default RPC endpoint'}
+          {config?.customRpcUrl ? 'Using custom RPC endpoint' : 'Helius Premium RPC (included with Pulse)'}
         </div>
+        {!config?.customRpcUrl && (
+          <div style={{
+            background: 'rgba(20, 241, 149, 0.06)',
+            border: '1px solid rgba(20, 241, 149, 0.15)',
+            borderRadius: '10px',
+            padding: '12px 16px',
+            marginTop: '12px',
+            fontSize: '12px',
+            lineHeight: 1.6,
+            color: '#888'
+          }}>
+            <span style={{ color: '#14F195', fontWeight: 600 }}>Included at no extra cost.</span>{' '}
+            Pulse routes all trades through Helius, a premium Solana RPC trusted by top DeFi protocols. You get faster transaction confirmation, 90%+ landing rates, and priority routing — the same infrastructure traders typically pay $50-200+/month for.
+          </div>
+        )}
       </div>
 
       <div style={{
