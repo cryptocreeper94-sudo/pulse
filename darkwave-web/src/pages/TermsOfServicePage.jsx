@@ -31,13 +31,16 @@ You represent and warrant that all information you provide during registration a
 • Market data and analysis tools
 • Cryptocurrency purchase and sale facilitation through third-party providers (including Stripe)
 • Portfolio tracking and management tools
+• Autonomous AI trading system (auto-trade) with configurable modes
+• Multi-chain wallet management with encrypted key storage
 
 IMPORTANT DISCLAIMERS:
 • Cryptocurrency trading involves substantial risk of loss and is not suitable for all investors
 • Past performance of our AI predictions does not guarantee future results
 • You should only invest funds you can afford to lose
 • We do not provide financial, investment, tax, or legal advice
-• All trading decisions are made at your own risk`
+• All trading decisions are made at your own risk
+• Auto-trading carries additional risk — the AI system may execute trades that result in losses`
     },
     {
       id: 'stripe-onramp',
