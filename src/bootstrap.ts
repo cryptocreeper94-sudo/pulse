@@ -1452,28 +1452,41 @@ async function handlePublicMarketRequest(req: http.IncomingMessage, res: http.Se
     }
     
     if (urlPath === '/api/public/stats') {
-      const stats = await pool.query(`
+      const totalStats = await pool.query(`
+        SELECT COUNT(*) as total FROM prediction_events
+      `);
+      const outcomeStats = await pool.query(`
         SELECT 
-          COUNT(*) as total_predictions,
-          COUNT(CASE WHEN ai_score >= 60 THEN 1 END) as bullish_count,
-          COUNT(CASE WHEN ai_score < 40 THEN 1 END) as bearish_count,
-          ROUND(AVG(ai_score)::numeric, 1) as avg_score,
-          COUNT(CASE WHEN created_at > NOW() - INTERVAL '30 days' THEN 1 END) as last_30d_count
-        FROM strikeagent_predictions
+          COUNT(*) as evaluated,
+          COUNT(CASE WHEN is_correct = true THEN 1 END) as correct,
+          COALESCE(ROUND(AVG(ABS(price_change_percent::numeric)), 1), 0) as avg_return
+        FROM prediction_outcomes
+      `);
+      const last30d = await pool.query(`
+        SELECT 
+          COUNT(*) as evaluated,
+          COUNT(CASE WHEN is_correct = true THEN 1 END) as correct
+        FROM prediction_outcomes
+        WHERE created_at > NOW() - INTERVAL '30 days'
       `);
       
-      const s = stats.rows[0];
-      const total = parseInt(s.total_predictions);
-      const bullish = parseInt(s.bullish_count);
-      const accuracy = total > 0 ? Math.round((bullish / total) * 1000) / 10 : 0;
+      const total = parseInt(totalStats.rows[0].total);
+      const evaluated = parseInt(outcomeStats.rows[0].evaluated);
+      const correct = parseInt(outcomeStats.rows[0].correct);
+      const avgReturn = parseFloat(outcomeStats.rows[0].avg_return) || 0;
+      const accuracy = evaluated > 0 ? Math.round((correct / evaluated) * 1000) / 10 : 0;
+      
+      const last30dEval = parseInt(last30d.rows[0].evaluated);
+      const last30dCorrect = parseInt(last30d.rows[0].correct);
+      const last30dAcc = last30dEval > 0 ? Math.round((last30dCorrect / last30dEval) * 1000) / 10 : accuracy;
       
       await pool.end();
       jsonResponse(res, 200, {
         totalPredictions: total,
         accuracy,
         profitableTrades: accuracy,
-        avgReturnPerTrade: 3.4,
-        last30dAccuracy: total > 0 ? Math.round((parseInt(s.last_30d_count) > 0 ? (bullish / total) * 100 : accuracy) * 10) / 10 : 0,
+        avgReturnPerTrade: avgReturn,
+        last30dAccuracy: last30dAcc,
         lastUpdated: new Date().toISOString()
       });
       return;
@@ -1486,39 +1499,45 @@ async function handlePublicMarketRequest(req: http.IncomingMessage, res: http.Se
         return;
       }
       
-      const recentPredictions = await pool.query(`
-        SELECT ticker, signal, confidence, price_at_prediction, created_at
-        FROM prediction_events 
-        WHERE created_at > NOW() - INTERVAL '6 hours'
-          AND signal IN ('BUY', 'SELL', 'STRONG_BUY', 'STRONG_SELL', 'HOLD')
-        ORDER BY created_at DESC
-        LIMIT 100
-      `);
+      const timeWindows = ['6 hours', '24 hours', '7 days'];
+      let recentRows: any[] = [];
+      for (const window of timeWindows) {
+        const result = await pool.query(`
+          SELECT ticker, signal, confidence, price_at_prediction, created_at
+          FROM prediction_events 
+          WHERE created_at > NOW() - INTERVAL '${window}'
+            AND signal IN ('BUY', 'SELL', 'STRONG_BUY', 'STRONG_SELL')
+          ORDER BY created_at DESC
+          LIMIT 100
+        `);
+        recentRows = result.rows;
+        if (recentRows.length > 0) break;
+      }
       
       const predictionStats = await pool.query(`
+        SELECT COUNT(*) as total FROM prediction_events
+      `);
+
+      const sentimentStats = await pool.query(`
         SELECT 
-          COUNT(*) as total,
-          COUNT(CASE WHEN signal IN ('BUY', 'STRONG_BUY') THEN 1 END) as bullish_count
+          COUNT(CASE WHEN signal IN ('BUY', 'STRONG_BUY') THEN 1 END) as bullish,
+          COUNT(CASE WHEN signal IN ('SELL', 'STRONG_SELL') THEN 1 END) as bearish,
+          COUNT(*) as total
         FROM prediction_events
+        WHERE created_at > NOW() - INTERVAL '24 hours'
       `);
 
-      const accuracyStats = await pool.query(`
+      const outcomeStats = await pool.query(`
         SELECT 
-          COALESCE(ROUND(
-            (COUNT(CASE WHEN is_correct = true THEN 1 END)::numeric / NULLIF(COUNT(*)::numeric, 0)) * 100, 1
-          ), 0) as accuracy
+          COUNT(*) as evaluated,
+          COUNT(CASE WHEN is_correct = true THEN 1 END) as correct,
+          COALESCE(ROUND(AVG(ABS(price_change_percent::numeric)), 1), 0) as avg_return
         FROM prediction_outcomes
-      `);
-
-      const avgReturnStats = await pool.query(`
-        SELECT COALESCE(ROUND(AVG(ABS(price_change_percent::numeric)), 1), 0) as avg_return
-        FROM prediction_outcomes
-        WHERE is_correct = true
       `);
       
       const seen = new Set<string>();
       const topSignals: any[] = [];
-      for (const row of recentPredictions.rows) {
+      for (const row of recentRows) {
         const ticker = row.ticker?.toUpperCase();
         if (!ticker || seen.has(ticker)) continue;
         seen.add(ticker);
@@ -1531,7 +1550,6 @@ async function handlePublicMarketRequest(req: http.IncomingMessage, res: http.Se
         else if (signal === 'BUY') { direction = 'long'; confidenceValue = 0.75; }
         else if (signal === 'STRONG_SELL') { direction = 'short'; confidenceValue = 0.9; }
         else if (signal === 'SELL') { direction = 'short'; confidenceValue = 0.75; }
-        else if (signal === 'HOLD') { direction = 'neutral'; confidenceValue = 0.5; }
 
         if (row.confidence === 'HIGH') confidenceValue = Math.min(confidenceValue + 0.1, 0.99);
         else if (row.confidence === 'LOW') confidenceValue = Math.max(confidenceValue - 0.15, 0.1);
@@ -1549,13 +1567,17 @@ async function handlePublicMarketRequest(req: http.IncomingMessage, res: http.Se
         if (topSignals.length >= 5) break;
       }
       
-      const ps = predictionStats.rows[0];
-      const totalPredictions = parseInt(ps.total);
-      const bullishCount = parseInt(ps.bullish_count);
-      const bullishPct = totalPredictions > 0 ? Math.round((bullishCount / totalPredictions) * 100) : 50;
-      const sentiment = bullishPct >= 60 ? 'bullish' : bullishPct <= 40 ? 'bearish' : 'neutral';
-      const accuracy = parseFloat(accuracyStats.rows[0]?.accuracy) || 0;
-      const avgReturn = parseFloat(avgReturnStats.rows[0]?.avg_return) || 0;
+      const totalPredictions = parseInt(predictionStats.rows[0].total);
+      const ss = sentimentStats.rows[0];
+      const recentTotal = parseInt(ss.total) || 1;
+      const bullishPct = Math.round((parseInt(ss.bullish) / recentTotal) * 100);
+      const sentiment = bullishPct >= 55 ? 'bullish' : bullishPct <= 45 ? 'bearish' : 'neutral';
+
+      const oc = outcomeStats.rows[0];
+      const evaluated = parseInt(oc.evaluated);
+      const correct = parseInt(oc.correct);
+      const accuracy = evaluated > 0 ? Math.round((correct / evaluated) * 1000) / 10 : 0;
+      const avgReturn = parseFloat(oc.avg_return) || 0;
       
       const activeSignals = await pool.query(`
         SELECT COUNT(DISTINCT ticker) as count 
