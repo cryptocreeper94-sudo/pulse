@@ -186,6 +186,8 @@ const defaultConfig = {
   notifyOnRecommendation: true,
   notifyChannel: 'email',
   customRpcUrl: '',
+  smsPhoneNumber: '',
+  smsOptIn: false,
   totalTradesExecuted: 0,
   winningTrades: 0,
   losingTrades: 0,
@@ -674,7 +676,108 @@ export default function AutoTradeConfig({ userId }) {
         />
 
         <div style={{ marginTop: '12px', color: '#555', fontSize: '12px' }}>
-          Notifications sent via email when enabled
+          Email notifications sent when enabled
+        </div>
+
+        <div style={{ 
+          marginTop: '20px', 
+          paddingTop: '20px', 
+          borderTop: '1px solid #333' 
+        }}>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '10px', 
+            marginBottom: '12px' 
+          }}>
+            <span style={{ fontSize: '18px' }}>📱</span>
+            <span style={{ color: '#fff', fontSize: '15px', fontWeight: 600 }}>SMS Notifications</span>
+          </div>
+
+          <div style={{ marginBottom: '12px' }}>
+            <div style={{ color: '#888', fontSize: '13px', marginBottom: '8px' }}>Phone Number</div>
+            <input
+              type="tel"
+              value={config?.smsPhoneNumber || ''}
+              onChange={(e) => updateConfig('smsPhoneNumber', e.target.value)}
+              placeholder="+1 (555) 123-4567"
+              disabled={!config?.enabled}
+              style={{
+                width: '100%',
+                padding: '10px 14px',
+                background: '#141414',
+                border: '1px solid #333',
+                borderRadius: '8px',
+                color: '#fff',
+                fontSize: '14px',
+                outline: 'none',
+                boxSizing: 'border-box',
+                cursor: !config?.enabled ? 'not-allowed' : 'text',
+                opacity: !config?.enabled ? 0.5 : 1
+              }}
+            />
+          </div>
+
+          <div 
+            onClick={() => {
+              if (!config?.enabled) return
+              if (!config?.smsPhoneNumber && !config?.smsOptIn) return
+              updateConfig('smsOptIn', !config?.smsOptIn)
+            }}
+            style={{ 
+              display: 'flex', 
+              alignItems: 'flex-start', 
+              gap: '10px',
+              padding: '12px',
+              background: config?.smsOptIn ? '#14F19510' : '#141414',
+              border: config?.smsOptIn ? '1px solid #14F19540' : '1px solid #333',
+              borderRadius: '10px',
+              cursor: (!config?.enabled || (!config?.smsPhoneNumber && !config?.smsOptIn)) ? 'not-allowed' : 'pointer',
+              opacity: !config?.enabled ? 0.5 : 1
+            }}
+          >
+            <div style={{
+              width: '20px',
+              height: '20px',
+              borderRadius: '4px',
+              border: config?.smsOptIn ? '2px solid #14F195' : '2px solid #555',
+              background: config?.smsOptIn ? '#14F195' : 'transparent',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              marginTop: '2px'
+            }}>
+              {config?.smsOptIn && (
+                <span style={{ color: '#0f0f0f', fontSize: '12px', fontWeight: 700 }}>✓</span>
+              )}
+            </div>
+            <div>
+              <div style={{ color: '#ccc', fontSize: '13px', lineHeight: 1.5 }}>
+                I agree to receive trade notification text messages from Pulse. Message and data rates may apply. You can opt out at any time by unchecking this box.
+              </div>
+            </div>
+          </div>
+
+          {config?.smsOptIn && config?.smsPhoneNumber && (
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '8px', 
+              marginTop: '10px',
+              color: '#14F195',
+              fontSize: '12px' 
+            }}>
+              <span style={{ 
+                width: '8px', 
+                height: '8px', 
+                borderRadius: '50%', 
+                background: '#14F195',
+                display: 'inline-block'
+              }} />
+              SMS notifications active
+            </div>
+          )}
         </div>
       </div>
 

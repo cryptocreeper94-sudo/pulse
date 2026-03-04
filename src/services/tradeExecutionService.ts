@@ -1,6 +1,7 @@
 import { autoTradeService, AutoTradeConfigData, CreateAutoTradeInput } from './autoTradeService';
 import { predictionLearningService } from './predictionLearningService.js';
 import { tradeExecutorService } from './tradeExecutorService';
+import { sendSMS, formatTradeNotification } from './smsNotificationService';
 import { db } from '../db/client';
 import { autoTrades, autoTradeConfig } from '../db/schema';
 import { eq, and, gte, sql } from 'drizzle-orm';
@@ -346,11 +347,21 @@ class TradeExecutionService {
         amountToken: swapResult.tokenAmount,
       });
       logger.info({ tradeId: trade.id, txSignature: swapResult.txSignature, amount, symbol: signal.tokenSymbol }, '[TradeExecution] Trade executed on-chain');
+
+      if (config.smsOptIn && config.smsPhoneNumber && config.notifyOnTrade) {
+        const msg = formatTradeNotification('executed', { symbol: signal.tokenSymbol, tradeType, amount: amount.toFixed(2), txSignature: swapResult.txSignature });
+        sendSMS(config.smsPhoneNumber, msg).catch(e => logger.error({ error: e.message }, '[SMS] Failed'));
+      }
     } else {
       await autoTradeService.updateTradeStatus(trade.id, 'failed', {
         txError: swapResult.error || 'Jupiter swap failed',
       });
       logger.warn({ tradeId: trade.id, error: swapResult.error, symbol: signal.tokenSymbol }, '[TradeExecution] Trade execution failed');
+
+      if (config.smsOptIn && config.smsPhoneNumber && config.notifyOnTrade) {
+        const msg = formatTradeNotification('failed', { symbol: signal.tokenSymbol, tradeType, error: swapResult.error });
+        sendSMS(config.smsPhoneNumber, msg).catch(e => logger.error({ error: e.message }, '[SMS] Failed'));
+      }
     }
 
     return trade;
@@ -675,6 +686,9 @@ ${statusEmoji} <b>TRADE ${status.toUpperCase()}</b> ${actionEmoji}
       notifyOnTrade: row.notifyOnTrade ?? true,
       notifyOnRecommendation: row.notifyOnRecommendation ?? true,
       notifyChannel: row.notifyChannel || 'email',
+      smsPhoneNumber: row.smsPhoneNumber || null,
+      smsOptIn: row.smsOptIn ?? false,
+      smsOptInAt: row.smsOptInAt || null,
       tradingWalletId: row.tradingWalletId,
       tradingWalletAddress: row.tradingWalletAddress || null,
       customRpcUrl: row.customRpcUrl || null,

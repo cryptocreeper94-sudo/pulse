@@ -2165,6 +2165,71 @@ async function handleAutoTradeWalletRequest(req: http.IncomingMessage, res: http
       return;
     }
 
+    if (urlPath === '/api/auto-trade/wallet/sms' && req.method === 'GET') {
+      const userId = new URL(req.url || '', `http://${req.headers.host}`).searchParams.get('userId');
+      if (!userId) {
+        jsonResponse(res, 400, { error: 'userId is required' });
+        return;
+      }
+
+      const pool = await getDbPool();
+      const result = await pool.query('SELECT sms_phone_number, sms_opt_in, sms_opt_in_at FROM auto_trade_config WHERE user_id = $1', [userId]);
+      await pool.end();
+
+      jsonResponse(res, 200, {
+        phoneNumber: result.rows[0]?.sms_phone_number || null,
+        optedIn: result.rows[0]?.sms_opt_in || false,
+        optedInAt: result.rows[0]?.sms_opt_in_at || null,
+      });
+      return;
+    }
+
+    if (urlPath === '/api/auto-trade/wallet/sms' && req.method === 'POST') {
+      const body = await readBody(req);
+      const { userId, phoneNumber, optIn } = body;
+
+      if (!userId) {
+        jsonResponse(res, 400, { error: 'userId is required' });
+        return;
+      }
+
+      if (optIn && !phoneNumber) {
+        jsonResponse(res, 400, { error: 'Phone number is required to opt in' });
+        return;
+      }
+
+      if (phoneNumber && typeof phoneNumber === 'string') {
+        const cleaned = phoneNumber.replace(/[^+\d]/g, '');
+        if (!/^\+\d{10,15}$/.test(cleaned)) {
+          jsonResponse(res, 400, { error: 'Phone number must be in international format (e.g. +1234567890)' });
+          return;
+        }
+      }
+
+      const pool = await getDbPool();
+      const cleanedPhone = phoneNumber ? phoneNumber.replace(/[^+\d]/g, '') : null;
+      
+      await pool.query(
+        `INSERT INTO auto_trade_config (user_id, sms_phone_number, sms_opt_in, sms_opt_in_at, updated_at) 
+         VALUES ($1, $2, $3, $4, NOW())
+         ON CONFLICT (user_id) DO UPDATE SET 
+           sms_phone_number = $2, 
+           sms_opt_in = $3, 
+           sms_opt_in_at = CASE WHEN $3 = true AND (auto_trade_config.sms_opt_in IS NULL OR auto_trade_config.sms_opt_in = false) THEN NOW() ELSE auto_trade_config.sms_opt_in_at END,
+           updated_at = NOW()`,
+        [userId, cleanedPhone, optIn ?? false, optIn ? new Date() : null]
+      );
+      await pool.end();
+
+      jsonResponse(res, 200, {
+        success: true,
+        phoneNumber: cleanedPhone,
+        optedIn: optIn ?? false,
+        message: optIn ? 'SMS notifications enabled' : 'SMS notifications disabled',
+      });
+      return;
+    }
+
     jsonResponse(res, 404, { error: 'Auto-trade wallet endpoint not found' });
   } catch (err: any) {
     console.error('[AutoTradeWallet] Request error:', err.message);

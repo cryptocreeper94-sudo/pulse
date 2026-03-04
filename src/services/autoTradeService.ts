@@ -44,6 +44,9 @@ export interface AutoTradeConfigData {
   notifyOnTrade: boolean;
   notifyOnRecommendation: boolean;
   notifyChannel: string;
+  smsPhoneNumber: string | null;
+  smsOptIn: boolean;
+  smsOptInAt: Date | null;
   tradingWalletId: string | null;
   tradingWalletAddress: string | null;
   customRpcUrl: string | null;
@@ -139,6 +142,9 @@ class AutoTradeService {
       notifyOnTrade: row.notifyOnTrade ?? true,
       notifyOnRecommendation: row.notifyOnRecommendation ?? true,
       notifyChannel: row.notifyChannel || 'email',
+      smsPhoneNumber: row.smsPhoneNumber || null,
+      smsOptIn: row.smsOptIn ?? false,
+      smsOptInAt: row.smsOptInAt || null,
       tradingWalletId: row.tradingWalletId,
       tradingWalletAddress: row.tradingWalletAddress || null,
       customRpcUrl: row.customRpcUrl || null,

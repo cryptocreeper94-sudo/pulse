@@ -3,6 +3,7 @@ import { tradeExecutionService } from "../../services/tradeExecutionService";
 import type { SignalEvaluation } from "../../services/tradeExecutionService";
 import { autoTradeService } from "../../services/autoTradeService";
 import { predictionLearningService } from "../../services/predictionLearningService.js";
+import { sendSMS, formatTradeNotification } from "../../services/smsNotificationService";
 import axios from "axios";
 
 const ADMIN_TELEGRAM_ID = process.env.ADMIN_TELEGRAM_ID;
@@ -196,25 +197,17 @@ export const autoTradeKillSwitchMonitor = inngest.createFunction(
       }
     }
 
-    if (alerts.length > 0 && ADMIN_TELEGRAM_ID) {
+    if (alerts.length > 0) {
       await step.run("send-alerts", async () => {
         for (const alert of alerts) {
-          const emoji = alert.type === 'consecutive_losses_warning' ? '⚠️' :
-                        alert.type === 'position_limit_warning' ? '📍' :
-                        alert.type === 'model_drift_alert' ? '🧠' : '❗';
-
-          const message = `
-${emoji} <b>AI TRADING ALERT</b>
-
-📋 <b>Type:</b> ${alert.type.replace(/_/g, ' ').toUpperCase()}
-👤 <b>User:</b> ${alert.userId.slice(0, 8)}...
-
-${alert.message}
-
-<i>Take action if needed</i>
-`.trim();
-
-          await sendTelegramMessage(ADMIN_TELEGRAM_ID, message);
+          const userConfig = activeConfigs.find(c => c.userId === alert.userId);
+          if (userConfig?.smsOptIn && userConfig?.smsPhoneNumber) {
+            const msg = formatTradeNotification('kill_switch', {
+              consecutiveLosses: userConfig.consecutiveLosses,
+              reason: alert.message,
+            });
+            await sendSMS(userConfig.smsPhoneNumber, msg);
+          }
         }
         return { alertsSent: alerts.length };
       });
@@ -263,18 +256,19 @@ export const autoTradeApprovalReminder = inngest.createFunction(
       }
     }
 
-    if (totalPending > 0 && ADMIN_TELEGRAM_ID) {
+    if (totalPending > 0) {
       await step.run("send-reminder", async () => {
-        let message = `⏳ <b>PENDING APPROVALS REMINDER</b>\n\n`;
-        message += `📊 <b>Total Pending:</b> ${totalPending} trades\n\n`;
-
         for (const item of pendingByUser) {
-          message += `👤 ${item.userId.slice(0, 8)}...: ${item.pending} pending\n`;
+          const userConfig = activeConfigs.find(c => c.userId === item.userId);
+          if (userConfig?.smsOptIn && userConfig?.smsPhoneNumber) {
+            const msg = formatTradeNotification('approval_needed', {
+              tradeType: 'TRADE',
+              symbol: `${item.pending} pending`,
+              amount: '0',
+            });
+            await sendSMS(userConfig.smsPhoneNumber, `PULSE: You have ${item.pending} trade(s) awaiting approval. Open Pulse to review.`);
+          }
         }
-
-        message += `\n<i>Open the app to approve or reject trades</i>`;
-
-        await sendTelegramMessage(ADMIN_TELEGRAM_ID, message);
         return { sent: true };
       });
     }

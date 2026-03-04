@@ -1028,6 +1028,11 @@ export const autoTradeConfig = pgTable('auto_trade_config', {
   notifyOnTrade: boolean('notify_on_trade').default(true),
   notifyOnRecommendation: boolean('notify_on_recommendation').default(true),
   notifyChannel: varchar('notify_channel', { length: 20 }).default('email'),
+
+  // SMS Notification (Twilio)
+  smsPhoneNumber: varchar('sms_phone_number', { length: 20 }),
+  smsOptIn: boolean('sms_opt_in').default(false),
+  smsOptInAt: timestamp('sms_opt_in_at'),
   
   // Wallet for trading (references built-in wallet)
   tradingWalletId: varchar('trading_wallet_id', { length: 255 }),
