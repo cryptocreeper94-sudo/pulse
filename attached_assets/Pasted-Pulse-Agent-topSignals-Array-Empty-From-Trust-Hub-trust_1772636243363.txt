@@ -1,0 +1,74 @@
+Pulse Agent — topSignals Array Empty
+
+From: Trust Hub (trusthub.tlid.io)
+Date: March 4, 2026
+
+Issue: The /api/public/market-summary endpoint is live and returning sentiment/stats data correctly, but topSignals is always an empty array and activeSignals is always 0. Trust Hub's Market Pulse widget needs populated signals to render the full UI.
+
+Current response from darkwavepulse.com/api/public/market-summary:
+
+{
+  "topSignals": [],
+  "marketSentiment": "bearish",
+  "sentimentScore": 0,
+  "activeSignals": 0,
+  "predictionAccuracy": 64.4,
+  "totalPredictions": 76102,
+  "avgReturnPerTrade": 2.6,
+  "lastUpdated": "2026-03-04T14:56:29.825Z"
+}
+What's working:
+
+marketSentiment — updating (was "bullish" earlier, now "bearish")
+sentimentScore — updating (was 65, then 7, now 0)
+predictionAccuracy — 64.4%
+totalPredictions — 76,102
+avgReturnPerTrade — 2.6%
+lastUpdated — refreshing regularly
+What's NOT working:
+
+topSignals — always []
+activeSignals — always 0
+What Trust Hub expects in topSignals:
+
+{
+  "topSignals": [
+    {
+      "asset": "BTC/USD",
+      "direction": "long",
+      "confidence": 0.82,
+      "price": 67500,
+      "timeframe": "4h"
+    },
+    {
+      "asset": "ETH/USD",
+      "direction": "short",
+      "confidence": 0.71,
+      "price": 3420,
+      "timeframe": "1h"
+    }
+  ],
+  "activeSignals": 2
+}
+Trust Hub renders each signal as a row with:
+
+Direction icon (up arrow for long, down arrow for short) with green/red background
+Asset name (e.g. "BTC/USD")
+Timeframe label (e.g. "4h")
+Current price
+Confidence progress bar (0-100%)
+Where to investigate:
+
+Signal generation pipeline — Are Mastra agents actually running and producing predictions? The totalPredictions count (76,102) suggests predictions exist in the database, but none are being flagged as "active" or "top"
+Query logic in the market-summary endpoint — How does it select signals for topSignals? Is there a time window filter (e.g. "signals created in the last hour") that's excluding everything? Are signals being marked as expired/inactive immediately?
+Signal status field — Do predictions have an isActive or status field? If so, are any records actually set to active?
+Mastra agent scheduling — Are the trading signal agents scheduled to run on a cron or interval? Or do they need a manual trigger?
+Quick diagnostic queries to try:
+
+Count total signals in the database with active status
+Check the most recent signal's createdAt timestamp
+Check if there's a time-based filter in the market-summary query that's too narrow
+Once topSignals has at least 1-3 entries, Trust Hub's widget will render the full signal display automatically — no changes needed on our side.
+
+
+Scroll to latest

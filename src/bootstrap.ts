@@ -1453,7 +1453,9 @@ async function handlePublicMarketRequest(req: http.IncomingMessage, res: http.Se
     
     if (urlPath === '/api/public/stats') {
       const totalStats = await pool.query(`
-        SELECT COUNT(*) as total FROM prediction_events
+        SELECT 
+          (SELECT COUNT(*) FROM prediction_events) as pe_total,
+          (SELECT COUNT(*) FROM strikeagent_predictions) as sa_total
       `);
       const outcomeStats = await pool.query(`
         SELECT 
@@ -1470,7 +1472,9 @@ async function handlePublicMarketRequest(req: http.IncomingMessage, res: http.Se
         WHERE created_at > NOW() - INTERVAL '30 days'
       `);
       
-      const total = parseInt(totalStats.rows[0].total);
+      const peTotal = parseInt(totalStats.rows[0].pe_total);
+      const saTotal = parseInt(totalStats.rows[0].sa_total);
+      const total = peTotal + saTotal;
       const evaluated = parseInt(outcomeStats.rows[0].evaluated);
       const correct = parseInt(outcomeStats.rows[0].correct);
       const avgReturn = parseFloat(outcomeStats.rows[0].avg_return) || 0;
@@ -1499,8 +1503,10 @@ async function handlePublicMarketRequest(req: http.IncomingMessage, res: http.Se
         return;
       }
       
-      const timeWindows = ['6 hours', '24 hours', '7 days'];
       let recentRows: any[] = [];
+      let signalSource = 'prediction_events';
+
+      const timeWindows = ['6 hours', '24 hours', '7 days'];
       for (const window of timeWindows) {
         const result = await pool.query(`
           SELECT ticker, signal, confidence, price_at_prediction, created_at
@@ -1513,18 +1519,33 @@ async function handlePublicMarketRequest(req: http.IncomingMessage, res: http.Se
         recentRows = result.rows;
         if (recentRows.length > 0) break;
       }
+
+      if (recentRows.length === 0) {
+        const fallback = await pool.query(`
+          SELECT ticker, signal, confidence, price_at_prediction, created_at
+          FROM prediction_events 
+          WHERE signal IN ('BUY', 'SELL', 'STRONG_BUY', 'STRONG_SELL')
+          ORDER BY created_at DESC
+          LIMIT 100
+        `);
+        recentRows = fallback.rows;
+      }
+
+      if (recentRows.length === 0) {
+        signalSource = 'strikeagent_predictions';
+        const saResult = await pool.query(`
+          SELECT token_symbol, ai_recommendation, ai_score, price_usd, created_at
+          FROM strikeagent_predictions 
+          ORDER BY created_at DESC
+          LIMIT 200
+        `);
+        recentRows = saResult.rows;
+      }
       
       const predictionStats = await pool.query(`
-        SELECT COUNT(*) as total FROM prediction_events
-      `);
-
-      const sentimentStats = await pool.query(`
         SELECT 
-          COUNT(CASE WHEN signal IN ('BUY', 'STRONG_BUY') THEN 1 END) as bullish,
-          COUNT(CASE WHEN signal IN ('SELL', 'STRONG_SELL') THEN 1 END) as bearish,
-          COUNT(*) as total
-        FROM prediction_events
-        WHERE created_at > NOW() - INTERVAL '24 hours'
+          (SELECT COUNT(*) FROM prediction_events) as pe_total,
+          (SELECT COUNT(*) FROM strikeagent_predictions) as sa_total
       `);
 
       const outcomeStats = await pool.query(`
@@ -1534,43 +1555,102 @@ async function handlePublicMarketRequest(req: http.IncomingMessage, res: http.Se
           COALESCE(ROUND(AVG(ABS(price_change_percent::numeric)), 1), 0) as avg_return
         FROM prediction_outcomes
       `);
+
+      const sentimentStats = await pool.query(`
+        SELECT 
+          COUNT(CASE WHEN signal IN ('BUY', 'STRONG_BUY') THEN 1 END) as bullish,
+          COUNT(*) as total
+        FROM prediction_events
+        WHERE created_at > NOW() - INTERVAL '7 days'
+      `);
+
+      let sentimentFallback: any = null;
+      if (parseInt(sentimentStats.rows[0].total) === 0) {
+        sentimentFallback = await pool.query(`
+          SELECT 
+            COUNT(CASE WHEN ai_score >= 60 THEN 1 END) as bullish,
+            COUNT(*) as total,
+            ROUND(AVG(ai_score)::numeric, 1) as avg_score
+          FROM strikeagent_predictions
+          WHERE created_at > NOW() - INTERVAL '7 days'
+        `);
+        if (parseInt(sentimentFallback.rows[0].total) === 0) {
+          sentimentFallback = await pool.query(`
+            SELECT 
+              COUNT(CASE WHEN ai_score >= 60 THEN 1 END) as bullish,
+              COUNT(*) as total,
+              ROUND(AVG(ai_score)::numeric, 1) as avg_score
+            FROM strikeagent_predictions
+          `);
+        }
+      }
       
       const seen = new Set<string>();
       const topSignals: any[] = [];
-      for (const row of recentRows) {
-        const ticker = row.ticker?.toUpperCase();
-        if (!ticker || seen.has(ticker)) continue;
-        seen.add(ticker);
 
-        const signal = row.signal;
-        let direction = 'neutral';
-        let confidenceValue = 0.5;
+      if (signalSource === 'prediction_events') {
+        for (const row of recentRows) {
+          const ticker = row.ticker?.toUpperCase();
+          if (!ticker || seen.has(ticker)) continue;
+          seen.add(ticker);
 
-        if (signal === 'STRONG_BUY') { direction = 'long'; confidenceValue = 0.9; }
-        else if (signal === 'BUY') { direction = 'long'; confidenceValue = 0.75; }
-        else if (signal === 'STRONG_SELL') { direction = 'short'; confidenceValue = 0.9; }
-        else if (signal === 'SELL') { direction = 'short'; confidenceValue = 0.75; }
+          const signal = row.signal;
+          let direction = 'neutral';
+          let confidenceValue = 0.5;
 
-        if (row.confidence === 'HIGH') confidenceValue = Math.min(confidenceValue + 0.1, 0.99);
-        else if (row.confidence === 'LOW') confidenceValue = Math.max(confidenceValue - 0.15, 0.1);
+          if (signal === 'STRONG_BUY') { direction = 'long'; confidenceValue = 0.9; }
+          else if (signal === 'BUY') { direction = 'long'; confidenceValue = 0.75; }
+          else if (signal === 'STRONG_SELL') { direction = 'short'; confidenceValue = 0.9; }
+          else if (signal === 'SELL') { direction = 'short'; confidenceValue = 0.75; }
 
-        const price = parseFloat(row.price_at_prediction) || 0;
-        const assetName = ticker.replace(/-/g, '').replace(/\d+$/, '');
+          if (row.confidence === 'HIGH') confidenceValue = Math.min(confidenceValue + 0.1, 0.99);
+          else if (row.confidence === 'LOW') confidenceValue = Math.max(confidenceValue - 0.15, 0.1);
 
-        topSignals.push({
-          asset: `${assetName}/USD`,
-          direction,
-          confidence: Math.round(confidenceValue * 100) / 100,
-          price,
-          timeframe: '4h'
-        });
-        if (topSignals.length >= 5) break;
+          const price = parseFloat(row.price_at_prediction) || 0;
+          const assetName = ticker.replace(/-/g, '').replace(/\d+$/, '');
+
+          topSignals.push({
+            asset: `${assetName}/USD`,
+            direction,
+            confidence: Math.round(confidenceValue * 100) / 100,
+            price,
+            timeframe: '4h'
+          });
+          if (topSignals.length >= 5) break;
+        }
+      } else {
+        for (const row of recentRows) {
+          const symbol = row.token_symbol?.toUpperCase();
+          if (!symbol || seen.has(symbol)) continue;
+          seen.add(symbol);
+          const score = parseInt(row.ai_score) || 50;
+          if (score >= 45 && score <= 55) continue;
+
+          topSignals.push({
+            asset: `${symbol}/USD`,
+            direction: score >= 60 ? 'long' : 'short',
+            confidence: Math.round((score / 100) * 100) / 100,
+            price: parseFloat(row.price_usd) || 0,
+            timeframe: '4h'
+          });
+          if (topSignals.length >= 5) break;
+        }
       }
       
-      const totalPredictions = parseInt(predictionStats.rows[0].total);
-      const ss = sentimentStats.rows[0];
-      const recentTotal = parseInt(ss.total) || 1;
-      const bullishPct = Math.round((parseInt(ss.bullish) / recentTotal) * 100);
+      const peTotal = parseInt(predictionStats.rows[0].pe_total);
+      const saTotal = parseInt(predictionStats.rows[0].sa_total);
+      const totalPredictions = peTotal + saTotal;
+
+      let bullishPct = 50;
+      if (sentimentFallback) {
+        const sf = sentimentFallback.rows[0];
+        const sfTotal = parseInt(sf.total) || 1;
+        bullishPct = Math.round((parseInt(sf.bullish) / sfTotal) * 100);
+      } else {
+        const ss = sentimentStats.rows[0];
+        const ssTotal = parseInt(ss.total) || 1;
+        bullishPct = Math.round((parseInt(ss.bullish) / ssTotal) * 100);
+      }
       const sentiment = bullishPct >= 55 ? 'bullish' : bullishPct <= 45 ? 'bearish' : 'neutral';
 
       const oc = outcomeStats.rows[0];
@@ -1580,10 +1660,13 @@ async function handlePublicMarketRequest(req: http.IncomingMessage, res: http.Se
       const avgReturn = parseFloat(oc.avg_return) || 0;
       
       const activeSignals = await pool.query(`
-        SELECT COUNT(DISTINCT ticker) as count 
-        FROM prediction_events 
-        WHERE created_at > NOW() - INTERVAL '1 hour'
+        SELECT 
+          (SELECT COUNT(DISTINCT ticker) FROM prediction_events WHERE created_at > NOW() - INTERVAL '1 hour') as pe_active,
+          (SELECT COUNT(DISTINCT token_symbol) FROM strikeagent_predictions WHERE created_at > NOW() - INTERVAL '1 hour') as sa_active
       `);
+      const peActive = parseInt(activeSignals.rows[0].pe_active) || 0;
+      const saActive = parseInt(activeSignals.rows[0].sa_active) || 0;
+      const activeCount = peActive + saActive || topSignals.length;
       
       await pool.end();
       
@@ -1591,7 +1674,7 @@ async function handlePublicMarketRequest(req: http.IncomingMessage, res: http.Se
         topSignals,
         marketSentiment: sentiment,
         sentimentScore: bullishPct,
-        activeSignals: parseInt(activeSignals.rows[0].count),
+        activeSignals: activeCount,
         predictionAccuracy: accuracy,
         totalPredictions,
         avgReturnPerTrade: avgReturn,
