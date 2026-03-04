@@ -522,7 +522,7 @@ class PredictionTrackingService {
   /**
    * Get pending predictions that need outcome checks
    */
-  async getPendingOutcomeChecks(horizon: '1h' | '4h' | '24h' | '7d'): Promise<any[]> {
+  async getPendingOutcomeChecks(horizon: '1h' | '4h' | '24h' | '7d', limit: number = 50): Promise<any[]> {
     const horizonMs: Record<string, number> = {
       '1h': 60 * 60 * 1000,
       '4h': 4 * 60 * 60 * 1000,
@@ -531,36 +531,22 @@ class PredictionTrackingService {
     };
 
     const cutoffTime = new Date(Date.now() - horizonMs[horizon]);
+    const maxAge = new Date(Date.now() - 8 * 24 * 60 * 60 * 1000);
 
-    // Get predictions that were created before the cutoff and haven't been evaluated for this horizon
-    const predictions = await db.select()
-      .from(predictionEvents)
-      .where(
-        and(
-          sql`${predictionEvents.createdAt} <= ${cutoffTime}`,
-          sql`${predictionEvents.status} != 'evaluated'`
-        )
-      );
+    const results = await db.execute(sql`
+      SELECT pe.*
+      FROM prediction_events pe
+      LEFT JOIN prediction_outcomes po 
+        ON po.prediction_id = pe.id AND po.horizon = ${horizon}
+      WHERE pe.created_at <= ${cutoffTime}
+        AND pe.created_at >= ${maxAge}
+        AND pe.status != 'evaluated'
+        AND po.id IS NULL
+      ORDER BY pe.created_at DESC
+      LIMIT ${limit}
+    `);
 
-    // Filter out ones that already have this horizon evaluated
-    const results = [];
-    for (const pred of predictions) {
-      const [existingOutcome] = await db.select()
-        .from(predictionOutcomes)
-        .where(
-          and(
-            eq(predictionOutcomes.predictionId, pred.id),
-            eq(predictionOutcomes.horizon, horizon)
-          )
-        )
-        .limit(1);
-
-      if (!existingOutcome) {
-        results.push(pred);
-      }
-    }
-
-    return results;
+    return results.rows || results;
   }
 }
 

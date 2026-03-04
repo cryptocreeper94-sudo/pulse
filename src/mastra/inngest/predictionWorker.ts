@@ -134,14 +134,37 @@ async function fetchCurrentPrice(ticker: string): Promise<number | null> {
   }
 }
 
+async function fetchPricesBatch(tickers: string[]): Promise<Record<string, number>> {
+  const uniqueIds = [...new Set(tickers.map(t => getCoingeckoId(t)))];
+  const prices: Record<string, number> = {};
+  
+  const batchSize = 50;
+  for (let i = 0; i < uniqueIds.length; i += batchSize) {
+    const batch = uniqueIds.slice(i, i + batchSize);
+    try {
+      const idsParam = batch.join(',');
+      const data = await coinGeckoClient.getSimplePrice(idsParam, 'usd', false, false, false);
+      for (const [id, val] of Object.entries(data)) {
+        if ((val as any)?.usd) {
+          prices[id] = (val as any).usd;
+        }
+      }
+    } catch (error: any) {
+      console.error(`[PredictionWorker] Batch price fetch failed:`, error.message);
+    }
+  }
+  
+  return prices;
+}
+
 export const predictionOutcomeWorker = inngest.createFunction(
   {
     id: "prediction-outcome-worker",
     name: "Check Prediction Outcomes",
   },
   [
-    { cron: "0 * * * *" }, // Run every hour at minute 0
-    { event: "prediction/check-outcomes" }, // Can also be triggered manually
+    { cron: "*/15 * * * *" },
+    { event: "prediction/check-outcomes" },
   ],
   async ({ event, step }) => {
     console.log("🔍 [PredictionWorker] Starting outcome check run...");
@@ -149,50 +172,60 @@ export const predictionOutcomeWorker = inngest.createFunction(
     let processedCount = 0;
     let errorCount = 0;
 
-    // Check each horizon
     for (const horizon of HORIZONS) {
       const pendingPredictions = await step.run(
         `get-pending-${horizon}`,
         async () => {
-          return await predictionTrackingService.getPendingOutcomeChecks(horizon);
+          return await predictionTrackingService.getPendingOutcomeChecks(horizon, 50);
         }
       );
 
+      if (pendingPredictions.length === 0) continue;
       console.log(`📊 [PredictionWorker] Found ${pendingPredictions.length} pending predictions for ${horizon} horizon`);
 
-      // Process each prediction
-      for (const prediction of pendingPredictions) {
-        try {
-          const currentPrice = await step.run(
-            `fetch-price-${prediction.id}-${horizon}`,
-            async () => {
-              return await fetchCurrentPrice(prediction.ticker);
-            }
-          );
+      const prices = await step.run(
+        `fetch-prices-batch-${horizon}`,
+        async () => {
+          const tickers = [...new Set(pendingPredictions.map((p: any) => p.ticker))];
+          return await fetchPricesBatch(tickers);
+        }
+      );
 
-          if (currentPrice === null) {
-            console.warn(`⚠️ [PredictionWorker] Could not fetch price for ${prediction.ticker}`);
-            errorCount++;
-            continue;
-          }
+      const results = await step.run(
+        `process-batch-${horizon}`,
+        async () => {
+          let processed = 0;
+          let errors = 0;
+          
+          for (const prediction of pendingPredictions) {
+            try {
+              const coinId = getCoingeckoId(prediction.ticker);
+              const currentPrice = prices[coinId];
+              
+              if (!currentPrice) {
+                errors++;
+                continue;
+              }
 
-          await step.run(
-            `record-outcome-${prediction.id}-${horizon}`,
-            async () => {
-              return await predictionTrackingService.recordOutcome({
+              await predictionTrackingService.recordOutcome({
                 predictionId: prediction.id,
                 horizon,
                 priceAtCheck: currentPrice,
               });
-            }
-          );
 
-          processedCount++;
-        } catch (error: any) {
-          console.error(`❌ [PredictionWorker] Error processing ${prediction.id}:`, error.message);
-          errorCount++;
+              processed++;
+            } catch (error: any) {
+              console.error(`❌ [PredictionWorker] Error processing ${prediction.id}:`, error.message);
+              errors++;
+            }
+          }
+          
+          return { processed, errors };
         }
-      }
+      );
+
+      processedCount += results.processed;
+      errorCount += results.errors;
     }
 
     const summary = {
@@ -308,8 +341,8 @@ export const modelTrainingWorker = inngest.createFunction(
     name: "Train Prediction Models",
   },
   [
-    { cron: "0 3 * * 0" }, // Run every Sunday at 3 AM
-    { event: "model/train" }, // Can be triggered manually
+    { cron: "0 3 * * *" },
+    { event: "model/train" },
   ],
   async ({ event, step }) => {
     console.log("🧠 [ModelTraining] Starting weekly model training...");

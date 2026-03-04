@@ -22,7 +22,13 @@ sed -i 's/host: "0\.0\.0\.0"/host: "127.0.0.1"/g' "$TARGET"
 
 if grep -q "import { tools } from '#tools'" "$TARGET"; then
   sed -i "s|import { tools } from '#tools';|const tools = [];|" "$TARGET"
-  echo "[patch-mastra] Fixed #tools import"
+  echo "[patch-mastra] Fixed #tools import (inline)"
+fi
+
+TOOLS_FILE=".mastra/.build/tools.mjs"
+if [ ! -f "$TOOLS_FILE" ]; then
+  echo 'export const tools = {};' > "$TOOLS_FILE"
+  echo "[patch-mastra] Created missing tools.mjs"
 fi
 
 if grep -q "throw new Error('Could not dynamically require" "$TARGET"; then
