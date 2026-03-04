@@ -65,7 +65,7 @@ export default function LoginScreen() {
         </div>
 
         <div className="login-footer">
-          <p>By signing in, you agree to our Terms of Service and Privacy Policy</p>
+          <p>By signing in, you agree to our <a href="/terms" style={{ color: '#00D4FF', textDecoration: 'none' }}>Terms of Service</a> and <a href="/privacy" style={{ color: '#00D4FF', textDecoration: 'none' }}>Privacy Policy</a></p>
         </div>
       </div>
 

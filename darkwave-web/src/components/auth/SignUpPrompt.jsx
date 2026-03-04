@@ -77,7 +77,7 @@ export default function SignUpPrompt() {
         <p className="signup-prompt-free">100% free to create an account</p>
 
         <div className="signup-prompt-footer">
-          By signing in, you agree to our Terms of Service and Privacy Policy
+          By signing in, you agree to our <a href="/terms" style={{ color: '#00D4FF', textDecoration: 'none' }}>Terms of Service</a> and <a href="/privacy" style={{ color: '#00D4FF', textDecoration: 'none' }}>Privacy Policy</a>
         </div>
       </div>
 
