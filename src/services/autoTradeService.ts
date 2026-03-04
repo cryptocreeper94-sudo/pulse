@@ -45,6 +45,7 @@ export interface AutoTradeConfigData {
   notifyOnRecommendation: boolean;
   notifyChannel: string;
   tradingWalletId: string | null;
+  tradingWalletAddress: string | null;
   totalTradesExecuted: number;
   winningTrades: number;
   losingTrades: number;
@@ -138,6 +139,7 @@ class AutoTradeService {
       notifyOnRecommendation: row.notifyOnRecommendation ?? true,
       notifyChannel: row.notifyChannel || 'telegram',
       tradingWalletId: row.tradingWalletId,
+      tradingWalletAddress: row.tradingWalletAddress || null,
       totalTradesExecuted: row.totalTradesExecuted ?? 0,
       winningTrades: row.winningTrades ?? 0,
       losingTrades: row.losingTrades ?? 0,

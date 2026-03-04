@@ -1031,6 +1031,8 @@ export const autoTradeConfig = pgTable('auto_trade_config', {
   
   // Wallet for trading (references built-in wallet)
   tradingWalletId: varchar('trading_wallet_id', { length: 255 }),
+  tradingWalletAddress: varchar('trading_wallet_address', { length: 255 }),
+  encryptedTradingKey: text('encrypted_trading_key'),
   
   // Stats
   totalTradesExecuted: integer('total_trades_executed').default(0),

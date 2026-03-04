@@ -187,6 +187,11 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  if (urlPath.startsWith('/api/auto-trade/wallet')) {
+    handleAutoTradeWalletRequest(req, res, urlPath);
+    return;
+  }
+
   // API proxy - only if server is ready
   if (urlPath.startsWith('/api/')) {
     const proxyReq = http.request({
@@ -2002,6 +2007,111 @@ async function handleAffiliateRequest(req: http.IncomingMessage, res: http.Serve
     jsonResponse(res, 404, { error: 'Affiliate endpoint not found' });
   } catch (err: any) {
     console.error('[Affiliate] Request error:', err.message);
+    jsonResponse(res, 500, { error: 'Internal server error' });
+  }
+}
+
+async function handleAutoTradeWalletRequest(req: http.IncomingMessage, res: http.ServerResponse, urlPath: string) {
+  try {
+    if (urlPath === '/api/auto-trade/wallet/link' && req.method === 'POST') {
+      const body = await readBody(req);
+      const { userId, privateKey } = body;
+
+      if (!userId || !privateKey) {
+        jsonResponse(res, 400, { error: 'userId and privateKey are required' });
+        return;
+      }
+
+      const { Keypair } = await import('@solana/web3.js');
+      const bs58 = (await import('bs58')).default;
+
+      let walletAddress: string;
+      try {
+        const keypair = Keypair.fromSecretKey(bs58.decode(privateKey));
+        walletAddress = keypair.publicKey.toBase58();
+      } catch {
+        jsonResponse(res, 400, { error: 'Invalid Solana private key' });
+        return;
+      }
+
+      const { tradeExecutionService } = await import('./services/tradeExecutionService');
+      const encryptedKey = tradeExecutionService.encryptTradingKey(privateKey);
+
+      const pool = await getDbPool();
+      await pool.query(
+        `INSERT INTO auto_trade_config (user_id, trading_wallet_address, encrypted_trading_key, created_at, updated_at)
+         VALUES ($1, $2, $3, NOW(), NOW())
+         ON CONFLICT (user_id) DO UPDATE SET
+           trading_wallet_address = $2,
+           encrypted_trading_key = $3,
+           updated_at = NOW()`,
+        [userId, walletAddress, encryptedKey]
+      );
+      await pool.end();
+
+      jsonResponse(res, 200, {
+        success: true,
+        walletAddress,
+        message: 'Trading wallet linked successfully'
+      });
+      return;
+    }
+
+    if (urlPath === '/api/auto-trade/wallet/status' && req.method === 'GET') {
+      const url = new URL(req.url || '', `http://localhost`);
+      const userId = url.searchParams.get('userId');
+
+      if (!userId) {
+        jsonResponse(res, 400, { error: 'userId is required' });
+        return;
+      }
+
+      const pool = await getDbPool();
+      const result = await pool.query(
+        `SELECT trading_wallet_address, encrypted_trading_key IS NOT NULL as has_key, enabled, mode
+         FROM auto_trade_config WHERE user_id = $1 LIMIT 1`,
+        [userId]
+      );
+      await pool.end();
+
+      if (result.rows.length === 0) {
+        jsonResponse(res, 200, { linked: false, walletAddress: null, enabled: false, mode: 'observer' });
+        return;
+      }
+
+      const row = result.rows[0];
+      jsonResponse(res, 200, {
+        linked: !!row.has_key,
+        walletAddress: row.trading_wallet_address || null,
+        enabled: row.enabled || false,
+        mode: row.mode || 'observer'
+      });
+      return;
+    }
+
+    if (urlPath === '/api/auto-trade/wallet/unlink' && req.method === 'POST') {
+      const body = await readBody(req);
+      const { userId } = body;
+
+      if (!userId) {
+        jsonResponse(res, 400, { error: 'userId is required' });
+        return;
+      }
+
+      const pool = await getDbPool();
+      await pool.query(
+        `UPDATE auto_trade_config SET trading_wallet_address = NULL, encrypted_trading_key = NULL, enabled = false, updated_at = NOW() WHERE user_id = $1`,
+        [userId]
+      );
+      await pool.end();
+
+      jsonResponse(res, 200, { success: true, message: 'Trading wallet unlinked and auto-trade disabled' });
+      return;
+    }
+
+    jsonResponse(res, 404, { error: 'Auto-trade wallet endpoint not found' });
+  } catch (err: any) {
+    console.error('[AutoTradeWallet] Request error:', err.message);
     jsonResponse(res, 500, { error: 'Internal server error' });
   }
 }

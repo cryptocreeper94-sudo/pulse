@@ -1,5 +1,6 @@
 import { inngest } from "./client";
-import { tradeExecutionService, SignalEvaluation } from "../../services/tradeExecutionService";
+import { tradeExecutionService } from "../../services/tradeExecutionService";
+import type { SignalEvaluation } from "../../services/tradeExecutionService";
 import { autoTradeService } from "../../services/autoTradeService";
 import { predictionLearningService } from "../../services/predictionLearningService.js";
 import axios from "axios";
@@ -286,9 +287,105 @@ export const autoTradeApprovalReminder = inngest.createFunction(
   }
 );
 
+export const autoTradeMLScanner = inngest.createFunction(
+  {
+    id: "auto-trade-ml-scanner",
+    name: "Scan ML Predictions for Auto-Trade",
+  },
+  [
+    { cron: "*/15 * * * *" },
+    { event: "auto-trade/scan-ml-predictions" },
+  ],
+  async ({ event, step }) => {
+    console.log("🤖 [AutoTrade] Scanning ML predictions for auto-trade signals...");
+
+    const activeConfigs = await step.run("get-active-configs", async () => {
+      return await tradeExecutionService.getActiveUsersForAutoTrade();
+    });
+
+    if (activeConfigs.length === 0) {
+      return { message: "No active auto-trade users", signals: 0 };
+    }
+
+    const recentPredictions = await step.run("get-recent-predictions", async () => {
+      const { db: database } = await import('../../db/client');
+      const { predictionEvents } = await import('../../db/schema');
+      const { desc, gte } = await import('drizzle-orm');
+
+      const cutoff = new Date(Date.now() - 20 * 60 * 1000);
+      return await database.select()
+        .from(predictionEvents)
+        .where(gte(predictionEvents.createdAt, cutoff))
+        .orderBy(desc(predictionEvents.createdAt))
+        .limit(20);
+    });
+
+    if (recentPredictions.length === 0) {
+      return { message: "No recent predictions found", signals: 0 };
+    }
+
+    let signalsProcessed = 0;
+
+    for (const config of activeConfigs) {
+      if (config.mode === 'observer') continue;
+
+      for (const prediction of recentPredictions) {
+        if (!prediction.signal || prediction.signal === 'HOLD') continue;
+
+        const isBuy = prediction.signal.includes('BUY');
+        const isSell = prediction.signal.includes('SELL');
+        if (!isBuy && !isSell) continue;
+
+        const confidence = prediction.confidence === 'HIGH' ? 0.85 :
+                          prediction.confidence === 'MEDIUM' ? 0.70 : 0.55;
+
+        const allowedSignals = JSON.parse(config.allowedSignals || '["BUY","STRONG_BUY"]') as string[];
+        if (!allowedSignals.includes(prediction.signal)) continue;
+
+        const allowedHorizons = JSON.parse(config.allowedHorizons || '["1h","4h"]') as string[];
+        if (prediction.horizon && !allowedHorizons.includes(prediction.horizon)) continue;
+
+        try {
+          await step.run(`process-signal-${config.userId}-${prediction.id}`, async () => {
+            const signal: SignalEvaluation = {
+              tokenAddress: prediction.ticker || '',
+              tokenSymbol: prediction.ticker || '',
+              tokenName: prediction.ticker || '',
+              chain: prediction.assetType === 'crypto' ? 'solana' : 'solana',
+              currentPrice: parseFloat(prediction.priceAtPrediction?.toString() || '0'),
+              signal: prediction.signal as any,
+              signalConfidence: confidence,
+              horizon: (prediction.horizon as any) || '1h',
+              predictionId: prediction.id?.toString(),
+              indicators: prediction.indicators ? JSON.parse(prediction.indicators as string) : {},
+            };
+
+            const decision = await tradeExecutionService.evaluateSignal(config.userId, signal);
+            if (decision.shouldTrade) {
+              signalsProcessed++;
+            }
+            return decision;
+          });
+        } catch (error: any) {
+          console.error(`[AutoTrade] Error processing signal for ${config.userId}: ${error.message}`);
+        }
+      }
+    }
+
+    console.log(`✅ [AutoTrade] ML scan complete: ${signalsProcessed} signals processed for ${activeConfigs.length} users`);
+    return {
+      timestamp: new Date().toISOString(),
+      activeUsers: activeConfigs.length,
+      predictionsScanned: recentPredictions.length,
+      signalsProcessed,
+    };
+  }
+);
+
 export const autoTradeWorkerFunctions = [
   autoTradeSignalProcessor,
   autoTradeDailyReport,
   autoTradeKillSwitchMonitor,
   autoTradeApprovalReminder,
+  autoTradeMLScanner,
 ];

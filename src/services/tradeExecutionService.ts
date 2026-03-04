@@ -1,10 +1,23 @@
 import { autoTradeService, AutoTradeConfigData, CreateAutoTradeInput } from './autoTradeService';
 import { predictionLearningService } from './predictionLearningService.js';
+import { tradeExecutorService } from './tradeExecutorService';
 import { db } from '../db/client';
 import { autoTrades, autoTradeConfig } from '../db/schema';
 import { eq, and, gte, sql } from 'drizzle-orm';
+import { Keypair, VersionedTransaction } from '@solana/web3.js';
+import { Connection } from '@solana/web3.js';
+import bs58 from 'bs58';
+import crypto from 'crypto';
 import pino from 'pino';
 import axios from 'axios';
+
+const HELIUS_API_KEY = process.env.HELIUS_API_KEY;
+const SOLANA_RPC = HELIUS_API_KEY
+  ? `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`
+  : 'https://api.mainnet-beta.solana.com';
+const SOL_MINT = 'So11111111111111111111111111111111111111112';
+const JUPITER_API = 'https://quote-api.jup.ag/v6';
+const TRADING_KEY_ENCRYPTION_SECRET = process.env.DARKWAVE_API_SECRET || 'pulse-trading-key-default';
 
 const logger = pino({ name: 'TradeExecutionService' });
 
@@ -323,13 +336,146 @@ class TradeExecutionService {
 
     const trade = await autoTradeService.createTrade(input);
 
-    await autoTradeService.updateTradeStatus(trade.id, 'executed', {
-      executedAt: new Date(),
-    });
+    const swapResult = await this.executeJupiterSwap(userId, config, signal, amount, tradeType);
 
-    logger.info({ tradeId: trade.id, amount, symbol: signal.tokenSymbol }, '[TradeExecution] Trade executed');
+    if (swapResult.success) {
+      await autoTradeService.updateTradeStatus(trade.id, 'executed', {
+        executedAt: new Date(),
+        txSignature: swapResult.txSignature,
+        amountNative: swapResult.solAmount,
+        amountToken: swapResult.tokenAmount,
+      });
+      logger.info({ tradeId: trade.id, txSignature: swapResult.txSignature, amount, symbol: signal.tokenSymbol }, '[TradeExecution] Trade executed on-chain');
+    } else {
+      await autoTradeService.updateTradeStatus(trade.id, 'failed', {
+        txError: swapResult.error || 'Jupiter swap failed',
+      });
+      logger.warn({ tradeId: trade.id, error: swapResult.error, symbol: signal.tokenSymbol }, '[TradeExecution] Trade execution failed');
+    }
 
     return trade;
+  }
+
+  private async executeJupiterSwap(
+    userId: string,
+    config: AutoTradeConfigData,
+    signal: SignalEvaluation,
+    amountUsd: number,
+    tradeType: 'BUY' | 'SELL'
+  ): Promise<{ success: boolean; txSignature?: string; error?: string; solAmount?: string; tokenAmount?: string }> {
+    try {
+      const walletConfig = await db.select({
+        tradingWalletAddress: autoTradeConfig.tradingWalletAddress,
+        encryptedTradingKey: autoTradeConfig.encryptedTradingKey,
+      }).from(autoTradeConfig).where(eq(autoTradeConfig.userId, userId)).limit(1);
+
+      if (!walletConfig[0]?.encryptedTradingKey || !walletConfig[0]?.tradingWalletAddress) {
+        logger.warn({ userId }, '[TradeExecution] No trading wallet linked - recording as paper trade');
+        return { success: true, error: undefined, txSignature: `paper_${Date.now().toString(36)}` };
+      }
+
+      const privateKeyBs58 = this.decryptTradingKey(walletConfig[0].encryptedTradingKey);
+      const keypair = Keypair.fromSecretKey(bs58.decode(privateKeyBs58));
+      const walletAddress = keypair.publicKey.toBase58();
+
+      if (signal.chain !== 'solana') {
+        logger.info({ chain: signal.chain }, '[TradeExecution] Non-Solana chain, recording as paper trade');
+        return { success: true, txSignature: `paper_${Date.now().toString(36)}` };
+      }
+
+      const solPrice = await tradeExecutorService.getSolPrice();
+      if (!solPrice || solPrice <= 0) {
+        return { success: false, error: 'Could not fetch SOL price' };
+      }
+
+      const solAmount = amountUsd / solPrice;
+
+      if (tradeType === 'BUY') {
+        const lamports = Math.floor(solAmount * 1e9).toString();
+        const quoteRes = await axios.get(`${JUPITER_API}/quote`, {
+          params: { inputMint: SOL_MINT, outputMint: signal.tokenAddress, amount: lamports, slippageBps: 500, swapMode: 'ExactIn' },
+          timeout: 10000,
+        });
+        const quote = quoteRes.data;
+
+        const swapRes = await axios.post(`${JUPITER_API}/swap`, {
+          quoteResponse: quote,
+          userPublicKey: walletAddress,
+          wrapAndUnwrapSol: true,
+          dynamicComputeUnitLimit: true,
+        }, { timeout: 15000 });
+
+        const swapTxBase64 = swapRes.data.swapTransaction;
+        const txBuf = Buffer.from(swapTxBase64, 'base64');
+        const tx = VersionedTransaction.deserialize(txBuf);
+        tx.sign([keypair]);
+
+        const connection = new Connection(SOLANA_RPC, 'confirmed');
+        const signature = await connection.sendRawTransaction(tx.serialize(), { skipPreflight: false, maxRetries: 3 });
+        await connection.confirmTransaction(signature, 'confirmed');
+
+        logger.info({ signature, symbol: signal.tokenSymbol, solAmount: solAmount.toFixed(6) }, '[TradeExecution] BUY swap confirmed');
+        return { success: true, txSignature: signature, solAmount: solAmount.toFixed(6), tokenAmount: quote.outAmount };
+      } else {
+        const tokenBalance = await tradeExecutorService.getWalletTokenBalance(walletAddress, signal.tokenAddress);
+        if (!tokenBalance || tokenBalance.amount === '0') {
+          return { success: false, error: 'No token balance to sell' };
+        }
+
+        const quoteRes = await axios.get(`${JUPITER_API}/quote`, {
+          params: { inputMint: signal.tokenAddress, outputMint: SOL_MINT, amount: tokenBalance.amount, slippageBps: 500, swapMode: 'ExactIn' },
+          timeout: 10000,
+        });
+        const quote = quoteRes.data;
+
+        const swapRes = await axios.post(`${JUPITER_API}/swap`, {
+          quoteResponse: quote,
+          userPublicKey: walletAddress,
+          wrapAndUnwrapSol: true,
+          dynamicComputeUnitLimit: true,
+        }, { timeout: 15000 });
+
+        const swapTxBase64 = swapRes.data.swapTransaction;
+        const txBuf = Buffer.from(swapTxBase64, 'base64');
+        const tx = VersionedTransaction.deserialize(txBuf);
+        tx.sign([keypair]);
+
+        const connection = new Connection(SOLANA_RPC, 'confirmed');
+        const signature = await connection.sendRawTransaction(tx.serialize(), { skipPreflight: false, maxRetries: 3 });
+        await connection.confirmTransaction(signature, 'confirmed');
+
+        logger.info({ signature, symbol: signal.tokenSymbol }, '[TradeExecution] SELL swap confirmed');
+        return { success: true, txSignature: signature, tokenAmount: tokenBalance.amount, solAmount: (parseFloat(quote.outAmount) / 1e9).toFixed(6) };
+      }
+    } catch (error: any) {
+      logger.error({ error: error.message, userId, symbol: signal.tokenSymbol }, '[TradeExecution] Jupiter swap error');
+      return { success: false, error: error.message };
+    }
+  }
+
+  encryptTradingKey(privateKeyBs58: string): string {
+    const salt = crypto.randomBytes(16);
+    const key = crypto.pbkdf2Sync(TRADING_KEY_ENCRYPTION_SECRET, salt, 100000, 32, 'sha256');
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
+    let encrypted = cipher.update(privateKeyBs58, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    const authTag = cipher.getAuthTag();
+    return Buffer.concat([salt, iv, authTag, Buffer.from(encrypted, 'hex')]).toString('base64');
+  }
+
+  private decryptTradingKey(encryptedData: string): string {
+    const data = Buffer.from(encryptedData, 'base64');
+    const salt = data.subarray(0, 16);
+    const iv = data.subarray(16, 32);
+    const authTag = data.subarray(32, 48);
+    const encrypted = data.subarray(48);
+    const key = crypto.pbkdf2Sync(TRADING_KEY_ENCRYPTION_SECRET, salt, 100000, 32, 'sha256');
+    const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
+    decipher.setAuthTag(authTag);
+    let decrypted = decipher.update(encrypted);
+    decrypted = Buffer.concat([decrypted, decipher.final()]);
+    return decrypted.toString('utf8');
   }
 
   private async sendRecommendationNotification(
@@ -520,6 +666,7 @@ ${statusEmoji} <b>TRADE ${status.toUpperCase()}</b> ${actionEmoji}
       notifyOnRecommendation: row.notifyOnRecommendation ?? true,
       notifyChannel: row.notifyChannel || 'telegram',
       tradingWalletId: row.tradingWalletId,
+      tradingWalletAddress: row.tradingWalletAddress || null,
       totalTradesExecuted: row.totalTradesExecuted ?? 0,
       winningTrades: row.winningTrades ?? 0,
       losingTrades: row.losingTrades ?? 0,
